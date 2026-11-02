@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai4acc-mini-hackathon"
+version = "0.1.0"
+description = "Simulation environment, benchmark harness, and baseline controllers for the AI Applications in Accelerators Tutorial & Mini-Hackathon."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Chong Shik Park", email = "kuphy@korea.ac.kr" },
+]
+keywords = [
+    "particle-accelerators",
+    "accelerator-physics",
+    "orbit-correction",
+    "machine-learning",
+    "reinforcement-learning",
+    "surrogate-modeling",
+    "gymnasium",
+    "weights-and-biases",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "numpy>=1.22.0",
+    "scipy>=1.8.0",
+    "matplotlib>=3.5.0",
+    "scikit-learn>=1.0.0",
+    "gymnasium>=0.28.0",
+    "wandb>=0.15.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyterlab>=3.0.0",
+    "ipykernel>=6.0.0",
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/cspark/ai4acc-mini-hackathon"
+Repository = "https://github.com/cspark/ai4acc-mini-hackathon.git"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]

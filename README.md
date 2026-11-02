@@ -87,6 +87,7 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 .
 ├── README.md                                         # Main workshop & challenge guide (this file)
 ├── AGENTS.md                                         # Operational instructions for AI assistants & agents
+├── pyproject.toml                                    # Standard Python package & build metadata (PEP 517/621)
 ├── .gitignore                                        # Standard Git ignore rules (LaTeX, Python, W&B)
 │
 ├── docs/                                             # Supporting workshop documentation (.docx guides)
@@ -130,9 +131,11 @@ You can run the challenge notebooks using any of the following environments:
    conda activate ai4acc
    ```
 
-2. Install the necessary packages:
+2. Install the package in editable mode with development dependencies:
    ```bash
-   pip install numpy scipy matplotlib scikit-learn gymnasium wandb jupyterlab
+   pip install -e ".[dev]"
+   # Or install dependencies individually:
+   # pip install numpy scipy matplotlib scikit-learn gymnasium wandb jupyterlab
    ```
 
 3. Launch Jupyter Lab and open the participant notebook:
