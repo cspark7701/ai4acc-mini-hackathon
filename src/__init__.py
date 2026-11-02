@@ -9,6 +9,7 @@ from src.controllers import (
     RLOrbitChallengeAgent
 )
 from src.benchmark import evaluate_hackathon_benchmark
+from src.visualization import draw_beamline
 
 __all__ = [
     "AcceleratorOrbitGymEnv",
@@ -16,5 +17,6 @@ __all__ = [
     "ClassicalSVDController",
     "SupervisedMLPController",
     "RLOrbitChallengeAgent",
-    "evaluate_hackathon_benchmark"
+    "evaluate_hackathon_benchmark",
+    "draw_beamline"
 ]
