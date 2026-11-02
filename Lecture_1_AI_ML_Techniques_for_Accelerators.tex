@@ -116,9 +116,9 @@ Modern particle accelerator facilities operate with thousands of tightly coupled
 \midrule
 09:10 -- 09:25 & 15 min & \textbf{Part 1: Motivation \& Accelerator Physics Foundations} \\
  & & Operational stability requirements, Hill's equation, betatron oscillation, ORM derivation, and hackathon lattice geometry. \\
-09:25 -- 09:45 & 20 min & \textbf{Part 2: Supervised Learning \& Neural Surrogate Modeling} \\
- & & Simulation tracking bottlenecks, offline exploration, Linear Ridge vs.\ Multi-Layer Perceptron (MLP), modeling cubic core saturation. \\
-09:45 -- 10:10 & 25 min & \textbf{Part 3: Closed-Loop Control Paradigms} \\
+09:25 -- 09:50 & 25 min & \textbf{Part 2: Machine Learning Fundamentals \& Neural Surrogate Modeling} \\
+ & & Neurons, layers (input/hidden/output), activation functions (ReLU), MSE/RMSE, Adam optimizer, train/val/test splits, bias-variance tradeoff, and MLP digital twins. \\
+09:50 -- 10:10 & 20 min & \textbf{Part 3: Closed-Loop Control Paradigms} \\
  & & Baseline 0 (Classical SVD pseudo-inverse), Baseline 1 (SciPy \texttt{L-BFGS-B} digital twin inversion), and Track 2 (RL policy agent with dynamic damping). \\
 10:10 -- 10:25 & 15 min & \textbf{Part 4: Mini-Hackathon Problem Formulation \& Gymnasium Contract} \\
  & & Environment spaces, reward formulation, 30-seed evaluation protocol, scoring formula trade-offs, and live Weights \& Biases (W\&B) telemetry. \\
@@ -198,12 +198,111 @@ The complete physical forward response equation is:
 
 ---
 
-\section{Part 2: Supervised Learning \& Neural Surrogate Modeling (20 min)}
+\section{Part 2: Machine Learning Fundamentals \& Neural Surrogate Modeling (25 min)}
 
-\subsection{Why Surrogate Modeling?}
-Numerical tracking engines (e.g., Elegant, MAD-X, OPAL) accurately simulate collective effects and 3D space charge, but require significant computational time. In contrast, closed-loop beam feedback requires microsecond-level response times. AI \textbf{Surrogate Models (Digital Twins)} learn the input-output mapping offline, enabling ultra-fast forward evaluations.
+\subsection{Machine Learning Taxonomy in Accelerators}
+Machine Learning (ML) algorithms automatically extract functional mappings from numerical tracking simulations or machine archives without requiring explicit analytical re-derivation. In accelerator operations, ML encompasses three main paradigms:
+\begin{itemize}
+    \item \textbf{Supervised Learning:} Learning a continuous regression mapping $\mathbf{Y} = f(\mathbf{X})$ from actuator magnet currents $\mathbf{X}$ to beam diagnostic offsets $\mathbf{Y}$. This forms the foundation of \textbf{Surrogate Modeling / Digital Twins}.
+    \item \textbf{Unsupervised Learning:} Uncovering latent structures in unlabelled data (e.g., PCA for betatron mode decomposition, autoencoders for anomaly detection).
+    \item \textbf{Reinforcement Learning (RL):} Training an agent policy $\pi(a|s)$ through environmental interaction to maximize cumulative reward for \textbf{Autonomous Closed-Loop Control}.
+\end{itemize}
 
-\subsection{Dataset Generation \& Validation Partitioning}
+\subsection{The Artificial Neuron: Mathematical Formulation}
+The fundamental atom of a neural network is the \textbf{artificial neuron} (perceptron):
+\begin{enumerate}
+    \item \textbf{Linear Combination (Pre-Activation):}
+    \begin{equation}
+        z = \sum_{i=1}^n w_i x_i + b = \mathbf{w}^T \mathbf{x} + b
+    \end{equation}
+    where $\mathbf{w} \in \mathbb{R}^n$ denotes the trainable synaptic weights, $\mathbf{x} \in \mathbb{R}^n$ is the input feature vector, and $b \in \mathbb{R}$ is the scalar bias shifting the firing threshold.
+    
+    \item \textbf{Non-Linear Mapping (Post-Activation):}
+    \begin{equation}
+        a = \sigma(z) = \sigma(\mathbf{w}^T \mathbf{x} + b)
+    \end{equation}
+    where $\sigma(\cdot)$ is the activation function.
+\end{enumerate}
+
+\subsection{Why Non-Linear Activation Functions are Essential}
+\begin{infobox}[The Collapse of Deep Linear Networks]
+If all activation functions were linear identities ($\sigma(z) = z$), stacking $L$ sequential layers would yield:
+\begin{equation}
+    \hat{\mathbf{Y}} = \mathbf{W}_3 (\mathbf{W}_2 (\mathbf{W}_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2) + \mathbf{b}_3 = (\mathbf{W}_3 \mathbf{W}_2 \mathbf{W}_1) \mathbf{x} + \mathbf{b}_{\text{net}} = \mathbf{W}_{\text{eff}} \mathbf{x} + \mathbf{b}_{\text{net}}
+\end{equation}
+A multi-layer linear network collapses mathematically into a \textbf{single linear matrix} $\mathbf{W}_{\text{eff}}$, offering no more expressive capacity than the classical linear Orbit Response Matrix $\mathbf{R}$.
+\end{infobox}
+
+Non-linear activation functions enable neural networks to act as Universal Function Approximators:
+\begin{itemize}
+    \item \textbf{Sigmoid:} $\sigma(z) = \frac{1}{1 + e^{-z}} \in (0, 1)$. Suffers from vanishing gradients when $|z| \gg 0$, halting weight updates during backpropagation.
+    \item \textbf{Hyperbolic Tangent ($\tanh$):} $\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}} \in (-1, 1)$. Zero-centered, but still prone to gradient saturation.
+    \item \textbf{Rectified Linear Unit (ReLU):}
+    \begin{equation}
+        \text{ReLU}(z) = \max(0, z) = \begin{cases} z & \text{if } z > 0 \\ 0 & \text{if } z \le 0 \end{cases}
+    \end{equation}
+    \textbf{Why ReLU is standard in accelerator surrogates:}
+    \begin{itemize}
+        \item Constant unit derivative $\frac{d}{dz}\text{ReLU}(z) = 1.0$ for $z > 0$, completely preventing gradient vanishing.
+        \item Extremely fast forward and backward passes without exponential function evaluation.
+        \item Induces sparse representations by zeroing negative activations.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Multi-Layer Perceptron (MLP) Topology: Layers \& Information Flow}
+A Multi-Layer Perceptron (MLP) organizes interconnected neurons into sequential layers:
+\begin{itemize}
+    \item \textbf{Input Layer ($\mathbb{R}^6$):} Ingests physical magnet actuator setpoints (the 6 corrector currents $I_1, \dots, I_6$).
+    \item \textbf{Hidden Layers ($\mathbb{R}^{128} \rightarrow \mathbb{R}^{64} \rightarrow \mathbb{R}^{32}$):} Progressive hierarchical feature representations. Each layer computes:
+    \begin{equation}
+        \mathbf{h}^{(l)} = \text{ReLU}\left( \mathbf{W}^{(l)} \mathbf{h}^{(l-1)} + \mathbf{b}^{(l)} \right)
+    \end{equation}
+    \item \textbf{Output Layer ($\mathbb{R}^{12}$):} Linear projection predicting the 12 Beam Position Monitor readings ($\hat{Y}_1, \dots, \hat{Y}_{12}$).
+\end{itemize}
+
+\subsection{Loss Functions, Loss Rates \& Metrics: MSE vs.\ RMSE}
+Network parameters are trained by minimizing an objective loss function:
+\begin{enumerate}
+    \item \textbf{Mean Squared Error (MSE) Loss:}
+    \begin{equation}
+        \mathcal{L}_{\text{MSE}}(\boldsymbol{\theta}) = \frac{1}{N \cdot M} \sum_{i=1}^N \sum_{j=1}^M \left( Y_{i,j} - \hat{Y}_{i,j}(\boldsymbol{\theta}) \right)^2
+    \end{equation}
+    Smoothly differentiable, penalizing large orbit outliers quadratically.
+    
+    \item \textbf{Root Mean Squared Error (RMSE) Evaluation Metric:}
+    \begin{equation}
+        \text{RMSE} = \sqrt{\mathcal{L}_{\text{MSE}}} = \sqrt{\frac{1}{N \cdot M} \sum_{i=1}^N \sum_{j=1}^M \left( Y_{i,j} - \hat{Y}_{i,j} \right)^2}
+    \end{equation}
+    \textbf{Why RMSE is the preferred metric in beam physics:} It preserves the original physical measurement units (\textbf{millimeters}) and directly reflects accelerator beam orbit distortion standards.
+\end{enumerate}
+
+\subsection{Optimization Algorithms: Gradient Descent \& The Adam Optimizer}
+During backpropagation, loss gradients $\nabla_{\boldsymbol{\theta}} \mathcal{L}$ are propagated backward to update weights:
+\begin{enumerate}
+    \item \textbf{Stochastic Gradient Descent (SGD):} $\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \nabla_{\boldsymbol{\theta}} \mathcal{L}$, where $\eta$ is the \textbf{learning rate}. High learning rates risk divergence; low learning rates cause stagnation.
+    \item \textbf{The Adam Optimizer (Adaptive Moment Estimation):} Combines Momentum (first moment $\mathbf{m}_t$) and RMSprop (second moment $\mathbf{v}_t$):
+    \begin{equation}
+        \mathbf{m}_t = \beta_1 \mathbf{m}_{t-1} + (1-\beta_1) \mathbf{g}_t, \quad \mathbf{v}_t = \beta_2 \mathbf{v}_{t-1} + (1-\beta_2) \mathbf{g}_t^2
+    \end{equation}
+    \begin{equation}
+        \hat{\mathbf{m}}_t = \frac{\mathbf{m}_t}{1-\beta_1^t}, \quad \hat{\mathbf{v}}_t = \frac{\mathbf{v}_t}{1-\beta_2^t} \implies \boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \frac{\eta}{\sqrt{\hat{\mathbf{v}}_t} + \epsilon} \hat{\mathbf{m}}_t
+    \end{equation}
+    Adam automatically scales individual parameter updates, ensuring stable convergence across coupled magnet channels.
+\end{enumerate}
+
+\subsection{Dataset Partitioning \& The Bias-Variance Tradeoff}
+To prevent memorization of diagnostic noise, data is partitioned into:
+\begin{itemize}
+    \item \textbf{Training Set (80\%, 1,200 shots):} Used directly for loss gradient computation and parameter updates.
+    \item \textbf{Validation Set (Optional):} Monitored across epochs for early stopping before overfitting occurs.
+    \item \textbf{Test / Holdout Set (20\%, 300 shots):} Strictly isolated during training to provide an unbiased benchmark on unseen accelerator states.
+\end{itemize}
+\begin{itemize}
+    \item \textbf{Underfitting (High Bias):} Linear models cannot capture the cubic magnetic core saturation.
+    \item \textbf{Overfitting (High Variance):} Over-parameterized models memorizing Gaussian sensor noise ($\sigma = 10\ \mu\text{m}$). Prevented using $L_2$ weight regularization (`alpha=1e-4`).
+\end{itemize}
+
+\subsection{Challenge Implementation \& Empirical Benchmark}
 In Step 3 of the challenge notebook, $1,500$ experimental samples are synthesized uniformly across current boundaries $[-3.0\text{ A}, +3.0\text{ A}]$:
 \begin{lstlisting}[language=Python]
 n_train_samples = 1500
@@ -216,24 +315,14 @@ Y_offline = Y_linear + Y_sat + bpm_noise
 X_train, X_test, Y_train, Y_test = train_test_split(
     X_offline, Y_offline, test_size=0.20, random_state=42
 )
+
+# Train Linear Ridge vs Deep MLP Regressor
+linear_model = Ridge(alpha=1.0).fit(X_train, Y_train)
+surrogate_model = MLPRegressor(
+    hidden_layer_sizes=(128, 64, 32), activation='relu',
+    solver='adam', alpha=1e-4, max_iter=400, random_state=42
+).fit(X_train, Y_train)
 \end{lstlisting}
-
-\subsection{Model Architecture Comparison: Ridge vs.\ Multi-Layer Perceptron}
-We compare two supervised regression architectures:
-
-\begin{enumerate}
-    \item \textbf{Regularized Linear Ridge Regression:}
-    \begin{equation}
-        \min_{\mathbf{W}} \|\mathbf{Y} - \mathbf{X}\mathbf{W}\|_F^2 + \lambda \|\mathbf{W}\|_F^2
-    \end{equation}
-    Because Ridge is strictly linear, it fails to account for the cubic saturation term $(\mathbf{I}^3)$.
-    
-    \item \textbf{Deep Multi-Layer Perceptron (MLP):}
-    \begin{equation}
-        \hat{\mathbf{Y}} = f_{\boldsymbol{\theta}}(\mathbf{I}) = \mathbf{W}_3 \cdot \text{ReLU}\left( \mathbf{W}_2 \cdot \text{ReLU}\left( \mathbf{W}_1 \mathbf{I} + \mathbf{b}_1 \right) + \mathbf{b}_2 \right) + \mathbf{b}_3
-    \end{equation}
-    Constructed with hidden layers $(128, 64, 32)$ and trained via the Adam optimizer ($L_2$ weight penalty $\alpha = 10^{-4}$).
-\end{enumerate}
 
 \begin{table}[h!]
 \centering
