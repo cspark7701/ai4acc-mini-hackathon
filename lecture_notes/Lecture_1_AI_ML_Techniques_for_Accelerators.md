@@ -165,7 +165,9 @@ Inputs       Weights
 ---
 
 ### 2.4 Multi-Layer Perceptron (MLP) Anatomy: Layers & Information Flow
-A **Multi-Layer Perceptron (MLP)** or deep feedforward neural network connects neurons in sequential layers:
+A **Multi-Layer Perceptron (MLP)** or deep feedforward neural network connects neurons in sequential layers, transforming low-dimensional corrector kicks into non-linear orbit distortions:
+
+![Multi-Layer Perceptron (MLP) Surrogate Architecture](../img/mlp_schematic.png)
 
 ```
    INPUT LAYER                  HIDDEN LAYERS                   OUTPUT LAYER

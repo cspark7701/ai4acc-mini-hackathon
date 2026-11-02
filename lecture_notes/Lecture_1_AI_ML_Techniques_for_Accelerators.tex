@@ -251,7 +251,15 @@ Non-linear activation functions enable neural networks to act as Universal Funct
 \end{itemize}
 
 \subsection{Multi-Layer Perceptron (MLP) Topology: Layers \& Information Flow}
-A Multi-Layer Perceptron (MLP) organizes interconnected neurons into sequential layers:
+A Multi-Layer Perceptron (MLP) organizes interconnected neurons into sequential layers (Figure~\ref{fig:mlp_schematic}):
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.90\textwidth]{mlp_schematic.png}
+\caption{Architecture of the Multi-Layer Perceptron (MLP) neural surrogate digital twin, mapping 6 dipole corrector currents to 12 BPM transverse orbit offsets through three hidden layers (128, 64, 32 units) with ReLU activations.}
+\label{fig:mlp_schematic}
+\end{figure}
+
 \begin{itemize}
     \item \textbf{Input Layer ($\mathbb{R}^6$):} Ingests physical magnet actuator setpoints (the 6 corrector currents $I_1, \dots, I_6$).
     \item \textbf{Hidden Layers ($\mathbb{R}^{128} \rightarrow \mathbb{R}^{64} \rightarrow \mathbb{R}^{32}$):} Progressive hierarchical feature representations. Each layer computes:
