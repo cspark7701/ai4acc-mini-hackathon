@@ -121,8 +121,8 @@ To preserve scientific rigor, academic honesty, and benchmark validity, all AI a
    - Benchmark evaluation must strictly run on `seeds = range(1, 31)`.
    - Do not cherry-pick or alter test seed indices.
 3. **Respect Participant vs. Solution Notebook Separation:**
-   - [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb): Must preserve the clear `TODO 1` and `TODO 2` instructional structure for attendees.
-   - [Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb): Contains reference baseline implementations and benchmark outputs.
+   - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb): Must preserve the clear `TODO 1` and `TODO 2` instructional structure for attendees.
+   - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb): Contains reference baseline implementations and benchmark outputs.
 4. **Action Space Adherence:**
    - The returned action must strictly be a 1D NumPy array or sequence of 6 numerical values.
    - Values exceeding $[-0.8, +0.8]$ A will be hard-clipped by the environment, but well-behaved agents should handle bounds internally.
@@ -173,7 +173,7 @@ from sklearn.linear_model import Ridge
 from sklearn.neural_network import MLPRegressor
 
 # 1. Instantiate environment
-from Single_Notebook_Beam_Orbit_Predictor_Solution import AcceleratorOrbitGymEnv  # or extracted class
+from src.environment import AcceleratorOrbitGymEnv
 env = AcceleratorOrbitGymEnv()
 
 # 2. Test controller on canonical seed 42

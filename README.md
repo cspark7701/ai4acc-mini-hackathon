@@ -88,18 +88,32 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 ├── README.md                                         # Main workshop & challenge guide (this file)
 ├── AGENTS.md                                         # Operational instructions for AI assistants & agents
 ├── .gitignore                                        # Standard Git ignore rules (LaTeX, Python, W&B)
-├── Lecture_1_AI_ML_Techniques_for_Accelerators.md    # Master lecture notes for Session 1 (Markdown)
-├── Lecture_1_AI_ML_Techniques_for_Accelerators.tex   # Master lecture notes for Session 1 (LaTeX source)
-├── Lecture_1_AI_ML_Techniques_for_Accelerators.pdf   # Compiled lecture monograph (PDF, 7 pages)
-├── Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb  # Primary challenge notebook for participants (with TODOs)
-├── Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb     # Reference solutions and benchmark code
-├── Single_Notebook_Beam_Orbit_Predictor.ipynb              # Master reference notebook
 │
-├── Technical Preparation.docx                        # Comprehensive tutorial readiness and curriculum guide
-├── Hackathon Project Guide.docx                      # Full challenge rules, physics spec, and scoring breakdown
-├── Mini-Hackathon Participant Instructions.docx       # Quick-reference participant milestone checklist
-├── W&B Workspace Setup Guide.docx                    # Step-by-step W&B team and leaderboard setup guide
-└── Docker Desktop Setup Guide.docx                   # Offline and container contingency deployment guide
+├── docs/                                             # Supporting workshop documentation (.docx guides)
+│   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide
+│   ├── Hackathon Project Guide.docx                  # Full challenge rules, physics spec, and scoring breakdown
+│   ├── Mini-Hackathon Participant Instructions.docx   # Quick-reference participant milestone checklist
+│   ├── W&B Workspace Setup Guide.docx                # Step-by-step W&B team and leaderboard setup guide
+│   └── Docker Desktop Setup Guide.docx               # Offline and container contingency deployment guide
+│
+├── lecture_notes/                                    # Master lecture notes for Session 1 (Dr. Chong Shik Park)
+│   ├── Lecture_1_AI_ML_Techniques_for_Accelerators.md    # Session 1 master notes (Markdown)
+│   ├── Lecture_1_AI_ML_Techniques_for_Accelerators.tex   # Session 1 LaTeX source
+│   └── Lecture_1_AI_ML_Techniques_for_Accelerators.pdf   # Compiled lecture monograph (PDF, 9 pages)
+│
+├── notebooks/                                        # Interactive Jupyter challenge notebooks
+│   ├── Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb  # Primary challenge notebook for participants (with TODOs)
+│   ├── Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb     # Reference solutions and benchmark code
+│   └── Single_Notebook_Beam_Orbit_Predictor.ipynb              # Master reference notebook
+│
+├── src/                                              # Reusable Python simulation & controller package
+│   ├── __init__.py                                   # Package exports
+│   ├── environment.py                                # Standardized AcceleratorOrbitGymEnv simulation
+│   ├── controllers.py                                # SVD, Supervised MLP, and RL policy controllers
+│   └── benchmark.py                                  # 30-seed evaluation harness & W&B telemetry
+│
+└── img/                                              # Visual diagrams and schematics
+    └── beamline.png                                  # 2D accelerator transport lattice schematic
 ```
 
 ---
@@ -123,12 +137,12 @@ You can run the challenge notebooks using any of the following environments:
 
 3. Launch Jupyter Lab and open the participant notebook:
    ```bash
-   jupyter lab Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
+   jupyter lab notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
    ```
 
 ### Option B: Google Colab
 
-1. Upload `Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb` to [Google Colab](https://colab.research.google.com/).
+1. Upload `notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb` to [Google Colab](https://colab.research.google.com/).
 2. Run the first cell to install dependencies:
    ```python
    !pip install -q wandb gymnasium scikit-learn
@@ -197,7 +211,7 @@ $$\text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text
 
 ## 🛠️ Participant Workflow & Instructions
 
-Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb):
+Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb):
 
 1. **Step 0 & 1:** Run environment setup and visualize the accelerator lattice schematic.
 2. **Step 2:** Instantiate the `AcceleratorOrbitGymEnv` simulation environment.
@@ -214,12 +228,12 @@ Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](f
 ## 📚 Documentation Index
 
 For detailed guidelines, refer to the included guides:
-- [Lecture 1 Notes: AI/ML & Surrogate Modeling (Markdown)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
-- [Lecture 1 Notes: AI/ML & Surrogate Modeling (PDF Monograph)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 7-page PDF monograph.
-- [Lecture 1 LaTeX Source](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Lecture_1_AI_ML_Techniques_for_Accelerators.tex) — LaTeX document source code.
-- [Hackathon Project Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Hackathon%20Project%20Guide.docx) — Complete rules, physics derivations, and scoring breakdown.
-- [Technical Preparation Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Technical%20Preparation.docx) — Detailed lecture syllabus, setup recommendations, and schedule.
-- [Mini-Hackathon Participant Instructions (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Mini-Hackathon%20Participant%20Instructions.docx) — Quick participant checklist.
-- [W&B Workspace Setup Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/W&B%20Workspace%20Setup%20Guide.docx) — Live dashboard and team administration guide.
-- [Docker Desktop Setup Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Docker%20Desktop%20Setup%20Guide.docx) — Containerized deployment instructions.
+- [Lecture 1 Notes: AI/ML & Surrogate Modeling (Markdown)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
+- [Lecture 1 Notes: AI/ML & Surrogate Modeling (PDF Monograph)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 9-page PDF monograph.
+- [Lecture 1 LaTeX Source](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.tex) — LaTeX document source code.
+- [Hackathon Project Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Hackathon%20Project%20Guide.docx) — Complete rules, physics derivations, and scoring breakdown.
+- [Technical Preparation Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Technical%20Preparation.docx) — Detailed lecture syllabus, setup recommendations, and schedule.
+- [Mini-Hackathon Participant Instructions (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Mini-Hackathon%20Participant%20Instructions.docx) — Quick participant checklist.
+- [W&B Workspace Setup Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/W&B%20Workspace%20Setup%20Guide.docx) — Live dashboard and team administration guide.
+- [Docker Desktop Setup Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Docker%20Desktop%20Setup%20Guide.docx) — Containerized deployment instructions.
 - [AGENTS.md](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.

@@ -5,7 +5,7 @@
 **Speaker:** Dr. Chong Shik Park  
 **Target Audience:** Graduate Students & Early-Career Postdoctoral Researchers in Accelerator Physics and Engineering  
 **Duration:** 80 Minutes (09:10 – 10:30)  
-**Companion Challenge Notebook:** [`Single_Notebook_Beam_Orbit_Predictor.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Single_Notebook_Beam_Orbit_Predictor.ipynb)
+**Companion Challenge Notebook:** [`notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb)
 
 ---
 
@@ -265,7 +265,7 @@ Total Offline Experimental Dataset (1,500 Simulation Shots)
 ---
 
 ### 2.8 Challenge Implementation & Empirical Validation
-In Step 3 of [`Single_Notebook_Beam_Orbit_Predictor.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Single_Notebook_Beam_Orbit_Predictor.ipynb), we compare the Linear Ridge baseline against the MLP Neural Surrogate:
+In Step 3 of [`notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb), we compare the Linear Ridge baseline against the MLP Neural Surrogate:
 
 ```python
 # Train Regularized Linear Baseline
@@ -421,7 +421,7 @@ Across the 30 standardized seeds, our three baseline reference implementations p
 
 ### Looking Ahead to Lecture 2 & Afternoon Hackathon:
 - **Lecture 2 (10:40 – 12:00):** Dr. Thorsten Hellert will present **Agentic AI, LLM Tools & Osprey Applications**, showing how autonomous AI agents can orchestrate simulation runs, formulate control hypotheses, and execute code in operational environments.
-- **Afternoon Mini-Hackathon (13:30 – 16:30):** You will open [`Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb), complete `TODO 1` (Surrogate Training) and `TODO 2` (RL Policy Tuning), and submit your runs to the live Weights & Biases leaderboard!
+- **Afternoon Mini-Hackathon (13:30 – 16:30):** You will open [`notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb), complete `TODO 1` (Surrogate Training) and `TODO 2` (RL Policy Tuning), and submit your runs to the live Weights & Biases leaderboard!
 
 ---
 
