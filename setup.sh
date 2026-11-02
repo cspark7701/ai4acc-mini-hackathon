@@ -86,6 +86,7 @@ if [ -f "${VENV_DIR}/bin/activate" ]; then
         echo "------------------------------------------------------------------"
         echo " Quickstart Commands:"
         echo "   • Start Jupyter Lab      : jupyter lab"
+        echo "   • Start Jupyter Notebook : jupyter notebook"
         echo "   • Run Participant Edition: jupyter lab notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"
         echo "   • Headless Benchmark Test: python -c 'import src; print(\"src loaded successfully!\")'"
         echo "   • Deactivate Environment : deactivate"
