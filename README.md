@@ -87,6 +87,7 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 .
 ├── README.md                                         # Main workshop & challenge guide (this file)
 ├── AGENTS.md                                         # Operational instructions for AI assistants & agents
+├── setup.sh                                          # Dynamic virtual environment setup & activation script
 ├── pyproject.toml                                    # Standard Python package & build metadata (PEP 517/621)
 ├── .gitignore                                        # Standard Git ignore rules (LaTeX, Python, W&B)
 │
@@ -123,7 +124,20 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 
 You can run the challenge notebooks using any of the following environments:
 
-### Option A: Local Python / Conda
+### Option A: Automated Setup Script (Recommended)
+
+The provided [`setup.sh`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/setup.sh) script automatically and dynamically detects the project directory (without hardcoded paths), creates a Python virtual environment (`.venv`), installs all dependencies and development tools in editable mode (`pip install -e ".[dev]"`), and activates the shell:
+
+```bash
+source setup.sh
+```
+
+Once activated, launch Jupyter Lab:
+```bash
+jupyter lab notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
+```
+
+### Option B: Manual Local Python / Conda
 
 1. Create and activate a clean Python virtual environment (Python 3.10+ recommended):
    ```bash
@@ -134,16 +148,14 @@ You can run the challenge notebooks using any of the following environments:
 2. Install the package in editable mode with development dependencies:
    ```bash
    pip install -e ".[dev]"
-   # Or install dependencies individually:
-   # pip install numpy scipy matplotlib scikit-learn gymnasium wandb jupyterlab
    ```
 
-3. Launch Jupyter Lab and open the participant notebook:
+3. Launch Jupyter Lab:
    ```bash
    jupyter lab notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
    ```
 
-### Option B: Google Colab
+### Option C: Google Colab
 
 1. Upload `notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb` to [Google Colab](https://colab.research.google.com/).
 2. Run the first cell to install dependencies:
@@ -156,7 +168,7 @@ You can run the challenge notebooks using any of the following environments:
    wandb.login()
    ```
 
-### Option C: Docker Container (Offline Contingency)
+### Option D: Docker Container (Offline Contingency)
 
 If local Wi-Fi or software installation is restricted:
 ```bash
