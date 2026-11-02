@@ -19,14 +19,8 @@ REPO_ROOT="$(cd "$(dirname "${_SCRIPT_PATH}")" >/dev/null 2>&1 && pwd)"
 (return 0 2>/dev/null) && _IS_SOURCED=1 || _IS_SOURCED=0
 
 # 3. Locate or select virtual environment directory dynamically
-VENV_NAME=".venv"
-if [ -d "${REPO_ROOT}/${VENV_NAME}" ]; then
-    VENV_DIR="${REPO_ROOT}/${VENV_NAME}"
-elif [ -d "${REPO_ROOT}/venv" ]; then
-    VENV_DIR="${REPO_ROOT}/venv"
-else
-    VENV_DIR="${REPO_ROOT}/${VENV_NAME}"
-fi
+VENV_NAME="${VENV_NAME:-ai4acc}"
+VENV_DIR="${REPO_ROOT}/${VENV_NAME}"
 
 # 4. Automatically create virtual environment if not already present
 if [ ! -f "${VENV_DIR}/bin/activate" ]; then

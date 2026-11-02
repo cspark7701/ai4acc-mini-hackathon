@@ -126,7 +126,7 @@ You can run the challenge notebooks using any of the following environments:
 
 ### Option A: Automated Setup Script (Recommended)
 
-The provided [`setup.sh`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/setup.sh) script automatically and dynamically detects the project directory (without hardcoded paths), creates a Python virtual environment (`.venv`), installs all dependencies and development tools in editable mode (`pip install -e ".[dev]"`), and activates the shell:
+The provided [`setup.sh`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/setup.sh) script automatically and dynamically detects the project directory (without hardcoded paths), creates a Python virtual environment (`ai4acc`), installs all dependencies and development tools in editable mode (`pip install -e ".[dev]"`), and activates the shell:
 
 ```bash
 source setup.sh
