@@ -1,0 +1,46 @@
+# Virtual environments
+.venv/
+ai4acc/
+env/
+venv/
+ENV/
+
+# Version control
+.git/
+.gitignore
+
+# Python bytecode and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+build/
+dist/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Experiment tracking & logging
+wandb/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+
+# OS metadata
+.DS_Store
+Thumbs.db

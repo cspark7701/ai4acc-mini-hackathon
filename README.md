@@ -168,16 +168,30 @@ jupyter lab notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
    wandb.login()
    ```
 
-### Option D: Docker Container (Offline Contingency)
+### Option D: Docker Container (One-Click Setup)
 
-If local Wi-Fi or software installation is restricted:
+A standalone [`Dockerfile`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Dockerfile) and [`docker-compose.yml`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docker-compose.yml) are provided for a completely reproducible, pre-configured environment:
+
+**Using Docker Compose (Recommended):**
 ```bash
+# Build image and start Jupyter Lab (notebooks are live-mounted to persist edits)
+docker compose up
+```
+
+**Using the Docker CLI directly:**
+```bash
+# 1. Build the image
+docker build -t ai4acc-hackathon .
+
+# 2. Run container with live notebook volume mount
 docker run -it --rm \
   -p 8888:8888 \
-  -v "${PWD}:/home/jovyan/work" \
-  -e JUPYTER_ENABLE_LAB=yes \
-  quay.io/jupyter/scipy-notebook:latest
+  -v "${PWD}/notebooks:/workspace/notebooks" \
+  -v "${PWD}/src:/workspace/src" \
+  ai4acc-hackathon
 ```
+
+Once launched, open **`http://localhost:8888`** in your browser. All packages (`gymnasium`, `scikit-learn`, `wandb`, `jupyterlab`, `notebook`) are pre-installed and ready to use!
 Access the Jupyter Lab interface in your browser at `http://localhost:8888`.
 
 ---

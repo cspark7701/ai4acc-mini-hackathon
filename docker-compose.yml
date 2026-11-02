@@ -1,0 +1,21 @@
+# ==============================================================================
+# docker-compose.yml — AI Applications in Accelerators Tutorial & Mini-Hackathon
+# KOMAC / KAERI
+# ==============================================================================
+
+services:
+  ai4acc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai4acc-mini-hackathon:latest
+    container_name: ai4acc-hackathon
+    ports:
+      - "8888:8888"
+    volumes:
+      # Mount notebooks and src so changes made inside Jupyter persist on your host
+      - ./notebooks:/workspace/notebooks
+      - ./src:/workspace/src
+    environment:
+      - WANDB_API_KEY=${WANDB_API_KEY:-}
+    restart: unless-stopped
