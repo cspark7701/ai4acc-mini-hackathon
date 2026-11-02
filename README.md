@@ -87,6 +87,7 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 .
 ├── README.md                                         # Main workshop & challenge guide (this file)
 ├── AGENTS.md                                         # Operational instructions for AI assistants & agents
+├── Lecture_1_AI_ML_Techniques_for_Accelerators.md    # Master lecture notes for Session 1 (Chong Shik Park)
 ├── Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb  # Primary challenge notebook for participants (with TODOs)
 ├── Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb     # Reference solutions and benchmark code
 ├── Single_Notebook_Beam_Orbit_Predictor.ipynb              # Master reference notebook
@@ -210,6 +211,7 @@ Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](f
 ## 📚 Documentation Index
 
 For detailed guidelines, refer to the included guides:
+- [Lecture 1 Notes: AI/ML & Surrogate Modeling](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
 - [Hackathon Project Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Hackathon%20Project%20Guide.docx) — Complete rules, physics derivations, and scoring breakdown.
 - [Technical Preparation Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Technical%20Preparation.docx) — Detailed lecture syllabus, setup recommendations, and schedule.
 - [Mini-Hackathon Participant Instructions (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Mini-Hackathon%20Participant%20Instructions.docx) — Quick participant checklist.
