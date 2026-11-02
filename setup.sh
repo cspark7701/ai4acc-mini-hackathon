@@ -55,8 +55,21 @@ fi
 # 5. Activate virtual environment
 if [ -f "${VENV_DIR}/bin/activate" ]; then
     if [ ${_IS_SOURCED} -eq 1 ]; then
+        # If another or previous virtual environment is currently active, deactivate it cleanly first
+        if [ -n "${VIRTUAL_ENV:-}" ] && [ "${VIRTUAL_ENV}" != "${VENV_DIR}" ]; then
+            if type deactivate >/dev/null 2>&1; then
+                deactivate
+            fi
+        fi
+
         # shellcheck disable=SC1090
         source "${VENV_DIR}/bin/activate"
+
+        # Ensure any leftover (.venv) in prompt is cleanly stripped
+        if [[ "${PS1:-}" == *"(.venv)"* ]]; then
+            PS1="${PS1//\(\.venv\) /}"
+            PS1="${PS1//\(\.venv\)/}"
+        fi
 
         # Set dynamic PYTHONPATH ensuring 'src' imports work from anywhere
         if [[ ":${PYTHONPATH:-}:" != *":${REPO_ROOT}:"* ]]; then
