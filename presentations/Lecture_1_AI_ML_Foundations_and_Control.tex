@@ -1,0 +1,677 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[paperwidth=13.333in,paperheight=7.5in,margin=0pt]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,bm}
+\usepackage{graphicx}
+\graphicspath{{../img/}{./img/}{img/}}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc,shapes.geometric,positioning}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+% Color Palette matching tmp/ and workshop branding
+\definecolor{navy}{HTML}{002060}
+\definecolor{primaryblue}{HTML}{184C78}
+\definecolor{accent}{HTML}{2980B9}
+\definecolor{accentlight}{HTML}{4472C4}
+\definecolor{darkgray}{HTML}{2C3E50}
+\definecolor{lightbg}{HTML}{F5F7FA}
+\definecolor{bordergray}{HTML}{C8CDD2}
+\definecolor{mutedgray}{HTML}{7F8C8D}
+\definecolor{crimson}{HTML}{9E1636}
+\definecolor{gold}{HTML}{B48C14}
+\definecolor{successgreen}{HTML}{27AE60}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+% Helper commands for positioning
+\newcommand{\at}[4]{%
+  \node[anchor=north west,inner sep=0pt,text width=#3in,align=left]
+    at ([xshift=#1in,yshift=-#2in]current page.north west) {#4\par};}
+
+\newcommand{\fs}[2]{\fontsize{#1pt}{#2pt}\selectfont}
+
+% Slide Header Macro
+\newcommand{\slideheader}[3]{%
+  % KU Logo
+  \node[anchor=north west,inner sep=0pt]
+    at ([xshift=0.4in,yshift=-0.2in]current page.north west)
+    {\includegraphics[width=0.9in]{ku_logo.png}};
+  % Vertical accent bar
+  \fill[accent] ([xshift=1.4in,yshift=-0.25in]current page.north west)
+    rectangle ++(0.06in,-0.95in);
+  % Category Tag and Title
+  \at{1.55}{0.18}{11.3}{%
+    {\fs{11}{13}\bfseries\color{accent}\MakeUppercase{#1}\quad|\quad}%
+    {\fs{22}{25}\bfseries\color{navy}#2}\\[0.25em]
+    \if\relax\detokenize{#3}\relax\else{\fs{13}{16}\color{darkgray}#3}\fi
+  }
+}
+
+% Slide Footer Macro
+\newcommand{\slidefooter}[1]{%
+  % Dividing Line
+  \fill[bordergray] ([xshift=0.4in,yshift=-7.0in]current page.north west)
+    rectangle ++(12.533in,-0.02in);
+  % Left Date
+  \at{0.4}{7.06}{2.5}{\fs{10}{12}\color{mutedgray}November 3, 2026}
+  % Center Presenter Info
+  \node[anchor=north,inner sep=0pt]
+    at ([yshift=-7.06in]current page.north)
+    {\fs{10}{12}\color{mutedgray}Chong Shik Park, Ph.D. \enspace$|$\enspace Korea University, Sejong \enspace$|$\enspace AI Applications in Accelerators};
+  % Right Slide Number
+  \node[anchor=north east,inner sep=0pt]
+    at ([xshift=-0.4in,yshift=-7.06in]current page.north east)
+    {\fs{10}{12}\bfseries\color{primaryblue}#1};
+}
+
+% Standard Content Card Macro
+\newcommand{\drawcard}[5]{%
+  \draw[rounded corners=6pt,fill=lightbg,draw=bordergray,line width=1pt]
+    ([xshift=#1in,yshift=-#2in]current page.north west)
+    rectangle ++(#3in,-#4in);
+  \if\relax\detokenize{#5}\relax\else
+    \pgfmathsetmacro{\cx}{#1+0.2}%
+    \pgfmathsetmacro{\cy}{#2+0.16}%
+    \pgfmathsetmacro{\cw}{#3-0.4}%
+    \at{\cx}{\cy}{\cw}{\fs{13.5}{16}\bfseries\color{navy}#5}
+  \fi
+}
+
+\begin{document}
+
+% ==============================================================================
+% SLIDE 1: Title Slide
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  % Top Navy Banner
+  \fill[navy] (current page.north west) rectangle ++(13.333in,-1.8in);
+  % KU Logo inside Banner
+  \node[anchor=north west,inner sep=0pt]
+    at ([xshift=0.8in,yshift=-0.35in]current page.north west)
+    {\includegraphics[width=1.2in]{ku_logo.png}};
+  % Event Banner Text
+  \at{2.3}{0.5}{10.0}{\fs{14}{16}\bfseries\color{white}AI APPLICATIONS IN ACCELERATORS TUTORIAL \& MINI-HACKATHON \enspace$|$\enspace KOMAC / KAERI}
+
+  % Main Title & Subtitle
+  \at{0.8}{2.2}{11.7}{%
+    {\fs{30}{36}\bfseries\color{primaryblue}Lecture 1: AI/ML Foundations and Closed-Loop Control\\for Particle Accelerators}\\[0.6em]
+    {\fs{17}{22}\color{darkgray}Physics Foundations, Neural Surrogates, Reinforcement Learning, and Bayesian Optimization}
+  }
+
+  % Presenter Card
+  \draw[rounded corners=6pt,fill=lightbg,draw=bordergray,line width=1pt]
+    ([xshift=0.8in,yshift=-4.7in]current page.north west) rectangle ++(11.7in,-2.0in);
+  \at{1.0}{4.85}{11.3}{%
+    {\fs{18}{22}\bfseries\color{navy}Chong Shik Park, Ph.D.}\\[0.4em]
+    {\fs{12}{16}\color{darkgray}
+    $\bullet$ Department of Accelerator Science, Korea University, Sejong 30019, Republic of Korea\\
+    $\bullet$ Center for Accelerator Research, Korea University, Sejong 30019, Republic of Korea}\\[0.4em]
+    {\fs{11}{14}\color{mutedgray}Date: November 3, 2026 \quad$|$\quad Audience: Accelerator Physicists, Postdocs, Engineers \& Graduate Students}
+  }
+
+  \slidefooter{1}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 2: Curricular Architecture & Overview
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Workshop Curriculum}{Integrated Morning Lectures \& Afternoon Hackathon}{Bridging theoretical foundations directly with closed-loop simulation and live W\&B tracking}
+
+  % Column 1: Lecture 1
+  \drawcard{0.6}{1.5}{3.9}{5.2}{Lecture 1 (09:10 -- 10:30)}
+  \at{0.8}{2.1}{3.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Instructor: Chong Shik Park, Ph.D.}\\[0.5em]
+    $\bullet$ Physics Foundations \& Hill's Equation\\
+    $\bullet$ Orbit Response Matrix (ORM) Coupling\\
+    $\bullet$ Non-Linear Cubic Core Saturation\\
+    $\bullet$ Neural Surrogate Digital Twins (\texttt{MLP})\\
+    $\bullet$ SVD Pseudo-Inverse vs Bounded Inversion\\
+    $\bullet$ Physics-Informed RL \& Dynamic Damping\\
+    $\bullet$ Gaussian Process Bayesian Optimization\\[0.8em]
+    {\bfseries\color{primaryblue}Target: Sub-micron closed-loop control under non-linear actuator constraints.}
+  }
+
+  % Column 2: Lecture 2
+  \drawcard{4.7}{1.5}{3.9}{5.2}{Lecture 2 (10:40 -- 12:00)}
+  \at{4.9}{2.1}{3.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Instructor: Thorsten Hellert, Ph.D.}\\[0.5em]
+    $\bullet$ Agentic AI Frameworks in Accelerators\\
+    $\bullet$ Large Language Model (LLM) Agents\\
+    $\bullet$ \textit{Osprey} Autonomous Control System\\
+    $\bullet$ Automated Scientific Workflows\\
+    $\bullet$ Python API Tool-Calling Architecture\\
+    $\bullet$ Operational Guardrails \& Safety Bounds\\
+    $\bullet$ Human-in-the-Loop Supervision\\[0.8em]
+    {\bfseries\color{primaryblue}Target: Autonomous tuning agents and scientific workflow orchestration.}
+  }
+
+  % Column 3: Hackathon
+  \drawcard{8.8}{1.5}{3.9}{5.2}{Mini-Hackathon (13:30 -- 17:00)}
+  \at{9.0}{2.1}{3.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Hands-On Orbit Alignment Challenge}\\[0.5em]
+    $\bullet$ 15-meter Transport Lattice (12 BPMs, 6 Steerers)\\
+    $\bullet$ 3 Parallel Tracks (MLP, RL, BO)\\
+    $\bullet$ Standardized 30-Seed Evaluation Suite\\
+    $\bullet$ Sub-$30\ \mu\text{m}$ Convergence Target\\
+    $\bullet$ Real-Time Weights \& Biases (W\&B) Logging\\
+    $\bullet$ Live Global Leaderboard Tracking\\
+    $\bullet$ Final Awards \& Recognition\\[0.8em]
+    {\bfseries\color{primaryblue}Target: $> 1,000$ points on standardized evaluation suite.}
+  }
+
+  \slidefooter{2}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 3: 5 Pillars of AI in Accelerators
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Domain Overview}{Five Foundational Pillars of AI in Modern Accelerators}{How artificial intelligence transforms design, commissioning, and autonomous operations}
+
+  % Pillar 1
+  \drawcard{0.6}{1.5}{12.1}{0.95}{1. Neural Surrogate Digital Twins}
+  \at{0.8}{1.88}{11.7}{\fs{10}{13}\color{darkgray}%
+    $\bullet$ Replaces slow tracking codes (\texttt{ELEGANT}, \texttt{MAD-X}) with sub-millisecond deep neural surrogates.\\
+    $\bullet$ Enables real-time model-predictive control, online orbit feedback, and virtual parametric sensitivity analysis.
+  }
+
+  % Pillar 2
+  \drawcard{0.6}{2.55}{12.1}{0.95}{2. Multi-Objective Bayesian Optimization}
+  \at{0.8}{2.93}{11.7}{\fs{10}{13}\color{darkgray}%
+    $\bullet$ Balances trade-offs: beam transmission vs photon brightness vs transverse emittance.\\
+    $\bullet$ Gaussian Processes with acquisition functions find Pareto-optimal set in dozens of shots instead of thousands.
+  }
+
+  % Pillar 3
+  \drawcard{0.6}{3.6}{12.1}{0.95}{3. Virtual Diagnostics \& Phase Space Reconstruction}
+  \at{0.8}{3.98}{11.7}{\fs{10}{13}\color{darkgray}%
+    $\bullet$ Reconstructs destructive beam metrics (6D phase space, bunch slice emittance) non-invasively.\\
+    $\bullet$ Neural networks predict shot-by-shot profiles from upstream RF cavities and BPM telemetry.
+  }
+
+  % Pillar 4
+  \drawcard{0.6}{4.65}{12.1}{0.95}{4. Anomaly Detection \& Machine Protection}
+  \at{0.8}{5.03}{11.7}{\fs{10}{13}\color{darkgray}%
+    $\bullet$ Unsupervised models monitor sensor drift to prevent multi-megawatt beam downtime.\\
+    $\bullet$ Deep sequence models predict RF breakdown and cavity quenches milliseconds before catastrophic trips.
+  }
+
+  % Pillar 5
+  \drawcard{0.6}{5.7}{12.1}{0.95}{5. Agentic AI \& Autonomous Operations}
+  \at{0.8}{6.08}{11.7}{\fs{10}{13}\color{darkgray}%
+    $\bullet$ Integrates LLM reasoning engines with accelerator APIs and diagnostic archives (e.g. \textit{Osprey}).\\
+    $\bullet$ Executes high-level operational commands safely within strict hardware interlock boundaries.
+  }
+
+  \slidefooter{3}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 4: Beam Physics & Hill's Equation
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Physics Foundations}{Transverse Beam Dynamics \& Hill's Equation}{Theoretical governing equation shaping betatron oscillations in linear magnetic lattices}
+
+  \drawcard{0.6}{1.5}{5.9}{5.2}{Hill's Equation Formulation}
+  \at{0.8}{2.1}{5.5}{\fs{11}{15}\color{darkgray}%
+    Transverse particle motion along path $s$ in an uncoupled linear channel:\\[0.6em]
+    \centering{\fs{14}{17}\bfseries\color{primaryblue}$\displaystyle \frac{d^2 x(s)}{ds^2} + K(s) x(s) = 0$}\\[0.6em]
+    \raggedright
+    $\bullet$ $K(s) = \frac{e}{p}\frac{\partial B_y(s)}{\partial x}$ represents quadrupole focusing ($K > 0$ for QF, $K < 0$ for QD).\\[0.4em]
+    $\bullet$ General solution is a pseudo-harmonic \textbf{betatron oscillation}:\\[0.4em]
+    \centering{\fs{13}{16}\bfseries\color{primaryblue}$x(s) = \sqrt{\epsilon \beta(s)} \cos(\psi(s) + \phi_0)$}\\[0.4em]
+    \raggedright
+    $\bullet$ $\beta(s)$: Courant-Snyder beta function (transverse beam envelope)\\
+    $\bullet$ $\psi(s) = \int_0^s \frac{d\bar{s}}{\beta(\bar{s})}$: Betatron phase advance\\
+    $\bullet$ $\nu = \frac{1}{2\pi} \oint \frac{ds}{\beta(s)}$: Betatron tune (total phase advance in units of $2\pi$)
+  }
+
+  \drawcard{6.8}{1.5}{5.9}{5.2}{The Operational Challenge: Hadron Linacs \& Rings}
+  \at{7.0}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Sub-Micron Stability Tolerances:}\\[0.4em]
+    $\bullet$ Modern light sources require orbit stabilization to $< 10\%$ of beam size (sub-micron RMS tolerances).\\[0.4em]
+    $\bullet$ In multi-megawatt hadron linacs (e.g. KOMAC, SNS, ESS):\\
+    \quad-- Offsets in quadrupoles/cavities induce strong space charge and halo.\\
+    \quad-- Losses exceeding $1\text{ W/m}$ ($10^{-5}$ of total current) cause severe structural radioactivation.\\
+    \quad-- Hands-on maintenance is prohibited if orbit deviations remain uncorrected.\\[0.6em]
+    {\bfseries\color{navy}Physical Disturbance Mechanisms:}\\
+    $\bullet$ Ground motion and mechanical vibration (pumps, cryocoolers)\\
+    $\bullet$ Thermal girder expansion and diurnal ambient temperature cycles\\
+    $\bullet$ Power supply current ripple and magnet core hysteresis
+  }
+
+  \slidefooter{4}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 5: Orbit Response Matrix (ORM)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Analytical Optics}{Derivation of the Orbit Response Matrix (ORM)}{Mathematical link connecting steerer deflections to downstream diagnostic readings}
+
+  \drawcard{0.6}{1.5}{5.9}{5.2}{Theoretical ORM Derivation}
+  \at{0.8}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    Localized angular kick $\theta_j$ applied by steering dipole $j$:\\[0.5em]
+    \centering{\fs{11.5}{15}\bfseries\color{primaryblue}$R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \frac{\sqrt{\beta_i \beta_j}}{2 \sin(\pi \nu)} \cos(|\psi_i - \psi_j| - \pi \nu)$}\\[0.6em]
+    \raggedright
+    {\bfseries\color{navy}Linear Superposition Formulation:}\\[0.3em]
+    \centering{\fs{13}{16}\bfseries\color{primaryblue}$\mathbf{Y}_{\text{linear}} = \mathbf{I} \cdot \mathbf{R}$}\\[0.4em]
+    \raggedright
+    $\bullet$ $\mathbf{I} \in \mathbb{R}^6$: Vector of 6 corrector currents in Amperes\\
+    $\bullet$ $\mathbf{R} \in \mathbb{R}^{6 \times 12}$: Linear Orbit Response Matrix\\
+    $\bullet$ $\mathbf{Y} \in \mathbb{R}^{12}$: Transverse displacements at 12 BPM stations\\[0.6em]
+    {\bfseries\color{navy}Coupling Dynamics:}\\
+    Deflecting a single steerer perturbs the entire downstream trajectory through betatron wave propagation.
+  }
+
+  \drawcard{6.8}{1.5}{5.9}{5.2}{Why Pure Linear Inversion Breaks Down}
+  \at{7.0}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Classical Singular Value Decomposition (SVD):}\\[0.3em]
+    \centering{\fs{13}{16}\bfseries\color{primaryblue}$\Delta \mathbf{I} = - \alpha \cdot (\mathbf{R}^T)^\dagger \cdot \mathbf{Y}$}\\[0.5em]
+    \raggedright
+    {\bfseries\color{crimson}Key Vulnerabilities in Real-World Operations:}\\[0.5em]
+    1. \textbf{Magnetic Core Saturation:}\\
+    High coil currents drive iron yokes into non-linear saturation. The true response departs significantly from $\mathbf{R}$.\\[0.4em]
+    2. \textbf{Limit Cycles \& Overshoot:}\\
+    High static feedback gains ($\alpha > 0.5$) cause severe overshoot and persistent oscillatory limit cycles in saturated regimes.\\[0.4em]
+    3. \textbf{Diagnostic Sensor Noise:}\\
+    Sensor jitter ($\sigma = 10\ \mu\text{m}$) is inverted as false physical errors, commanding unnecessary actuator kicks.
+  }
+
+  \slidefooter{5}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 6: Transport Lattice Geometry (With Diagram)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Hackathon Benchmark}{The 15-Meter Transport Lattice Architecture}{Layout of quadrupole doublets, dipole steering magnets, and beam position monitors}
+
+  % Beamline Image
+  \node[anchor=north,inner sep=0pt]
+    at ([yshift=-1.5in]current page.north)
+    {\includegraphics[width=12.1in]{beamline.png}};
+
+  % Cards below image
+  \drawcard{0.6}{4.7}{5.9}{2.0}{Diagnostics \& Actuators}
+  \at{0.8}{5.1}{5.5}{\fs{11}{15}\color{darkgray}%
+    $\bullet$ \textbf{12 Diagnostic BPMs:} Evenly spaced from $s = 1.0\text{ m}$ to $s = 15.0\text{ m}$.\\
+    $\bullet$ \textbf{6 Dipole Steering Magnets:} 3 Horizontal (HCM1-3) \& 3 Vertical (VCM1-3).\\
+    $\bullet$ \textbf{Quadrupole Doublets:} Alternating QF \& QD magnets shaping transverse beta.
+  }
+
+  \drawcard{6.8}{4.7}{5.9}{2.0}{Hardware Constraints}
+  \at{7.0}{5.1}{5.5}{\fs{11}{15}\color{darkgray}%
+    $\bullet$ \textbf{Cumulative Current Bounds:} $\mathbf{I} \in [-5.0\text{ A}, +5.0\text{ A}]$ (thermal limit).\\
+    $\bullet$ \textbf{Single-Step Delta Bounds:} $\Delta \mathbf{I} \in [-0.8\text{ A}, +0.8\text{ A}]$ (rate of change limit).\\
+    $\bullet$ \textbf{Sensor Noise Floor:} Gaussian jitter $\boldsymbol{\epsilon} \sim \mathcal{N}(0, 0.010^2\text{ mm})$ ($10\ \mu\text{m}$ RMS).
+  }
+
+  \slidefooter{6}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 7: Non-Linear Saturation & Imperfections
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Physical Realism}{Non-Linear Magnetic Saturation \& Misalignments}{Modeling realistic iron-core saturation and random quadrupole alignment errors}
+
+  \drawcard{0.6}{1.5}{5.9}{5.2}{Mathematical Response Formulation}
+  \at{0.8}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    Physical Beam Position Monitor Reading $\mathbf{Y}$:\\[0.5em]
+    \centering{\fs{12.5}{15}\bfseries\color{primaryblue}$\mathbf{Y} = \mathbf{I} \cdot \mathbf{R} - 0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R}) + \mathbf{Y}_0 + \boldsymbol{\epsilon}$}\\[0.6em]
+    \raggedright
+    {\bfseries\color{navy}Components Breakdown:}\\[0.4em]
+    1. $\mathbf{I} \cdot \mathbf{R}$: Pure linear betatron response\\[0.3em]
+    2. $-0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R})$: Non-linear iron core soft saturation\\
+    \quad-- At $I = 2.0\text{ A}$: $6\%$ drop in effective steerer authority\\
+    \quad-- At $I = 4.0\text{ A}$: $24\%$ authority loss (linear model severely overshoots)\\[0.3em]
+    3. $\mathbf{Y}_0$: Initial orbit distortion from misaligned quadrupoles\\[0.3em]
+    4. $\boldsymbol{\epsilon} \sim \mathcal{N}(0, 0.010^2\text{ mm})$: Diagnostic Gaussian jitter ($10\ \mu\text{m}$)
+  }
+
+  \drawcard{6.8}{1.5}{5.9}{5.2}{Initial Distortion \& Noise Profiles}
+  \at{7.0}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Initial Distortion Generation ($\mathbf{Y}_0$):}\\[0.4em]
+    Quadrupole misalignments induce harmonic betatron waves:\\[0.4em]
+    \centering{\fs{11.5}{14}\bfseries\color{primaryblue}$Y_{0, k} = A_1 \sin\left(\frac{2\pi s_k}{\lambda_1} + \phi_1\right) + A_2 \cos\left(\frac{2\pi s_k}{\lambda_2} + \phi_2\right)$}\\[0.5em]
+    \raggedright
+    $\bullet$ Produces realistic initial RMS orbit errors between $0.40\text{ mm}$ and $1.10\text{ mm}$ across evaluation seeds.\\[0.8em]
+    {\bfseries\color{navy}The Benchmark Convergence Target:}\\[0.4em]
+    \centering{\fs{14}{17}\bfseries\color{successgreen}Target RMS: $< 0.030\text{ mm}$ ($30\ \mu\text{m}$)}\\[0.6em]
+    \raggedright
+    To achieve success, competitor policies must suppress initial orbit distortion by \textbf{93\% to 97\%} within a strict budget of 20 control steps.
+  }
+
+  \slidefooter{7}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 8: Machine Learning Fundamentals
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{ML Core Theory}{Deep Neural Networks \& Supervised Learning Foundations}{Architectural principles of artificial neurons, non-linear activations, and loss optimization}
+
+  \drawcard{0.6}{1.5}{5.9}{5.2}{Anatomy of an Artificial Neural Network}
+  \at{0.8}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Artificial Neuron Transformation:}\\[0.3em]
+    \centering{\fs{12}{15}\bfseries\color{primaryblue}$z = \sum_{j} w_j x_j + b = \mathbf{w}^T \mathbf{x} + b, \quad a = \sigma(z)$}\\[0.5em]
+    \raggedright
+    {\bfseries\color{navy}Multi-Layer Perceptron (MLP):}\\
+    Chaining $L$ affine transformations with element-wise non-linear activations:\\[0.3em]
+    \centering{\fs{11.5}{14}\bfseries\color{primaryblue}$\mathbf{h}^{(l)} = \sigma\left(\mathbf{W}^{(l)} \mathbf{h}^{(l-1)} + \mathbf{b}^{(l)}\right)$}\\[0.5em]
+    \raggedright
+    {\bfseries\color{navy}Activation Function: Rectified Linear Unit (ReLU)}\\
+    \centering{\fs{12}{15}\bfseries\color{primaryblue}$\sigma(z) = \max(0, z)$}\\[0.4em]
+    \raggedright
+    $\bullet$ Constant gradient $= 1$ for $z > 0$ (prevents vanishing gradients)\\
+    $\bullet$ Computationally ultra-efficient; introduces piecewise linearity
+  }
+
+  \drawcard{6.8}{1.5}{5.9}{5.2}{Loss Formulation \& Adam Optimizer}
+  \at{7.0}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Objective Function (MSE + L2 Weight Decay):}\\[0.3em]
+    \centering{\fs{11.5}{14}\bfseries\color{primaryblue}$\mathcal{L}(\boldsymbol{\theta}) = \frac{1}{N}\sum_{i=1}^N \|\mathbf{y}_i - f_{\boldsymbol{\theta}}(\mathbf{I}_i)\|^2 + \lambda \|\boldsymbol{\theta}\|^2$}\\[0.6em]
+    \raggedright
+    {\bfseries\color{navy}Adam (Adaptive Moment Estimation):}\\[0.3em]
+    $\bullet$ Tracks first moment $\mathbf{m}_t$ and uncentered second moment $\mathbf{v}_t$:\\[0.3em]
+    \centering{\fs{10.5}{13}\color{darkgray}$\mathbf{m}_t = \beta_1 \mathbf{m}_{t-1} + (1-\beta_1)\mathbf{g}_t, \quad \mathbf{v}_t = \beta_2 \mathbf{v}_{t-1} + (1-\beta_2)\mathbf{g}_t^2$}\\[0.4em]
+    \raggedright
+    $\bullet$ Parameter update with bias correction:\\[0.3em]
+    \centering{\fs{11}{14}\bfseries\color{primaryblue}$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \frac{\eta}{\sqrt{\hat{\mathbf{v}}_t} + \epsilon} \hat{\mathbf{m}}_t$}\\[0.5em]
+    \raggedright
+    $\bullet$ Provides robust convergence across varying gradient scales without requiring manual per-parameter learning rate tuning.
+  }
+
+  \slidefooter{8}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 9: Neural Surrogate Digital Twin (With Diagram)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Surrogate Modeling}{Designing the Neural Surrogate Digital Twin}{Capturing non-linear cubic saturation with MLPRegressor for sub-millisecond execution}
+
+  % MLP Schematic Image
+  \node[anchor=north west,inner sep=0pt]
+    at ([xshift=0.6in,yshift=-1.5in]current page.north west)
+    {\includegraphics[width=5.9in]{mlp_schematic.png}};
+
+  \drawcard{6.8}{1.5}{5.9}{5.2}{Surrogate Architecture \& Training}
+  \at{7.0}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Dataset Generation:}\\
+    $\bullet$ 2,000 synthetic tracking runs sampling corrector currents uniformly across $\mathbf{I} \in [-3.0, 3.0]^6\text{ A}$.\\
+    $\bullet$ Accurately captures both linear optics and cubic core saturation.\\[0.6em]
+    {\bfseries\color{navy}MLPRegressor Hyperparameters:}\\
+    $\bullet$ \textbf{Input:} 6 Corrector currents [HCM1-3, VCM1-3]\\
+    $\bullet$ \textbf{Hidden Architecture:} $(128, 64, 32)$ neurons\\
+    $\bullet$ \textbf{Activation:} ReLU; \textbf{Solver:} Adam\\
+    $\bullet$ \textbf{Regularization:} $\alpha_{\text{L2}} = 10^{-4}$, \texttt{max\_iter=500}\\
+    $\bullet$ \textbf{Output:} 12 predicted BPM readings [BPM1-12]\\[0.6em]
+    {\bfseries\color{navy}Performance Verification:}\\
+    $\bullet$ Holdout Test MSE: $< 2.5 \times 10^{-4}\text{ mm}^2$\\
+    $\bullet$ Forward inference latency: $< 0.2\text{ ms}$ per call
+  }
+
+  \slidefooter{9}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 10: Closed-Loop Control Architecture (With Diagram)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Closed-Loop Control}{Forward Prediction vs Closed-Loop Orbit Control}{Transitioning from predictive surrogate twins to continuous closed-loop feedback policies}
+
+  % Schematic Image
+  \node[anchor=north west,inner sep=0pt]
+    at ([xshift=0.6in,yshift=-1.5in]current page.north west)
+    {\includegraphics[width=6.2in]{forward_sl_and_rl_schematic.png}};
+
+  \drawcard{7.1}{1.5}{5.6}{5.2}{Closed-Loop Control Dynamics}
+  \at{7.3}{2.1}{5.2}{\fs{11}{15}\color{darkgray}%
+    {\bfseries\color{navy}The Closed-Loop Feedback Cycle:}\\[0.6em]
+    1. \textbf{Diagnostics:} 12 Beam Position Monitors measure current transverse orbit error $\mathbf{Y}_t \in \mathbb{R}^{12}$.\\[0.5em]
+    2. \textbf{Policy Decision:} Orbit controller computes corrective kick vector $\Delta \mathbf{I}_t \in [-0.8, 0.8]^6\text{ A}$.\\[0.5em]
+    3. \textbf{Actuator Execution:} Power supplies update cumulative magnet currents:\\[0.2em]
+    \centering{\fs{11}{13}\bfseries\color{primaryblue}$\mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \Delta \mathbf{I}_t, -5.0, 5.0)\text{ A}$}\\[0.5em]
+    \raggedright
+    4. \textbf{Lattice Response:} Corrected magnetic fields deflect beam; new transverse orbit $\mathbf{Y}_{t+1}$ is established.\\[0.5em]
+    5. \textbf{Termination:} Succeeds if $\text{RMS} < 0.030\text{ mm}$ or truncates if step count reaches 20.
+  }
+
+  \slidefooter{10}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 11: Baseline 0 vs Baseline 1 Comparison
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Benchmark Baselines}{Baseline 0 (Linear SVD) vs Baseline 1 (Neural Inversion)}{Comparing classical pseudo-inverse control with model-based bounded optimization}
+
+  \drawcard{0.6}{1.5}{5.9}{5.2}{Baseline 0: Classical Linear SVD}
+  \at{0.8}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Mathematical Formulation:}\\[0.3em]
+    \centering{\fs{12.5}{15}\bfseries\color{primaryblue}$\Delta \mathbf{I} = - \alpha \cdot (\mathbf{R}^T)^\dagger \cdot \mathbf{Y}$}\\[0.5em]
+    \raggedright
+    {\bfseries\color{navy}Operational Characteristics:}\\
+    $\bullet$ Static gain $\alpha \approx 0.45$, hard clipped to $[-0.8, 0.8]\text{ A}$\\
+    $\bullet$ Execution latency: $< 0.1\text{ ms}$ (instantaneous)\\[0.5em]
+    {\bfseries\color{navy}Strengths \& Limitations:}\\
+    $\checkmark$ Guaranteed convergence in purely linear regimes\\
+    $\times$ Completely blind to cubic core saturation\\
+    $\times$ Causes overshooting and limit cycles at high currents\\
+    $\times$ Sluggish convergence (Mean steps: 5.6)\\[0.6em]
+    \centering{\fs{11}{14}\bfseries\color{primaryblue}Official Score: 1,013.1 points (Rank \#3)}
+  }
+
+  \drawcard{6.8}{1.5}{5.9}{5.2}{Baseline 1: Supervised Neural Inversion}
+  \at{7.0}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Model-Based Optimization:}\\[0.3em]
+    \centering{\fs{11}{13}\bfseries\color{primaryblue}$\min_{\Delta \mathbf{I}} \|\mathbf{Y}_{\text{obs}} + f_{\boldsymbol{\theta}}(\Delta \mathbf{I})\|^2 + \lambda \|\Delta \mathbf{I}\|^2$}\\[0.2em]
+    \centering{\fs{10}{12}\color{darkgray}$\text{subject to } \Delta \mathbf{I} \in [-5.0, 5.0]^6\text{ A}$}\\[0.5em]
+    \raggedright
+    {\bfseries\color{navy}Operational Characteristics:}\\
+    $\bullet$ Solver: SciPy \texttt{L-BFGS-B} on trained MLP digital twin\\
+    $\bullet$ Execution latency: $\sim 15 - 25\text{ ms}$ per step\\[0.5em]
+    {\bfseries\color{navy}Why It Outperforms Classical SVD:}\\
+    $\checkmark$ Accurately anticipates non-linear core saturation\\
+    $\checkmark$ Computes optimal kicks in non-linear regimes\\
+    $\checkmark$ Reaches convergence in just 2.3 steps average\\[0.6em]
+    \centering{\fs{11}{14}\bfseries\color{primaryblue}Official Score: 1,016.8 points (Rank \#2)}
+  }
+
+  \slidefooter{11}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 12: Track 2 - Closed-Loop RL Policy
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Track 2 Challenge}{Closed-Loop RL with Physics-Informed Priors}{Continuous policy networks combining analytical optics priors with dynamic step damping}
+
+  \drawcard{0.6}{1.5}{5.9}{5.2}{Physics-Informed Residual Architecture}
+  \at{0.8}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Residual Policy Formulation:}\\[0.3em]
+    \centering{\fs{11.5}{14}\bfseries\color{primaryblue}$\Delta \mathbf{I}(t) = \gamma(t) \cdot \left[ - \alpha (\mathbf{R}^T)^\dagger \mathbf{Y} + \mathbf{W}_{\text{learned}} \mathbf{Y} + \mathbf{b} \right]$}\\[0.6em]
+    \raggedright
+    {\bfseries\color{navy}Two Core Synergistic Components:}\\[0.5em]
+    1. \textbf{Analytical Physics Prior ($- \alpha (\mathbf{R}^T)^\dagger \mathbf{Y}$):}\\
+    $\bullet$ Guarantees immediate coarse stabilization from step 1.\\
+    $\bullet$ Prevents unguided random exploratory actions.\\[0.5em]
+    2. \textbf{Learned Residual Offset ($\mathbf{W}_{\text{learned}} \mathbf{Y} + \mathbf{b}$):}\\
+    $\bullet$ Compensates for non-linear saturation deficit.\\
+    $\bullet$ Learns asymmetric corrections across HCM and VCM plane.
+  }
+
+  \drawcard{6.8}{1.5}{5.9}{5.2}{Dynamic Harmonic Step Damping}
+  \at{7.0}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}The Sensor Noise Amplification Problem:}\\
+    Near the $0.030\text{ mm}$ boundary, sensor noise ($\epsilon \sim 10\ \mu\text{m}$) creates spurious apparent gradients, triggering limit-cycle oscillations.\\[0.6em]
+    {\bfseries\color{navy}Harmonic Damping Schedule:}\\[0.3em]
+    \centering{\fs{12.5}{15}\bfseries\color{primaryblue}$\gamma(t) = \frac{1.0}{1.0 + \kappa \cdot t}, \quad \kappa \approx 0.03$}\\[0.6em]
+    \raggedright
+    $\bullet$ \textbf{Step 1 ($t = 0, \gamma = 1.0$):} Full kick authority rapidly eliminates millimeter-scale initial distortions.\\[0.4em]
+    $\bullet$ \textbf{Step 5+ ($t \ge 4, \gamma < 0.88$):} Attenuated feedback prevents sensor noise amplification and locks RMS below $0.030\text{ mm}$.
+  }
+
+  \slidefooter{12}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 13: Track 3 - Closed-Loop Bayesian Optimization
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Track 3 Challenge}{Closed-Loop Bayesian Optimization with Gaussian Processes}{Sample-efficient probabilistic modeling with Lower Confidence Bound (LCB) acquisition}
+
+  \drawcard{0.6}{1.5}{5.9}{5.2}{Probabilistic Gaussian Process Modeling}
+  \at{0.8}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}GP Mapping $\Delta \mathbf{I} \mapsto \mathbf{Y}$ Orbit Deviation:}\\[0.3em]
+    \centering{\fs{12}{15}\bfseries\color{primaryblue}$\hat{\mathbf{Y}}(\Delta \mathbf{I}) \sim \mathcal{GP}\left(\mathbf{m}(\Delta \mathbf{I}), \mathbf{K}(\Delta \mathbf{I}, \Delta \mathbf{I}')\right)$}\\[0.6em]
+    \raggedright
+    {\bfseries\color{navy}Composite Kernel Architecture:}\\[0.3em]
+    \centering{\fs{10.5}{13}\bfseries\color{primaryblue}$k(\mathbf{x}, \mathbf{x}') = k_{\text{Mat\'ern-5/2}}(\mathbf{x}, \mathbf{x}') + \sigma_{\text{noise}}^2 \delta(\mathbf{x}, \mathbf{x}')$}\\[0.6em]
+    \raggedright
+    $\bullet$ \textbf{Mat\'ern-5/2 Kernel:} Captures smooth, non-linear iron core saturation dynamics without unrealistic infinite differentiability.\\[0.4em]
+    $\bullet$ \textbf{White Noise Kernel:} Explicitly models the $10\ \mu\text{m}$ BPM diagnostic jitter floor.
+  }
+
+  \drawcard{6.8}{1.5}{5.9}{5.2}{Lower Confidence Bound (LCB) Acquisition}
+  \at{7.0}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}LCB Acquisition Function:}\\[0.3em]
+    \centering{\fs{11}{13}\bfseries\color{primaryblue}$\alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left(\mathbf{Y}_{\text{obs}} + \boldsymbol{\mu}_{\text{GP}}\right) - \kappa \cdot \overline{\boldsymbol{\sigma}}_{\text{GP}} + \lambda \|\Delta \mathbf{I}\|^2$}\\[0.6em]
+    \raggedright
+    {\bfseries\color{navy}Exploration vs Exploitation Trade-off:}\\
+    $\bullet$ $\boldsymbol{\mu}_{\text{GP}}(\Delta \mathbf{I})$: Posterior mean predicted orbit\\
+    $\bullet$ $\overline{\boldsymbol{\sigma}}_{\text{GP}}(\Delta \mathbf{I})$: Posterior epistemic uncertainty\\
+    $\bullet$ $\kappa \ge 0$: Exploration bonus coefficient\\[0.6em]
+    {\bfseries\color{navy}Benchmark Outcome:}\\
+    When calibrated, Track 3 achieves optimal convergence in just \textbf{1.5 steps average}, with the highest current economy.
+  }
+
+  \slidefooter{13}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 14: Hackathon Contract & Scoring
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Competition Rules}{Gymnasium Contract \& Official Scoring Formula}{Standardized Farama Gymnasium environment interface and multi-objective performance metric}
+
+  \drawcard{0.6}{1.5}{5.9}{5.2}{Gymnasium Contract (\texttt{AcceleratorOrbitGymEnv})}
+  \at{0.8}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Environment Interface:}\\[0.3em]
+    \texttt{obs, info = env.reset(seed=s)}\\
+    \texttt{obs, reward, terminated, truncated, info = env.step(action)}\\[0.6em]
+    $\bullet$ \textbf{obs:} $\text{np.ndarray}$ shape $(12,)$ in $[-10, 10]\text{ mm}$\\
+    $\bullet$ \textbf{action:} $\text{np.ndarray}$ shape $(6,)$ clipped to $[-0.8, 0.8]\text{ A}$\\
+    $\bullet$ \textbf{Step reward:}\\
+    \centering{\fs{10.5}{13}\color{primaryblue}$r_t = - \text{RMS}_{t+1} - 0.01\|\Delta \mathbf{I}\|_2 + (50.0\text{ if terminated})$}\\[0.4em]
+    \raggedright
+    $\bullet$ \textbf{Termination:} $\text{RMS} < 0.030\text{ mm}$ (success!)\\
+    $\bullet$ \textbf{Truncation:} $\text{step} \ge 20$ (failed to converge)
+  }
+
+  \drawcard{6.8}{1.5}{5.9}{5.2}{Official Hackathon Scoring Formula}
+  \at{7.0}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Score Formula (Across 30 Standardized Seeds):}\\[0.3em]
+    \centering{\fs{10.5}{13}\bfseries\color{primaryblue}$\text{Score} = (10 \times \text{Success\%}) - (2.0 \times \overline{\text{Steps}}) + \left(\frac{0.03}{\max(\overline{\text{RMS}}, 0.005)} \times 20\right) - (2.0 \times \overline{\|\mathbf{I}\|})$}\\[0.6em]
+    \raggedright
+    {\bfseries\color{navy}Four Scoring Components:}\\[0.3em]
+    1. \textbf{Success Rate ($10 \times \%$):} Up to $+1,000\text{ pts}$ (100\% convergence)\\
+    2. \textbf{Speed Penalty ($-2 \times \overline{\text{Steps}}$):} $-2\text{ pts}$ per step taken\\
+    3. \textbf{Sub-Micron Precision Bonus:} Up to $+120\text{ pts}$ for ultra-low residual RMS\\
+    4. \textbf{Current Economy Penalty:} $-2\text{ pts}$ per Ampere of cumulative current norm
+  }
+
+  \slidefooter{14}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 15: 30-Seed Benchmark Leaderboard (With Diagram)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Evaluation Results}{30-Seed Benchmark Leaderboard \& Trajectories}{Comparison of Classical SVD, Supervised MLP, Closed-Loop RL, and Bayesian Optimization}
+
+  % Trajectory Image
+  \node[anchor=north west,inner sep=0pt]
+    at ([xshift=0.6in,yshift=-1.5in]current page.north west)
+    {\includegraphics[width=6.0in]{benchmark_trajectories.png}};
+
+  \drawcard{6.9}{1.5}{5.8}{5.2}{Official Benchmark Leaderboard}
+  \at{7.1}{2.0}{5.4}{\fs{10}{13.5}\color{darkgray}%
+    {\fs{12}{15}\bfseries\color{gold}[Rank 1] Bayesian Opt (Track 3)}\\
+    \quad$\bullet$ Success: \textbf{100.0\%} \enspace$|$\enspace Steps: \textbf{1.5 steps}\\
+    \quad$\bullet$ Final RMS: \textbf{0.0149 mm} \enspace$|$\enspace Current: \textbf{0.93 A}\\
+    \quad$\bullet$ Challenge Score: \textbf{1,035.4 pts}\\[0.6em]
+    {\fs{12}{15}\bfseries\color{primaryblue}[Rank 2] Supervised MLP (Baseline 1)}\\
+    \quad$\bullet$ Success: 100.0\% \enspace$|$\enspace Steps: 2.3 steps\\
+    \quad$\bullet$ Final RMS: 0.0257 mm \enspace$|$\enspace Current: 1.21 A\\
+    \quad$\bullet$ Challenge Score: 1,016.8 pts\\[0.6em]
+    {\fs{12}{15}\bfseries\color{darkgray}[Rank 3] Classical SVD (Baseline 0)}\\
+    \quad$\bullet$ Success: 100.0\% \enspace$|$\enspace Steps: 5.6 steps\\
+    \quad$\bullet$ Final RMS: 0.0230 mm \enspace$|$\enspace Current: 1.16 A\\
+    \quad$\bullet$ Challenge Score: 1,013.1 pts\\[0.6em]
+    {\fs{12}{15}\bfseries\color{darkgray}[Rank 4] Closed-Loop RL (Track 2)}\\
+    \quad$\bullet$ Success: 100.0\% \enspace$|$\enspace Steps: 6.1 steps\\
+    \quad$\bullet$ Final RMS: 0.0239 mm \enspace$|$\enspace Current: 1.18 A\\
+    \quad$\bullet$ Challenge Score: 1,011.1 pts
+  }
+
+  \slidefooter{15}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 16: Summary & Practical Takeaways
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Conclusion \& Roadmap}{Key Takeaways, Practical Advice \& Next Steps}{Strategic advice for afternoon hackathon competitors and transition to Lecture 2}
+
+  \drawcard{0.6}{1.5}{5.9}{5.2}{Key Takeaways from Lecture 1}
+  \at{0.8}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    1. \textbf{Physics Guides the AI:}\\
+    Never train from scratch when the analytical ORM is known. Using pseudo-inverse priors guarantees early stability.\\[0.6em]
+    2. \textbf{Surrogates Capture Non-Linearities:}\\
+    When iron yokes saturate, compact MLPs accurately represent cubic falloff and enable 2-step bounded inversions.\\[0.6em]
+    3. \textbf{Probabilistic Uncertainty Wins:}\\
+    Gaussian Process BO balances exploration against exploitation, leading the 30-seed leaderboard in 1.5 steps.\\[0.6em]
+    4. \textbf{Adaptive Damping Locks Stability:}\\
+    Attenuating feedback near the $10\ \mu\text{m}$ noise floor prevents sensor-induced limit cycles.
+  }
+
+  \drawcard{6.8}{1.5}{5.9}{5.2}{Practical Hackathon Advice \& Next Session}
+  \at{7.0}{2.1}{5.5}{\fs{10.5}{14}\color{darkgray}%
+    {\bfseries\color{navy}Practical Competitor Advice:}\\[0.4em]
+    $\bullet$ \textbf{If your policy oscillates:} Check feedback gain $\alpha$. Introduce harmonic damping $\gamma(t) = 1 / (1 + 0.03t)$.\\
+    $\bullet$ \textbf{If surrogate error is high:} Ensure training data covers $[-3.0, 3.0]\text{ A}$ with cubic non-linearities.\\
+    $\bullet$ \textbf{Log Telemetry to W\&B:} Compare your run curves against the official benchmark on the live leaderboard.\\[1.0em]
+    {\bfseries\color{navy}Next Session (10:40 -- 12:00):}\\[0.4em]
+    {\fs{11.5}{14}\bfseries\color{primaryblue}Lecture 2: Agentic AI for Accelerator Research (Osprey Applications)}\\[0.3em]
+    {\fs{11}{14}\color{darkgray}Speaker: Thorsten Hellert, Ph.D. (LBNL)}
+  }
+
+  \slidefooter{16}
+\end{tikzpicture}
+
+\end{document}
