@@ -53,7 +53,7 @@ def build_docx():
     # Document Title
     p_title = doc.add_paragraph()
     p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run_title = p_title.add_run("가속기 분야 AI 활용 튜토리얼 & 미니 해커톤\n")
+    run_title = p_title.add_run("가속기 AI 활용 튜토리얼 & 미니 해커톤\n")
     run_title.font.size = Pt(20)
     run_title.font.bold = True
     run_title.font.color.rgb = PRIMARY
@@ -79,7 +79,7 @@ def build_docx():
 
     p_intro_ko = doc.add_paragraph()
     p_intro_ko.add_run(
-        "가속기 분야 AI 활용 튜토리얼 & 미니 해커톤에 참가하시는 연구원, 엔지니어, 대학원생 여러분을 환영합니다. "
+        "가속기 AI 활용 튜토리얼 & 미니 해커톤에 참가하시는 연구원, 엔지니어, 대학원생 여러분을 환영합니다. "
         "본 워크숍은 가속기 빔 물리 모델링, 신경망 대리모델 디지털 트윈, 폐루프 궤도 정렬 제어(RL, BO), 그리고 "
         "에이전틱 자율 운전 워크플로우를 포괄하는 1일 집중 이론 교육 및 실습 챌린지입니다."
     )
