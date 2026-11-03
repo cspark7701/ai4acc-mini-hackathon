@@ -5,14 +5,14 @@
 
 # [한국어 공지사항]
 
-## 🌟 행사 개요
+## 🌟 워크숍 개요
 
 **가속기 분야 AI 활용 튜토리얼 & 미니 해커톤**에 참가하시는 모든 연구원, 엔지니어, 대학원생 여러분을 진심으로 환영합니다!
 
-본 행사는 최신 인공지능(AI) 및 머신러닝(ML) 기법을 입자 가속기 물리 모델링, 폐루프 빔 궤도 제어, 그리고 에이전틱 자율 운전 워크플로우에 접목하는 이론적 기초와 실습 역량을 집중적으로 함양하는 1일 집중 튜토리얼 및 챌린지입니다.
+본 워크숍은 최신 인공지능(AI) 및 머신러닝(ML) 기법을 입자 가속기 물리 모델링, 폐루프 빔 궤도 제어, 그리고 에이전틱 자율 운전 워크플로우에 접목하는 이론적 기초와 실습 역량을 집중적으로 함양하는 1일 집중 튜토리얼 및 챌린지입니다.
 
-- **행사 일시:** 2026년 11월 3일 (화) 09:00 – 17:00
-- **행사 장소:** KOMAC / KAERI (한국원자력연구원 양성자과학연구단)
+- **일시:** 2026년 11월 3일 (화) 09:00 – 17:00
+- **장소:** KOMAC / KAERI (한국원자력연구원 양성자과학연구단)
 - **주요 대상:** 가속기 물리 및 제어 분야 연구원, 박사후연구원, 대학원생 및 도메인 엔지니어
 - **강사진:**
   - **박종식 박사 (Chong Shik Park, Ph.D.)** — 고려대학교 세종캠퍼스 (Korea University, Sejong)
@@ -36,37 +36,41 @@
 
 ## 💻 참가자 필수 준비 사항 (Participant Preparation)
 
-원활하고 유익한 실습 진행을 위해 참가자 여러분께서는 행사 당일 전 아래 사항을 확인해 주시기 바랍니다.
+원활하고 유익한 실습 진행을 위해 참가자 여러분께서는 워크숍 참가 전 아래 사항을 확인해 주시기 바랍니다.
 
 ### 1. 개인 노트북 지참 (BYOD — Bring Your Own Device)
 - 실습 및 오후 미니 해커톤 참가를 위해 **개인 노트북과 충전 어댑터**를 필히 지참해 주시기 바랍니다.
 - 현장 와이파이(Wi-Fi) 무선 인터넷이 제공됩니다.
 
-### 2. 운영체제 플랫폼 안내 (Windows, Mac, Linux 모두 환영)
-- **Windows, macOS, Linux** 등 참가자분께서 평소 사용하시는 어떠한 운영체제(OS) 환경이든 환영합니다.
-- 본 튜토리얼의 모든 실습 코드는 브라우저 기반의 **Google Colab (별도 로컬 설치 불필요, 권장)** 환경에 완벽히 최적화되어 있습니다.
-- 로컬 환경이나 Docker 환경에서 직접 구동을 원하시는 경우에도 모두 원활하게 동작하도록 패키징되어 있습니다.
+### 2. 실습 환경 및 운영체제 안내 (Docker 권장 / Windows, Mac, Linux 모두 지원)
+- **Windows, macOS, Linux** 등 참가자분께서 평소 사용하시는 어떠한 운영체제(OS) 환경이든 모두 지원합니다.
+- 본 튜토리얼에서는 복잡한 패키지 충돌 없이 즉시 실습 가능한 **Docker 환경 사용을 적극 권장**합니다.
+  - 저장소를 클론한 후 터미널에서 `docker compose up` 명령을 실행하면, 튜토리얼 노트북과 시뮬레이션 환경이 포함된 JupyterLab 컨테이너(`http://localhost:8888`)가 즉시 구동됩니다.
+  - **Docker Desktop 앱 설치 필요 여부 안내:**
+    - **Windows & macOS:** **Docker Desktop 앱 설치가 필요합니다.** (Windows/macOS는 리눅스 커널 컨테이너를 가상화 백엔드인 WSL 2 또는 Hypervisor를 통해 구동하므로 Docker Desktop 또는 호환 앱이 필수적입니다.)
+    - **Linux:** **별도의 Docker Desktop GUI 앱이 필요하지 않습니다.** 리눅스 배포판 패키지 관리자의 기본 도커 엔진 CLI(`docker-ce` 또는 `docker.io` 및 `docker-compose-plugin`)만으로 직접 네이티브 실행됩니다.
+  - Docker 외에 로컬 파이썬(Python 3.10+) 가상환경(venv/conda)을 통한 직접 실행(`pip install -r requirements.txt`)도 완벽히 지원됩니다.
 
 ### 3. Weights & Biases (W&B) 무료 계정 사전 생성
-- 본 해커톤은 머신러닝 실험 추적 및 라이브 리더보드 플랫폼인 **Weights & Biases (W&B)**를 활용합니다.
-- 행사 전 [wandb.ai](https://wandb.ai) (또는 [wandb.ai/site/ko](https://wandb.ai/site/ko))에서 **무료 개인 계정**을 미리 가입해 주시기 바랍니다.
-- 가입 후 [wandb.ai/authorize](https://wandb.ai/authorize)에서 발급되는 본인의 API 키를 메모해 오시면, 행사 당일 단 한 줄의 코드로 자신의 제어 알고리즘 결과를 라이브 리더보드에 등록하실 수 있습니다. *(오프라인 및 익명 모드도 지원하므로 미가입자도 벤치마크 실행 자체는 가능합니다.)*
+- 본 미니 해커톤은 머신러닝 실험 추적 및 라이브 리더보드 플랫폼인 **Weights & Biases (W&B)**를 활용합니다.
+- 워크숍 참가 전 [wandb.ai](https://wandb.ai) (또는 [wandb.ai/site/ko](https://wandb.ai/site/ko))에서 **무료 개인 계정**을 미리 가입해 주시기 바랍니다.
+- 가입 후 [wandb.ai/authorize](https://wandb.ai/authorize)에서 발급되는 본인의 API 키를 메모해 오시면, 튜토리얼 당일 단 한 줄의 코드로 자신의 제어 알고리즘 결과를 라이브 리더보드에 등록하실 수 있습니다. *(오프라인 및 익명 모드도 지원하므로 미가입자도 벤치마크 실행 자체는 가능합니다.)*
 
 ---
 
 ## ✅ 참가 전 체크리스트 (Readiness Checklist)
 
 - [ ] 개인 노트북 및 전원 어댑터 준비 완료
-- [ ] 구글 계정(Google Colab 접속용) 로그인 가능 확인
+- [ ] Docker (Windows/macOS: Docker Desktop 설치, Linux: Docker Engine CLI) 또는 로컬 Python 3.10+ 환경 준비 완료
+- [ ] 저장소 복제(`git clone`) 및 `docker compose up` 실행 테스트 완료 (`http://localhost:8888` 접속 확인)
 - [ ] [wandb.ai](https://wandb.ai) 무료 계정 생성 및 API 키 확인
-- [ ] (선택 사항) 로컬 파이썬(3.10+) 또는 Docker Desktop 사전 설치 (로컬 실행 희망자)
 
 ---
 <div style="page-break-after: always;"></div>
 
 # [English Announcement]
 
-## 🌟 Event Overview
+## 🌟 Workshop Overview
 
 We cordially invite researchers, engineers, postdoctoral scholars, and graduate students to the **AI Applications in Accelerators Tutorial & Mini-Hackathon**!
 
@@ -103,10 +107,14 @@ To guarantee a seamless and productive hands-on experience, please review the fo
 - All participants are requested to **bring their personal laptop and power adapter** for the morning tutorials and the afternoon hackathon.
 - High-speed venue Wi-Fi connectivity will be provided.
 
-### 2. Platform Flexibility (Windows, macOS, and Linux are All Welcome)
+### 2. Platform Flexibility & Recommended Docker Environment (Windows, macOS, Linux)
 - You are welcome to use **any operating system: Windows, macOS, or Linux**.
-- All interactive challenge notebooks are turnkey-ready and fully supported on **Google Colab (recommended, zero local installation required)**.
-- Participants preferring local execution may also run the provided environments natively via Python 3.10+ / JupyterLab or via the included Docker container.
+- We strongly encourage participants to use the provided **Docker environment** for a guaranteed reproducible workspace without dependency conflicts.
+  - After cloning the repository, simply execute `docker compose up` to launch the turnkey JupyterLab environment (`http://localhost:8888`) with all physics simulation models, Gym environments, and benchmark harnesses ready to go.
+  - **Do participants need Docker Desktop?**
+    - **Windows & macOS:** **Yes, Docker Desktop is required.** Windows and macOS require Docker Desktop (or a compatible tool like OrbStack on macOS) to provide the underlying Linux VM virtualization layer (WSL 2 on Windows, Apple Hypervisor on macOS).
+    - **Linux:** **No Docker Desktop app is required.** Linux users can run natively using the standard Docker engine CLI (`docker-ce` or `docker.io` with Docker Compose) directly on the host kernel.
+  - Participants may also run natively via a local Python 3.10+ virtual environment (`pip install -r requirements.txt`).
 
 ### 3. Create a Free Weights & Biases (W&B) Account in Advance
 - The hackathon utilizes **Weights & Biases (W&B)** for real-time experiment tracking, telemetry visualization, and the live competition leaderboard.
@@ -115,16 +123,9 @@ To guarantee a seamless and productive hands-on experience, please review the fo
 
 ---
 
-## ✅ Pre-Event Readiness Checklist
+## ✅ Pre-Workshop Readiness Checklist
 
 - [ ] Personal laptop and power adapter ready
-- [ ] Active Google account tested for Google Colab access
+- [ ] Docker (Docker Desktop on Windows/macOS; Docker Engine CLI on Linux) or local Python 3.10+ environment ready
+- [ ] Repository cloned (`git clone`) and verified via `docker compose up` (`http://localhost:8888`)
 - [ ] Free [wandb.ai](https://wandb.ai) account created & API key retrieved from [wandb.ai/authorize](https://wandb.ai/authorize)
-- [ ] (Optional) Local Python 3.10+ environment or Docker Desktop installed for participants choosing local execution
-
----
-
-## 📍 Inquiries & Contact
-- **Host Institution:** KOMAC / KAERI
-- **Repository & Code:** [AI Applications in Accelerators Hackathon GitHub Repository](https://github.com/cspark/ai4acc-mini-hackathon)
-- For technical questions regarding environment setup, refer to `docs/Technical Preparation.docx` or `docs/DOCKER_GUIDE.md`.
