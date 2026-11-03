@@ -420,7 +420,7 @@ participant_nb = {
     'cells': participant_cells,
     'metadata': {
         'language_info': {'name': 'python', 'version': '3.12.3'},
-        'kernelspec': {'name': 'python3', 'display_name': 'Python 3 (ipykernel)'}
+        'kernelspec': {'name': 'ai4acc', 'display_name': 'Python (ai4acc)'}
     },
     'nbformat': 4,
     'nbformat_minor': 2
@@ -450,7 +450,7 @@ solution_nb = {
     'cells': solution_cells,
     'metadata': {
         'language_info': {'name': 'python', 'version': '3.12.3'},
-        'kernelspec': {'name': 'python3', 'display_name': 'Python 3 (ipykernel)'}
+        'kernelspec': {'name': 'ai4acc', 'display_name': 'Python (ai4acc)'}
     },
     'nbformat': 4,
     'nbformat_minor': 2

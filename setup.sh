@@ -50,6 +50,11 @@ if [ ! -f "${VENV_DIR}/bin/activate" ]; then
     echo "[setup.sh] Upgrading pip and installing project dependencies in editable mode..."
     "${VENV_DIR}/bin/pip" install --upgrade pip
     "${VENV_DIR}/bin/pip" install -e "${REPO_ROOT}[dev]"
+
+    # Register Jupyter kernel for automatic selection in notebooks
+    echo "[setup.sh] Registering Jupyter kernel '${VENV_NAME}'..."
+    "${VENV_DIR}/bin/python" -m ipykernel install --user --name="${VENV_NAME}" --display-name="Python (${VENV_NAME})" >/dev/null 2>&1 || true
+    "${VENV_DIR}/bin/python" -m ipykernel install --prefix="${VENV_DIR}" --name="${VENV_NAME}" --display-name="Python (${VENV_NAME})" >/dev/null 2>&1 || true
 fi
 
 # 5. Activate virtual environment

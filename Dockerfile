@@ -28,7 +28,8 @@ COPY src/ ./src/
 
 # Upgrade pip and install package in editable mode with development tools (JupyterLab, Notebook, Pytest, Black)
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install -e ".[dev]"
+    pip install -e ".[dev]" && \
+    python -m ipykernel install --name=ai4acc --display-name="Python (ai4acc)"
 
 # Copy all remaining project files (notebooks, lecture notes, docs, img, setup script)
 COPY . .
