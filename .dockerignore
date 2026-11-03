@@ -22,6 +22,15 @@ dist/
 # Solution notebook (withheld from participant container)
 notebooks/*Solution*.ipynb
 
+# Files excluded from participant container
+lecture_notes/*.md
+lecture_notes/*.tex
+presentations/*.pptx
+presentations/*.tex
+presentations/*.md
+img/ku_logo.png
+docs/DOCKER_GUIDE.md
+
 # Jupyter checkpoints
 .ipynb_checkpoints/
 **/.ipynb_checkpoints/

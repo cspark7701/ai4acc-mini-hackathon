@@ -34,9 +34,14 @@ RUN pip install --upgrade pip setuptools wheel && \
 # Copy all participant project files (notebooks, lecture notes, slide decks, docs, img)
 COPY . .
 
-# Ensure solution notebooks and internal maintenance scripts are excluded from participant container
+# Ensure solution notebooks, internal maintenance scripts, and unneeded files are excluded
 RUN rm -f /workspace/notebooks/*Solution*.ipynb && \
-    rm -rf /workspace/scripts
+    rm -rf /workspace/scripts && \
+    rm -f /workspace/README.md && \
+    rm -f /workspace/docs/DOCKER_GUIDE.md && \
+    rm -f /workspace/img/ku_logo.png && \
+    rm -f /workspace/lecture_notes/*.md /workspace/lecture_notes/*.tex && \
+    rm -f /workspace/presentations/*.pptx /workspace/presentations/*.tex /workspace/presentations/*.md
 
 # Expose default Jupyter port
 EXPOSE 8888
