@@ -64,14 +64,20 @@ def create_presentation():
     blank_layout = prs.slide_layouts[6]
 
     def add_header(slide, tag_text, title_text, subtitle_text=""):
-        # Vertical Divider Bar: top=0.25in, height=0.90in -> vertical center = 0.70in
-        bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(0.25), Inches(0.06), Inches(0.90))
+        # Top-left KU Logo, vertically aligned with the blue column bar
+        # Blue bar: top=0.25in, height=0.90in -> vertical center = 0.70in
+        # KU Logo: height=0.82in, width=0.70in -> top = 0.70 - 0.82/2 = 0.29in -> vertical center = 0.70in
+        if KU_LOGO.exists():
+            slide.shapes.add_picture(str(KU_LOGO), Inches(0.50), Inches(0.29), width=Inches(0.70), height=Inches(0.82))
+
+        # Vertical Divider Bar aligned with KU logo and title: left=1.35in, top=0.25in, height=0.90in
+        bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1.35), Inches(0.25), Inches(0.06), Inches(0.90))
         bar.fill.solid()
         bar.fill.fore_color.rgb = ACCENT
         bar.line.color.rgb = ACCENT
 
-        # Title & Subtitle Box centered with the bar
-        tb = slide.shapes.add_textbox(Inches(0.72), Inches(0.22), Inches(11.8), Inches(0.95))
+        # Title & Subtitle Box centered with the bar and logo
+        tb = slide.shapes.add_textbox(Inches(1.55), Inches(0.22), Inches(11.2), Inches(0.95))
         tf = tb.text_frame
         tf.word_wrap = True
         tf.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -149,8 +155,14 @@ def create_presentation():
     if KU_LOGO.exists():
         s1.shapes.add_picture(str(KU_LOGO), Inches(1.0), Inches(0.85), width=Inches(0.95))
 
-    # Event badge text next to logo
-    tb_tag = s1.shapes.add_textbox(Inches(2.2), Inches(0.88), Inches(10.0), Inches(0.8))
+    # Vertical accent bar aligned with logo
+    bar_s1 = s1.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(2.10), Inches(0.85), Inches(0.06), Inches(1.05))
+    bar_s1.fill.solid()
+    bar_s1.fill.fore_color.rgb = ACCENT
+    bar_s1.line.color.rgb = ACCENT
+
+    # Event badge text next to logo & bar
+    tb_tag = s1.shapes.add_textbox(Inches(2.28), Inches(0.88), Inches(9.8), Inches(0.8))
     tf_tag = tb_tag.text_frame
     tf_tag.word_wrap = True
     add_text_run(tf_tag.paragraphs[0], "AI APPLICATIONS IN ACCELERATORS TUTORIAL & MINI-HACKATHON", bold=True, size=Pt(13.5), color=PRIMARY)

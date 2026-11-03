@@ -39,14 +39,18 @@
 
 \newcommand{\fs}[2]{\fontsize{#1pt}{#2pt}\selectfont}
 
-% Slide Header Macro: Blue bar vertically centered with Title & Subtitle
+% Slide Header Macro: KU logo on top left, vertically aligned with blue column bar & title
 \newcommand{\slideheader}[3]{%
-  % Vertical accent bar: top=0.25in, height=0.90in -> vertical center = 0.70in
-  \fill[accent] ([xshift=0.5in,yshift=-0.25in]current page.north west)
+  % Top-left KU Logo: width=0.70in, height=0.82in, vertically centered at y = -0.70in
+  \node[anchor=west,inner sep=0pt]
+    at ([xshift=0.50in,yshift=-0.70in]current page.north west)
+    {\includegraphics[width=0.70in,height=0.82in]{ku_logo.png}};
+  % Vertical accent bar: left=1.35in, top=0.25in, height=0.90in -> vertical center = 0.70in
+  \fill[accent] ([xshift=1.35in,yshift=-0.25in]current page.north west)
     rectangle ++(0.06in,-0.90in);
   % Title & Subtitle Node: vertically centered at y = -0.70in
-  \node[anchor=west,inner sep=0pt,text width=11.8in,align=left]
-    at ([xshift=0.72in,yshift=-0.70in]current page.north west) {%
+  \node[anchor=west,inner sep=0pt,text width=11.2in,align=left]
+    at ([xshift=1.55in,yshift=-0.70in]current page.north west) {%
       {\fs{11}{13}\bfseries\color{accent}\MakeUppercase{#1}\quad|\quad}%
       {\fs{20.5}{24}\bfseries\color{navy}#2}\\[0.18em]
       \if\relax\detokenize{#3}\relax\else{\fs{13}{16}\color{darkgray}#3}\fi
@@ -101,8 +105,12 @@
     at ([xshift=1.0in,yshift=-0.85in]current page.north west)
     {\includegraphics[width=0.95in]{ku_logo.png}};
 
-  % Event Banner next to Logo
-  \at{2.2}{0.88}{10.0}{%
+  % Vertical accent bar aligned with logo
+  \fill[accent] ([xshift=2.10in,yshift=-0.85in]current page.north west)
+    rectangle ++(0.06in,-1.05in);
+
+  % Event Banner next to Logo & Bar
+  \at{2.28}{0.88}{9.8}{%
     {\fs{13.5}{16}\bfseries\color{primaryblue}AI APPLICATIONS IN ACCELERATORS TUTORIAL \& MINI-HACKATHON}\\[0.22em]
     {\fs{11.5}{14}\color{mutedgray}Host: KOMAC / KAERI (Korea Multi-purpose Accelerator Complex)}
   }
