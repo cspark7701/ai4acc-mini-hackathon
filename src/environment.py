@@ -92,3 +92,34 @@ class AcceleratorOrbitGymEnv:
             "currents": self.I_corr.copy()
         }
         return obs, reward, terminated, truncated, info
+
+
+def generate_offline_dataset(
+    env: AcceleratorOrbitGymEnv,
+    n_samples: int = 1500,
+    current_range: Tuple[float, float] = (-3.0, 3.0),
+    noise_std: float = 0.010,
+    random_state: int = 42
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Generate synthetic offline dataset of corrector currents and corresponding BPM readings.
+    Incorporates linear response, non-linear cubic saturation, and sensor noise.
+
+    Parameters:
+        env: AcceleratorOrbitGymEnv instance providing transfer matrix R.
+        n_samples: Number of random training samples to generate.
+        current_range: (min_current, max_current) in Amperes.
+        noise_std: Standard deviation of Gaussian sensor jitter.
+        random_state: Seed for reproducible random generation.
+
+    Returns:
+        X: Corrector current settings of shape (n_samples, 6) in Amperes.
+        Y: Observed BPM displacements of shape (n_samples, 12) in mm.
+    """
+    rng = np.random.RandomState(random_state)
+    X = rng.uniform(current_range[0], current_range[1], size=(n_samples, env.n_correctors)).astype(np.float32)
+    Y_linear = X @ env.R
+    Y_sat = - 0.015 * (X**3) @ env.R
+    noise = rng.normal(0, noise_std, size=(n_samples, env.n_bpms)).astype(np.float32)
+    Y = (Y_linear + Y_sat + noise).astype(np.float32)
+    return X, Y

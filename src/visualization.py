@@ -3,7 +3,7 @@ src/visualization.py
 Schematic diagram generation for the accelerator transport lattice.
 """
 import os
-from typing import Optional
+from typing import Optional, Dict, Any
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -64,9 +64,99 @@ def draw_beamline(save_path: Optional[str] = "img/beamline.png", show: bool = Tr
     plt.tight_layout()
 
     if save_path:
+        if not os.path.isabs(save_path) and not os.path.exists("img") and os.path.exists("../img"):
+            save_path = os.path.join("..", save_path)
         os.makedirs(os.path.dirname(os.path.abspath(save_path)), exist_ok=True)
         fig.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"Lattice schematic saved to {save_path}")
+
+    if show:
+        plt.show()
+
+    return fig
+
+
+def plot_benchmark_trajectories(
+    env: Any,
+    controllers: Dict[str, Any],
+    seed: int = 42,
+    save_path: Optional[str] = None,
+    show: bool = True
+) -> plt.Figure:
+    """
+    Generate Dual Trajectory Alignment and Dynamic Convergence Curves for benchmark controllers.
+
+    Parameters:
+        env: AcceleratorOrbitGymEnv instance.
+        controllers: Dict mapping controller names to controller instances,
+                     e.g. {"Linear SVD": b0, "Supervised MLP": b1, "RL Agent": b2}.
+        seed: Random seed for canonical evaluation (default: 42).
+        save_path: Optional path to save high-res figure PNG.
+        show: Whether to call plt.show() immediately.
+
+    Returns:
+        fig: Matplotlib Figure object.
+    """
+    obs_canon, info_canon = env.reset(seed=seed)
+    initial_canon_rms = info_canon.get("initial_rms", float(np.sqrt(np.mean(obs_canon**2))))
+
+    trajectories = {}
+    for name, agent in controllers.items():
+        obs, info = env.reset(seed=seed)
+        rms_hist = [info.get("initial_rms", float(np.sqrt(np.mean(obs**2))))]
+        while not (info.get("is_success", False) or info.get("step", 0) >= env.max_steps):
+            action = agent.act(obs, info)
+            obs, reward, term, trunc, info = env.step(action)
+            rms_hist.append(info["rms"])
+            if term or trunc:
+                break
+        trajectories[name] = (obs, rms_hist)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 4.8))
+
+    # Subplot 1: Beamline Trajectory Alignment
+    bpm_stations = range(1, env.n_bpms + 1)
+    ax1.plot(bpm_stations, obs_canon, 'ro-', label=f'Uncorrected Drift (RMS={initial_canon_rms:.3f} mm)', linewidth=1.8)
+
+    palette = [
+        ('cyan', '^', '--', 2.0),
+        ('blue', 'o', '--', 2.0),
+        ('green', 's', '-', 2.2),
+        ('magenta', 'd', '-.', 2.0),
+        ('darkorange', 'v', ':', 2.0)
+    ]
+
+    for idx, (name, (final_obs, rms_hist)) in enumerate(trajectories.items()):
+        col, marker, ls, lw = palette[idx % len(palette)]
+        final_rms = rms_hist[-1]
+        ax1.plot(bpm_stations, final_obs, color=col, marker=marker, linestyle=ls, linewidth=lw, label=f'{name} (RMS={final_rms:.3f} mm)')
+
+    ax1.axhline(0, color='black', linestyle=':', alpha=0.6)
+    ax1.set_title("BPM Trajectory Alignment: Uncorrected vs. Competitors", fontsize=11, fontweight='bold')
+    ax1.set_xlabel("BPM Station Index", fontsize=10)
+    ax1.set_ylabel("Beam Displacement (mm)", fontsize=10)
+    ax1.legend(frameon=True, fontsize=8.5)
+    ax1.grid(True, linestyle='--', alpha=0.4)
+
+    # Subplot 2: Dynamic Convergence over Steps
+    for idx, (name, (final_obs, hist)) in enumerate(trajectories.items()):
+        col, marker, ls, lw = palette[idx % len(palette)]
+        ax2.plot(range(len(hist)), hist, color=col, marker=marker, linestyle='-', linewidth=lw, label=f'{name} (Final: {hist[-1]:.3f} mm)')
+
+    ax2.axhline(env.target_rms, color='red', linestyle='--', linewidth=1.5, label=f'Target Tolerance ({env.target_rms:.3f} mm)')
+    ax2.set_title("Convergence Dynamics across Interaction Steps", fontsize=11, fontweight='bold')
+    ax2.set_xlabel("Control Step $t$", fontsize=10)
+    ax2.set_ylabel("Beam Orbit RMS (mm)", fontsize=10)
+    ax2.legend(frameon=True, fontsize=8.5)
+    ax2.grid(True, linestyle='--', alpha=0.4)
+
+    plt.tight_layout()
+
+    if save_path:
+        if not os.path.isabs(save_path) and not os.path.exists("img") and os.path.exists("../img"):
+            save_path = os.path.join("..", save_path)
+        os.makedirs(os.path.dirname(os.path.abspath(save_path)), exist_ok=True)
+        fig.savefig(save_path, dpi=300, bbox_inches='tight')
 
     if show:
         plt.show()

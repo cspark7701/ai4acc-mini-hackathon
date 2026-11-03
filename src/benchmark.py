@@ -14,8 +14,8 @@ except ImportError:
 
 
 def evaluate_hackathon_benchmark(
-    env: Any,
-    agent: Any,
+    env_or_agent: Any,
+    agent: Optional[Any] = None,
     agent_name: str = "Agent",
     team_name: str = "Team_Alpha",
     seeds: Sequence[int] = range(1, 31),
@@ -25,7 +25,15 @@ def evaluate_hackathon_benchmark(
 ) -> Dict[str, Any]:
     """
     Standardized benchmark evaluation across specified random seeds.
+    Accepts either evaluate_hackathon_benchmark(env, agent, ...) or evaluate_hackathon_benchmark(agent, ...).
     """
+    if agent is None:
+        agent = env_or_agent
+        from src.environment import AcceleratorOrbitGymEnv
+        env = AcceleratorOrbitGymEnv()
+    else:
+        env = env_or_agent
+
     n_seeds = len(seeds)
     successes = 0
     total_steps = 0
@@ -111,3 +119,21 @@ def evaluate_hackathon_benchmark(
         "mean_latency": mean_latency,
         "score": score
     }
+
+
+def print_benchmark_leaderboard(leaderboard: Sequence[Any]) -> None:
+    """
+    Format and display official hackathon benchmark leaderboard table.
+
+    Parameters:
+        leaderboard: List of (name, metrics_dict) tuples.
+    """
+    sorted_board = sorted(leaderboard, key=lambda x: x[1].get("score", 0.0), reverse=True)
+    print("=" * 85)
+    print("                        OFFICIAL HACKATHON BENCHMARK LEADERBOARD")
+    print("=" * 85)
+    print(f"{'Rank':<5} | {'Agent / Controller Name':<28} | {'Success':<8} | {'Steps':<6} | {'Final RMS':<10} | {'Score':<8}")
+    print("-" * 85)
+    for rank, (name, metrics) in enumerate(sorted_board, 1):
+        print(f"#{rank:<4} | {name:<28} | {metrics['success_rate']:>6.1f}% | {metrics['mean_steps']:>5.1f} | {metrics['mean_rms']:>8.4f}mm | {metrics['score']:>7.1f}")
+    print("=" * 85)
