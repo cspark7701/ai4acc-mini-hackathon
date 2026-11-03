@@ -93,7 +93,7 @@ def evaluate_hackathon_benchmark(
                     "max_steps": env.max_steps,
                     "noise_std_mm": env.noise_std
                 },
-                reinit=True
+                reinit="finish_previous"
             )
             run.summary["challenge_score"] = float(round(score, 1))
             run.summary["success_rate_pct"] = float(round(success_rate, 1))
