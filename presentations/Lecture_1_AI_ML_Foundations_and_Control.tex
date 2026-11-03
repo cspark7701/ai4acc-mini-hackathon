@@ -11,6 +11,7 @@
 \usepackage{tikz}
 \usetikzlibrary{calc,shapes.geometric,positioning}
 \usepackage{booktabs}
+\usepackage{array}
 \usepackage{hyperref}
 
 % Color Palette
@@ -29,7 +30,7 @@
 \setlength{\parindent}{0pt}
 
 % Total Slides Count
-\newcommand{\totalslides}{27}
+\newcommand{\totalslides}{28}
 
 % Positioning helper
 \newcommand{\at}[4]{%
@@ -38,21 +39,18 @@
 
 \newcommand{\fs}[2]{\fontsize{#1pt}{#2pt}\selectfont}
 
-% Slide Header Macro
+% Slide Header Macro: Blue bar vertically centered with Title & Subtitle
 \newcommand{\slideheader}[3]{%
-  % KU Logo
-  \node[anchor=north west,inner sep=0pt]
-    at ([xshift=0.5in,yshift=-0.2in]current page.north west)
-    {\includegraphics[width=0.9in]{ku_logo.png}};
-  % Vertical accent bar
-  \fill[accent] ([xshift=1.5in,yshift=-0.22in]current page.north west)
-    rectangle ++(0.06in,-0.95in);
-  % Category Tag and Title
-  \at{1.68}{0.18}{11.1}{%
-    {\fs{11.5}{14}\bfseries\color{accent}\MakeUppercase{#1}\quad|\quad}%
-    {\fs{22}{26}\bfseries\color{navy}#2}\\[0.22em]
-    \if\relax\detokenize{#3}\relax\else{\fs{13.5}{17}\color{darkgray}#3}\fi
-  }
+  % Vertical accent bar: top=0.25in, height=0.90in -> vertical center = 0.70in
+  \fill[accent] ([xshift=0.5in,yshift=-0.25in]current page.north west)
+    rectangle ++(0.06in,-0.90in);
+  % Title & Subtitle Node: vertically centered at y = -0.70in
+  \node[anchor=west,inner sep=0pt,text width=11.8in,align=left]
+    at ([xshift=0.72in,yshift=-0.70in]current page.north west) {%
+      {\fs{11}{13}\bfseries\color{accent}\MakeUppercase{#1}\quad|\quad}%
+      {\fs{20.5}{24}\bfseries\color{navy}#2}\\[0.18em]
+      \if\relax\detokenize{#3}\relax\else{\fs{13}{16}\color{darkgray}#3}\fi
+    };
 }
 
 % Slide Footer Macro
@@ -81,14 +79,14 @@
     \pgfmathsetmacro{\cx}{#1+0.25}%
     \pgfmathsetmacro{\cy}{#2+0.22}%
     \pgfmathsetmacro{\cw}{#3-0.5}%
-    \at{\cx}{\cy}{\cw}{\fs{16}{20}\bfseries\color{navy}#5}
+    \at{\cx}{\cy}{\cw}{\fs{15.5}{19}\bfseries\color{navy}#5}
   \fi
 }
 
 \begin{document}
 
 % ==============================================================================
-% SLIDE 1: Title Slide (Seamless White Background - No Logo Color Clash)
+% SLIDE 1: Title Slide (Unwrapped Title & Proportional Logo)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   % Clean outer border
@@ -98,36 +96,36 @@
   \fill[accent] ([xshift=0.5in,yshift=-0.5in]current page.north west)
     rectangle ++(12.333in,-0.1in);
 
-  % KU Logo (Seamlessly on White Background)
+  % Elegantly scaled KU Logo (0.95 in)
   \node[anchor=north west,inner sep=0pt]
-    at ([xshift=1.0in,yshift=-0.9in]current page.north west)
-    {\includegraphics[width=1.5in]{ku_logo.png}};
+    at ([xshift=1.0in,yshift=-0.85in]current page.north west)
+    {\includegraphics[width=0.95in]{ku_logo.png}};
 
   % Event Banner next to Logo
-  \at{2.8}{1.1}{9.5}{%
-    {\fs{14}{17}\bfseries\color{primaryblue}AI APPLICATIONS IN ACCELERATORS TUTORIAL \& MINI-HACKATHON}\\[0.25em]
-    {\fs{12}{15}\color{mutedgray}Host: KOMAC / KAERI (Korea Multi-purpose Accelerator Complex)}
+  \at{2.2}{0.88}{10.0}{%
+    {\fs{13.5}{16}\bfseries\color{primaryblue}AI APPLICATIONS IN ACCELERATORS TUTORIAL \& MINI-HACKATHON}\\[0.22em]
+    {\fs{11.5}{14}\color{mutedgray}Host: KOMAC / KAERI (Korea Multi-purpose Accelerator Complex)}
   }
 
   % Horizontal dividing line
-  \fill[bordergray] ([xshift=1.0in,yshift=-2.2in]current page.north west)
+  \fill[bordergray] ([xshift=1.0in,yshift=-2.0in]current page.north west)
     rectangle ++(11.333in,-0.02in);
 
-  % Main Title & Subtitle
-  \at{1.0}{2.4}{11.333}{%
-    {\fs{32}{38}\bfseries\color{navy}Lecture 1: AI/ML Foundations and Closed-Loop Control\\for Particle Accelerators}\\[0.5em]
-    {\fs{18}{23}\color{accent}Physics Foundations, Neural Surrogates, Reinforcement Learning, and Bayesian Optimization}
+  % Main Title & Subtitle (Unwrapped at 26pt)
+  \at{1.0}{2.25}{11.333}{%
+    {\fs{26}{30}\bfseries\color{navy}Lecture 1: AI/ML Foundations \& Closed-Loop Control}\\[0.45em]
+    {\fs{15}{19}\color{accent}Physics Foundations, Neural Surrogates, Reinforcement Learning, and Bayesian Optimization}
   }
 
   % Presenter Card
   \draw[rounded corners=8pt,fill=lightbg,draw=bordergray,line width=1.2pt]
     ([xshift=1.0in,yshift=-4.7in]current page.north west) rectangle ++(11.333in,-1.9in);
   \at{1.3}{4.85}{10.7}{%
-    {\fs{20}{24}\bfseries\color{navy}Chong Shik Park, Ph.D.}\\[0.4em]
-    {\fs{13.5}{18}\color{darkgray}
+    {\fs{19}{23}\bfseries\color{navy}Chong Shik Park, Ph.D.}\\[0.35em]
+    {\fs{13}{17}\color{darkgray}
     $\bullet$ Department of Accelerator Science, Korea University, Sejong 30019, Republic of Korea\\
-    $\bullet$ Center for Accelerator Research, Korea University, Sejong 30019, Republic of Korea}\\[0.4em]
-    {\fs{11.5}{15}\color{mutedgray}Date: November 3, 2026 \quad$|$\quad Audience: Accelerator Physicists, Postdocs, Engineers \& Graduate Students}
+    $\bullet$ Center for Accelerator Research, Korea University, Sejong 30019, Republic of Korea}\\[0.35em]
+    {\fs{11}{14}\color{mutedgray}Date: November 3, 2026 \quad$|$\quad Audience: Accelerator Physicists, Postdocs, Engineers \& Graduate Students}
   }
 
   \slidefooter{1}
@@ -135,10 +133,10 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 2: Operational Context & Why AI in Accelerators
+% SLIDE 2: Operational Context
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Operational Context}{Why AI in Modern Particle Accelerators?}{Meeting stringent sub-micron stability tolerances while managing non-linear actuator dynamics}
+  \slideheader{Operational Context}{Why AI in Particle Accelerators?}{Meeting stringent sub-micron stability tolerances while managing non-linear actuator dynamics}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{The Operational Challenge: High-Precision Orbit Stabilization}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -158,10 +156,10 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 3: Curricular Architecture & Master Schedule
+% SLIDE 3: Master Curriculum & Schedule
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Workshop Curriculum}{Integrated Morning Lectures \& Afternoon Hackathon}{Cohesive one-day curriculum connecting physics foundations directly to competitive simulation benchmarks}
+  \slideheader{Workshop Curriculum}{Master Curriculum \& Program Schedule}{Cohesive one-day curriculum connecting physics foundations directly to competitive simulation benchmarks}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Program Schedule \& Learning Objectives}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -181,10 +179,10 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 4: 5 Pillars of AI in Accelerators (Part 1)
+% SLIDE 4: AI Pillars: Surrogates & Optimization
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Domain Overview}{Five Pillars of AI in Accelerators (Part 1: Surrogates \& Optimization)}{Foundational applications revolutionizing beam physics simulations and online tuning}
+  \slideheader{Domain Overview}{AI Pillars: Surrogates \& Optimization}{Foundational applications revolutionizing beam physics simulations and online tuning}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Pillars 1 \& 2: Fast Digital Twins \& Autonomous Multi-Objective Tuning}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -203,10 +201,10 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 5: 5 Pillars of AI in Accelerators (Part 2)
+% SLIDE 5: AI Pillars: Diagnostics, Protection & Agents
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Domain Overview}{Five Pillars of AI in Accelerators (Part 2: Diagnostics, Protection \& Agents)}{Expanding AI applications into beam instrumentation, uptime preservation, and autonomous agents}
+  \slideheader{Domain Overview}{AI Pillars: Diagnostics, Protection \& Agents}{Expanding AI applications into beam instrumentation, uptime preservation, and autonomous agents}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Pillars 3, 4 \& 5: Virtual Diagnostics, Protection \& Agentic Control}
   \at{1.1}{2.1}{11.1}{\fs{13}{18}\color{darkgray}%
@@ -226,10 +224,10 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 6: Accelerator Physics: Hill's Equation
+% SLIDE 6: Hill's Equation & Transverse Motion
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Physics Foundations}{Transverse Beam Dynamics \& Hill's Equation}{The fundamental second-order differential equation governing transverse betatron motion}
+  \slideheader{Physics Foundations}{Hill's Equation \& Transverse Motion}{The fundamental second-order differential equation governing transverse betatron motion}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Derivation and Physical Interpretation of Hill's Equation}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -250,10 +248,10 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 7: Betatron Oscillations & Courant-Snyder Optics
+% SLIDE 7: Betatron Motion & Courant-Snyder Optics
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Beam Optics}{Betatron Oscillations, Beta Function \& Betatron Tune}{Analytical solution to Hill's equation and Courant-Snyder envelope parameters}
+  \slideheader{Beam Optics}{Betatron Motion \& Courant-Snyder Optics}{Analytical solution to Hill's equation and Courant-Snyder envelope parameters}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Betatron Oscillation Solution \& Envelope Dynamics}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -275,10 +273,10 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 8: Orbit Response Matrix (ORM) Derivation
+% SLIDE 8: Orbit Response Matrix Derivation
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Analytical Optics}{Derivation of the Orbit Response Matrix (ORM)}{Mathematical formulation linking localized steering kicks to downstream BPM readings}
+  \slideheader{Analytical Optics}{Orbit Response Matrix Derivation}{Mathematical formulation linking localized steering kicks to downstream BPM readings}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{The Analytical ORM Transfer Function}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -301,17 +299,18 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 9: The Hackathon 15-Meter Transport Lattice Architecture
+% SLIDE 9: 15-Meter Transport Lattice Architecture (ZERO OVERLAP)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Hackathon Benchmark}{The 15-Meter Transport Lattice Architecture}{Physical arrangement of quadrupole doublets, dipole correctors, and beam position monitors}
+  \slideheader{Hackathon Benchmark}{15-Meter Transport Lattice Architecture}{Physical arrangement of quadrupole doublets, dipole correctors, and beam position monitors}
 
-  % Full-Width Beamline Graphic
+  % Sized Image: Width = 10.0 in, Height = 2.5 in
   \node[anchor=north,inner sep=0pt]
-    at ([yshift=-1.4in]current page.north)
-    {\includegraphics[width=11.733in]{beamline.png}};
+    at ([yshift=-1.45in]current page.north)
+    {\includegraphics[width=10.0in,height=2.5in]{beamline.png}};
 
-  \drawcard{0.8}{4.3}{11.733}{2.4}{Transport Line Specifications \& Component Placement}
+  % Card below at Top = 4.25in (Zero Overlap!)
+  \drawcard{0.8}{4.25}{11.733}{2.45}{Transport Line Specifications \& Component Placement}
   \at{1.1}{4.8}{11.1}{\fs{13}{18}\color{darkgray}%
     $\bullet$ \textbf{12 Beam Position Monitors (BPMs):} Evenly distributed from $s = 1.0\text{ m}$ to $s = 15.0\text{ m}$, measuring transverse displacement $\mathbf{Y}$ in millimeters.\\[0.35em]
     $\bullet$ \textbf{6 Dipole Steering Magnets:} 3 Horizontal (HCM1-3) and 3 Vertical (VCM1-3) steerers positioned between $s = 0.2\text{ m}$ and $s = 8.0\text{ m}$.\\[0.35em]
@@ -323,10 +322,10 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 10: Hardware Constraints & Actuator Bounds
+% SLIDE 10: Hardware Limits & Actuator Bounds
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Physical Limits}{Hardware Constraints \& Actuator Bounds}{Realistic power supply operational boundaries and sensor measurement jitter}
+  \slideheader{Physical Limits}{Hardware Limits \& Actuator Bounds}{Realistic power supply operational boundaries and sensor measurement jitter}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Power Supply Limits and Diagnostic Noise Specifications}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -347,10 +346,10 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 11: Non-Linear Magnetic Core Saturation
+% SLIDE 11: Magnetic Core Non-Linear Saturation
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Non-Linear Physics}{Magnetic Core Saturation \& Initial Distortion}{Departing from idealized linear optics: modeling cubic saturation and quadrupole errors}
+  \slideheader{Non-Linear Physics}{Magnetic Core Non-Linear Saturation}{Departing from idealized linear optics: modeling cubic saturation and quadrupole errors}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Mathematical Formulation of Non-Linear Beamline Response}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -371,10 +370,10 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 12: Machine Learning Fundamentals: The Artificial Neuron
+% SLIDE 12: Artificial Neurons & Layer Composition
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{ML Foundations}{Machine Learning Foundations: Artificial Neurons \& Layers}{Mathematical anatomy of feedforward perceptrons and non-linear activation functions}
+  \slideheader{ML Foundations}{Artificial Neurons \& Layer Composition}{Mathematical anatomy of feedforward perceptrons and deep neural layer stacking}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Neuron Transformation and Multi-Layer Composition}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -386,9 +385,8 @@
     Stacks $L$ successive layers of affine transformations and non-linear activations:\\[0.4em]
     \centering{\fs{15}{18}\bfseries\color{primaryblue}$\mathbf{h}^{(l)} = \sigma\left( \mathbf{W}^{(l)} \mathbf{h}^{(l-1)} + \mathbf{b}^{(l)} \right), \quad \text{with } \mathbf{h}^{(0)} = \mathbf{x}, \quad \hat{\mathbf{y}} = \mathbf{h}^{(L)}$}\\[0.7em]
     \raggedright
-    {\fs{15}{18}\bfseries\color{navy}3. Activation Function Selection: Rectified Linear Unit (ReLU):}\\[0.3em]
-    $\bullet$ $\sigma(z) = \max(0, z)$: Yields constant derivative $= 1$ for $z > 0$, completely resolving the vanishing gradient problem inherent to sigmoid/tanh activations in deep networks.\\
-    $\bullet$ Computationally ultra-efficient, enabling fast backpropagation.
+    {\fs{15}{18}\bfseries\color{navy}3. Universal Approximation Theorem (Hornik et al., 1989):}\\[0.3em]
+    $\bullet$ A feedforward network with at least one non-linear hidden layer can approximate any continuous non-linear function arbitrarily well, guaranteeing surrogate representability of magnetic saturation.
   }
 
   \slidefooter{12}
@@ -396,25 +394,25 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 13: Loss Formulation & Adam Optimization
+% SLIDE 13: Activation Functions in Neural Networks (DEDICATED SLIDE)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{ML Foundations}{Loss Functions \& The Adam Optimizer}{Formulating surrogate objective functions and adaptive gradient descent mechanics}
+  \slideheader{ML Foundations}{Activation Functions in Neural Networks}{Comprehensive comparison of non-linear activations, gradients, and selection criteria}
 
-  \drawcard{0.8}{1.4}{11.733}{5.3}{Objective Formulation and Adaptive Momentum Updates}
-  \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
-    {\bfseries\color{navy}Supervised Loss Formulation (Mean Squared Error + L2 Regularization):}\\[0.3em]
-    To train a neural surrogate on offline simulation data $(\mathbf{I}_i, \mathbf{y}_{\text{true},i})$, we minimize the regularized loss:\\[0.4em]
-    \centering{\fs{16}{20}\bfseries\color{primaryblue}$\mathcal{L}(\boldsymbol{\theta}) = \frac{1}{N} \sum_{i=1}^N \|\mathbf{y}_{\text{true},i} - f_{\boldsymbol{\theta}}(\mathbf{I}_i)\|^2  +  \lambda \|\boldsymbol{\theta}\|^2$}\\[0.7em]
-    \raggedright
-    {\bfseries\color{navy}The Adam Optimization Algorithm (Adaptive Moment Estimation):}\\[0.3em]
-    $\bullet$ \textbf{First Moment $\mathbf{m}_t$:} Exponentially moving average of gradients (momentum):\\
-    \quad $\mathbf{m}_t = \beta_1 \mathbf{m}_{t-1} + (1 - \beta_1) \mathbf{g}_t, \quad (\beta_1 = 0.9)$\\[0.3em]
-    $\bullet$ \textbf{Second Moment $\mathbf{v}_t$:} Exponentially moving average of squared gradients (adaptive scale):\\
-    \quad $\mathbf{v}_t = \beta_2 \mathbf{v}_{t-1} + (1 - \beta_2) \mathbf{g}_t^2, \quad (\beta_2 = 0.999)$\\[0.3em]
-    $\bullet$ \textbf{Parameter Update with Bias Correction:}\\
-    \quad $\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \frac{\eta}{\sqrt{\hat{\mathbf{v}}_t} + \epsilon} \hat{\mathbf{m}}_t$\\[0.4em]
-    $\bullet$ \textbf{Advantage for Accelerators:} Automatically adapts individual parameter steps across varying magnet coupling scales without tedious manual learning rate schedules.
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Core Activation Functions: Formula, Gradient \& Use Cases}
+  \at{1.1}{2.05}{11.1}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{navy}1. ReLU (Rectified Linear Unit):} \textbf{\color{primaryblue}$f(z) = \max(0, z)$}\\[0.15em]
+    $\bullet$ Constant gradient $= 1$ for $z > 0$. Prevents vanishing gradients, ultra-fast. Standard choice for surrogate hidden layers.\\[0.45em]
+    {\bfseries\color{navy}2. Leaky ReLU:} \textbf{\color{primaryblue}$f(z) = \max(\alpha z, z), \quad \alpha \approx 0.01$}\\[0.15em]
+    $\bullet$ Maintains a small non-zero slope for $z < 0$. Solves the "dying ReLU" issue where inactive neurons permanently shut down.\\[0.45em]
+    {\bfseries\color{navy}3. GELU (Gaussian Error Linear Unit):} \textbf{\color{primaryblue}$f(z) = z \cdot \Phi(z)$}\\[0.15em]
+    $\bullet$ Smooth probabilistic gating based on the standard normal CDF. State-of-the-art activation in modern LLMs \& Transformers.\\[0.45em]
+    {\bfseries\color{navy}4. Sigmoid:} \textbf{\color{primaryblue}$\sigma(z) = \frac{1}{1 + e^{-z}}$}\\[0.15em]
+    $\bullet$ Squeezes output to $(0, 1)$. Ideal for binary probability outputs; severe vanishing gradient when saturated at extremes.\\[0.45em]
+    {\bfseries\color{navy}5. Tanh (Hyperbolic Tangent):} \textbf{\color{primaryblue}$\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}$}\\[0.15em]
+    $\bullet$ Zero-centered in $(-1, 1)$, offering stronger gradient dynamics than Sigmoid, but still susceptible to saturation at large $|z|$.\\[0.45em]
+    {\bfseries\color{navy}6. Linear / Identity:} \textbf{\color{primaryblue}$f(z) = z$}\\[0.15em]
+    $\bullet$ No non-linearity. Essential for the output layer of continuous regression surrogates (e.g., predicting BPM readings $\mathbf{Y}$).
   }
 
   \slidefooter{13}
@@ -422,21 +420,27 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 14: Neural Surrogate Digital Twin Architecture (LARGE IMAGE)
+% SLIDE 14: Optimization Algorithms in Machine Learning (DEDICATED SLIDE)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Surrogate Modeling}{Neural Surrogate Digital Twin Architecture}{Deep Multi-Layer Perceptron (128-64-32) modeling non-linear beam response}
+  \slideheader{ML Foundations}{Optimization Algorithms in Machine Learning}{First-order stochastic gradient methods, momentum, adaptive learning rates, and quasi-Newton solvers}
 
-  % Full-Width Large MLP Graphic
-  \node[anchor=north,inner sep=0pt]
-    at ([yshift=-1.4in]current page.north)
-    {\includegraphics[width=11.333in]{mlp_schematic.png}};
-
-  \drawcard{0.8}{5.6}{11.733}{1.2}{}
-  \at{1.0}{5.75}{11.3}{\fs{13}{18}\color{darkgray}%
-    $\bullet$ \textbf{Input Layer:} 6 Corrector Magnet Currents [HCM1-3, VCM1-3] in Amperes.\\[0.3em]
-    $\bullet$ \textbf{Hidden Architecture:} Dense layers ($128 \rightarrow 64 \rightarrow 32$) with ReLU activations capturing cubic iron-core saturation.\\[0.3em]
-    $\bullet$ \textbf{Output Layer:} 12 Beam Position Monitor readings [BPM1-12] in millimeters, evaluated in $< 0.2\text{ milliseconds}$.
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Evolution of Solvers: From Standard SGD to Adam and L-BFGS-B}
+  \at{1.1}{2.05}{11.1}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{navy}1. SGD (Stochastic Gradient Descent):} \textbf{\color{primaryblue}$\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} - \eta \cdot \mathbf{g}$}\\[0.15em]
+    $\bullet$ Basic first-order step. Prone to severe oscillation across ill-conditioned curvatures and high sensitivity to learning rate $\eta$.\\[0.45em]
+    {\bfseries\color{navy}2. Momentum SGD:} \textbf{\color{primaryblue}$\mathbf{v} \leftarrow \gamma \mathbf{v} + \eta \mathbf{g}, \quad \boldsymbol{\theta} \leftarrow \boldsymbol{\theta} - \mathbf{v}$}\\[0.15em]
+    $\bullet$ Accumulates velocity in directions of consistent gradients, dampening oscillations and accelerating through saddle points.\\[0.45em]
+    {\bfseries\color{navy}3. AdaGrad (Adaptive Gradient):} \textbf{\color{primaryblue}$\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} - \frac{\eta}{\sqrt{\mathbf{G}} + \epsilon} \mathbf{g}$}\\[0.15em]
+    $\bullet$ Adapts learning rates per-parameter based on historical squared gradients. However, learning rate decays monotonically to zero.\\[0.45em]
+    {\bfseries\color{navy}4. RMSProp:} \textbf{\color{primaryblue}$\mathbf{v} \leftarrow \beta \mathbf{v} + (1-\beta)\mathbf{g}^2, \quad \boldsymbol{\theta} \leftarrow \boldsymbol{\theta} - \frac{\eta}{\sqrt{\mathbf{v}} + \epsilon} \mathbf{g}$}\\[0.15em]
+    $\bullet$ Uses exponentially decaying moving average of squared gradients. Solves AdaGrad's premature stopping problem.\\[0.45em]
+    {\bfseries\color{navy}5. Adam (Adaptive Moment Estimation):} \textbf{\color{primaryblue}$\mathbf{m}_t \text{ (1st moment)} + \mathbf{v}_t \text{ (2nd moment)}$}\\[0.15em]
+    $\bullet$ Combines Momentum and RMSProp with bias correction. Default gold standard for deep neural network surrogate training.\\[0.45em]
+    {\bfseries\color{navy}6. AdamW (Decoupled Weight Decay):} \textbf{\color{primaryblue}Direct $L_2$ weight decay subtraction}\\[0.15em]
+    $\bullet$ Decouples $L_2$ penalty from adaptive gradient scaling. Dramatically improves generalization performance.\\[0.45em]
+    {\bfseries\color{navy}7. L-BFGS-B (Quasi-Newton with Box Bounds):} \textbf{\color{primaryblue}Second-order Hessian approximation}\\[0.15em]
+    $\bullet$ Highly effective for bounded parameter inversion (Baseline 1 \& Track 3) with tight box bounds $[-0.8, +0.8]\text{ A}$.
   }
 
   \slidefooter{14}
@@ -444,10 +448,33 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 15: Neural Surrogate Training & Holdout Verification
+% SLIDE 15: Neural Surrogate Digital Twin (RESIZED - ZERO OVERLAP)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Digital Twin Validation}{Surrogate Dataset Generation \& Holdout Verification}{Ensuring digital twin fidelity across linear and saturated magnetic operating regimes}
+  \slideheader{Surrogate Modeling}{Neural Surrogate Digital Twin}{Deep Multi-Layer Perceptron (128-64-32) capturing non-linear cubic saturation}
+
+  % Sized Image: Width = 6.2 in, Height = 3.6 in
+  \node[anchor=north,inner sep=0pt]
+    at ([yshift=-1.45in]current page.north)
+    {\includegraphics[width=6.2in,height=3.6in]{mlp_schematic.png}};
+
+  % Card below at Top = 5.25in (Zero Overlap!)
+  \drawcard{0.8}{5.25}{11.733}{1.55}{}
+  \at{1.0}{5.4}{11.3}{\fs{12.5}{17}\color{darkgray}%
+    $\bullet$ \textbf{Input Layer:} 6 Corrector Magnet Currents [HCM1-3, VCM1-3] in Amperes.\\[0.3em]
+    $\bullet$ \textbf{Hidden Layers:} Dense layers ($128 \rightarrow 64 \rightarrow 32$) with ReLU non-linear activations capturing cubic iron-core saturation.\\[0.3em]
+    $\bullet$ \textbf{Output Layer:} 12 predicted Beam Position Monitor readings [BPM1-12] in millimeters, evaluated in $< 0.2\text{ milliseconds}$.
+  }
+
+  \slidefooter{15}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 16: Surrogate Training & Holdout Validation
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Digital Twin Validation}{Surrogate Training \& Validation}{Ensuring digital twin fidelity across linear and saturated magnetic operating regimes}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Offline Dataset Generation and Model Verification}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -464,36 +491,37 @@
     $\bullet$ \textbf{Sub-Millisecond Execution:} Forward inference takes $< 0.2\text{ ms}$ per call, 10,000$\times$ faster than numerical tracking.
   }
 
-  \slidefooter{15}
-\end{tikzpicture}
-\clearpage
-
-% ==============================================================================
-% SLIDE 16: Closed-Loop Control Flow Architecture (LARGE IMAGE)
-% ==============================================================================
-\begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Closed-Loop Control}{Forward Digital Twin vs Closed-Loop Feedback Flow}{Transitioning from predictive surrogate modeling to active closed-loop trajectory correction}
-
-  % Full-Width Large Control Schematic Graphic
-  \node[anchor=north,inner sep=0pt]
-    at ([yshift=-1.4in]current page.north)
-    {\includegraphics[width=11.533in]{forward_sl_and_rl_schematic.png}};
-
-  \drawcard{0.8}{5.6}{11.733}{1.2}{}
-  \at{1.0}{5.75}{11.3}{\fs{13}{18}\color{darkgray}%
-    $\bullet$ \textbf{Forward Supervised Model (Top):} Maps steerer current commands $\Delta\mathbf{I}$ to predicted BPM displacement vectors $\hat{\mathbf{Y}}$.\\[0.3em]
-    $\bullet$ \textbf{Closed-Loop Control Loop (Bottom):} Senses true BPM displacement $\mathbf{Y}$, passes error through controller policy, updates magnet power supplies, and repeats until convergence.
-  }
-
   \slidefooter{16}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 17: Baseline 0: Classical Linear SVD Controller
+% SLIDE 17: Closed-Loop Control Architecture (RESIZED - ZERO OVERLAP)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Benchmark Baselines}{Baseline 0: Classical Linear SVD Controller}{Inverting the linear Orbit Response Matrix via Moore-Penrose pseudo-inverse}
+  \slideheader{Closed-Loop Control}{Closed-Loop Control Architecture}{Transitioning from predictive surrogate modeling to active closed-loop trajectory correction}
+
+  % Sized Image: Width = 6.7 in, Height = 3.6 in
+  \node[anchor=north,inner sep=0pt]
+    at ([yshift=-1.45in]current page.north)
+    {\includegraphics[width=6.7in,height=3.6in]{forward_sl_and_rl_schematic.png}};
+
+  % Card below at Top = 5.25in (Zero Overlap!)
+  \drawcard{0.8}{5.25}{11.733}{1.55}{}
+  \at{1.0}{5.4}{11.3}{\fs{12.5}{17}\color{darkgray}%
+    $\bullet$ \textbf{Forward Supervised Model (Top):} Maps candidate corrector kick commands $\Delta\mathbf{I}$ to predicted BPM displacement vectors $\hat{\mathbf{Y}}$.\\[0.3em]
+    $\bullet$ \textbf{Closed-Loop Control Loop (Bottom):} Senses true BPM displacement $\mathbf{Y}$, passes error through controller policy, updates magnet power supplies, and repeats until convergence.
+  }
+
+  \slidefooter{17}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 18: Baseline 0: Classical Linear SVD
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Benchmark Baselines}{Baseline 0: Classical Linear SVD}{Inverting the linear Orbit Response Matrix via Moore-Penrose pseudo-inverse}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Mathematical Formulation \& Operational Vulnerabilities}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -508,15 +536,15 @@
     {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 5.6 mean steps, 1,013.1 total score (Rank \#3).}
   }
 
-  \slidefooter{17}
+  \slidefooter{18}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 18: Baseline 1: Supervised Neural Inversion
+% SLIDE 19: Baseline 1: Supervised Neural Inversion
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Benchmark Baselines}{Baseline 1: Supervised Neural Surrogate Inversion}{Model-based bounded optimization via SciPy L-BFGS-B on the trained neural digital twin}
+  \slideheader{Benchmark Baselines}{Baseline 1: Supervised Neural Inversion}{Model-based bounded optimization via SciPy L-BFGS-B on the trained neural digital twin}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Optimization Formulation on Forward Surrogate}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -531,15 +559,15 @@
     {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 2.3 mean steps, 1,016.8 total score (Rank \#2).}
   }
 
-  \slidefooter{18}
+  \slidefooter{19}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 19: Track 2: Closed-Loop RL with Physics-Informed Priors
+% SLIDE 20: Track 2: Closed-Loop RL with Physics Priors
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Track 2 Challenge}{Closed-Loop RL with Physics-Informed Priors}{Continuous policy networks combining analytical optics priors with learned residual offsets}
+  \slideheader{Track 2 Challenge}{Track 2: Closed-Loop RL with Physics Priors}{Continuous policy networks combining analytical optics priors with learned residual offsets}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{The Physics-Informed Residual Architecture}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -557,12 +585,12 @@
     \textbf{3. Execution Latency:} $< 0.4\text{ ms}$ (pure feedforward matrix multiply, 50$\times$ faster than iterative \texttt{L-BFGS-B}).
   }
 
-  \slidefooter{19}
+  \slidefooter{20}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 20: Dynamic Harmonic Step Damping
+% SLIDE 21: Dynamic Harmonic Step Damping
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slideheader{Stability Control}{Dynamic Harmonic Step Damping}{Preventing sensor-noise amplification and eliminating limit-cycle oscillations}
@@ -580,15 +608,15 @@
     $\bullet$ \textbf{Step 5+ ($t \ge 4, \gamma < 0.88$):} Attenuated feedback prevents sensor jitter amplification, locking the orbit cleanly below $0.030\text{ mm}$.
   }
 
-  \slidefooter{20}
+  \slidefooter{21}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 21: Track 3: Closed-Loop Bayesian Optimization
+% SLIDE 22: Track 3: Closed-Loop Bayesian Optimization
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Track 3 Challenge}{Closed-Loop Bayesian Optimization with Gaussian Processes}{Sample-efficient probabilistic modeling with epistemic uncertainty estimation}
+  \slideheader{Track 3 Challenge}{Track 3: Closed-Loop Bayesian Optimization}{Sample-efficient probabilistic modeling with epistemic uncertainty estimation}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Probabilistic Gaussian Process Modeling}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -605,15 +633,15 @@
     For any candidate kick $\Delta\mathbf{I}$, the GP provides both posterior mean $\boldsymbol{\mu}_{\text{GP}}(\Delta\mathbf{I})$ and standard deviation $\boldsymbol{\sigma}_{\text{GP}}(\Delta\mathbf{I})$.
   }
 
-  \slidefooter{21}
+  \slidefooter{22}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 22: Lower Confidence Bound (LCB) Acquisition
+% SLIDE 23: Lower Confidence Bound Acquisition
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Acquisition Function}{Lower Confidence Bound (LCB) Acquisition \& Optimization}{Balancing exploration of non-linear saturation against exploitation of predicted orbit corrections}
+  \slideheader{Acquisition Function}{Lower Confidence Bound Acquisition}{Balancing exploration of non-linear saturation against exploitation of predicted orbit corrections}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{The LCB Acquisition Strategy}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -629,15 +657,15 @@
     {\bfseries\color{navy}$\bullet$ Exceptional Convergence Speed:} \textbf{\color{successgreen}When calibrated, Track 3 reaches the convergence threshold in an average of only 1.5 steps!}
   }
 
-  \slidefooter{22}
+  \slidefooter{23}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 23: Gymnasium Contract (AcceleratorOrbitGymEnv)
+% SLIDE 24: Gymnasium Environment Contract
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Benchmark Contract}{Gymnasium Environment Specification}{Standard Farama Gymnasium API contract governing state, actions, and rewards}
+  \slideheader{Benchmark Contract}{Gymnasium Environment Contract}{Standard Farama Gymnasium API contract governing state, actions, and rewards}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{The Farama Gymnasium Environment Interface}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -652,12 +680,12 @@
     $\bullet$ \textbf{Termination Criteria:} \texttt{terminated = True} when $\text{RMS} < 0.030\text{ mm}$ (success); \texttt{truncated = True} when $\text{step} \ge 20$ (budget exhausted).
   }
 
-  \slidefooter{23}
+  \slidefooter{24}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 24: Multi-Objective Challenge Scoring Formula
+% SLIDE 25: Standardized 30-Seed Scoring Formula
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slideheader{Evaluation Protocol}{Standardized 30-Seed Scoring Formula}{Multi-objective evaluation metric balancing convergence reliability, speed, precision, and power}
@@ -674,38 +702,46 @@
     \textbf{4. Current Economy Penalty ($-2.0 \times \overline{\|\mathbf{I}\|}$):} Penalizes excessive steerer current norms to protect hardware.
   }
 
-  \slidefooter{24}
-\end{tikzpicture}
-\clearpage
-
-% ==============================================================================
-% SLIDE 25: Tested Benchmark Leaderboard & Trajectories
-% ==============================================================================
-\begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Evaluation Results}{Tested Benchmark Leaderboard \& Convergence Trajectories}{Verified comparative benchmark results across the 30 standardized evaluation seeds}
-
-  % Full-Width Large Trajectory Graphic
-  \node[anchor=north,inner sep=0pt]
-    at ([yshift=-1.4in]current page.north)
-    {\includegraphics[width=11.733in]{benchmark_trajectories.png}};
-
-  \drawcard{0.8}{4.3}{11.733}{2.4}{Tested Benchmark Leaderboard (30 Standardized Seeds)}
-  \at{1.1}{4.8}{11.1}{\fs{12.5}{17}\color{darkgray}%
-    {\bfseries\color{gold}[Rank 1] Track 3 -- Bayesian Optimization (BO):} Success: \textbf{100.0\%} $|$ Mean Steps: \textbf{1.5 steps} $|$ Final RMS: \textbf{0.0149 mm} $|$ Current: \textbf{0.93 A} $|$ Score: \textbf{\color{gold}1,035.4 pts}\\[0.25em]
-    {\bfseries\color{primaryblue}[Rank 2] Baseline 1 -- Supervised Neural Inversion (MLP):} Success: 100.0\% $|$ Mean Steps: 2.3 steps $|$ Final RMS: 0.0257 mm $|$ Current: 1.21 A $|$ Score: \textbf{\color{primaryblue}1,016.8 pts}\\[0.25em]
-    {\bfseries\color{darkgray}[Rank 3] Baseline 0 -- Classical Linear SVD:} Success: 100.0\% $|$ Mean Steps: 5.6 steps $|$ Final RMS: 0.0230 mm $|$ Current: 1.16 A $|$ Score: \textbf{1,013.1 pts}\\[0.25em]
-    {\bfseries\color{darkgray}[Rank 4] Track 2 -- Closed-Loop RL Policy Agent:} Success: 100.0\% $|$ Mean Steps: 6.1 steps $|$ Final RMS: 0.0239 mm $|$ Current: 1.18 A $|$ Score: \textbf{1,011.1 pts}
-  }
-
   \slidefooter{25}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 26: Strategic Advice for Hackathon Competitors
+% SLIDE 26: Tested Benchmark Leaderboard & Trajectories (TABLE FORMAT - NO WRAPPING)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Competitor Strategy}{Strategic Advice \& Practical Recipes for the Hackathon}{Practical engineering guidance to maximize benchmark score and avoid common failure modes}
+  \slideheader{Evaluation Results}{Tested Benchmark Leaderboard \& Trajectories}{Verified comparative benchmark results across the 30 standardized evaluation seeds}
+
+  % Sized Image: Width = 8.6 in, Height = 2.9 in (Zero Overlap!)
+  \node[anchor=north,inner sep=0pt]
+    at ([yshift=-1.40in]current page.north)
+    {\includegraphics[width=8.6in,height=2.9in]{benchmark_trajectories.png}};
+
+  % Clean Unwrapped Table at Top = 4.55in
+  \node[anchor=north,inner sep=0pt]
+    at ([yshift=-4.55in]current page.north) {%
+      \renewcommand{\arraystretch}{1.22}
+      \begin{tabular}{@{}llccccc@{}}
+        \toprule
+        \textbf{\color{primaryblue}Rank} & \textbf{\color{primaryblue}Controller Paradigm} & \textbf{\color{primaryblue}Success} & \textbf{\color{primaryblue}Mean Steps} & \textbf{\color{primaryblue}Final RMS} & \textbf{\color{primaryblue}Current} & \textbf{\color{primaryblue}Score} \\
+        \midrule
+        \textbf{\color{gold}Rank 1} & Track 3: Bayesian Optimization (BO) & \textbf{100.0\%} & \textbf{1.5 steps} & \textbf{0.0149 mm} & \textbf{0.93 A} & \textbf{\color{gold}1,035.4 pts} \\
+        \textbf{\color{primaryblue}Rank 2} & Baseline 1: Supervised Neural Inversion (MLP) & 100.0\% & 2.3 steps & 0.0257 mm & 1.21 A & \textbf{\color{primaryblue}1,016.8 pts} \\
+        \textbf{Rank 3} & Baseline 0: Classical Linear SVD & 100.0\% & 5.6 steps & 0.0230 mm & 1.16 A & 1,013.1 pts \\
+        \textbf{Rank 4} & Track 2: Closed-Loop RL Policy Agent & 100.0\% & 6.1 steps & 0.0239 mm & 1.18 A & 1,011.1 pts \\
+        \bottomrule
+      \end{tabular}
+    };
+
+  \slidefooter{26}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 27: Strategic Advice for Competitors
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slideheader{Competitor Strategy}{Strategic Advice for Competitors}{Practical engineering guidance to maximize benchmark score and avoid common failure modes}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Engineering Best Practices for Orbit Control}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -719,15 +755,15 @@
     $\bullet$ Connect your notebook runs to Weights \& Biases (\texttt{wandb.ai}) to visualize step-by-step RMS decay against reference baselines on the live leaderboard.
   }
 
-  \slidefooter{26}
+  \slidefooter{27}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 27: Summary & Transition to Lecture 2
+% SLIDE 28: Summary & Transition to Lecture 2
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Conclusion \& Roadmap}{Summary Takeaways \& Transition to Lecture 2}{Key conclusions from Lecture 1 and orientation for the upcoming agentic AI session}
+  \slideheader{Conclusion \& Roadmap}{Summary \& Transition to Lecture 2}{Key conclusions from Lecture 1 and orientation for the upcoming agentic AI session}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Key Takeaways \& What Comes Next}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
@@ -743,7 +779,7 @@
     {\fs{16}{20}\bfseries\color{accent}Q \& A Discussion}
   }
 
-  \slidefooter{27}
+  \slidefooter{28}
 \end{tikzpicture}
 
 \end{document}
