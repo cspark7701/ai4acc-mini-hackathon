@@ -1,7 +1,7 @@
-# Lecture 1: Introduction to AI/ML and Surrogate Modeling for Accelerators
+# Lecture 1: AI/ML Foundations and Closed-Loop Control for Particle Accelerators
 
-**Event:** AI Applications in Accelerators Tutorial & Mini-Hackathon  
-**Speaker:** Dr. Chong Shik Park  
+**Author:** Chong Shik Park, Ph.D.  
+**Date:** November 3, 2026  
 **Target Audience:** Graduate Students & Early-Career Postdoctoral Researchers in Accelerator Physics and Engineering  
 
 ---
@@ -18,7 +18,8 @@ This lecture provides the rigorous theoretical and computational bridge between 
 5. Transitioning from forward prediction to closed-loop orbit correction:
    - Classical Moore-Penrose Pseudo-Inverse (SVD),
    - Model-based bounded optimization (`L-BFGS-B`),
-   - Closed-loop Reinforcement Learning (RL) policies with physics-informed priors and adaptive damping.
+   - Closed-loop Reinforcement Learning (RL) policies with physics-informed priors and adaptive damping,
+   - Sample-efficient Bayesian Optimization using Gaussian Processes and Lower Confidence Bound (LCB) acquisition.
 
 <div style="page-break-after: always;"></div>
 
@@ -39,23 +40,23 @@ This lecture provides the rigorous theoretical and computational bridge between 
 
 ## 1. Introduction: AI Applications in Modern Particle Accelerators
 
-Over the past decade, Artificial Intelligence (AI) and Machine Learning (ML) have evolved from experimental proofs-of-concept into mission-critical operational tools across modern particle accelerator facilities, including synchrotron light sources, free-electron lasers (XFELs), spallation neutron sources, high-intensity hadron linacs, and energy-frontier colliders. Modern accelerators operate with thousands of distributed, non-linearly coupled magnet actuators, radiofrequency (RF) accelerating stations, and high-rate diagnostic monitors under stringent beam quality and stability demands.
+Over the past decade, Artificial Intelligence (AI) and Machine Learning (ML) have evolved from experimental proofs-of-concept into mission-critical operational tools across modern particle accelerator facilities, including synchrotron light sources, free-electron lasers (XFELs), spallation neutron sources, high-intensity hadron linacs, and energy-frontier colliders ([Edelen et al., 2020](https://inspirehep.net/literature/1841328)). Modern accelerators operate with thousands of distributed, non-linearly coupled magnet actuators, radiofrequency (RF) accelerating stations, and high-rate diagnostic monitors under stringent beam quality and stability demands.
 
 The landscape of AI applications in particle accelerators is broadly categorized into five foundational pillars:
 
-1. **Surrogate Modeling & Fast Digital Twins:**  
+1. **Surrogate Modeling & Fast Digital Twins ([Edelen et al., 2018](https://doi.org/10.1109/TNS.2018.2818987), [Edelen et al., 2020](https://inspirehep.net/literature/1841328)):**  
    High-fidelity numerical particle tracking codes (such as `ELEGANT`, `MAD-X`, and `OPAL`) simulate complex beam dynamics, space-charge forces, and collective effects, but require minutes to hours per run. Deep neural networks (Multi-Layer Perceptrons, Convolutional Networks, and Physics-Informed Neural Networks) learn fast surrogate representations capable of evaluating beamline outcomes in sub-millisecond execution times. These ultra-fast surrogates serve as digital twins for real-time model-predictive control, online trajectory correction, and rapid parametric sensitivity analysis.
 
-2. **Multi-Objective Autonomous Optimization & Tuning:**  
+2. **Multi-Objective Autonomous Optimization & Tuning ([Roussel et al., 2023](https://doi.org/10.1103/PhysRevAccelBeams.26.094601), [Edelen et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.044601)):**  
    Commissioning and daily operations involve optimizing conflicting performance objectives—such as maximizing beam transmission and photon brightness while minimizing transverse emittance and beam halo. Bayesian Optimization (BO) with Gaussian Processes, combined with active learning and exploration-exploitation acquisition functions, enables sample-efficient multi-objective optimization directly on physical machines, converging in dozens of shots compared to thousands of iterations required by brute-force parameter scans.
 
-3. **Virtual Diagnostics & Non-Destructive Phase Space Reconstruction:**  
+3. **Virtual Diagnostics & Non-Destructive Phase Space Reconstruction ([Emma et al., 2021](https://doi.org/10.1038/s41467-020-20593-3)):**  
    Critical beam properties—such as 6D phase space, bunch slice emittance, and femtosecond current profiles—often require interceptive diagnostics (e.g., transverse deflection cavities, wire scanners, or screens) that disrupt or destroy the beam. Virtual diagnostics leverage supervised machine learning to accurately reconstruct unmeasured or destructive bunch characteristics shot-by-shot from non-invasive upstream RF probes, magnet currents, and Beam Position Monitor (BPM) signals.
 
-4. **Anomaly Detection, Fault Prediction & Machine Protection:**  
+4. **Anomaly Detection, Fault Prediction & Machine Protection ([Tennant et al., 2020](https://doi.org/10.1088/2632-2153/ab822e)):**  
    Unscheduled beam downtime in multi-megawatt hadron linacs and synchrotron facilities incurs heavy scientific and operational costs. Unsupervised machine learning (autoencoders, isolation forests) continuously monitors archival and real-time telemetry to detect subtle precursor drift patterns, while deep sequence models predict high-voltage RF breakdowns, ion source dropouts, and superconducting cavity quenches milliseconds before catastrophic failure, triggering proactive mitigation and machine protection interlocks.
 
-5. **Agentic AI & Autonomous Operation Workflows:**  
+5. **Agentic AI & Autonomous Operation Workflows ([Hellert et al., 2024](https://doi.org/10.1103/PhysRevAccelBeams.27.064601)):**  
    Moving beyond single-purpose neural networks, modern research explores autonomous agent architectures (such as *Osprey* and LLM-driven scientific agents). These systems integrate large language models with standardized Python control APIs, simulation engines, and diagnostic databases, enabling high-level natural language operational commands (e.g., "align the transport line orbit and optimize injection efficiency") to be autonomously planned, validated, and executed under strict domain guardrails.
 
 ---
@@ -430,7 +431,7 @@ class SupervisedMLPController:
 - As demonstrated on test seed 42, Baseline 1 reaches convergence ($\text{RMS} < 0.03\text{ mm}$) in **just 2 to 3 steps**, compared to 6 steps for classical SVD.
 
 ### 4.3 Track 2: Closed-Loop RL & Physics-Informed Policy Agents
-While numerical optimization per step is powerful, iterative gradient solvers add execution latency ($\sim 15 - 30\text{ ms}$). A direct continuous policy network maps observation directly to control actions in a single forward pass ($\sim 0.2\text{ ms}$).
+While numerical optimization per step is powerful, iterative gradient solvers add execution latency ($\sim 15 - 30\text{ ms}$). In contrast, a direct continuous policy network executes in $< 0.5\text{ ms}$ ([Kain et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.124801)).
 
 #### Physics-Informed Residual Policy Architecture
 Rather than learning control from scratch with random initialization, high-performing accelerator RL agents combine a **physics prior** with a **learned residual**:
@@ -442,6 +443,43 @@ Near the convergence boundary ($0.030\text{ mm}$), noise fluctuations $\epsilon 
 $$\gamma(t) = \frac{1.0}{1.0 + \kappa \cdot t}, \quad \kappa \approx 0.03$$
 - **Step 1 ($t=0$):** Full kick authority ($\gamma = 1.0$) rapidly suppresses large millimeter-scale distortions.
 - **Step 5+ ($t \ge 4$):** Damped kick authority prevents sensor noise amplification and locks the trajectory below $0.030\text{ mm}$.
+
+---
+
+### 4.4 Track 3: Closed-Loop Bayesian Optimization with Gaussian Processes
+Bayesian Optimization (BO) provides sample-efficient optimization in high-dimensional non-linear accelerator systems by combining a probabilistic surrogate model with an acquisition function ([Roussel et al., 2023](https://doi.org/10.1103/PhysRevAccelBeams.26.094601), [Edelen et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.044601)).
+
+In our closed-loop architecture, a Gaussian Process (GP) regressor models the mapping from corrector kicks $\Delta \mathbf{I}$ to transverse orbit deviations:
+$$\hat{\mathbf{Y}}(\Delta \mathbf{I}) \sim \mathcal{GP}\left(\mathbf{m}(\Delta \mathbf{I}), \mathbf{K}(\Delta \mathbf{I}, \Delta \mathbf{I}')\right)$$
+
+To capture the smooth physics of magnetic core saturation while accounting for BPM diagnostic noise ($\sigma = 0.010\text{ mm}$), we employ a Matérn-5/2 kernel augmented with a white noise kernel:
+$$k(\mathbf{x}, \mathbf{x}') = \sigma_f^2 \left( 1 + \sqrt{5}\frac{r}{\ell} + \frac{5}{3}\frac{r^2}{\ell^2} \right) \exp\left( -\sqrt{5}\frac{r}{\ell} \right) + \sigma_n^2 \delta(\mathbf{x}, \mathbf{x}')$$
+
+#### Epistemic Uncertainty & Lower Confidence Bound (LCB) Acquisition
+Unlike deterministic point-prediction neural networks, the Gaussian Process yields both a posterior mean $\boldsymbol{\mu}(\Delta \mathbf{I})$ and a posterior standard deviation $\boldsymbol{\sigma}(\Delta \mathbf{I})$ quantifying epistemic uncertainty.
+We evaluate candidate corrective kicks using the Lower Confidence Bound (LCB) acquisition function:
+$$\alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y}_{\text{obs}} + \boldsymbol{\mu}(\Delta \mathbf{I}) \right) - \kappa \cdot \overline{\boldsymbol{\sigma}}(\Delta \mathbf{I}) + \lambda \|\Delta \mathbf{I}\|_2^2$$
+
+where $\kappa \ge 0$ balances exploitation (minimizing predicted orbit RMS) with exploration (reducing uncertainty in non-linear saturation regimes). When $\kappa = 0$, the controller performs pure exploitation of the well-calibrated posterior mean, converging in an average of only **1.5 steps** across the benchmark suite.
+
+```python
+class BayesianOptimizationController:
+    def __init__(self, gp_surrogate, kappa=0.0, l2_reg=0.0001):
+        self.gp = gp_surrogate
+        self.kappa = kappa
+        self.l2_reg = l2_reg
+
+    def act(self, obs, info=None):
+        def acquisition_lcb(delta_I):
+            pred_mean, pred_std = self.gp.predict(delta_I.reshape(1, -1), return_std=True)
+            res = obs + pred_mean[0]
+            rms_pred = np.sqrt(np.mean(res**2))
+            unc = np.mean(pred_std)
+            return float(rms_pred - self.kappa * unc + self.l2_reg * np.sum(delta_I**2))
+
+        res = opt.minimize(acquisition_lcb, np.zeros(6), bounds=[(-5.0, 5.0)]*6, method='L-BFGS-B')
+        return np.clip(res.x, -0.8, 0.8)
+```
 
 ---
 
@@ -472,42 +510,41 @@ $$\text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text
 
 #### Scoring Components Breakdown:
 1. **Success Rate ($10 \times \%$):** Up to **1,000.0 points** for $100\%$ convergence across all 30 seeds.
-2. **Speed Penalty ($-2 \times \overline{\text{Steps}}$):** Penalizes sluggish policies. Converging in 2.3 steps incurs only $-4.6$ points, while taking 10 steps costs $-20.0$ points.
-3. **Precision Bonus ($\frac{0.03}{\text{RMS}} \times 20$):** Rewards sub-micron orbit precision. An RMS of $0.020\text{ mm}$ yields $+30.0$ points; $0.010\text{ mm}$ yields $+60.0$ points.
+2. **Speed Penalty ($-2 \times \overline{\text{Steps}}$):** Penalizes sluggish policies. Converging in 1.5 steps incurs only $-3.0$ points, while taking 10 steps costs $-20.0$ points.
+3. **Precision Bonus ($\frac{0.03}{\text{RMS}} \times 20$):** Rewards sub-micron orbit precision. An RMS of $0.015\text{ mm}$ yields $+40.0$ points.
 4. **Current Economy Penalty ($-2 \times \overline{\|\mathbf{I}\|}$):** Penalizes excessive corrector current norms, protecting power supplies and preventing magnet saturation.
 
 ### 5.4 Reference Benchmark Results
-Across the 30 standardized seeds, our three baseline reference implementations produce:
+Across the 30 standardized seeds, our four competitor implementations produce:
 
 | Rank | Controller Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Total Score |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| 🥇 | **Baseline 1: Supervised MLP Inversion** | **100.0%** | **2.3 steps** | $0.0257\text{ mm}$ | $1.21\text{ A}$ | **1,016.8 pts** |
-| 🥈 | **Baseline 0: Classical Linear SVD** | **100.0%** | 5.6 steps | **$0.0230\text{ mm}$** | **$1.16\text{ A}$** | **1,013.1 pts** |
-| 🥉 | **Track 2: Closed-Loop RL Agent** | **100.0%** | 6.1 steps | $0.0239\text{ mm}$ | $1.18\text{ A}$ | **1,011.1 pts** |
+| 🥇 | **Track 3: Bayesian Optimization Controller** | **100.0%** | **1.5 steps** | $\mathbf{0.0149\text{ mm}}$ | $\mathbf{0.93\text{ A}}$ | **1,035.4 pts** |
+| 🥈 | **Baseline 1: Supervised MLP Inversion** | **100.0%** | 2.3 steps | $0.0257\text{ mm}$ | $1.21\text{ A}$ | **1,016.8 pts** |
+| 🥉 | **Baseline 0: Classical Linear SVD** | **100.0%** | 5.6 steps | **$0.0230\text{ mm}$** | **$1.16\text{ A}$** | **1,013.1 pts** |
+| 4 | **Track 2: Closed-Loop RL Agent** | **100.0%** | 6.1 steps | $0.0239\text{ mm}$ | $1.18\text{ A}$ | **1,011.1 pts** |
 
 ---
 
 ## 6. Summary & Q&A
 
 ### Key Takeaways from Lecture 1:
-1. **Machine Learning Foundations:** Neural networks are compositions of linear transformations and non-linear activations (ReLU). Without non-linearity, networks collapse into simple matrix multiplications equivalent to linear ORM.
-2. **Physics Guides the AI:** Without understanding betatron oscillations and the Orbit Response Matrix, training an agent from scratch requires hundreds of thousands of steps. By incorporating the Moore-Penrose pseudo-inverse as a **physics prior**, our agents converge robustly in under 10 steps.
-3. **Surrogates Enable Non-Linear Control:** When magnetic saturation invalidates linear models, a compact multi-layer perceptron accurately captures high-current behavior and empowers standard numerical optimizers to solve orbit corrections in 2 steps.
+1. **Physics Guides the AI:** Without understanding betatron oscillations and the Orbit Response Matrix, training an agent from scratch requires hundreds of thousands of steps. By incorporating the Moore-Penrose pseudo-inverse as a **physics prior**, our agents converge robustly in under 10 steps.
+2. **Surrogates Enable Non-Linear Control:** When magnetic saturation invalidates linear models, a compact multi-layer perceptron accurately captures high-current behavior and empowers standard numerical optimizers to solve orbit corrections in 2 steps.
+3. **Uncertainty-Guided Optimization:** Bayesian optimization with Lower Confidence Bound (LCB) acquisition leverages epistemic uncertainty to navigate saturation while achieving optimal current economy and sub-$15\ \mu\text{m}$ precision in 1.5 steps.
 4. **Damping Prevents Sensor Noise Amplification:** As orbit errors approach diagnostic noise floors ($10\ \mu\text{m}$), adaptive step damping is crucial to prevent feedback-induced limit cycles.
-
-### Looking Ahead to Lecture 2 & Afternoon Hackathon:
-- **Lecture 2 (10:40 – 12:00):** Dr. Thorsten Hellert will present **Agentic AI, LLM Tools & Osprey Applications**, showing how autonomous AI agents can orchestrate simulation runs, formulate control hypotheses, and execute code in operational environments.
-- **Afternoon Mini-Hackathon (13:30 – 16:30):** You will open [`notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb), complete `TODO 1` (Surrogate Training) and `TODO 2` (RL Policy Tuning), and submit your runs to the live Weights & Biases leaderboard!
 
 ---
 
 ## 📖 Recommended References & Readings
 
-1. **Minty, M. G., & Zimmermann, F.** (2003). *Measurement and Control of Charged Particle Beams*. Springer.
-2. **Wiedemann, H.** (2015). *Particle Accelerator Physics* (4th ed.). Springer.
-3. **Goodfellow, I., Bengio, Y., & Courville, A.** (2016). *Deep Learning*. MIT Press.
-4. **Hellert, T., et al.** (2024). *Autonomous Accelerator Tuning using Large Language Model Agents and Osprey*. Physical Review Accelerators and Beams.
-5. **Edelen, A., et al.** (2020). *Machine learning for orders-of-magnitude speedup in multiobjective optimization of particle accelerator beamlines*. Physical Review Accelerators and Beams, 23(4), 044601.
-6. **Kingma, D. P., & Ba, J.** (2015). *Adam: A Method for Stochastic Optimization*. International Conference on Learning Representations (ICLR).
-7. **Farama Gymnasium Documentation:** https://gymnasium.farama.org/
-8. **Weights & Biases Python SDK Documentation:** https://docs.wandb.ai/
+1. **Edelen, A., et al.** (2020). *Opportunities in machine learning for particle accelerators*. ICFA Beam Dynamics Newsletter, 84.
+2. **Edelen, A., Biedron, S., Chase, B., et al.** (2018). *Neural networks for modeling and control of particle accelerators*. IEEE Transactions on Nuclear Science, 63(2), 878–897.
+3. **Roussel, R., et al.** (2023). *Turn-key constrained parameter space exploration using Bayesian optimization for accelerator tuning*. Physical Review Accelerators and Beams, 26(9), 094601.
+4. **Edelen, A., et al.** (2020). *Machine learning for orders-of-magnitude speedup in multiobjective optimization of particle accelerator beamlines*. Physical Review Accelerators and Beams, 23(4), 044601.
+5. **Emma, C., et al.** (2021). *Virtual diagnostic for beam profile reconstruction using deep neural networks at LCLS*. Nature Communications, 12(1), 348.
+6. **Tennant, C., et al.** (2020). *Supervised machine learning for failure prediction in superconducting radio-frequency cavities at CEBAF*. Machine Learning: Science and Technology, 1(3), 035005.
+7. **Kain, V., et al.** (2020). *Sample-efficient reinforcement learning for CERN accelerator control*. Physical Review Accelerators and Beams, 23(12), 124801.
+8. **Hellert, T., et al.** (2024). *Autonomous accelerator tuning using large language model agents and Osprey*. Physical Review Accelerators and Beams, 27(6), 064601.
+9. **Minty, M. G., & Zimmermann, F.** (2003). *Measurement and Control of Charged Particle Beams*. Springer.
+10. **Wiedemann, H.** (2015). *Particle Accelerator Physics* (4th ed.). Springer.

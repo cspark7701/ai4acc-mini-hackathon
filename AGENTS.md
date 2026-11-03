@@ -90,6 +90,11 @@ class BenchmarkController:
      $$\Delta \mathbf{I} = \text{damping}(t) \cdot \left[ - \alpha \cdot (\mathbf{R}^T)^{\dagger} \mathbf{Y} + \mathbf{W}_{\text{learned}} \mathbf{Y} + \mathbf{b} \right]$$
    - Uses dynamic decay (e.g., $1.0 / (1.0 + 0.03 \cdot t)$) to prevent terminal limit-cycle oscillations around the sub-$0.03\text{ mm}$ target boundary.
 
+4. **Track 3 — Closed-Loop Bayesian Optimization Controller:**
+   - Uses a `GaussianProcessRegressor` (Matérn-5/2 kernel with sensor noise floor) to model orbit error with epistemic uncertainty estimation:
+     $$\alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y} + \boldsymbol{\mu}_{\text{GP}}(\Delta \mathbf{I}) \right) - \kappa \cdot \overline{\boldsymbol{\sigma}}_{\text{GP}}(\Delta \mathbf{I}) + \lambda \|\Delta \mathbf{I}\|^2$$
+   - Balances exploration ($\kappa > 0$) against exploitation ($\kappa = 0$) under non-linear saturation, converging in an average of $1.5$ steps.
+
 ---
 
 ## 📏 Official Scoring & Evaluation Protocol
@@ -121,7 +126,7 @@ To preserve scientific rigor, academic honesty, and benchmark validity, all AI a
    - Benchmark evaluation must strictly run on `seeds = range(1, 31)`.
    - Do not cherry-pick or alter test seed indices.
 3. **Respect Participant vs. Solution Notebook Separation:**
-   - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb): Must preserve the clear `TODO 1` and `TODO 2` instructional structure for attendees.
+   - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb): Must preserve the clear `TODO 1`, `TODO 2`, and `TODO 3` instructional structure for attendees.
    - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb): Contains reference baseline implementations and benchmark outputs.
 4. **Action Space Adherence:**
    - The returned action must strictly be a 1D NumPy array or sequence of 6 numerical values.

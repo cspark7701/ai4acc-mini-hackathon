@@ -47,3 +47,41 @@ class RLOrbitChallengeAgent:
         action = action_phys + 0.05 * np.tanh(action_learned)
         damping = 1.0 / (1.0 + 0.03 * step_idx)
         return np.clip(action * damping, -0.8, 0.8)
+
+
+class BayesianOptimizationController:
+    """
+    Track 3: Closed-Loop Bayesian Optimization Controller using Gaussian Processes.
+
+    Leverages a Gaussian Process surrogate to model non-linear orbit response with epistemic
+    uncertainty estimation. Solves a bounded acquisition function (Lower Confidence Bound, LCB)
+    per step to balance exploitation of predicted orbit corrections against exploration:
+        alpha_LCB(delta_I) = RMS(obs + mu(delta_I)) - kappa * sigma(delta_I) + lambda * ||delta_I||^2
+    """
+    def __init__(
+        self,
+        gp_surrogate: Any,
+        kappa: float = 0.0,
+        l2_reg: float = 0.0001,
+        delta_bound: float = 0.8
+    ):
+        self.gp = gp_surrogate
+        self.kappa = float(kappa)
+        self.l2_reg = float(l2_reg)
+        self.delta_bound = float(delta_bound)
+
+    def act(self, obs: np.ndarray, info: Optional[Dict[str, Any]] = None) -> np.ndarray:
+        def acquisition_lcb(delta_I: np.ndarray) -> float:
+            pred_mean, pred_std = self.gp.predict(delta_I.reshape(1, -1), return_std=True)
+            res = obs + pred_mean[0]
+            rms_pred = np.sqrt(np.mean(res**2))
+            unc = np.mean(pred_std)
+            return float(rms_pred - self.kappa * unc + self.l2_reg * np.sum(delta_I**2))
+
+        res = opt.minimize(
+            acquisition_lcb,
+            np.zeros(6),
+            bounds=[(-5.0, 5.0)] * 6,
+            method='L-BFGS-B'
+        )
+        return np.clip(res.x, -self.delta_bound, self.delta_bound)

@@ -6,7 +6,8 @@ from src.environment import AcceleratorOrbitGymEnv, BoxSpace, generate_offline_d
 from src.controllers import (
     ClassicalSVDController,
     SupervisedMLPController,
-    RLOrbitChallengeAgent
+    RLOrbitChallengeAgent,
+    BayesianOptimizationController
 )
 from src.benchmark import evaluate_hackathon_benchmark, print_benchmark_leaderboard
 from src.visualization import draw_beamline, plot_benchmark_trajectories
@@ -18,6 +19,7 @@ __all__ = [
     "ClassicalSVDController",
     "SupervisedMLPController",
     "RLOrbitChallengeAgent",
+    "BayesianOptimizationController",
     "evaluate_hackathon_benchmark",
     "print_benchmark_leaderboard",
     "draw_beamline",

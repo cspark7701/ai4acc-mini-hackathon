@@ -47,6 +47,11 @@ Desktop.ini
 *.swp
 *~
 
+# Temporary files and directories
+tmp/
+*.tmp
+temp/
+
 # Generated runtime images
 img/beamline.png
 img/benchmark_trajectories.png

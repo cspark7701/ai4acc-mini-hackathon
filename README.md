@@ -26,11 +26,11 @@ Welcome to the **AI Applications in Accelerators Tutorial & Mini-Hackathon** rep
 Modern particle accelerators rely increasingly on machine learning and autonomous agentic workflows to handle high-dimensional, non-linear, and time-critical beam control tasks. This tutorial bridges theoretical foundations with real-time operational applications:
 
 - **Morning Lectures:**
-  - **Lecture 1:** *AI/ML Fundamentals, Neural Networks & Surrogate Modeling for Accelerators* — **Chong Shik Park**
+  - **Lecture 1:** *AI/ML Foundations and Closed-Loop Control for Particle Accelerators* — **Chong Shik Park, Ph.D.**
   - **Lecture 2:** *Agentic AI, LLM Tools & Osprey Applications in Accelerator Research* — **Thorsten Hellert**
 - **Afternoon Mini-Hackathon:**
   - Hands-on closed-loop control challenge in a standardized [Gymnasium](https://gymnasium.farama.org/) environment.
-  - Multi-track benchmarking: Classical Linear ORM, Supervised Neural Surrogate Inversion, and Closed-Loop Reinforcement Learning / Adaptive Policies.
+  - Multi-track benchmarking: Classical Linear ORM (Baseline 0), Supervised Neural Surrogate Inversion (Track 1), Closed-Loop Reinforcement Learning (Track 2), and Closed-Loop Bayesian Optimization with Gaussian Processes (Track 3).
   - Live real-time scoring streamed to a unified [Weights & Biases (W&B)](https://wandb.ai) leaderboard.
 
 ---
@@ -69,14 +69,15 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 | Time | Session Phase | Speaker / Facilitator | Core Focus |
 | :--- | :--- | :--- | :--- |
 | **09:00 – 09:10** | Opening Remarks | Workshop Organizers | Welcome & learning goals |
-| **09:10 – 10:30** | **Lecture 1** (Extended) | **Chong Shik Park** | AI/ML fundamentals, neural networks & surrogate modeling |
+| **09:10 – 10:30** | **Lecture 1** (Extended) | **Chong Shik Park, Ph.D.** | AI/ML foundations, neural surrogates, RL & Bayesian optimization |
 | **10:30 – 10:40** | Coffee & Networking | Attendees | Mid-morning recess |
 | **10:40 – 12:00** | **Lecture 2** (Extended) | **Thorsten Hellert** | Agentic AI, LLM tools & Osprey in accelerator control |
 | **12:00 – 13:30** | Lunch Break | Attendees | Lunch & informal discussion |
 | **13:30 – 13:45** | Hackathon Kickoff | Technical Mentors | Environment verification & W&B login |
-| **13:45 – 14:45** | Supervised Track | Participants | Train Ridge & MLP surrogate models; optimizer inversion |
-| **14:45 – 15:45** | RL & Adaptive Track | Participants | Continuous feedback policy, gain & damping tuning |
-| **15:45 – 16:30** | Live W&B Benchmarking | Participants | 30-seed benchmark evaluation, sync to live screen |
+| **13:45 – 14:30** | Track 1: Supervised Inversion | Participants | Train Ridge & MLP surrogate models; optimizer inversion |
+| **14:30 – 15:15** | Track 2: RL & Adaptive Policy | Participants | Continuous feedback policy, gain & damping tuning |
+| **15:15 – 16:00** | Track 3: Bayesian Optimization | Participants | GP controller with Lower Confidence Bound (LCB) acquisition |
+| **16:00 – 16:30** | Live W&B Benchmarking | Participants | 30-seed benchmark evaluation, sync to live screen |
 | **16:30 – 17:00** | Team Presentations & Showcase | All Teams | 3-minute lightning presentations & awards |
 
 ---
@@ -234,9 +235,10 @@ $$\text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text
 
 | Rank | Controller / Agent Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Official Score |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| 🥇 | **Baseline 1: Supervised MLP Surrogate Inversion** | 100.0% | **2.3 steps** | 0.0257 mm | 1.21 A | **1,016.8 pts** |
-| 🥈 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | **0.0230 mm** | **1.16 A** | **1,013.1 pts** |
-| 🥉 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 1.18 A | **1,011.1 pts** |
+| 🥇 | **Track 3: Bayesian Optimization Controller** | **100.0%** | **1.5 steps** | $\mathbf{0.0149\text{ mm}}$ | $\mathbf{0.93\text{ A}}$ | **1,035.4 pts** |
+| 🥈 | **Baseline 1: Supervised MLP Surrogate Inversion** | 100.0% | 2.3 steps | 0.0257 mm | 1.21 A | **1,016.8 pts** |
+| 🥉 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | **0.0230 mm** | **1.16 A** | **1,013.1 pts** |
+| 4 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 1.18 A | **1,011.1 pts** |
 
 ---
 
@@ -248,19 +250,18 @@ Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](f
 2. **Step 2:** Instantiate the `AcceleratorOrbitGymEnv` simulation environment.
 3. **Step 3 (TODO 1):** Train the forward surrogate models (Linear Ridge and Multi-Layer Perceptron) on offline beam data and inspect holdout RMSE.
 4. **Step 4 (Baseline 0 & 1):** Test the classical SVD controller and the SciPy `L-BFGS-B` surrogate inversion controller.
-5. **Step 4 (TODO 2 / Track 2):** Implement and tune your custom closed-loop policy agent:
-   - Tune feedback gain $\alpha$, damping schedules, or neural residual offsets.
-   - Adhere to the standard `act(obs, info) -> action` interface.
-6. **Step 5:** Run `evaluate_hackathon_benchmark(...)` across all 30 evaluation seeds and inspect the live W&B run URL.
-7. **Step 6 & 7:** Generate trajectory alignment plots and prepare your team's 3-minute showcase presentation.
+5. **Step 4 (TODO 2 / Track 2):** Implement and tune your custom closed-loop RL feedback policy agent (damping schedules, gain, reward shaping).
+6. **Step 4 (TODO 3 / Track 3):** Implement and tune your sample-efficient Bayesian Optimization controller with GaussianProcessRegressor and Lower Confidence Bound (LCB) acquisition.
+7. **Step 5:** Run `evaluate_hackathon_benchmark(...)` across all 30 evaluation seeds and inspect the live W&B run URL.
+8. **Step 6 & 7:** Generate trajectory alignment plots and prepare your team's 3-minute showcase presentation.
 
 ---
 
 ## 📚 Documentation Index
 
 For detailed guidelines, refer to the included guides:
-- [Lecture 1 Notes: AI/ML & Surrogate Modeling (Markdown)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
-- [Lecture 1 Notes: AI/ML & Surrogate Modeling (PDF Monograph)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 9-page PDF monograph.
+- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (Markdown)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
+- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 14-page PDF monograph.
 - [Lecture 1 LaTeX Source](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.tex) — LaTeX document source code.
 - [Hackathon Project Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Hackathon%20Project%20Guide.docx) — Complete rules, physics derivations, and scoring breakdown.
 - [Technical Preparation Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Technical%20Preparation.docx) — Detailed lecture syllabus, setup recommendations, and schedule.

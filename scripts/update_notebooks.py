@@ -1,620 +1,485 @@
 """
 scripts/update_notebooks.py
-Regenerate streamlined hackathon notebooks:
-- Imports core simulation, controllers, and benchmarks from src/
-- Adds comprehensive instructions and newbie examples for TODO 1 and TODO 2
-- Hides the raw proprietary scoring formula in the participant notebook
-- Adds strategic tuning cheat-sheet and hints showing which values to modify to get higher scores
+Updates Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb and
+Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb to include Track 3 (Bayesian Optimization)
+and reflect the updated Lecture 1 title.
 """
 import json
 
-def make_cell(cell_type, text):
-    lines = [line + '\n' for line in text.split('\n')]
-    if lines and lines[-1] == '\n':
-        lines = lines[:-1]
-    return {
-        'cell_type': cell_type,
-        'metadata': {},
-        'source': lines,
-        **({'execution_count': None, 'outputs': []} if cell_type == 'code' else {})
-    }
-
-# ------------------------------------------------------------------------------
-# Cell 0: Header Markdown
-# ------------------------------------------------------------------------------
-c0_md = """# Accelerator Orbit Alignment Hackathon: Beam Orbit Benchmark
-## Participant Edition (with Weights & Biases / W&B Leaderboard Integration)
-
-**Workshop & Challenge Context:**
-* **Venue:** Korea Multi-purpose Accelerator Complex (KOMAC) / KAERI
-* **Target Audience:** Graduate Students & Early-Career Accelerator Researchers
-* **Curricular Alignment:** 
-  * **Lecture 1:** Chong Shik Park — AI/ML Fundamentals & Neural Surrogate Modeling
-  * **Lecture 2:** Thorsten Hellert — Agentic AI, Autonomous Operations & Scientific Workflows
-
----
-
-### 🎯 Challenge Mission
-In modern particle accelerators and beam transport lines, beam alignment is critical to ensure high transmission efficiency and prevent beam loss. 
-In this hackathon, you will develop closed-loop control algorithms to steer the beam through a **15-meter transport line** with:
-* **6 Dipole Steering Magnets:** $X = [\\mathrm{HCM1}, \\mathrm{VCM1}, \\mathrm{HCM2}, \\mathrm{VCM2}, \\mathrm{HCM3}, \\mathrm{VCM3}]^T \\in [-5.0\\text{ A}, +5.0\\text{ A}]$
-* **12 Beam Position Monitors (BPMs):** $Y \\in \\mathbb{R}^{12}$, measuring transverse beam offsets in millimeters (mm).
-* **Non-Linear Iron Saturation:** $B(I) \\approx I - 0.015 \\cdot I^3$, causing progressive softening at higher corrector currents.
-* **Objective:** Align the beam so that the Root-Mean-Square (RMS) displacement is below **$0.030\\text{ mm}$** within a budget of **20 control steps**:
-  $$\\text{RMS} = \\sqrt{\\frac{1}{12}\\sum_{i=1}^{12} Y_i^2} < 0.030\\text{ mm}$$
-
----
-
-### 🏆 Two Parallel Competition Tracks:
-1. **Track 1 (Supervised Digital Twin Inversion):** Train a non-linear neural surrogate model (MLP) on offline tracking data, and use an optimization solver to invert the surrogate for optimal corrective kicks.
-2. **Track 2 (Closed-Loop Reinforcement Learning / Adaptive Policy):** Design an interactive feedback policy agent that continuously senses BPM offsets and outputs delta current kicks $\\Delta I_c$ with physics-informed priors and adaptive damping."""
-
-# ------------------------------------------------------------------------------
-# Cell 1: Step 0 Code (Imports & Setup)
-# ------------------------------------------------------------------------------
-c1_code = """# Step 0: Imports, Environment Setup, and Weights & Biases (W&B) Configuration
-import os
-import time
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import root_mean_squared_error
-from sklearn.linear_model import Ridge
-from sklearn.neural_network import MLPRegressor
-
-# Import standardized simulation, controllers, benchmark & visualization from src/
-from src import (
-    AcceleratorOrbitGymEnv,
-    ClassicalSVDController,
-    SupervisedMLPController,
-    RLOrbitChallengeAgent,
-    generate_offline_dataset,
-    evaluate_hackathon_benchmark,
-    print_benchmark_leaderboard,
-    draw_beamline,
-    plot_benchmark_trajectories
-)
-
-# ------------------------------------------------------------------------------
-# Hackathon Configuration (Customize for Your Team!)
-# ------------------------------------------------------------------------------
-# >>> [PARTICIPANT MODIFY HERE]: Change to your registered team name!
-TEAM_NAME = "Team_Alpha"
-
-# >>> [DO NOT MODIFY]: Official workshop competition settings
-WANDB_PROJECT = "accelerator-orbit-hackathon" # [DO NOT CHANGE] Official project name for live leaderboard
-WANDB_ENTITY = None                          # [DO NOT CHANGE] Preset workshop entity
-USE_WANDB = True                             # [DO NOT CHANGE] Keep True to submit scores to the live leaderboard
-
-print(f"Setup complete! Ready to compete as: {TEAM_NAME}")"""
-
-# ------------------------------------------------------------------------------
-# Cell 2: Section 1 Markdown
-# ------------------------------------------------------------------------------
-c2_md = """## 1. Accelerator Lattice Physics & 2D Schematic
-
-The challenge beamline section consists of:
-* **Actuators:** 6 dipole steering magnets (3 Horizontal `HCM1-3`, 3 Vertical `VCM1-3`).
-* **Optics:** Alternating quadrupole magnets (`QF` focusing, `QD` defocusing) shaping betatron oscillations.
-* **Diagnostics:** 12 Beam Position Monitors (`BPM1` to `BPM12`) spaced along the 15-meter transport axis.
-
-The 2D schematic diagram below illustrates the arrangement of steering magnets, quadrupoles, and diagnostic monitors along the longitudinal beam axis $s$."""
-
-# ------------------------------------------------------------------------------
-# Cell 3: Step 1 Code
-# ------------------------------------------------------------------------------
-c3_code = """# Step 1: Display 2D Accelerator Beamline Schematic Diagram
-# [DO NOT MODIFY - Diagnostic Lattice Visualization]
-fig = draw_beamline(save_path="img/beamline.png", show=True)"""
-
-# ------------------------------------------------------------------------------
-# Cell 4: Section 2 Markdown
-# ------------------------------------------------------------------------------
-c4_md = """## 2. Standard Gymnasium Environment (`AcceleratorOrbitGymEnv`)
-
-The accelerator simulator is encapsulated in a standardized **Gymnasium** environment (`src/environment.py`):
-* **Observation Space:** $\\mathbf{Y} \\in \\mathbb{R}^{12}$, bounded in $[-10.0\\text{ mm}, +10.0\\text{ mm}]$ (12 BPM readings).
-* **Action Space:** $\\Delta \\mathbf{I} \\in \\mathbb{R}^6$, bounded in $[-0.8\\text{ A}, +0.8\\text{ A}]$ per step.
-* **Hardware Limit:** Total current state $\\mathbf{I}_{t+1} = \\text{clip}(\\mathbf{I}_t + \\Delta \\mathbf{I}, -5.0, +5.0)\\text{ A}$.
-* **Physical Response Model:**
-  $$\\mathbf{Y} = \\mathbf{I} \\cdot \\mathbf{R} - 0.015 \\cdot (\\mathbf{I}^3 \\cdot \\mathbf{R}) + \\mathbf{Y}_0 + \\boldsymbol{\\epsilon}$$
-  where $\\mathbf{R}$ is the $6 \\times 12$ linear transfer matrix, $-0.015 \\mathbf{I}^3 \\mathbf{R}$ represents soft iron core saturation, $\\mathbf{Y}_0$ is initial alignment drift, and $\\boldsymbol{\\epsilon} \\sim \\mathcal{N}(0, 0.010^2\\text{ mm}^2)$ is Gaussian sensor noise.
-* **Customizable Reward & Penalty Structure (for RL & Policy Optimization):**
-  $$r_t = - w_{\\text{rms}} \\cdot \\text{RMS}_{t+1} - w_{\\text{act}} \\cdot \\|\\Delta \\mathbf{I}\\|_2^2 - c_{\\text{step}} + (B_{\\text{success}} \\text{ if terminated else } 0.0)$$
-  * $w_{\\text{rms}}$ (`rms_weight`, default `10.0`): Penalizes beam displacement from center axis.
-  * $w_{\\text{act}}$ (`action_weight`, default `0.01`): Penalizes large actuator kick effort to prevent current saturation.
-  * $c_{\\text{step}}$ (`step_penalty`, default `0.0`): Step cost deducted each turn. **Increasing this (e.g. 0.5 to 1.5) incentivizes RL agents to converge in fewer steps!**
-  * $B_{\\text{success}}$ (`success_bonus`, default `50.0`): Completion reward when $\\text{RMS} < 0.030\\text{ mm}$.
-  * `reward_fn`: Optional custom callable `(rms, action, terminated, truncated, step) -> float` for advanced reward shaping.
-* **Termination:** Episode succeeds when $\\text{RMS} < 0.030\\text{ mm}$, or truncates after `max_steps = 20` steps."""
-
-# ------------------------------------------------------------------------------
-# Cell 5: Step 2 Code
-# ------------------------------------------------------------------------------
-c5_code = """# Step 2: Instantiate Standardized Hackathon Gymnasium Environment
-# ==============================================================================
-# [OPTIONAL TODO / CAN MODIFY FOR RL POLICY TRAINING & OPTIMIZATION]
-# ==============================================================================
-# You can customize reward/penalty weights or pass a custom reward_fn callback:
-env = AcceleratorOrbitGymEnv(
-    rms_weight=10.0,      # [CAN MODIFY] Penalty weight for orbit RMS error
-    action_weight=0.01,   # [CAN MODIFY] Penalty weight for corrector kick effort
-    step_penalty=0.5,     # [CAN MODIFY] Step penalty to incentivize faster convergence!
-    success_bonus=50.0    # [CAN MODIFY] Completion bonus upon reaching RMS < 0.030 mm
-    # reward_fn=None      # [CAN MODIFY] Optional: pass custom_reward_fn(rms, action, term, trunc, step)
-)
-
-# [DO NOT MODIFY]: Reset to canonical test seed 42 to inspect initial uncorrected orbit
-obs, info = env.reset(seed=42)
-
-print("=" * 68)
-print("   Hackathon Gymnasium Environment Instantiated Successfully!")
-print("=" * 68)
-print(f"  • Observation Vector Shape : {obs.shape} (12 BPM stations in mm)")
-print(f"  • Action Vector Shape      : {env.action_space.shape} (6 Corrector kick deltas in A)")
-print(f"  • Action Limits (per step) : [{env.action_space.low[0]:.1f} A, +{env.action_space.high[0]:.1f} A]")
-print(f"  • Hardware Current Bounds  : [-5.0 A, +5.0 A]")
-print(f"  • Target RMS Tolerance     : < {env.target_rms:.3f} mm")
-print(f"  • Max Control Budget       : {env.max_steps} steps per episode")
-print(f"  • Initial Uncorrected RMS  : {info['rms']:.4f} mm")
-print(f"  • Reward Shaping Params    : rms_w={env.rms_weight}, act_w={env.action_weight}, step_cost={env.step_penalty}, bonus={env.success_bonus}")
-print("=" * 68)"""
-
-# ------------------------------------------------------------------------------
-# Cell 6: Section 3 Markdown
-# ------------------------------------------------------------------------------
-c6_md = """## 3. Supervised Forward Modeling: Linear Model vs. Neural Surrogate
-
-In accelerator operations, numerical tracking simulation datasets can be converted into fast machine learning digital twins (Lecture 1).
-Here, we collect 1,500 simulation shots (80% train, 20% test) across currents $[-3.0\\text{ A}, +3.0\\text{ A}]$ and train:
-1. **A Linear Ridge Model:** Serves as a baseline, but cannot account for non-linear core saturation.
-2. **A Multi-Layer Perceptron (MLP):** A deep neural network capable of fitting the non-linear cubic saturation curve."""
-
-# ------------------------------------------------------------------------------
-# Cell 7: Step 3 Code (Participant with TODO 1 & Hints)
-# ------------------------------------------------------------------------------
-c7_code_part = """# Step 3: Offline Data Generation & Surrogate Training
-# [OPTIONAL CAN MODIFY]: You can increase n_samples (e.g. 2000, 3000) or adjust sampling range:
-X_offline, Y_offline = generate_offline_dataset(
-    env,
-    n_samples=1500,               # [CAN MODIFY] Number of training samples
-    current_range=(-3.0, 3.0),    # [CAN MODIFY] Current sampling range in Amperes
-    noise_std=0.010,              # [DO NOT MODIFY] Physical sensor noise floor (0.010 mm)
-    random_state=42
-)
-
-# [DO NOT MODIFY]: Standard 80/20 train/test evaluation split
-X_train, X_test, Y_train, Y_test = train_test_split(X_offline, Y_offline, test_size=0.20, random_state=42)
-print(f"Dataset generated: X_train shape={X_train.shape}, Y_train shape={Y_train.shape}")
-
-# ==============================================================================
-# TODO 1: Train Linear Baseline & Neural Surrogate Model
-# ==============================================================================
-# INSTRUCTIONS FOR PARTICIPANTS:
-# Train two surrogate models to predict the 12 BPM readings from 6 corrector currents:
-#   1. Linear Model (Ridge Regression): Fast baseline, but linear only.
-#   2. Multi-Layer Perceptron (MLPRegressor): Deep feedforward neural network that
-#      learns the cubic iron core magnetic saturation: B(I) ~ I - 0.015 * I^3.
-#
-# ------------------------------------------------------------------------------
-# EXAMPLES FOR NEWBIE PARTICIPANTS:
-#
-# Example 1: Train Ridge Linear Regression
-#   linear_model = Ridge(alpha=1.0)
-#   linear_model.fit(X_train, Y_train)
-#
-# Example 2: Train Multi-Layer Perceptron (MLPRegressor)
-#   surrogate_model = MLPRegressor(
-#       hidden_layer_sizes=(128, 64, 32), # 3 hidden layers: 128 -> 64 -> 32 neurons
-#       activation='relu',               # Activation function: f(x) = max(0, x)
-#       solver='adam',                   # Adam gradient-based optimizer
-#       alpha=1e-4,                      # L2 regularization penalty
-#       learning_rate_init=0.001,        # Initial learning rate
-#       max_iter=400,                    # Training epochs
-#       random_state=42
-#   )
-#   surrogate_model.fit(X_train, Y_train)
-#
-# ------------------------------------------------------------------------------
-# 💡 HINTS TO GET HIGHER SCORES:
-#   • Network Architecture: Try wider or deeper layers like (128, 128), (256, 128, 64).
-#     A more expressive surrogate provides a more accurate gradient for the optimizer in Track 1!
-#   • Training Sample Size: Increasing n_samples (e.g. 2000 or 3000) improves test generalization.
-#   • Regularization: Tune alpha (e.g., 1e-4 vs 1e-5) to avoid overfitting the sensor noise.
-#   • Accuracy Benchmark: Target test RMSE is < 0.015 mm (near the 0.010 mm sensor noise floor).
-# ==============================================================================
-
-# ------------------------------------------------------------------------------
-# 1. Train Linear Baseline
-# ------------------------------------------------------------------------------
-# >>> [OPTIONAL CAN MODIFY]: Tune alpha regularization parameter:
-linear_model = Ridge(alpha=1.0).fit(X_train, Y_train)
-
-# [DO NOT MODIFY]: Test set RMSE evaluation
-rmse_linear = root_mean_squared_error(Y_test, linear_model.predict(X_test))
-
-# ------------------------------------------------------------------------------
-# 2. Train Multi-Layer Perceptron (MLP) Neural Surrogate
-# ------------------------------------------------------------------------------
-# >>> [PARTICIPANT MODIFY HERE - TODO 1] <<<
-# Tune hidden_layer_sizes, activation, alpha, learning_rate_init, max_iter to minimize test RMSE:
-surrogate_model = MLPRegressor(
-    hidden_layer_sizes=(128, 64, 32),  # [CAN MODIFY] e.g. (128, 128) or (256, 128, 64)
-    activation='relu',                # [CAN MODIFY] 'relu', 'tanh', etc.
-    solver='adam',                    # [CAN MODIFY] 'adam', 'lbfgs'
-    alpha=1e-4,                       # [CAN MODIFY] L2 regularization strength
-    learning_rate_init=0.001,         # [CAN MODIFY] Initial learning rate
-    max_iter=400,                     # [CAN MODIFY] Training epochs
-    random_state=42
-).fit(X_train, Y_train)
-
-# [DO NOT MODIFY]: Test set RMSE evaluation
-rmse_mlp = root_mean_squared_error(Y_test, surrogate_model.predict(X_test))
-
-print("=" * 68)
-print("SURROGATE MODEL PREDICTIVE ACCURACY (TEST SET):")
-print("=" * 68)
-print(f"  • Linear Ridge Test RMSE   : {rmse_linear:.4f} mm")
-print(f"  • Neural MLP Test RMSE     : {rmse_mlp:.4f} mm (Captures cubic core saturation)")
-print(f"  • Gaussian BPM Noise Floor : {env.noise_std:.4f} mm")
-print("=" * 68)"""
-
-# ------------------------------------------------------------------------------
-# Cell 8: Section 4 Markdown
-# ------------------------------------------------------------------------------
-c8_md = """---
-## 4. Benchmark Controllers: Classical, Supervised, and RL Agents
-
-Every competitor controller must implement the standardized agent interface:
-```python
-def act(self, obs: np.ndarray, info: Optional[dict] = None) -> np.ndarray
-```
-where `obs` has shape `(12,)` and the returned action is an array of shape `(6,)` in $[-0.8\\text{ A}, +0.8\\text{ A}]$.
-
-1. **Baseline 0 (Classical SVD Controller):** Inverts the linear Orbit Response Matrix via Moore-Penrose pseudo-inverse: $\\Delta \\mathbf{I} = - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y}$.
-2. **Baseline 1 (Supervised Neural Inversion):** Solves an optimization problem per step using the trained neural surrogate digital twin:
-   $$\\min_{\\Delta \\mathbf{I}} \\|\\mathbf{Y} + f_{\\theta}(\\Delta \\mathbf{I})\\|^2 + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$
-3. **Challenge Track 2 (Closed-Loop RL / Adaptive Agent):** Combines physics prior feedback with adaptive step damping:
-   $$\\Delta \\mathbf{I}_t = \\text{damping}(t) \\cdot \\left[ - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y} + \\mathbf{W}_{\\text{tune}} \\mathbf{Y} + \\mathbf{b} \\right]$$
-   RL agents learn or optimize policy parameters by interacting with `AcceleratorOrbitGymEnv`. By tuning reward and penalty weights (`step_penalty`, `action_weight`, `rms_weight`, `success_bonus`), you can directly incentivize the agent to converge in fewer steps and use minimal corrector current!"""
-
-# ------------------------------------------------------------------------------
-# Cell 9: Step 4 Code (Participant with TODO 2 & Hints)
-# ------------------------------------------------------------------------------
-c9_code_part = """# Step 4: Define Benchmark Controllers
-
-# ------------------------------------------------------------------------------
-# 1. Baseline 0: Classical Linear ORM Pseudo-Inverse Controller (from src)
-# ------------------------------------------------------------------------------
-# [DO NOT MODIFY - Standard Reference Baseline 0]:
-b0 = ClassicalSVDController(env.R, gain=0.45)
-
-# ------------------------------------------------------------------------------
-# 2. Baseline 1: Supervised Forward Surrogate + SciPy Inversion Optimizer (from src)
-# ------------------------------------------------------------------------------
-# [OPTIONAL CAN MODIFY]: Uses your trained surrogate_model from TODO 1 above:
-b1 = SupervisedMLPController(surrogate_model)
-
-# ==============================================================================
-# TODO 2 (Challenge Track 2): Design & Tune Closed-Loop Policy Agent
-# ==============================================================================
-# INSTRUCTIONS FOR PARTICIPANTS:
-# Implement your closed-loop policy by writing the act(obs, info) method.
-# Your agent receives current BPM readings obs (12,) and returns delta currents action (6,).
-#
-# ------------------------------------------------------------------------------
-# EXAMPLES FOR NEWBIE PARTICIPANTS:
-#
-# Example A: Damped Physics Prior (Simple & Robust)
-#   class DampedSVDController:
-#       def __init__(self, R_matrix, gain=0.45, decay=0.03):
-#           self.R_pinv = np.linalg.pinv(R_matrix.T)
-#           self.gain = gain
-#           self.decay = decay
-#       def act(self, obs, info=None):
-#           step = info.get("step", 0) if info else 0
-#           damping = 1.0 / (1.0 + self.decay * step)
-#           action = - self.gain * (self.R_pinv @ obs) * damping
-#           return np.clip(action, -0.8, 0.8)
-#
-# Example B: Physics Prior + Tunable Linear Residual Correction
-#   class RLOrbitChallengeAgent:
-#       def __init__(self, R_matrix, gain=0.45):
-#           self.base_R_pinv = np.linalg.pinv(R_matrix.T)
-#           self.gain = gain
-#           self.W_tune = np.zeros((6, 12))  # Adjust weights to compensate saturation
-#           self.bias = np.zeros(6)
-#       def act(self, obs, info=None):
-#           step = info.get("step", 0) if info else 0
-#           action_phys = - self.gain * (self.base_R_pinv @ obs)
-#           action_learned = self.W_tune @ obs + self.bias
-#           action = action_phys + 0.05 * np.tanh(action_learned)
-#           damping = 1.0 / (1.0 + 0.03 * step)
-#           return np.clip(action * damping, -0.8, 0.8)
-#
-# Example C: Custom Reward Shaping for RL Policy Training & Optimization
-#   # You can pass customized reward/penalty parameters to the gym environment:
-#   #   env_rl = AcceleratorOrbitGymEnv(
-#   #       rms_weight=15.0,    # Stronger focus on tight alignment
-#   #       action_weight=0.02, # Penalize high current kicks
-#   #       step_penalty=1.0,   # Heavy step cost forces fast convergence!
-#   #       success_bonus=60.0  # Big reward for achieving RMS < 0.030 mm
-#   #   )
-#   # Or define a custom reward function callback:
-#   #   def custom_reward_fn(rms, action, terminated, truncated, step):
-#   #       r = - 12.0 * rms - 0.02 * np.sum(action**2) - 0.8 # step cost
-#   #       if terminated:
-#   #           r += 50.0 + max(0.0, (0.020 - rms) * 500.0) # extra precision bonus!
-#   #       return r
-#   #   env_rl = AcceleratorOrbitGymEnv(reward_fn=custom_reward_fn)
-#
-# ------------------------------------------------------------------------------
-# 💡 STRATEGIC TUNING HINTS: WHICH VALUES TO MODIFY TO GET HIGHER SCORES!
-#
-# 1. Feedback Gain (alpha): Default is 0.45.
-#    • Increasing gain to 0.55–0.72 dramatically speeds up convergence (reduces step count).
-#    • Warning: If gain is too high (>0.75), the policy may overshoot due to non-linear saturation!
-#
-# 2. Adaptive Gain Scheduling:
-#    • Instead of fixed gain, check the current RMS error:
-#        rms = np.sqrt(np.mean(obs**2))
-#        gain = 0.72 if rms > 0.15 else (0.55 if rms > 0.05 else 0.38)
-#    • This takes large strides when far away, and delicate micro-steps near the 0.030 mm target!
-#
-# 3. Dynamic Damping (gamma):
-#    • damping = 1.0 / (1.0 + gamma * step).
-#    • Tuning gamma in [0.015, 0.035] suppresses limit-cycle oscillations around 0.030 mm.
-#
-# 4. Non-Linear Cubic Desaturation Compensation:
-#    • The magnet response softens as B(I) ~ I - 0.015 * I^3.
-#    • Apply analytical series inversion to your kick:
-#        delta_I_corrected = delta_I_lin + 0.015 * (delta_I_lin ** 3)
-#    • This compensates for iron core softening in 1 shot!
-#
-# 5. Energy Efficiency (Current Norm):
-#    • Avoid unnecessary opposing kicks between adjacent correctors; keeping total current
-#      low gives an energy-efficiency score bonus!
-#
-# 6. Reward & Penalty Shaping (Reinforcement Learning / Policy Optimization):
-#    • In RL policy training, the agent maximizes cumulative reward sum(r_t).
-#    • Increase step_penalty (e.g. 0.5 to 1.5): Heavy penalty per step forces the agent to
-#      find shortest paths to convergence, drastically reducing mean_steps!
-#    • Increase action_weight (e.g. 0.02 to 0.05): Higher action penalty prevents excessive
-#      corrector currents, directly optimizing your mean current norm score.
-#    • Custom Precision Bonus: Adding an extra bonus when RMS drops below 0.020 mm trains the
-#      policy to land close to the 0.010 mm sensor noise floor, unlocking huge precision scores!
-# ==============================================================================
-
-# >>> [PARTICIPANT MODIFY HERE - TODO 2 (CHALLENGE TRACK 2)] <<<
-class MyCustomRLAgent:
-    \"\"\"Track 2: Participant Custom Closed-Loop Policy Agent.\"\"\"
-    def __init__(self, R_matrix, gain=0.45):
-        # [CAN MODIFY] Precomputed pseudo-inverse or learned matrix representation
-        self.base_R_pinv = np.linalg.pinv(R_matrix.T)
-        
-        # [CAN MODIFY] Initial feedback gain alpha (Try 0.55 - 0.72!)
-        self.gain = gain
-        
-        # [CAN MODIFY] Learned residual weights, biases, or neural policy parameters
-        self.W_tune = np.zeros((6, 12), dtype=np.float64)
-        self.bias = np.zeros(6, dtype=np.float64)
-
-    def act(self, obs, info=None):
-        \"\"\"
-        [PARTICIPANT TODO]: Compute delta current kicks (shape (6,)) bounded in [-0.8, 0.8] A.
-        \"\"\"
-        step_idx = info.get("step", 0) if info else 0
-
-        # >>> [CAN MODIFY]: Dynamic / adaptive gain calculation:
-        action_phys = - self.gain * (self.base_R_pinv @ obs)
-
-        # >>> [CAN MODIFY]: Residual learned kick or non-linear saturation compensation:
-        action_learned = self.W_tune @ obs + self.bias
-        action = action_phys + 0.05 * np.tanh(action_learned)
-
-        # >>> [CAN MODIFY]: Damping factor to prevent limit-cycle oscillations around 0.030 mm:
-        damping = 1.0 / (1.0 + 0.03 * step_idx)
-
-        # [DO NOT MODIFY HARDWARE CLIP BOUNDS]: Output must remain within [-0.8, +0.8] A
-        return np.clip(action * damping, -0.8, 0.8)
-
-# >>> [CAN MODIFY]: Instantiate your custom controller:
-b2 = MyCustomRLAgent(env.R, gain=0.45)
-print("All three competitor controllers initialized successfully.")"""
-
-# ------------------------------------------------------------------------------
-# Cell 10: Section 5 Markdown (Hides formula, adds multi-objective description & cheat-sheet)
-# ------------------------------------------------------------------------------
-c10_md_part = """---
-## 5. Standardized Benchmark Evaluation & Live W&B Scoring
-
-To ensure fair and rigorous comparison, agents are evaluated across **30 standardized evaluation seeds** (`seeds = range(1, 31)`) featuring diverse physical drift perturbations.
-
-### 🎯 Official Multi-Objective Evaluation Criteria
-The benchmark evaluation engine (`src/benchmark.py`) computes an aggregated **Hackathon Benchmark Score** evaluating four competitive dimensions:
-1. **Alignment Success Rate (%):** Did the agent achieve $\\text{RMS} < 0.030\\text{ mm}$ within the 20-step budget? (Primary requirement).
-2. **Convergence Speed (Mean Steps):** Reaching the target in fewer steps earns substantial speed bonuses.
-3. **Residual Precision (Final RMS):** Pushing residual orbit error below the $0.030\\text{ mm}$ threshold down towards the $0.010\\text{ mm}$ sensor noise floor earns significant precision bonuses!
-4. **Actuator Current Efficiency (Mean Norm):** Minimizing cumulative corrector currents $\\overline{\\|\\mathbf{I}\\|}$ preserves magnet power supplies and avoids energy penalties.
-
-*(Note: The exact proprietary weighting coefficients are encapsulated inside the evaluation engine in `src/benchmark.py`)*.
-
----
-
-### 💡 Strategic Tuning Cheat-Sheet: How to Beat the Baseline Leaderboard!
-
-| Tuning Target | What to Modify | Impact on Performance & Score |
-| :--- | :--- | :--- |
-| **Faster Convergence** | Feedback gain $\\alpha \\in [0.55, 0.72]$ in `act()` | Cuts mean steps from 6 down to 3, earning a large speed bonus. |
-| **Adaptive Gain Schedule** | Dynamic gain based on current RMS in `act()` | Aggressive kicks when far (`> 0.15 mm`); fine-tuned kicks when close (`< 0.05 mm`). |
-| **Precision RMS Bonus** | Damping cooling factor $\\gamma \\in [0.015, 0.035]$ | Prevents terminal oscillations, allowing the beam to land near the $0.010\\text{ mm}$ noise floor. |
-| **Non-Linear Boost** | $\\Delta \\mathbf{I}_{\\text{act}} = \\Delta \\mathbf{I}_{\\text{lin}} + 0.015 \\cdot \\Delta \\mathbf{I}_{\\text{lin}}^3$ | Cancels cubic iron saturation in one shot, avoiding under-correction. |
-| **Reward / Penalty Shaping** | Increase `step_penalty` ($0.5$–$1.5$) & `action_weight` in `env` | In RL training, penalizing steps forces 3–4 step solutions; penalizing kicks minimizes current norm! |
-| **Precision Reward Shaping** | Add custom `reward_fn` with bonus when $\\text{RMS} < 0.020\\text{ mm}$ | Trains RL policy to aim for the $0.010\\text{ mm}$ sensor noise floor instead of stopping at $0.029\\text{ mm}$. |
-| **Track 1 Optimizer Fix** | Bound search to `[(-0.8, 0.8)]` & warm-start | Prevents action clipping and boosts Track 1 success rate dramatically! |
-
-When `USE_WANDB = True`, telemetry, seed breakdowns, and scores are automatically uploaded to **Weights & Biases (W&B)**."""
-
-# ------------------------------------------------------------------------------
-# Cell 11: Step 5 Code (Clean call to benchmark engine)
-# ------------------------------------------------------------------------------
-c11_code_part = """# Step 5: Standardized Evaluation Harness with Weights & Biases Logging
-# ==============================================================================
-# [DO NOT MODIFY - Standardized 30-Seed Evaluation Protocol]
-# ==============================================================================
-# Evaluates each competitor controller across 30 standardized seeds (range 1 to 31).
-# Telemetry, seed breakdowns, and scores are automatically uploaded to W&B.
-print("Running Official Hackathon Benchmark across 30 Test Seeds...")
-
-res_b0 = evaluate_hackathon_benchmark(env, b0, agent_name="Baseline0_LinearSVD", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)
-res_b1 = evaluate_hackathon_benchmark(env, b1, agent_name="Baseline1_SupervisedMLP", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)
-res_b2 = evaluate_hackathon_benchmark(env, b2, agent_name="Track2_RLAgent", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)
-
-# Display Official Leaderboard Table
-print_benchmark_leaderboard([
-    ("Baseline 1 (Supervised MLP Inversion)", res_b1),
-    ("Baseline 0 (Linear ORM SVD Controller)", res_b0),
-    ("Track 2 (RL Closed-Loop Agent)", res_b2),
-])"""
-
-# ------------------------------------------------------------------------------
-# Cell 12: Section 6 Markdown
-# ------------------------------------------------------------------------------
-c12_md = """---
-## 6. Visualizing Trajectory Alignment & Dynamic Convergence
-
-In this step, we evaluate each controller on canonical test seed 42 to inspect:
-1. **Beamline Trajectory Alignment (Subplot 1):** Uncorrected beam displacement vs. final corrected orbits across all 12 BPM stations.
-2. **Convergence Dynamics (Subplot 2):** Orbit RMS error decay over successive interaction steps towards the $0.030\\text{ mm}$ tolerance line."""
-
-# ------------------------------------------------------------------------------
-# Cell 13: Step 6 Code
-# ------------------------------------------------------------------------------
-c13_code = """# Step 6: Generate Dual Trajectory Overlay & Dynamic Convergence Curves
-# ==============================================================================
-# [DO NOT MODIFY - Canonical Diagnostic Visualization]
-# ==============================================================================
-fig = plot_benchmark_trajectories(
-    env,
-    controllers={
-        "Linear SVD": b0,
-        "Supervised MLP": b1,
-        "RL Agent": b2
-    },
-    seed=42,
-    save_path="img/benchmark_trajectories.png",
-    show=True
-)"""
-
-# ------------------------------------------------------------------------------
-# Cell 14: Section 7 Markdown
-# ------------------------------------------------------------------------------
-c14_md = """---
-## 7. Final Team Showcase Cell (16:30–17:00)
-Run this single summary cell during team presentations to display your official Hackathon submission score!"""
-
-# ------------------------------------------------------------------------------
-# Cell 15: Step 7 Code
-# ------------------------------------------------------------------------------
-c15_code = """# Step 7: Final Team Showcase Presentation Summary
-# ==============================================================================
-# [DO NOT MODIFY - Automated Showcase Scorecard for Presentation]
-# ==============================================================================
-best_agent_name, best_metrics = max(
-    [("Track 2 (RL Closed-Loop Agent)", res_b2),
-     ("Baseline 1 (Supervised MLP)", res_b1),
-     ("Baseline 0 (Linear SVD)", res_b0)],
-    key=lambda item: item[1]["score"]
-)
-
-print("=" * 68)
-print(f"   TEAM: {TEAM_NAME} — OFFICIAL HACKATHON BENCHMARK SUBMISSION")
-print("=" * 68)
-print(f"  • Best Performing Agent  : {best_agent_name}")
-print(f"  • Official Total Score   : {best_metrics['score']:.1f} points")
-print(f"  • Alignment Success Rate : {best_metrics['success_rate']:.1f}%")
-print(f"  • Mean Steps to Target   : {best_metrics['mean_steps']:.1f} steps")
-print(f"  • Mean Residual Orbit RMS: {best_metrics['mean_rms']:.4f} mm")
-print(f"  • Mean Corrector Norm    : {best_metrics['mean_norm']:.2f} A")
-print(f"  • Mean Policy Latency    : {best_metrics['mean_latency']:.2f} ms")
-print("=" * 68)"""
-
-# ------------------------------------------------------------------------------
-# Assembly
-# ------------------------------------------------------------------------------
-participant_cells = [
-    make_cell('markdown', c0_md),
-    make_cell('code', c1_code),
-    make_cell('markdown', c2_md),
-    make_cell('code', c3_code),
-    make_cell('markdown', c4_md),
-    make_cell('code', c5_code),
-    make_cell('markdown', c6_md),
-    make_cell('code', c7_code_part),
-    make_cell('markdown', c8_md),
-    make_cell('code', c9_code_part),
-    make_cell('markdown', c10_md_part),
-    make_cell('code', c11_code_part),
-    make_cell('markdown', c12_md),
-    make_cell('code', c13_code),
-    make_cell('markdown', c14_md),
-    make_cell('code', c15_code)
-]
-
-participant_nb = {
-    'cells': participant_cells,
-    'metadata': {
-        'language_info': {'name': 'python', 'version': '3.12.3'},
-        'kernelspec': {'name': 'ai4acc', 'display_name': 'Python (ai4acc)'}
-    },
-    'nbformat': 4,
-    'nbformat_minor': 2
-}
-
-with open('notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb', 'w') as f:
-    json.dump(participant_nb, f, indent=1)
-print('Generated Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb (formula hidden, hints added)')
-
-# Solution Notebook: includes the reference Track 2 agent in Step 4
-solution_cells = list(participant_cells)
-c9_code_sol = """# Step 4: Define Benchmark Controllers
-
-# ------------------------------------------------------------------------------
-# 1. Baseline 0: Classical Linear ORM Pseudo-Inverse Controller (from src)
-# ------------------------------------------------------------------------------
-# [Reference Baseline 0]:
-b0 = ClassicalSVDController(env.R, gain=0.45)
-
-# ------------------------------------------------------------------------------
-# 2. Baseline 1: Supervised Forward Surrogate + SciPy Inversion Optimizer (from src)
-# ------------------------------------------------------------------------------
-# [Reference Baseline 1]:
-b1 = SupervisedMLPController(surrogate_model)
-
-# ------------------------------------------------------------------------------
-# 3. Track 2: Reference Closed-Loop RL / Adaptive Agent (from src)
-# ------------------------------------------------------------------------------
-# [Reference Solution Agent]:
-b2 = RLOrbitChallengeAgent(env.R, gain=0.45)
-
-print("All three competitor controllers initialized successfully.")"""
-
-solution_cells[9] = make_cell('code', c9_code_sol)
-
-solution_nb = {
-    'cells': solution_cells,
-    'metadata': {
-        'language_info': {'name': 'python', 'version': '3.12.3'},
-        'kernelspec': {'name': 'ai4acc', 'display_name': 'Python (ai4acc)'}
-    },
-    'nbformat': 4,
-    'nbformat_minor': 2
-}
-
-with open('notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb', 'w') as f:
-    json.dump(solution_nb, f, indent=1)
-print('Generated Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb')
-
-with open('notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb', 'w') as f:
-    json.dump(solution_nb, f, indent=1)
-print('Generated Single_Notebook_Beam_Orbit_Predictor.ipynb')
+def update_participant_notebook():
+    path = "notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"
+    with open(path, "r", encoding="utf-8") as f:
+        nb = json.load(f)
+
+    # 1. Update Cell 0 (Title & Tracks)
+    nb["cells"][0]["source"] = [
+        "# Accelerator Orbit Alignment Hackathon: Beam Orbit Benchmark\n",
+        "## Participant Edition (with Weights & Biases / W&B Leaderboard Integration)\n",
+        "\n",
+        "**Workshop & Challenge Context:**\n",
+        "* **Author:** Chong Shik Park, Ph.D.\n",
+        "* **Date:** November 3, 2026\n",
+        "* **Target Audience:** Graduate Students & Early-Career Accelerator Researchers\n",
+        "* **Curricular Alignment:** \n",
+        "  * **Lecture 1:** Chong Shik Park — AI/ML Foundations and Closed-Loop Control for Particle Accelerators\n",
+        "  * **Lecture 2:** Thorsten Hellert — Agentic AI, Autonomous Operations & Scientific Workflows\n",
+        "\n",
+        "---\n",
+        "\n",
+        "### 🎯 Challenge Mission\n",
+        "In modern particle accelerators and beam transport lines, beam alignment is critical to ensure high transmission efficiency and prevent beam loss. \n",
+        "In this hackathon, you will develop closed-loop control algorithms to steer the beam through a **15-meter transport line** with:\n",
+        "* **6 Dipole Steering Magnets:** $X = [\\mathrm{HCM1}, \\mathrm{VCM1}, \\mathrm{HCM2}, \\mathrm{VCM2}, \\mathrm{HCM3}, \\mathrm{VCM3}]^T \\in [-5.0\\text{ A}, +5.0\\text{ A}]$\n",
+        "* **12 Beam Position Monitors (BPMs):** $Y \\in \\mathbb{R}^{12}$, measuring transverse beam offsets in millimeters (mm).\n",
+        "* **Non-Linear Iron Saturation:** $B(I) \\approx I - 0.015 \\cdot I^3$, causing progressive softening at higher corrector currents.\n",
+        "* **Objective:** Align the beam so that the Root-Mean-Square (RMS) displacement is below **$0.030\\text{ mm}$** within a budget of **20 control steps**:\n",
+        "  $$\\text{RMS} = \\sqrt{\\frac{1}{12}\\sum_{i=1}^{12} Y_i^2} < 0.030\\text{ mm}$$\n",
+        "\n",
+        "---\n",
+        "\n",
+        "### 🏆 Three Parallel Competition Tracks:\n",
+        "1. **Track 1 (Supervised Digital Twin Inversion):** Train a non-linear neural surrogate model (MLP) on offline tracking data, and use an optimization solver to invert the surrogate for optimal corrective kicks.\n",
+        "2. **Track 2 (Closed-Loop Reinforcement Learning / Adaptive Policy):** Design an interactive feedback policy agent that continuously senses BPM offsets and outputs delta current kicks $\\Delta I_c$ with physics-informed priors and adaptive damping.\n",
+        "3. **Track 3 (Bayesian Optimization Controller):** Build a sample-efficient Gaussian Process controller with Lower Confidence Bound (LCB) acquisition to actively align the beam under non-linear saturation.\n"
+    ]
+
+    # 2. Update Cell 1 (Imports)
+    nb["cells"][1]["source"] = [
+        "# Step 0: Imports, Environment Setup, and Weights & Biases (W&B) Configuration\n",
+        "import os\n",
+        "import time\n",
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.metrics import root_mean_squared_error\n",
+        "from sklearn.linear_model import Ridge\n",
+        "from sklearn.neural_network import MLPRegressor\n",
+        "from sklearn.gaussian_process import GaussianProcessRegressor\n",
+        "from sklearn.gaussian_process.kernels import Matern, WhiteKernel\n",
+        "\n",
+        "# Import standardized simulation, controllers, benchmark & visualization from src/\n",
+        "from src import (\n",
+        "    AcceleratorOrbitGymEnv,\n",
+        "    ClassicalSVDController,\n",
+        "    SupervisedMLPController,\n",
+        "    RLOrbitChallengeAgent,\n",
+        "    BayesianOptimizationController,\n",
+        "    generate_offline_dataset,\n",
+        "    evaluate_hackathon_benchmark,\n",
+        "    print_benchmark_leaderboard,\n",
+        "    draw_beamline,\n",
+        "    plot_benchmark_trajectories\n",
+        ")\n",
+        "\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# Hackathon Configuration (Customize for Your Team!)\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# >>> [PARTICIPANT MODIFY HERE]: Change to your registered team name!\n",
+        "TEAM_NAME = \"Team_Alpha\"\n",
+        "\n",
+        "# >>> [DO NOT MODIFY]: Official workshop competition settings\n",
+        "WANDB_PROJECT = \"accelerator-orbit-hackathon\" # [DO NOT CHANGE] Official project name for live leaderboard\n",
+        "WANDB_ENTITY = None                          # [DO NOT CHANGE] Preset workshop entity\n",
+        "USE_WANDB = True                             # [DO NOT CHANGE] Keep True to submit scores to the live leaderboard\n",
+        "\n",
+        "print(f\"Setup complete! Ready to compete as: {TEAM_NAME}\")\n"
+    ]
+
+    # 3. Update Cell 8 (Section 4 Markdown: 4 controllers)
+    nb["cells"][8]["source"] = [
+        "---\n",
+        "## 4. Benchmark Controllers: Classical, Supervised, RL, and Bayesian Optimization Agents\n",
+        "\n",
+        "Every competitor controller must implement the standardized agent interface:\n",
+        "```python\n",
+        "def act(self, obs: np.ndarray, info: Optional[dict] = None) -> np.ndarray\n",
+        "```\n",
+        "where `obs` has shape `(12,)` and the returned action is an array of shape `(6,)` in $[-0.8\\text{ A}, +0.8\\text{ A}]$.\n",
+        "\n",
+        "1. **Baseline 0 (Classical SVD Controller):** Inverts the linear Orbit Response Matrix via Moore-Penrose pseudo-inverse: $\\Delta \\mathbf{I} = - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y}$.\n",
+        "2. **Baseline 1 / Track 1 (Supervised Neural Inversion):** Solves an optimization problem per step using the trained neural surrogate digital twin:\n",
+        "   $$\\min_{\\Delta \\mathbf{I}} \\|\\mathbf{Y} + f_{\\theta}(\\Delta \\mathbf{I})\\|^2 + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n",
+        "3. **Challenge Track 2 (Closed-Loop RL / Adaptive Agent):** Combines physics prior feedback with adaptive step damping:\n",
+        "   $$\\Delta \\mathbf{I}_t = \\text{damping}(t) \\cdot \\left[ - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y} + \\mathbf{W}_{\\text{tune}} \\mathbf{Y} + \\mathbf{b} \\right]$$\n",
+        "   RL agents learn or optimize policy parameters by interacting with `AcceleratorOrbitGymEnv`. By tuning reward and penalty weights (`step_penalty`, `action_weight`, `rms_weight`, `success_bonus`), you can directly incentivize the agent to converge in fewer steps and use minimal corrector current!\n",
+        "4. **Challenge Track 3 (Bayesian Optimization Controller):** Uses a Gaussian Process surrogate with epistemic uncertainty estimation to evaluate an acquisition function (Lower Confidence Bound, LCB) balancing exploitation of predicted orbit corrections with exploration:\n",
+        "   $$\\alpha_{\\text{LCB}}(\\Delta \\mathbf{I}) = \\text{RMS}(\\mathbf{Y}_{\\text{obs}} + \\mu_{\\text{GP}}(\\Delta \\mathbf{I})) - \\kappa \\cdot \\sigma_{\\text{GP}}(\\Delta \\mathbf{I}) + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n"
+    ]
+
+    # 4. Update Cell 9 (Code: add TODO 3 for Bayesian Optimization)
+    cell9_code = nb["cells"][9]["source"]
+    todo3_text = [
+        "\n",
+        "# ==============================================================================\n",
+        "# TODO 3 (Challenge Track 3): Design & Tune Bayesian Optimization Controller\n",
+        "# ==============================================================================\n",
+        "# INSTRUCTIONS FOR PARTICIPANTS:\n",
+        "# Implement a Bayesian Optimization controller using GaussianProcessRegressor.\n",
+        "# 1. Train a Gaussian Process surrogate on calibration data (or a 300-shot subset).\n",
+        "# 2. Configure the GP kernel (e.g. Matern, RBF, WhiteKernel for 10 um sensor noise).\n",
+        "# 3. Implement the Lower Confidence Bound (LCB) acquisition function:\n",
+        "#      alpha_LCB = rms_pred - kappa * uncertainty + lambda * ||action||^2\n",
+        "# 4. Tune exploration weight kappa (e.g. 0.0 for pure exploitation, 0.5-1.5 for exploration).\n",
+        "#\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# EXAMPLES FOR NEWBIE PARTICIPANTS:\n",
+        "#\n",
+        "# Example: Fit Gaussian Process Regressor on Calibration Shots\n",
+        "#   gp_kernel = Matern(length_scale=1.5, nu=2.5) + WhiteKernel(noise_level=1e-4)\n",
+        "#   gp_model = GaussianProcessRegressor(kernel=gp_kernel, alpha=1e-4, normalize_y=True, random_state=42)\n",
+        "#   gp_model.fit(X_train[:300], Y_train[:300]) # 300 samples provides sub-second fitting!\n",
+        "#\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# 💡 STRATEGIC TUNING HINTS: WHICH VALUES TO MODIFY TO GET HIGHER SCORES!\n",
+        "#\n",
+        "# 1. Exploration vs. Exploitation Parameter (kappa):\n",
+        "#    • kappa = 0.0: Pure exploitation of the GP posterior mean (fastest convergence!).\n",
+        "#    • kappa = 0.5 - 1.5: Actively balances uncertainty in high-current non-linear saturation zones.\n",
+        "#\n",
+        "# 2. Kernel Selection:\n",
+        "#    • Matern(nu=2.5) provides physically realistic smoothness for magnetic field response.\n",
+        "#    • WhiteKernel(noise_level=1e-4) directly models the 0.010 mm BPM sensor jitter.\n",
+        "#\n",
+        "# 3. Regularization (l2_reg):\n",
+        "#    • Adding small L2 penalty (e.g. 1e-4) suppresses excessive corrector current norms.\n",
+        "# ==============================================================================\n",
+        "\n",
+        "# >>> [PARTICIPANT MODIFY HERE - TODO 3 (CHALLENGE TRACK 3)] <<<\n",
+        "class MyBayesianOptAgent:\n",
+        "    \"\"\"Track 3: Participant Custom Bayesian Optimization Controller.\"\"\"\n",
+        "    def __init__(self, gp_model, kappa=0.0, l2_reg=0.0001):\n",
+        "        # [CAN MODIFY]: Gaussian Process surrogate model\n",
+        "        self.gp = gp_model\n",
+        "        # [CAN MODIFY]: Exploration weight kappa (Try 0.0 for pure exploitation, or 0.5 for active exploration)\n",
+        "        self.kappa = float(kappa)\n",
+        "        # [CAN MODIFY]: Action penalty regularization weight\n",
+        "        self.l2_reg = float(l2_reg)\n",
+        "\n",
+        "    def act(self, obs, info=None):\n",
+        "        \"\"\"\n",
+        "        [PARTICIPANT TODO]: Minimize acquisition function to select optimal delta current kick.\n",
+        "        \"\"\"\n",
+        "        import scipy.optimize as opt\n",
+        "        def acquisition_lcb(delta_I):\n",
+        "            pred_mean, pred_std = self.gp.predict(delta_I.reshape(1, -1), return_std=True)\n",
+        "            res = obs + pred_mean[0]\n",
+        "            rms_pred = np.sqrt(np.mean(res**2))\n",
+        "            unc = np.mean(pred_std)\n",
+        "            # Lower Confidence Bound (LCB) acquisition\n",
+        "            return float(rms_pred - self.kappa * unc + self.l2_reg * np.sum(delta_I**2))\n",
+        "\n",
+        "        res = opt.minimize(\n",
+        "            acquisition_lcb,\n",
+        "            np.zeros(6),\n",
+        "            bounds=[(-5.0, 5.0)] * 6,\n",
+        "            method='L-BFGS-B'\n",
+        "        )\n",
+        "        return np.clip(res.x, -0.8, 0.8)\n",
+        "\n",
+        "# >>> [CAN MODIFY]: Fit Gaussian Process surrogate on calibration data (e.g. 300 shots):\n",
+        "gp_kernel = Matern(length_scale=1.5, nu=2.5) + WhiteKernel(noise_level=1e-4)\n",
+        "gp_surrogate = GaussianProcessRegressor(kernel=gp_kernel, alpha=1e-4, normalize_y=True, random_state=42)\n",
+        "gp_surrogate.fit(X_train[:300], Y_train[:300])\n",
+        "\n",
+        "# >>> [CAN MODIFY]: Instantiate your Track 3 Bayesian Optimization Controller:\n",
+        "b3 = MyBayesianOptAgent(gp_surrogate, kappa=0.0, l2_reg=0.0001)\n",
+        "print(\"All four competitor controllers (Baseline 0, Track 1, Track 2, Track 3) initialized successfully.\")\n"
+    ]
+
+    new_cell9 = []
+    for line in cell9_code:
+        if 'print("All three competitor controllers' in line:
+            new_cell9.extend(todo3_text)
+        else:
+            new_cell9.append(line)
+    nb["cells"][9]["source"] = new_cell9
+
+    # 5. Update Cell 11 (Evaluation & Leaderboard)
+    nb["cells"][11]["source"] = [
+        "# Step 5: Standardized Evaluation Harness with Weights & Biases Logging\n",
+        "# ==============================================================================\n",
+        "# [DO NOT MODIFY - Standardized 30-Seed Evaluation Protocol]\n",
+        "# ==============================================================================\n",
+        "# Evaluates each competitor controller across 30 standardized seeds (range 1 to 31).\n",
+        "# Telemetry, seed breakdowns, and scores are automatically uploaded to W&B.\n",
+        "print(\"Running Official Hackathon Benchmark across 30 Test Seeds...\")\n",
+        "\n",
+        "res_b0 = evaluate_hackathon_benchmark(env, b0, agent_name=\"Baseline0_LinearSVD\", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)\n",
+        "res_b1 = evaluate_hackathon_benchmark(env, b1, agent_name=\"Baseline1_SupervisedMLP\", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)\n",
+        "res_b2 = evaluate_hackathon_benchmark(env, b2, agent_name=\"Track2_RLAgent\", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)\n",
+        "res_b3 = evaluate_hackathon_benchmark(env, b3, agent_name=\"Track3_BayesianOpt\", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)\n",
+        "\n",
+        "# Display Official Leaderboard Table\n",
+        "print_benchmark_leaderboard([\n",
+        "    (\"Track 3 (Bayesian Optimization Controller)\", res_b3),\n",
+        "    (\"Baseline 1 (Supervised MLP Inversion)\", res_b1),\n",
+        "    (\"Baseline 0 (Linear ORM SVD Controller)\", res_b0),\n",
+        "    (\"Track 2 (RL Closed-Loop Agent)\", res_b2),\n",
+        "])\n"
+    ]
+
+    # 6. Update Cell 13 (Trajectory Visualization)
+    nb["cells"][13]["source"] = [
+        "# Step 6: Generate Dual Trajectory Overlay & Dynamic Convergence Curves\n",
+        "# ==============================================================================\n",
+        "# [DO NOT MODIFY - Canonical Diagnostic Visualization]\n",
+        "# ==============================================================================\n",
+        "fig = plot_benchmark_trajectories(\n",
+        "    env,\n",
+        "    controllers={\n",
+        "        \"Linear SVD\": b0,\n",
+        "        \"Supervised MLP\": b1,\n",
+        "        \"RL Agent\": b2,\n",
+        "        \"Bayesian Opt\": b3\n",
+        "    },\n",
+        "    seed=42,\n",
+        "    save_path=\"img/benchmark_trajectories.png\",\n",
+        "    show=True\n",
+        ")\n"
+    ]
+
+    # 7. Update Cell 15 (Final Team Showcase)
+    nb["cells"][15]["source"] = [
+        "# Step 7: Final Team Showcase Presentation Summary\n",
+        "# ==============================================================================\n",
+        "# [DO NOT MODIFY - Automated Showcase Scorecard for Presentation]\n",
+        "# ==============================================================================\n",
+        "best_agent_name, best_metrics = max(\n",
+        "    [(\"Track 3 (Bayesian Optimization)\", res_b3),\n",
+        "     (\"Track 2 (RL Closed-Loop Agent)\", res_b2),\n",
+        "     (\"Baseline 1 (Supervised MLP)\", res_b1),\n",
+        "     (\"Baseline 0 (Linear SVD)\", res_b0)],\n",
+        "    key=lambda item: item[1][\"score\"]\n",
+        ")\n",
+        "\n",
+        "print(\"=\" * 68)\n",
+        "print(f\"   TEAM: {TEAM_NAME} — OFFICIAL HACKATHON BENCHMARK SUBMISSION\")\n",
+        "print(\"=\" * 68)\n",
+        "print(f\"  • Best Performing Agent  : {best_agent_name}\")\n",
+        "print(f\"  • Official Total Score   : {best_metrics['score']:.1f} points\")\n",
+        "print(f\"  • Alignment Success Rate : {best_metrics['success_rate']:.1f}%\")\n",
+        "print(f\"  • Mean Steps to Target   : {best_metrics['mean_steps']:.1f} steps\")\n",
+        "print(f\"  • Mean Residual Orbit RMS: {best_metrics['mean_rms']:.4f} mm\")\n",
+        "print(f\"  • Mean Corrector Norm    : {best_metrics['mean_norm']:.2f} A\")\n",
+        "print(f\"  • Mean Policy Latency    : {best_metrics['mean_latency']:.2f} ms\")\n",
+        "print(\"=\" * 68)\n"
+    ]
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(nb, f, indent=1)
+    print("Updated Participant notebook successfully!")
+
+
+def update_solution_notebook():
+    path = "notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb"
+    with open(path, "r", encoding="utf-8") as f:
+        nb = json.load(f)
+
+    # 1. Update Cell 0 (Title & Tracks)
+    nb["cells"][0]["source"] = [
+        "# Accelerator Orbit Alignment Hackathon: Beam Orbit Benchmark\n",
+        "## Solution & Reference Benchmark Edition (with Weights & Biases / W&B Leaderboard Integration)\n",
+        "\n",
+        "**Workshop & Challenge Context:**\n",
+        "* **Author:** Chong Shik Park, Ph.D.\n",
+        "* **Date:** November 3, 2026\n",
+        "* **Target Audience:** Graduate Students & Early-Career Accelerator Researchers\n",
+        "* **Curricular Alignment:** \n",
+        "  * **Lecture 1:** Chong Shik Park — AI/ML Foundations and Closed-Loop Control for Particle Accelerators\n",
+        "  * **Lecture 2:** Thorsten Hellert — Agentic AI, Autonomous Operations & Scientific Workflows\n",
+        "\n",
+        "---\n",
+        "\n",
+        "### 🎯 Challenge Mission\n",
+        "In modern particle accelerators and beam transport lines, beam alignment is critical to ensure high transmission efficiency and prevent beam loss. \n",
+        "In this hackathon, you will develop closed-loop control algorithms to steer the beam through a **15-meter transport line** with:\n",
+        "* **6 Dipole Steering Magnets:** $X = [\\mathrm{HCM1}, \\mathrm{VCM1}, \\mathrm{HCM2}, \\mathrm{VCM2}, \\mathrm{HCM3}, \\mathrm{VCM3}]^T \\in [-5.0\\text{ A}, +5.0\\text{ A}]$\n",
+        "* **12 Beam Position Monitors (BPMs):** $Y \\in \\mathbb{R}^{12}$, measuring transverse beam offsets in millimeters (mm).\n",
+        "* **Non-Linear Iron Saturation:** $B(I) \\approx I - 0.015 \\cdot I^3$, causing progressive softening at higher corrector currents.\n",
+        "* **Objective:** Align the beam so that the Root-Mean-Square (RMS) displacement is below **$0.030\\text{ mm}$** within a budget of **20 control steps**:\n",
+        "  $$\\text{RMS} = \\sqrt{\\frac{1}{12}\\sum_{i=1}^{12} Y_i^2} < 0.030\\text{ mm}$$\n",
+        "\n",
+        "---\n",
+        "\n",
+        "### 🏆 Three Parallel Competition Tracks:\n",
+        "1. **Track 1 (Supervised Digital Twin Inversion):** Train a non-linear neural surrogate model (MLP) on offline tracking data, and use an optimization solver to invert the surrogate for optimal corrective kicks.\n",
+        "2. **Track 2 (Closed-Loop Reinforcement Learning / Adaptive Policy):** Design an interactive feedback policy agent that continuously senses BPM offsets and outputs delta current kicks $\\Delta I_c$ with physics-informed priors and adaptive damping.\n",
+        "3. **Track 3 (Bayesian Optimization Controller):** Build a sample-efficient Gaussian Process controller with Lower Confidence Bound (LCB) acquisition to actively align the beam under non-linear saturation.\n"
+    ]
+
+    # 2. Update Cell 1 (Imports)
+    nb["cells"][1]["source"] = [
+        "# Step 0: Imports, Environment Setup, and Weights & Biases (W&B) Configuration\n",
+        "import os\n",
+        "import time\n",
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.metrics import root_mean_squared_error\n",
+        "from sklearn.linear_model import Ridge\n",
+        "from sklearn.neural_network import MLPRegressor\n",
+        "from sklearn.gaussian_process import GaussianProcessRegressor\n",
+        "from sklearn.gaussian_process.kernels import Matern, WhiteKernel\n",
+        "\n",
+        "# Import standardized simulation, controllers, benchmark & visualization from src/\n",
+        "from src import (\n",
+        "    AcceleratorOrbitGymEnv,\n",
+        "    ClassicalSVDController,\n",
+        "    SupervisedMLPController,\n",
+        "    RLOrbitChallengeAgent,\n",
+        "    BayesianOptimizationController,\n",
+        "    generate_offline_dataset,\n",
+        "    evaluate_hackathon_benchmark,\n",
+        "    print_benchmark_leaderboard,\n",
+        "    draw_beamline,\n",
+        "    plot_benchmark_trajectories\n",
+        ")\n",
+        "\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# Hackathon Configuration (Customize for Your Team!)\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# >>> [PARTICIPANT MODIFY HERE]: Change to your registered team name!\n",
+        "TEAM_NAME = \"Team_ReferenceSolution\"\n",
+        "\n",
+        "# >>> [DO NOT MODIFY]: Official workshop competition settings\n",
+        "WANDB_PROJECT = \"accelerator-orbit-hackathon\" # [DO NOT CHANGE] Official project name for live leaderboard\n",
+        "WANDB_ENTITY = None                          # [DO NOT CHANGE] Preset workshop entity\n",
+        "USE_WANDB = False                            # Offline local evaluation mode for solution notebook\n",
+        "\n",
+        "print(f\"Setup complete! Ready to compete as: {TEAM_NAME}\")\n"
+    ]
+
+    # 3. Update Cell 8 (Section 4 Markdown: 4 controllers)
+    nb["cells"][8]["source"] = [
+        "---\n",
+        "## 4. Benchmark Controllers: Classical, Supervised, RL, and Bayesian Optimization Agents\n",
+        "\n",
+        "Every competitor controller must implement the standardized agent interface:\n",
+        "```python\n",
+        "def act(self, obs: np.ndarray, info: Optional[dict] = None) -> np.ndarray\n",
+        "```\n",
+        "where `obs` has shape `(12,)` and the returned action is an array of shape `(6,)` in $[-0.8\\text{ A}, +0.8\\text{ A}]$.\n",
+        "\n",
+        "1. **Baseline 0 (Classical SVD Controller):** Inverts the linear Orbit Response Matrix via Moore-Penrose pseudo-inverse: $\\Delta \\mathbf{I} = - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y}$.\n",
+        "2. **Baseline 1 / Track 1 (Supervised Neural Inversion):** Solves an optimization problem per step using the trained neural surrogate digital twin:\n",
+        "   $$\\min_{\\Delta \\mathbf{I}} \\|\\mathbf{Y} + f_{\\theta}(\\Delta \\mathbf{I})\\|^2 + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n",
+        "3. **Challenge Track 2 (Closed-Loop RL / Adaptive Agent):** Combines physics prior feedback with adaptive step damping:\n",
+        "   $$\\Delta \\mathbf{I}_t = \\text{damping}(t) \\cdot \\left[ - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y} + \\mathbf{W}_{\\text{tune}} \\mathbf{Y} + \\mathbf{b} \\right]$$\n",
+        "4. **Challenge Track 3 (Bayesian Optimization Controller):** Uses a Gaussian Process surrogate with epistemic uncertainty estimation to evaluate an acquisition function (Lower Confidence Bound, LCB) balancing exploitation of predicted orbit corrections with exploration:\n",
+        "   $$\\alpha_{\\text{LCB}}(\\Delta \\mathbf{I}) = \\text{RMS}(\\mathbf{Y}_{\\text{obs}} + \\mu_{\\text{GP}}(\\Delta \\mathbf{I})) - \\kappa \\cdot \\sigma_{\\text{GP}}(\\Delta \\mathbf{I}) + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n"
+    ]
+
+    # 4. Update Cell 9 (Code: add Track 3 reference controller)
+    nb["cells"][9]["source"] = [
+        "# Step 4: Define Benchmark Controllers\n",
+        "\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# 1. Baseline 0: Classical Linear ORM Pseudo-Inverse Controller (from src)\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# [Reference Baseline 0]:\n",
+        "b0 = ClassicalSVDController(env.R, gain=0.45)\n",
+        "\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# 2. Baseline 1: Supervised Forward Surrogate + SciPy Inversion Optimizer (from src)\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# [Reference Baseline 1]:\n",
+        "b1 = SupervisedMLPController(surrogate_model)\n",
+        "\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# 3. Track 2: Reference Closed-Loop RL / Adaptive Agent (from src)\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# [Reference Solution Agent]:\n",
+        "b2 = RLOrbitChallengeAgent(env.R, gain=0.45)\n",
+        "\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# 4. Track 3: Reference Bayesian Optimization Controller (from src)\n",
+        "# ------------------------------------------------------------------------------\n",
+        "# Fit Gaussian Process surrogate on calibration data (300 samples for sub-second fitting)\n",
+        "gp_kernel = Matern(length_scale=1.5, nu=2.5) + WhiteKernel(noise_level=1e-4)\n",
+        "gp_surrogate = GaussianProcessRegressor(kernel=gp_kernel, alpha=1e-4, normalize_y=True, random_state=42)\n",
+        "gp_surrogate.fit(X_train[:300], Y_train[:300])\n",
+        "\n",
+        "# [Reference Solution Agent]:\n",
+        "b3 = BayesianOptimizationController(gp_surrogate, kappa=0.0, l2_reg=0.0001)\n",
+        "\n",
+        "print(\"All four competitor controllers (Baseline 0, Track 1, Track 2, Track 3) initialized successfully.\")\n"
+    ]
+
+    # 5. Update Cell 11 (Evaluation & Leaderboard)
+    nb["cells"][11]["source"] = [
+        "# Step 5: Standardized Evaluation Harness with Weights & Biases Logging\n",
+        "# ==============================================================================\n",
+        "# [DO NOT MODIFY - Standardized 30-Seed Evaluation Protocol]\n",
+        "# ==============================================================================\n",
+        "# Evaluates each competitor controller across 30 standardized seeds (range 1 to 31).\n",
+        "# Telemetry, seed breakdowns, and scores are automatically uploaded to W&B.\n",
+        "print(\"Running Official Hackathon Benchmark across 30 Test Seeds...\")\n",
+        "\n",
+        "res_b0 = evaluate_hackathon_benchmark(env, b0, agent_name=\"Baseline0_LinearSVD\", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)\n",
+        "res_b1 = evaluate_hackathon_benchmark(env, b1, agent_name=\"Baseline1_SupervisedMLP\", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)\n",
+        "res_b2 = evaluate_hackathon_benchmark(env, b2, agent_name=\"Track2_RLAgent\", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)\n",
+        "res_b3 = evaluate_hackathon_benchmark(env, b3, agent_name=\"Track3_BayesianOpt\", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)\n",
+        "\n",
+        "# Display Official Leaderboard Table\n",
+        "print_benchmark_leaderboard([\n",
+        "    (\"Track 3 (Bayesian Optimization Controller)\", res_b3),\n",
+        "    (\"Baseline 1 (Supervised MLP Inversion)\", res_b1),\n",
+        "    (\"Baseline 0 (Linear ORM SVD Controller)\", res_b0),\n",
+        "    (\"Track 2 (RL Closed-Loop Agent)\", res_b2),\n",
+        "])\n"
+    ]
+
+    # 6. Update Cell 13 (Trajectory Visualization)
+    nb["cells"][13]["source"] = [
+        "# Step 6: Generate Dual Trajectory Overlay & Dynamic Convergence Curves\n",
+        "# ==============================================================================\n",
+        "# [DO NOT MODIFY - Canonical Diagnostic Visualization]\n",
+        "# ==============================================================================\n",
+        "fig = plot_benchmark_trajectories(\n",
+        "    env,\n",
+        "    controllers={\n",
+        "        \"Linear SVD\": b0,\n",
+        "        \"Supervised MLP\": b1,\n",
+        "        \"RL Agent\": b2,\n",
+        "        \"Bayesian Opt\": b3\n",
+        "    },\n",
+        "    seed=42,\n",
+        "    save_path=\"img/benchmark_trajectories.png\",\n",
+        "    show=True\n",
+        ")\n"
+    ]
+
+    # 7. Update Cell 15 (Final Team Showcase)
+    nb["cells"][15]["source"] = [
+        "# Step 7: Final Team Showcase Presentation Summary\n",
+        "# ==============================================================================\n",
+        "# [DO NOT MODIFY - Automated Showcase Scorecard for Presentation]\n",
+        "# ==============================================================================\n",
+        "best_agent_name, best_metrics = max(\n",
+        "    [(\"Track 3 (Bayesian Optimization)\", res_b3),\n",
+        "     (\"Track 2 (RL Closed-Loop Agent)\", res_b2),\n",
+        "     (\"Baseline 1 (Supervised MLP)\", res_b1),\n",
+        "     (\"Baseline 0 (Linear SVD)\", res_b0)],\n",
+        "    key=lambda item: item[1][\"score\"]\n",
+        ")\n",
+        "\n",
+        "print(\"=\" * 68)\n",
+        "print(f\"   TEAM: {TEAM_NAME} — OFFICIAL HACKATHON BENCHMARK SUBMISSION\")\n",
+        "print(\"=\" * 68)\n",
+        "print(f\"  • Best Performing Agent  : {best_agent_name}\")\n",
+        "print(f\"  • Official Total Score   : {best_metrics['score']:.1f} points\")\n",
+        "print(f\"  • Alignment Success Rate : {best_metrics['success_rate']:.1f}%\")\n",
+        "print(f\"  • Mean Steps to Target   : {best_metrics['mean_steps']:.1f} steps\")\n",
+        "print(f\"  • Mean Residual Orbit RMS: {best_metrics['mean_rms']:.4f} mm\")\n",
+        "print(f\"  • Mean Corrector Norm    : {best_metrics['mean_norm']:.2f} A\")\n",
+        "print(f\"  • Mean Policy Latency    : {best_metrics['mean_latency']:.2f} ms\")\n",
+        "print(\"=\" * 68)\n"
+    ]
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(nb, f, indent=1)
+    print("Updated Solution notebook successfully!")
+
+if __name__ == "__main__":
+    update_participant_notebook()
+    update_solution_notebook()
