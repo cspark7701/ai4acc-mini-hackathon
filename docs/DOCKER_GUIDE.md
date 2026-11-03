@@ -1,6 +1,47 @@
 # 🐳 Docker Environment Guide — AI Applications in Accelerators Mini-Hackathon
 
-This guide explains how to use, run, and publish the containerized environment for the **AI Applications in Accelerators Tutorial & Mini-Hackathon** (KOMAC / KAERI).
+This guide explains system requirements, terminal options across operating systems, and how to use, run, and publish the containerized environment for the **AI Applications in Accelerators Tutorial & Mini-Hackathon** (KOMAC / KAERI).
+
+---
+
+## 📋 System Requirements & Supported Terminals
+
+### Do participants need PowerShell?
+**No, PowerShell is NOT mandatory.** Participants can use **any terminal** of their choice on Windows, macOS, or Linux. 
+
+With **Docker Compose**, the launch command is identical across all operating systems and shells:
+```bash
+docker compose up
+```
+
+| Operating System | Supported Terminals | Path Syntax for `-v` (CLI only) |
+| :--- | :--- | :--- |
+| **Windows** | **PowerShell** | `-v "${PWD}/notebooks:/workspace/notebooks"` |
+| **Windows** | **Command Prompt (`cmd.exe`)** | `-v "%cd%\notebooks:/workspace/notebooks"` |
+| **Windows** | **Git Bash** | `-v "/$(pwd)/notebooks:/workspace/notebooks"` |
+| **Windows** | **WSL 2 (Ubuntu)** | `-v "${PWD}/notebooks:/workspace/notebooks"` |
+| **macOS** | **Terminal / iTerm2 (zsh / bash)** | `-v "${PWD}/notebooks:/workspace/notebooks"` |
+| **Linux** | **Bash / Zsh / Any terminal** | `-v "${PWD}/notebooks:/workspace/notebooks"` |
+
+> [!TIP]
+> If participants run **`docker compose up`**, they don't have to worry about shell-specific path syntax (`${PWD}` vs `%cd%`) at all—Docker Compose handles path resolution natively on every OS!
+
+---
+
+### Prerequisites for Participants
+
+1. **Docker Runtime:**
+   - **Windows / macOS:** Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) (ensure it is running before opening the terminal).
+     - *Windows note:* Docker Desktop requires **WSL 2 backend** (installed automatically by modern Docker Desktop installers).
+   - **Linux:** Install `docker.io` and `docker-compose-plugin` (or Docker Engine).
+2. **Web Browser:**
+   - Any modern browser (Google Chrome, Microsoft Edge, Mozilla Firefox, Safari) to interact with JupyterLab at `http://localhost:8888`.
+3. **Hardware Specifications:**
+   - **RAM:** Minimum 4 GB (8 GB or more recommended).
+   - **Storage:** ~2.5 GB free disk space (base image + dependencies).
+   - **Architecture:** Works on both x86_64 (Intel/AMD) and ARM64 (Apple Silicon M1/M2/M3/M4).
+4. **Weights & Biases Account (Optional but recommended):**
+   - Free account at [wandb.ai](https://wandb.ai) to submit scores to the live leaderboard.
 
 ---
 
