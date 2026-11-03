@@ -47,3 +47,7 @@ Desktop.ini
 *.swp
 *~
 
+# Generated runtime images
+img/beamline.png
+img/benchmark_trajectories.png
+
