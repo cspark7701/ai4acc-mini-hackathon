@@ -53,12 +53,12 @@ def build_docx():
     # Document Title
     p_title = doc.add_paragraph()
     p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run_title = p_title.add_run("워크숍 공지사항 / Workshop Announcement\n")
+    run_title = p_title.add_run("가속기 분야 AI 활용 튜토리얼 & 미니 해커톤\n")
     run_title.font.size = Pt(20)
     run_title.font.bold = True
     run_title.font.color.rgb = PRIMARY
 
-    run_sub = p_title.add_run("AI Applications in Accelerators Tutorial & Mini-Hackathon\n가속기 분야 AI 활용 튜토리얼 & 미니 해커톤")
+    run_sub = p_title.add_run("AI Applications in Accelerators Tutorial & Mini-Hackathon")
     run_sub.font.size = Pt(13)
     run_sub.font.bold = True
     run_sub.font.color.rgb = SECONDARY
@@ -73,7 +73,7 @@ def build_docx():
 
     # ================= KOREAN SECTION =================
     h1_ko = doc.add_heading(level=1)
-    r_h1_ko = h1_ko.add_run("[한국어] 워크숍 안내 및 참가자 준비 사항")
+    r_h1_ko = h1_ko.add_run("워크숍 개요 및 참가자 필수 준비 사항")
     r_h1_ko.font.color.rgb = PRIMARY
     r_h1_ko.font.size = Pt(15)
 
@@ -103,13 +103,11 @@ def build_docx():
     r_b1.bold = True
     p_box.add_run("실습 및 오후 미니 해커톤 참가를 위해 개인 노트북과 전원 충전기를 반드시 지참해 주십시오.\n")
 
-    r_b2 = p_box.add_run("2. 운영체제 및 실습 환경 (Docker 권장 / Windows, Mac, Linux 지원): ")
+    r_b2 = p_box.add_run("2. 운영체제 및 Docker Desktop 설치 (Windows / Mac / Linux): ")
     r_b2.bold = True
     p_box.add_run(
-        "모든 OS를 완벽히 지원하며, 시뮬레이션 환경이 사전 패키징된 Docker 사용을 적극 권장합니다. "
-        "저장소 복제 후 'docker compose up' 명령으로 즉시 JupyterLab(포트 8888)에 접속할 수 있습니다. "
-        "(Windows/macOS는 가상화 백엔드를 위해 Docker Desktop 설치가 필요하며, Linux는 기본 Docker CLI 엔진만으로 구동됩니다. "
-        "로컬 Python 3.10+ 가상환경 실행도 완벽히 지원됩니다.)\n"
+        "모든 OS를 완벽히 지원합니다. Windows 또는 Mac(macOS) 노트북을 사용하시는 참가자분께서는 워크숍 참가 전 사전에 Docker Desktop 앱을 반드시 설치해 주시기 바랍니다. "
+        "(Linux 환경은 기본 Docker Engine CLI 사용)\n"
     )
 
     r_b3 = p_box.add_run("3. Weights & Biases (W&B) 무료 계정 사전 생성: ")
@@ -167,7 +165,7 @@ def build_docx():
 
     # ================= ENGLISH SECTION =================
     h1_en = doc.add_heading(level=1)
-    r_h1_en = h1_en.add_run("[English] Workshop Announcement & Participant Guide")
+    r_h1_en = h1_en.add_run("Workshop Overview & Participant Guide")
     r_h1_en.font.color.rgb = PRIMARY
     r_h1_en.font.size = Pt(15)
 
@@ -198,13 +196,11 @@ def build_docx():
     r_eb1.bold = True
     p_box_en.add_run("Please bring your personal laptop and power adapter for hands-on exercises and the afternoon hackathon.\n")
 
-    r_eb2 = p_box_en.add_run("2. Operating Systems & Recommended Docker Setup: ")
+    r_eb2 = p_box_en.add_run("2. Operating Systems & Docker Desktop Setup (Windows, macOS, Linux): ")
     r_eb2.bold = True
     p_box_en.add_run(
-        "All platforms (Windows, macOS, Linux) are fully supported. We strongly recommend using Docker ('docker compose up') "
-        "for a turnkey, reproducible workspace without package conflicts. Note: Windows and macOS require Docker Desktop (or equivalent) "
-        "to supply container virtualization, whereas Linux runs natively via the standard Docker engine CLI. "
-        "(Local Python 3.10+ environments are also fully supported.)\n"
+        "All platforms are supported. Participants using Windows or Mac (macOS) laptops are requested to install the Docker Desktop app "
+        "prior to attending the workshop. (Linux users may use standard Docker Engine CLI).\n"
     )
 
     r_eb3 = p_box_en.add_run("3. Create a Free Weights & Biases Account: ")

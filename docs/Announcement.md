@@ -1,9 +1,7 @@
-# 📢 공지사항: 가속기 분야 AI 활용 튜토리얼 & 미니 해커톤
-# Announcement: AI Applications in Accelerators Tutorial & Mini-Hackathon
+# 📢 가속기 분야 AI 활용 튜토리얼 & 미니 해커톤
+# AI Applications in Accelerators Tutorial & Mini-Hackathon
 
 ---
-
-# [한국어 공지사항]
 
 ## 🌟 워크숍 개요
 
@@ -42,14 +40,11 @@
 - 실습 및 오후 미니 해커톤 참가를 위해 **개인 노트북과 충전 어댑터**를 필히 지참해 주시기 바랍니다.
 - 현장 와이파이(Wi-Fi) 무선 인터넷이 제공됩니다.
 
-### 2. 실습 환경 및 운영체제 안내 (Docker 권장 / Windows, Mac, Linux 모두 지원)
+### 2. 운영체제 및 Docker Desktop 설치 안내 (Windows / Mac / Linux)
 - **Windows, macOS, Linux** 등 참가자분께서 평소 사용하시는 어떠한 운영체제(OS) 환경이든 모두 지원합니다.
-- 본 튜토리얼에서는 복잡한 패키지 충돌 없이 즉시 실습 가능한 **Docker 환경 사용을 적극 권장**합니다.
-  - 저장소를 클론한 후 터미널에서 `docker compose up` 명령을 실행하면, 튜토리얼 노트북과 시뮬레이션 환경이 포함된 JupyterLab 컨테이너(`http://localhost:8888`)가 즉시 구동됩니다.
-  - **Docker Desktop 앱 설치 필요 여부 안내:**
-    - **Windows & macOS:** **Docker Desktop 앱 설치가 필요합니다.** (Windows/macOS는 리눅스 커널 컨테이너를 가상화 백엔드인 WSL 2 또는 Hypervisor를 통해 구동하므로 Docker Desktop 또는 호환 앱이 필수적입니다.)
-    - **Linux:** **별도의 Docker Desktop GUI 앱이 필요하지 않습니다.** 리눅스 배포판 패키지 관리자의 기본 도커 엔진 CLI(`docker-ce` 또는 `docker.io` 및 `docker-compose-plugin`)만으로 직접 네이티브 실행됩니다.
-  - Docker 외에 로컬 파이썬(Python 3.10+) 가상환경(venv/conda)을 통한 직접 실행(`pip install -r requirements.txt`)도 완벽히 지원됩니다.
+- 본 실습에서는 원활하고 안정적인 환경 구동을 위해 Docker를 활용합니다.
+- **Windows 또는 Mac(macOS) 노트북을 사용하시는 참가자분께서는 워크숍 참가 전 사전에 Docker Desktop 앱을 반드시 설치해 주시기 바랍니다.**
+- Linux 환경 사용자의 경우 별도의 GUI 앱 없이 터미널 기본 Docker Engine(`docker-ce` 또는 `docker.io` 및 `docker compose`)을 준비해 주시면 됩니다.
 
 ### 3. Weights & Biases (W&B) 무료 계정 사전 생성
 - 본 미니 해커톤은 머신러닝 실험 추적 및 라이브 리더보드 플랫폼인 **Weights & Biases (W&B)**를 활용합니다.
@@ -61,14 +56,11 @@
 ## ✅ 참가 전 체크리스트 (Readiness Checklist)
 
 - [ ] 개인 노트북 및 전원 어댑터 준비 완료
-- [ ] Docker (Windows/macOS: Docker Desktop 설치, Linux: Docker Engine CLI) 또는 로컬 Python 3.10+ 환경 준비 완료
-- [ ] 저장소 복제(`git clone`) 및 `docker compose up` 실행 테스트 완료 (`http://localhost:8888` 접속 확인)
+- [ ] Docker Desktop 앱 설치 완료 (Windows / macOS 사용자) 또는 Docker Engine 준비 완료 (Linux 사용자)
 - [ ] [wandb.ai](https://wandb.ai) 무료 계정 생성 및 API 키 확인
 
 ---
 <div style="page-break-after: always;"></div>
-
-# [English Announcement]
 
 ## 🌟 Workshop Overview
 
@@ -107,14 +99,11 @@ To guarantee a seamless and productive hands-on experience, please review the fo
 - All participants are requested to **bring their personal laptop and power adapter** for the morning tutorials and the afternoon hackathon.
 - High-speed venue Wi-Fi connectivity will be provided.
 
-### 2. Platform Flexibility & Recommended Docker Environment (Windows, macOS, Linux)
+### 2. Operating Systems & Docker Desktop Installation (Windows, macOS, Linux)
 - You are welcome to use **any operating system: Windows, macOS, or Linux**.
-- We strongly encourage participants to use the provided **Docker environment** for a guaranteed reproducible workspace without dependency conflicts.
-  - After cloning the repository, simply execute `docker compose up` to launch the turnkey JupyterLab environment (`http://localhost:8888`) with all physics simulation models, Gym environments, and benchmark harnesses ready to go.
-  - **Do participants need Docker Desktop?**
-    - **Windows & macOS:** **Yes, Docker Desktop is required.** Windows and macOS require Docker Desktop (or a compatible tool like OrbStack on macOS) to provide the underlying Linux VM virtualization layer (WSL 2 on Windows, Apple Hypervisor on macOS).
-    - **Linux:** **No Docker Desktop app is required.** Linux users can run natively using the standard Docker engine CLI (`docker-ce` or `docker.io` with Docker Compose) directly on the host kernel.
-  - Participants may also run natively via a local Python 3.10+ virtual environment (`pip install -r requirements.txt`).
+- Hands-on exercises and challenge environments are packaged using Docker for consistent and reproducible execution.
+- **Participants using Windows or Mac (macOS) laptops are requested to install the Docker Desktop app prior to attending the workshop.**
+- Linux users may use their standard command-line Docker Engine (`docker-ce` or `docker.io` and `docker compose`).
 
 ### 3. Create a Free Weights & Biases (W&B) Account in Advance
 - The hackathon utilizes **Weights & Biases (W&B)** for real-time experiment tracking, telemetry visualization, and the live competition leaderboard.
@@ -126,6 +115,5 @@ To guarantee a seamless and productive hands-on experience, please review the fo
 ## ✅ Pre-Workshop Readiness Checklist
 
 - [ ] Personal laptop and power adapter ready
-- [ ] Docker (Docker Desktop on Windows/macOS; Docker Engine CLI on Linux) or local Python 3.10+ environment ready
-- [ ] Repository cloned (`git clone`) and verified via `docker compose up` (`http://localhost:8888`)
+- [ ] Docker Desktop app installed (Windows / macOS users) or Docker Engine ready (Linux users)
 - [ ] Free [wandb.ai](https://wandb.ai) account created & API key retrieved from [wandb.ai/authorize](https://wandb.ai/authorize)
