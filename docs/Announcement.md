@@ -59,12 +59,23 @@
 1. [Docker Desktop 공식 웹사이트](https://www.docker.com/products/docker-desktop/)에서 본인의 Mac 칩 사양(Apple Silicon M1/M2/M3/M4 또는 Intel 칩)에 맞는 버전을 다운로드하여 설치합니다.
 2. 설치 후 Docker Desktop 앱을 실행하여 초기 권한 및 백그라운드 서비스 등록을 완료합니다.
 
-#### 🐧 Linux 사용자:
+#### 🐧 Linux 사용자 (Ubuntu/Debian 및 CentOS/RHEL):
 - 별도의 GUI 앱 없이 터미널에서 패키지 관리자를 통해 Docker 엔진과 Docker Compose 플러그인을 설치합니다:
-  ```bash
-  sudo apt update && sudo apt install -y docker.io docker-compose-plugin
-  sudo usermod -aG docker $USER
-  ```
+  - **Ubuntu / Debian:**
+    ```bash
+    sudo apt update && sudo apt install -y docker.io docker-compose-plugin
+    sudo systemctl enable --now docker
+    sudo usermod -aG docker $USER
+    ```
+  - **CentOS / RHEL (Red Hat Enterprise Linux) / Rocky Linux:**
+    ```bash
+    sudo dnf install -y yum-utils
+    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    sudo systemctl enable --now docker
+    sudo usermod -aG docker $USER
+    ```
+  *(참고: docker 그룹 추가 후 변경사항 적용을 위해 터미널 재로그인이 필요합니다.)*
 
 ### 3. Weights & Biases (W&B) 무료 계정 사전 생성
 - 본 미니 해커톤은 머신러닝 실험 추적 및 라이브 리더보드 플랫폼인 **Weights & Biases (W&B)**를 활용합니다.
@@ -138,12 +149,23 @@ To guarantee a seamless and productive hands-on experience, please review the fo
 1. Download and install Docker Desktop from the [official website](https://www.docker.com/products/docker-desktop/) selecting the installer matching your hardware (Apple Silicon for M1/M2/M3/M4 or Intel chip).
 2. Launch Docker Desktop and complete initial system permission grants.
 
-#### 🐧 Linux Users:
+#### 🐧 Linux Users (Ubuntu/Debian & CentOS/RHEL):
 - No GUI app is required. Install Docker Engine and the Docker Compose plugin via your distribution's package manager:
-  ```bash
-  sudo apt update && sudo apt install -y docker.io docker-compose-plugin
-  sudo usermod -aG docker $USER
-  ```
+  - **Ubuntu / Debian:**
+    ```bash
+    sudo apt update && sudo apt install -y docker.io docker-compose-plugin
+    sudo systemctl enable --now docker
+    sudo usermod -aG docker $USER
+    ```
+  - **CentOS / RHEL (Red Hat Enterprise Linux) / Rocky Linux:**
+    ```bash
+    sudo dnf install -y yum-utils
+    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    sudo systemctl enable --now docker
+    sudo usermod -aG docker $USER
+    ```
+  *(Note: Log out and log back in after adding your user to the docker group for changes to take effect).*
 
 ### 3. Create a Free Weights & Biases (W&B) Account in Advance
 - The hackathon utilizes **Weights & Biases (W&B)** for real-time experiment tracking, telemetry visualization, and the live competition leaderboard.

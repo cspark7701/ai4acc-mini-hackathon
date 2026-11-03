@@ -33,7 +33,7 @@ docker compose up
 1. **Docker Runtime:**
    - **Windows / macOS:** Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) (ensure it is running before opening the terminal).
      - *Windows note:* Docker Desktop requires **WSL 2 backend** (installed automatically by modern Docker Desktop installers).
-   - **Linux:** Install `docker.io` and `docker-compose-plugin` (or Docker Engine).
+   - **Linux:** Install Docker Engine and the Docker Compose plugin (Ubuntu/Debian: `sudo apt install docker.io docker-compose-plugin`; CentOS/RHEL: `sudo dnf install docker-ce docker-compose-plugin`). Ensure service is running via `sudo systemctl enable --now docker`.
 2. **Web Browser:**
    - Any modern browser (Google Chrome, Microsoft Edge, Mozilla Firefox, Safari) to interact with JupyterLab at `http://localhost:8888`.
 3. **Hardware Specifications:**

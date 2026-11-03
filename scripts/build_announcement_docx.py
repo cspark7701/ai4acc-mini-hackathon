@@ -108,7 +108,7 @@ def build_docx():
     p_box.add_run(
         "모든 OS를 완벽히 지원합니다. Windows 또는 Mac(macOS) 노트북을 사용하시는 참가자분께서는 사전에 Docker Desktop 앱을 반드시 설치해 주시기 바랍니다. "
         "특히 Windows 사용자는 PowerShell(관리자 권한)에서 'wsl --install'을 실행하여 WSL 2 기반 엔진을 활성화해 주십시오. "
-        "(Linux 환경은 기본 Docker Engine CLI 사용)\n"
+        "(Linux 환경: Ubuntu/Debian은 'apt install docker.io docker-compose-plugin', CentOS/RHEL은 'dnf install docker-ce docker-compose-plugin' 사용)\n"
     )
 
     r_b3 = p_box.add_run("3. Weights & Biases (W&B) 무료 계정 사전 생성: ")
@@ -202,7 +202,7 @@ def build_docx():
     p_box_en.add_run(
         "All platforms are supported. Participants using Windows or Mac (macOS) laptops are requested to install Docker Desktop "
         "prior to attending the workshop. On Windows, please ensure the WSL 2 backend is enabled by running 'wsl --install' in PowerShell. "
-        "(Linux users may use standard Docker Engine CLI).\n"
+        "(Linux: Ubuntu/Debian via apt, CentOS/RHEL via dnf using the official docker-ce repository).\n"
     )
 
     r_eb3 = p_box_en.add_run("3. Create a Free Weights & Biases Account: ")
