@@ -115,14 +115,26 @@ The accelerator simulator is encapsulated in a standardized **Gymnasium** enviro
 * **Physical Response Model:**
   $$\\mathbf{Y} = \\mathbf{I} \\cdot \\mathbf{R} - 0.015 \\cdot (\\mathbf{I}^3 \\cdot \\mathbf{R}) + \\mathbf{Y}_0 + \\boldsymbol{\\epsilon}$$
   where $\\mathbf{R}$ is the $6 \\times 12$ linear transfer matrix, $-0.015 \\mathbf{I}^3 \\mathbf{R}$ represents soft iron core saturation, $\\mathbf{Y}_0$ is initial alignment drift, and $\\boldsymbol{\\epsilon} \\sim \\mathcal{N}(0, 0.010^2\\text{ mm}^2)$ is Gaussian sensor noise.
-* **Reward:** $r_t = - 10.0 \\times \\text{RMS}_{t+1} - 0.01 \\|\\Delta \\mathbf{I}\\|_2^2 + (50.0 \\text{ if success else } 0.0)$.
+* **Customizable Reward & Penalty Structure (for RL & Policy Optimization):**
+  $$r_t = - w_{\\text{rms}} \\cdot \\text{RMS}_{t+1} - w_{\\text{act}} \\cdot \\|\\Delta \\mathbf{I}\\|_2^2 - c_{\\text{step}} + (B_{\\text{success}} \\text{ if terminated else } 0.0)$$
+  * $w_{\\text{rms}}$ (`rms_weight`, default `10.0`): Penalizes beam displacement from center axis.
+  * $w_{\\text{act}}$ (`action_weight`, default `0.01`): Penalizes large actuator kick effort to prevent current saturation.
+  * $c_{\\text{step}}$ (`step_penalty`, default `0.0`): Step cost deducted each turn. **Increasing this (e.g. 0.5 to 1.5) incentivizes RL agents to converge in fewer steps!**
+  * $B_{\\text{success}}$ (`success_bonus`, default `50.0`): Completion reward when $\\text{RMS} < 0.030\\text{ mm}$.
+  * `reward_fn`: Optional custom callable `(rms, action, terminated, truncated, step) -> float` for advanced reward shaping.
 * **Termination:** Episode succeeds when $\\text{RMS} < 0.030\\text{ mm}$, or truncates after `max_steps = 20` steps."""
 
 # ------------------------------------------------------------------------------
 # Cell 5: Step 2 Code
 # ------------------------------------------------------------------------------
 c5_code = """# Step 2: Instantiate Standardized Hackathon Gymnasium Environment
-env = AcceleratorOrbitGymEnv()
+# Tip for Track 2 (RL): You can customize reward/penalty weights or pass a custom reward_fn!
+env = AcceleratorOrbitGymEnv(
+    rms_weight=10.0,      # Penalty weight for orbit RMS error
+    action_weight=0.01,   # Penalty weight for corrector kick effort
+    step_penalty=0.5,     # [TRY MODIFYING THIS] Step penalty to incentivize faster convergence!
+    success_bonus=50.0    # Completion bonus upon reaching RMS < 0.030 mm
+)
 
 # Reset to canonical test seed 42 to inspect initial uncorrected orbit distortion
 obs, info = env.reset(seed=42)
@@ -137,6 +149,7 @@ print(f"  • Hardware Current Bounds  : [-5.0 A, +5.0 A]")
 print(f"  • Target RMS Tolerance     : < {env.target_rms:.3f} mm")
 print(f"  • Max Control Budget       : {env.max_steps} steps per episode")
 print(f"  • Initial Uncorrected RMS  : {info['rms']:.4f} mm")
+print(f"  • Reward Shaping Params    : rms_w={env.rms_weight}, act_w={env.action_weight}, step_cost={env.step_penalty}, bonus={env.success_bonus}")
 print("=" * 68)"""
 
 # ------------------------------------------------------------------------------
@@ -240,7 +253,8 @@ where `obs` has shape `(12,)` and the returned action is an array of shape `(6,)
 2. **Baseline 1 (Supervised Neural Inversion):** Solves an optimization problem per step using the trained neural surrogate digital twin:
    $$\\min_{\\Delta \\mathbf{I}} \\|\\mathbf{Y} + f_{\\theta}(\\Delta \\mathbf{I})\\|^2 + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$
 3. **Challenge Track 2 (Closed-Loop RL / Adaptive Agent):** Combines physics prior feedback with adaptive step damping:
-   $$\\Delta \\mathbf{I}_t = \\text{damping}(t) \\cdot \\left[ - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y} + \\mathbf{W}_{\\text{tune}} \\mathbf{Y} + \\mathbf{b} \\right]$$"""
+   $$\\Delta \\mathbf{I}_t = \\text{damping}(t) \\cdot \\left[ - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y} + \\mathbf{W}_{\\text{tune}} \\mathbf{Y} + \\mathbf{b} \\right]$$
+   RL agents learn or optimize policy parameters by interacting with `AcceleratorOrbitGymEnv`. By tuning reward and penalty weights (`step_penalty`, `action_weight`, `rms_weight`, `success_bonus`), you can directly incentivize the agent to converge in fewer steps and use minimal corrector current!"""
 
 # ------------------------------------------------------------------------------
 # Cell 9: Step 4 Code (Participant with TODO 2 & Hints)
@@ -290,6 +304,22 @@ b1 = SupervisedMLPController(surrogate_model)
 #           damping = 1.0 / (1.0 + 0.03 * step)
 #           return np.clip(action * damping, -0.8, 0.8)
 #
+# Example C: Custom Reward Shaping for RL Policy Training & Optimization
+#   # You can pass customized reward/penalty parameters to the gym environment:
+#   #   env_rl = AcceleratorOrbitGymEnv(
+#   #       rms_weight=15.0,    # Stronger focus on tight alignment
+#   #       action_weight=0.02, # Penalize high current kicks
+#   #       step_penalty=1.0,   # Heavy step cost forces fast convergence!
+#   #       success_bonus=60.0  # Big reward for achieving RMS < 0.030 mm
+#   #   )
+#   # Or define a custom reward function callback:
+#   #   def custom_reward_fn(rms, action, terminated, truncated, step):
+#   #       r = - 12.0 * rms - 0.02 * np.sum(action**2) - 0.8 # step cost
+#   #       if terminated:
+#   #           r += 50.0 + max(0.0, (0.020 - rms) * 500.0) # extra precision bonus!
+#   #       return r
+#   #   env_rl = AcceleratorOrbitGymEnv(reward_fn=custom_reward_fn)
+#
 # ------------------------------------------------------------------------------
 # 💡 STRATEGIC TUNING HINTS: WHICH VALUES TO MODIFY TO GET HIGHER SCORES!
 #
@@ -316,6 +346,15 @@ b1 = SupervisedMLPController(surrogate_model)
 # 5. Energy Efficiency (Current Norm):
 #    • Avoid unnecessary opposing kicks between adjacent correctors; keeping total current
 #      low gives an energy-efficiency score bonus!
+#
+# 6. Reward & Penalty Shaping (Reinforcement Learning / Policy Optimization):
+#    • In RL policy training, the agent maximizes cumulative reward sum(r_t).
+#    • Increase step_penalty (e.g. 0.5 to 1.5): Heavy penalty per step forces the agent to
+#      find shortest paths to convergence, drastically reducing mean_steps!
+#    • Increase action_weight (e.g. 0.02 to 0.05): Higher action penalty prevents excessive
+#      corrector currents, directly optimizing your mean current norm score.
+#    • Custom Precision Bonus: Adding an extra bonus when RMS drops below 0.020 mm trains the
+#      policy to land close to the 0.010 mm sensor noise floor, unlocking huge precision scores!
 # ==============================================================================
 
 class MyCustomRLAgent:
@@ -364,6 +403,8 @@ The benchmark evaluation engine (`src/benchmark.py`) computes an aggregated **Ha
 | **Adaptive Gain Schedule** | Dynamic gain based on current RMS in `act()` | Aggressive kicks when far (`> 0.15 mm`); fine-tuned kicks when close (`< 0.05 mm`). |
 | **Precision RMS Bonus** | Damping cooling factor $\\gamma \\in [0.015, 0.035]$ | Prevents terminal oscillations, allowing the beam to land near the $0.010\\text{ mm}$ noise floor. |
 | **Non-Linear Boost** | $\\Delta \\mathbf{I}_{\\text{act}} = \\Delta \\mathbf{I}_{\\text{lin}} + 0.015 \\cdot \\Delta \\mathbf{I}_{\\text{lin}}^3$ | Cancels cubic iron saturation in one shot, avoiding under-correction. |
+| **Reward / Penalty Shaping** | Increase `step_penalty` ($0.5$–$1.5$) & `action_weight` in `env` | In RL training, penalizing steps forces 3–4 step solutions; penalizing kicks minimizes current norm! |
+| **Precision Reward Shaping** | Add custom `reward_fn` with bonus when $\\text{RMS} < 0.020\\text{ mm}$ | Trains RL policy to aim for the $0.010\\text{ mm}$ sensor noise floor instead of stopping at $0.029\\text{ mm}$. |
 | **Track 1 Optimizer Fix** | Bound search to `[(-0.8, 0.8)]` & warm-start | Prevents action clipping and boosts Track 1 success rate dramatically! |
 
 When `USE_WANDB = True`, telemetry, seed breakdowns, and scores are automatically uploaded to **Weights & Biases (W&B)**."""

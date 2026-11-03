@@ -2,7 +2,7 @@
 src/environment.py
 Accelerator Orbit Alignment Gymnasium Simulation Environment.
 """
-from typing import Tuple, Dict, Any, Optional
+from typing import Tuple, Dict, Any, Optional, Callable
 import numpy as np
 
 
@@ -22,12 +22,29 @@ class AcceleratorOrbitGymEnv:
     """Accelerator Orbit Hackathon: Multi-Corrector Beam Alignment Environment."""
     metadata = {"render_modes": ["human"]}
 
-    def __init__(self, max_steps: int = 20, target_rms: float = 0.030, noise_std: float = 0.010):
+    def __init__(
+        self,
+        max_steps: int = 20,
+        target_rms: float = 0.030,
+        noise_std: float = 0.010,
+        rms_weight: float = 10.0,
+        action_weight: float = 0.01,
+        step_penalty: float = 0.0,
+        success_bonus: float = 50.0,
+        reward_fn: Optional[Callable[..., float]] = None
+    ):
         self.n_correctors = 6
         self.n_bpms = 12
         self.max_steps = max_steps
         self.target_rms = target_rms
         self.noise_std = noise_std
+
+        # Reward shaping parameters (customizable by participants)
+        self.rms_weight = float(rms_weight)
+        self.action_weight = float(action_weight)
+        self.step_penalty = float(step_penalty)
+        self.success_bonus = float(success_bonus)
+        self.reward_fn = reward_fn
 
         self.action_space = BoxSpace(low=-0.8, high=0.8, shape=(self.n_correctors,))
         self.observation_space = BoxSpace(low=-10.0, high=10.0, shape=(self.n_bpms,))
@@ -76,13 +93,16 @@ class AcceleratorOrbitGymEnv:
         obs = self._get_obs()
         rms = float(np.sqrt(np.mean(obs**2)))
 
-        # Step Reward: Negative distance penalty + step action effort
-        reward = -10.0 * rms - 0.01 * float(np.sum(action**2))
         terminated = bool(rms < self.target_rms)
         truncated = bool(self.current_step >= self.max_steps)
 
-        if terminated:
-            reward += 50.0  # Success completion bonus
+        # Step Reward & Penalties (customizable by participants for RL policy optimization)
+        if self.reward_fn is not None:
+            reward = float(self.reward_fn(rms, action, terminated, truncated, self.current_step))
+        else:
+            reward = - self.rms_weight * rms - self.action_weight * float(np.sum(action**2)) - self.step_penalty
+            if terminated:
+                reward += self.success_bonus
 
         info = {
             "initial_rms": self.initial_rms,
