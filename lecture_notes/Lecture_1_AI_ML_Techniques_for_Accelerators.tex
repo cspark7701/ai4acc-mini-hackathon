@@ -209,6 +209,76 @@ Machine Learning (ML) algorithms automatically extract functional mappings from 
     \item \textbf{Reinforcement Learning (RL):} Training an agent policy $\pi(a|s)$ through environmental interaction to maximize cumulative reward for \textbf{Autonomous Closed-Loop Control}.
 \end{itemize}
 
+\subsection{Foundational ML Paradigms: Forward Supervised Learning vs. Reinforcement Learning}
+In developing autonomous beam alignment algorithms, accelerator engineers rely primarily on two complementary paradigms: \textbf{Forward Supervised Learning} (training a digital twin surrogate of the accelerator to be inverted) and \textbf{Reinforcement Learning} (training a closed-loop policy agent that directly interacts with the machine). Figure~\ref{fig:sl_vs_rl} illustrates their distinct architectural workflows.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.98\textwidth]{forward_sl_and_rl_schematic.png}
+\caption{Architectural comparison between Forward Supervised Learning (Surrogate Digital Twin \& Inversion, Track 1) and Reinforcement Learning (Closed-Loop Policy Interaction, Track 2) for particle accelerator orbit control.}
+\label{fig:sl_vs_rl}
+\end{figure}
+
+\subsubsection{Forward Supervised Learning: Digital Twin Surrogate \& Inversion (Track 1)}
+In Forward Supervised Learning, the model learns the predictive forward response mapping $\mathbf{I} \mapsto \mathbf{Y}$ from passive, pre-recorded tracking simulation datasets:
+\begin{enumerate}
+    \item \textbf{Offline Dataset Generation:} We sample $N$ random corrector current vectors $\mathbf{I} \in \mathbb{R}^6$ across operating ranges (e.g., $[-3.0\text{ A}, +3.0\text{ A}]$) and evaluate their transverse displacements $\mathbf{Y} \in \mathbb{R}^{12}$ across all 12 BPMs, yielding dataset $\mathcal{D} = \{(\mathbf{I}^{(i)}, \mathbf{Y}^{(i)})\}_{i=1}^N$.
+    \item \textbf{Surrogate Model Training:} A deep neural network (e.g. Multi-Layer Perceptron $f_{\boldsymbol{\theta}}$ with layers $128 \rightarrow 64 \rightarrow 32$) is trained to minimize the Mean Squared Error (MSE) loss:
+    \begin{equation}
+        \mathcal{L}_{\text{MSE}}(\boldsymbol{\theta}) = \frac{1}{N} \sum_{i=1}^N \left\| \mathbf{Y}^{(i)} - f_{\boldsymbol{\theta}}(\mathbf{I}^{(i)}) \right\|_2^2
+    \end{equation}
+    Through Adam backpropagation, the neural surrogate captures non-linear magnetic core saturation $B(I) \approx I - 0.015 \cdot I^3$ down to the $0.010\text{ mm}$ diagnostic noise floor.
+    \item \textbf{Online Inversion for Beam Alignment:} During beam operations, observed orbit distortions $\mathbf{Y}_{\text{obs}}$ are corrected by solving an online bounded minimization problem:
+    \begin{equation}
+        \Delta \mathbf{I}^* = \arg\min_{\Delta \mathbf{I}} \left\| \mathbf{Y}_{\text{obs}} + f_{\boldsymbol{\theta}}(\Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2 \quad \text{subject to } \Delta \mathbf{I} \in [-0.8\text{ A}, +0.8\text{ A}]^6
+    \end{equation}
+    Because the surrogate captures soft saturation, this approach converges in as few as 2 to 3 iterations.
+\end{enumerate}
+
+\subsubsection{Reinforcement Learning: Closed-Loop Policy Control (Track 2)}
+In Reinforcement Learning (RL), orbit steering is formulated as a Markov Decision Process (MDP) $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$:
+\begin{enumerate}
+    \item \textbf{State Space ($\mathcal{S}$):} Transverse beam offsets measured at 12 BPM stations: $\mathbf{s}_t = \mathbf{Y}_t \in [-10.0\text{ mm}, +10.0\text{ mm}]^{12}$.
+    \item \textbf{Action Space ($\mathcal{A}$):} Corrector kick delta currents: $\mathbf{a}_t = \Delta \mathbf{I}_t \in [-0.8\text{ A}, +0.8\text{ A}]^6$.
+    \item \textbf{Environment Dynamics ($\mathcal{P}$):} Physical transport law including betatron optics, core saturation, misalignment drift $\mathbf{Y}_0$, and sensor noise $\boldsymbol{\epsilon}$:
+    \begin{equation}
+        \mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \mathbf{a}_t, -5.0, +5.0)\text{ A}, \quad \mathbf{s}_{t+1} = \mathbf{I}_{t+1} \cdot \mathbf{R} - 0.015 \cdot (\mathbf{I}_{t+1}^3 \cdot \mathbf{R}) + \mathbf{Y}_0 + \boldsymbol{\epsilon}
+    \end{equation}
+    \item \textbf{Reward Signal ($\mathcal{R}$):} Scalar feedback rewarding alignment precision and penalizing actuator effort and steps:
+    \begin{equation}
+        r_t = - w_{\text{rms}} \cdot \text{RMS}_{t+1} - w_{\text{act}} \cdot \|\mathbf{a}_t\|_2^2 - c_{\text{step}} + (B_{\text{success}} \text{ if terminated else } 0.0)
+    \end{equation}
+    \item \textbf{Physics-Informed Prior \& Adaptive Damping:} High-performance policies synthesize an analytical pseudo-inverse prior with learned non-linear residual compensation and dynamic step cooling:
+    \begin{equation}
+        \Delta \mathbf{I}_t = \gamma(t) \cdot \left[ - \alpha (\mathbf{R}^T)^\dagger \mathbf{Y}_t + \mathbf{W}_{\text{tune}} \mathbf{Y}_t + \mathbf{b} \right], \quad \gamma(t) = \frac{1.0}{1.0 + 0.03 \cdot t}
+    \end{equation}
+    This enables direct policy execution in single forward passes ($\approx 0.2\text{ ms}$ latency).
+\end{enumerate}
+
+\subsubsection{Comparative Architectural Analysis}
+Table~\ref{tab:sl_vs_rl} summarizes the fundamental operational differences between the two paradigms.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{p{3.5cm} p{5.5cm} p{5.5cm}}
+\toprule
+\textbf{Dimension} & \textbf{Forward Supervised Learning (Track 1)} & \textbf{Reinforcement Learning (Track 2)} \\
+\midrule
+\textbf{Primary Goal} & Accurate physical predictive twin ($\hat{\mathbf{Y}} = f_{\boldsymbol{\theta}}(\mathbf{I})$) & Optimal closed-loop action policy ($\mathbf{a}_t = \pi_{\boldsymbol{\phi}}(\mathbf{s}_t)$) \\
+\textbf{Data Source} & Offline passive sampling across grid & Online interactive rollouts in environment \\
+\textbf{Training Signal} & Ground-truth diagnostic vectors $\mathbf{Y}$ & Scalar reward feedback $r_t$ \\
+\textbf{Objective} & Minimize MSE / RMSE error & Maximize cumulative return $\mathbb{E}[\sum \gamma^t r_t]$ \\
+\textbf{Control Mechanism} & Forward twin + SciPy \texttt{L-BFGS-B} solver & Direct feedback policy evaluation \\
+\textbf{Execution Latency} & $\approx 15 - 30\text{ ms}$ per step & $\approx 0.2\text{ ms}$ per step \\
+\textbf{Sample Efficiency} & High ($1,500$ shots trains full model) & Moderate to high (with physics priors) \\
+\textbf{Safety Handling} & Explicit box constraints in optimizer & Hardware action clipping \& damping \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of Forward Supervised Learning vs.\ Closed-Loop Reinforcement Learning for accelerator control.}
+\label{tab:sl_vs_rl}
+\end{table}
+
 \subsection{The Artificial Neuron: Mathematical Formulation}
 The fundamental atom of a neural network is the \textbf{artificial neuron} (perceptron):
 \begin{enumerate}

@@ -119,7 +119,54 @@ graph TD
 
 ---
 
-### 2.2 Biological & Artificial Neurons: The Mathematical Building Block
+### 2.2 Foundational ML Paradigms: Forward Supervised Learning vs. Reinforcement Learning
+
+To successfully design autonomous beam alignment systems, it is essential to understand the fundamental distinction between **Forward Supervised Learning** (learning a digital twin of the accelerator to be inverted) and **Reinforcement Learning** (learning a closed-loop policy agent that directly interacts with the machine).
+
+![Forward Supervised Learning vs. Reinforcement Learning Paradigms in Accelerators](../img/forward_sl_and_rl_schematic.png)
+
+#### 2.2.1 Forward Supervised Learning: Surrogate Digital Twin & Online Inversion (Track 1)
+In Forward Supervised Learning, the algorithm learns an input-to-output mapping from static, pre-collected datasets without directly steering the physical machine during training:
+1. **Offline Training Phase:** 
+   - We sample $N$ random corrector current vectors $\mathbf{I} \in \mathbb{R}^6$ (e.g., $N = 1,500$ shots over $[-3.0\text{ A}, +3.0\text{ A}]$) and pass them through high-fidelity tracking simulations or physical machine excitation steps.
+   - For each input $\mathbf{I}$, the 12 Beam Position Monitor (BPM) transverse displacements $\mathbf{Y} \in \mathbb{R}^{12}$ are recorded, forming a supervised dataset $\mathcal{D} = \{(\mathbf{I}^{(i)}, \mathbf{Y}^{(i)})\}_{i=1}^N$.
+   - A deep neural network (e.g. Multi-Layer Perceptron $f_{\boldsymbol{\theta}}$) is trained to minimize the Mean Squared Error (MSE) loss between its prediction $\hat{\mathbf{Y}} = f_{\boldsymbol{\theta}}(\mathbf{I})$ and the true readings $\mathbf{Y}$:
+     $$\mathcal{L}_{\text{MSE}}(\boldsymbol{\theta}) = \frac{1}{N} \sum_{i=1}^N \left\| \mathbf{Y}^{(i)} - f_{\boldsymbol{\theta}}(\mathbf{I}^{(i)}) \right\|_2^2$$
+   - Through gradient backpropagation and the Adam optimizer, the neural surrogate fits the non-linear magnetic core saturation $B(I) \approx I - 0.015 \cdot I^3$ down to the $0.010\text{ mm}$ sensor noise floor.
+2. **Online Inversion for Beam Alignment:**
+   - In operations, the trained surrogate $f_{\boldsymbol{\theta}}$ acts as an ultra-fast **digital twin**. Given an observed distorted orbit $\mathbf{Y}_{\text{obs}}$, we find the corrective kick $\Delta \mathbf{I}^*$ by numerically inverting the surrogate via bounded optimization (e.g., SciPy `L-BFGS-B`):
+     $$\Delta \mathbf{I}^* = \arg\min_{\Delta \mathbf{I}} \left\| \mathbf{Y}_{\text{obs}} + f_{\boldsymbol{\theta}}(\Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2 \quad \text{subject to } \Delta \mathbf{I} \in [-0.8\text{ A}, +0.8\text{ A}]^6$$
+   - **Key Advantage:** Extremely fast convergence (often 2–3 iterations) because the surrogate accurately anticipates magnetic saturation.
+
+#### 2.2.2 Reinforcement Learning: Closed-Loop Policy Control (Track 2)
+In Reinforcement Learning (RL), the system is formulated as a sequential **Markov Decision Process (MDP)** $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, where an agent policy learns through continuous trial-and-error interaction:
+1. **State Space ($\mathcal{S}$):** Current transverse beam displacements at diagnostic stations, $\mathbf{s}_t = \mathbf{Y}_t \in \mathbb{R}^{12}$, bounded in $[-10.0\text{ mm}, +10.0\text{ mm}]$.
+2. **Action Space ($\mathcal{A}$):** Corrective magnet current adjustments, $\mathbf{a}_t = \Delta \mathbf{I}_t \in \mathbb{R}^6$, constrained by hardware delta limits $[-0.8\text{ A}, +0.8\text{ A}]$.
+3. **Environment Transition Dynamics ($\mathcal{P}$):** Physical beamline transport response, including linear betatron motion, non-linear saturation, initial quadrupole drift $\mathbf{Y}_0$, and sensor noise $\boldsymbol{\epsilon}$:
+   $$\mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \mathbf{a}_t, -5.0, +5.0)\text{ A}, \quad \mathbf{s}_{t+1} = \mathbf{I}_{t+1} \cdot \mathbf{R} - 0.015 \cdot (\mathbf{I}_{t+1}^3 \cdot \mathbf{R}) + \mathbf{Y}_0 + \boldsymbol{\epsilon}$$
+4. **Reward Signal ($\mathcal{R}$):** Scalar performance feedback evaluated at each interaction step:
+   $$r_t = - w_{\text{rms}} \cdot \text{RMS}_{t+1} - w_{\text{act}} \cdot \|\mathbf{a}_t\|_2^2 - c_{\text{step}} + (B_{\text{success}} \text{ if terminated else } 0.0)$$
+   where $w_{\text{rms}}$ penalizes beam offset, $w_{\text{act}}$ penalizes large kick effort, $c_{\text{step}}$ penalizes elapsed control steps, and $B_{\text{success}} = 50.0$ rewards achieving $\text{RMS} < 0.030\text{ mm}$.
+5. **Policy Architecture & Damping:** Rather than learning from scratch, high-performance accelerator RL policies leverage **physics-informed priors** (such as Moore-Penrose pseudo-inverse of ORM) augmented with learned neural residuals and dynamic step damping:
+   $$\Delta \mathbf{I}_t = \gamma(t) \cdot \left[ - \alpha (\mathbf{R}^T)^\dagger \mathbf{Y}_t + \mathbf{W}_{\text{tune}} \mathbf{Y}_t + \mathbf{b} \right], \quad \gamma(t) = \frac{1.0}{1.0 + 0.03 \cdot t}$$
+   - **Key Advantage:** Ultra-low latency ($\approx 0.2\text{ ms}$ forward pass) and direct real-time adaptability without requiring iterative numerical optimization loops.
+
+#### 2.2.3 Comparative Architectural Analysis: Forward SL vs. Closed-Loop RL
+
+| Dimension | Forward Supervised Learning (Track 1) | Reinforcement Learning (Track 2) |
+| :--- | :--- | :--- |
+| **Primary Goal** | Accurate physical predictive twin ($\hat{\mathbf{Y}} = f_{\boldsymbol{\theta}}(\mathbf{I})$) | Optimal closed-loop action policy ($\mathbf{a}_t = \pi_{\boldsymbol{\phi}}(\mathbf{s}_t)$) |
+| **Data Collection** | Offline passive sampling across parameter grid | Online interactive rollouts in environment |
+| **Learning Signal** | Vector ground-truth labels $\mathbf{Y}_{\text{true}}$ (BPM vectors) | Scalar reward $r_t$ (Alignment quality + energy penalty) |
+| **Loss / Objective** | Minimize MSE / RMSE prediction error | Maximize expected cumulative return $\mathbb{E}[\sum \gamma^t r_t]$ |
+| **Control Mechanism** | Forward twin evaluation + SciPy `L-BFGS-B` solver | Direct feedback policy evaluation in single matrix pass |
+| **Execution Latency** | $\sim 15 - 30\text{ ms}$ (due to iterative optimization steps) | $\sim 0.2\text{ ms}$ (direct feedforward matrix computation) |
+| **Sample Efficiency** | High (1,500 shots trains complete non-linear model) | Moderate to high (when initialized with physics priors) |
+| **Failure Handling** | Constrained explicitly by optimizer bounds | Constrained by hardware action clipping & damping schedule |
+
+---
+
+### 2.3 Biological & Artificial Neurons: The Mathematical Building Block
 An **artificial neuron** (percepton) is the fundamental computational atom of a neural network:
 
 ```
@@ -140,7 +187,7 @@ Inputs       Weights
 
 ---
 
-### 2.3 Why Activation Functions are Essential: Breaking Linearity
+### 2.4 Why Activation Functions are Essential: Breaking Linearity
 > [!IMPORTANT]
 > **Why can't we just stack linear matrix layers?**  
 > If all activation functions were identity mappings ($\sigma(z) = z$), a 3-layer network would compute:
@@ -164,7 +211,7 @@ Inputs       Weights
 
 ---
 
-### 2.4 Multi-Layer Perceptron (MLP) Anatomy: Layers & Information Flow
+### 2.5 Multi-Layer Perceptron (MLP) Anatomy: Layers & Information Flow
 A **Multi-Layer Perceptron (MLP)** or deep feedforward neural network connects neurons in sequential layers, transforming low-dimensional corrector kicks into non-linear orbit distortions:
 
 ![Multi-Layer Perceptron (MLP) Surrogate Architecture](../img/mlp_schematic.png)
@@ -191,7 +238,7 @@ A **Multi-Layer Perceptron (MLP)** or deep feedforward neural network connects n
 
 ---
 
-### 2.5 Loss Functions, Loss Rates & Evaluation Metrics: MSE vs. RMSE
+### 2.6 Loss Functions, Loss Rates & Evaluation Metrics: MSE vs. RMSE
 
 To train a neural network, we must quantify the error between network predictions $\hat{\mathbf{Y}}$ and physical ground truth observations $\mathbf{Y}$.
 
@@ -207,7 +254,7 @@ To train a neural network, we must quantify the error between network prediction
 
 ---
 
-### 2.6 Optimization Algorithms: Gradient Descent, Learning Rate, and Adam
+### 2.7 Optimization Algorithms: Gradient Descent, Learning Rate, and Adam
 
 The network parameters $\boldsymbol{\theta} = \{\mathbf{W}^{(l)}, \mathbf{b}^{(l)}\}$ are optimized by minimizing the loss function $\mathcal{L}(\boldsymbol{\theta})$ via **backpropagation** (chain rule computation of gradients $\nabla_{\boldsymbol{\theta}} \mathcal{L}$).
 
@@ -241,7 +288,7 @@ In our challenge notebook, we configure `solver='adam'`. Adam combines the advan
 
 ---
 
-### 2.7 Rigorous Dataset Partitioning: Train, Validation, and Test (Holdout) Splits
+### 2.8 Rigorous Dataset Partitioning: Train, Validation, and Test (Holdout) Splits
 
 A neural network with 11,596 parameters can easily memorize random noise if not evaluated correctly. We enforce strict data partitioning:
 
@@ -266,7 +313,7 @@ Total Offline Experimental Dataset (1,500 Simulation Shots)
 
 ---
 
-### 2.8 Challenge Implementation & Empirical Validation
+### 2.9 Challenge Implementation & Empirical Validation
 In Step 3 of [`notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb), we compare the Linear Ridge baseline against the MLP Neural Surrogate:
 
 ```python
