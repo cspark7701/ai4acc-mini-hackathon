@@ -1,7 +1,6 @@
 """
 scripts/build_announcement_docx.py
-Generates docs/Announcement.docx in synchronization with docs/Announcement.md.
-Eliminates '행사' words, removes Google Colab references, promotes Docker, and clarifies Docker Desktop requirements.
+Generates docs/Announcement.docx in complete synchronization with docs/Announcement.md.
 """
 import docx
 from docx.shared import Inches, Pt, RGBColor
@@ -77,15 +76,16 @@ def build_docx():
 
     # ================= KOREAN SECTION =================
     h1_ko = doc.add_heading(level=1)
-    r_h1_ko = h1_ko.add_run("워크숍 개요 및 참가자 필수 준비 사항")
+    r_h1_ko = h1_ko.add_run("개요 및 참가자 필수 준비 사항")
     r_h1_ko.font.color.rgb = PRIMARY
     r_h1_ko.font.size = Pt(15)
 
     p_intro_ko = doc.add_paragraph()
     p_intro_ko.add_run(
-        "가속기 AI 튜토리얼 세션 & 미니 해커톤에 참가하시는 연구원, 엔지니어, 대학원생 여러분을 환영합니다. "
-        "본 워크숍은 가속기 빔 물리 모델링, 신경망 대리모델 디지털 트윈, 폐루프 궤도 정렬 제어(RL, BO), 그리고 "
-        "에이전틱 자율 운전 워크플로우를 포괄하는 1일 집중 이론 교육 및 실습 챌린지입니다."
+        "가속기 AI 튜토리얼 세션 & 미니 해커톤에 참가하시는 모든 연구원, 엔지니어, 대학원생 여러분을 진심으로 환영합니다! "
+        "본 행사는 최신 인공지능(AI) 및 머신러닝(ML) 기법을 입자 가속기 물리 모델링, 폐루프 빔 궤도 제어, 그리고 "
+        "에이전틱 자율 운전 워크플로우에 접목하는 이론적 기초와 실습 역량을 집중적으로 함양하는 1일 집중 튜토리얼 및 챌린지입니다.\n"
+        "• 주요 대상: 가속기 물리 및 제어 박사후연구원, 대학원생 및 학부생"
     )
 
     # Callout Box for Key Prep in Korean
@@ -134,12 +134,12 @@ def build_docx():
     r_sch_ko.font.color.rgb = SECONDARY
     r_sch_ko.font.size = Pt(12.5)
 
-    table_ko = doc.add_table(rows=6, cols=3)
+    table_ko = doc.add_table(rows=8, cols=3)
     table_ko.alignment = WD_TABLE_ALIGNMENT.CENTER
     table_ko.autofit = False
     widths = [Inches(1.5), Inches(1.8), Inches(3.4)]
 
-    headers = ["시간", "세션", "세부 내용 및 연사"]
+    headers = ["시간", "세션 구분", "세부 내용 및 강사"]
     for i, h in enumerate(headers):
         c = table_ko.cell(0, i)
         c.width = widths[i]
@@ -152,11 +152,13 @@ def build_docx():
         r.font.size = Pt(9.5)
 
     rows_ko = [
-        ("09:00 – 09:10", "개회 및 오리엔테이션", "워크숍 목표 소개, Docker/실습 환경 점검 및 챌린지 가이드"),
-        ("09:10 – 10:30", "강의 1 (80분)", "입자 가속기를 위한 AI/ML 기초 및 폐루프 제어\n(박종식 박사, 고려대학교 세종캠퍼스)"),
-        ("10:40 – 12:00", "강의 2 (80분)", "가속기 연구를 위한 에이전틱 AI: Osprey 프레임워크 응용\n(Thorsten Hellert 박사, LBNL)"),
-        ("12:00 – 13:30", "점심 식사 및 네트워킹", "점심 식사 및 참가자 간 교류"),
-        ("13:30 – 17:00", "미니 해커톤 및 시상", "빔 궤도 정렬 챌린지 (트랙 1/2/3)\nW&B 실시간 리더보드 평가, 우수자 시상 및 총평")
+        ("09:00 – 09:10", "개회 및 오리엔테이션", "워크숍 목표 소개, 실습 환경 점검 및 W&B 챌린지 안내"),
+        ("09:10 – 10:30", "강의 1", "입자 가속기를 위한 AI/ML 기초 및 폐루프 제어\n(강사: 박종식 박사, 고려대학교 세종캠퍼스)"),
+        ("10:30 – 10:40", "휴식 및 질의응답", "세션 간 휴식 및 1차 Q&A"),
+        ("10:40 – 12:00", "강의 2", "가속기 연구를 위한 에이전틱 AI: Osprey 프레임워크 응용\n(강사: Thorsten Hellert 박사, LBNL)"),
+        ("12:00 – 13:30", "점심 식사 및 네트워킹", "식사 및 참가자 간 교류"),
+        ("13:30 – 16:30", "미니 해커톤 실습", "빔 궤도 정렬 벤치마크 챌린지 (트랙 1/2/3)\n신경망 대리모델(MLP), 강화학습(RL), 베이지안 최적화(BO) 제어"),
+        ("16:30 – 17:00", "시상 및 총평", "Weights & Biases 실시간 리더보드 결과 확인, 우수 참가자 시상 및 폐회")
     ]
 
     for row_idx, data in enumerate(rows_ko, start=1):
@@ -181,9 +183,10 @@ def build_docx():
     p_intro_en = doc.add_paragraph()
     p_intro_en.add_run(
         "We cordially invite researchers, engineers, postdoctoral scholars, and graduate students to the "
-        "AI Tutorial Session for Accelerators & Mini-Hackathon at KOMAC / KAERI. This intensive, one-day workshop "
-        "covers the full arc from beam physics foundations and neural surrogate digital twins to closed-loop orbit control "
-        "(RL, Bayesian Optimization) and agentic operations."
+        "AI Tutorial Session for Accelerators & Mini-Hackathon at KOMAC / KAERI. This intensive, full-day educational "
+        "session and competition bridges cutting-edge Artificial Intelligence (AI) and Machine Learning (ML) techniques "
+        "with physical beam dynamics, closed-loop accelerator orbit correction, and agentic autonomous operational workflows.\n"
+        "• Target Audience: Undergraduate and graduate students, postdocs in accelerator physics and technologies"
     )
 
     # Callout Box for Key Prep in English
@@ -232,11 +235,11 @@ def build_docx():
     r_sch_en.font.color.rgb = SECONDARY
     r_sch_en.font.size = Pt(12.5)
 
-    table_en = doc.add_table(rows=6, cols=3)
+    table_en = doc.add_table(rows=8, cols=3)
     table_en.alignment = WD_TABLE_ALIGNMENT.CENTER
     table_en.autofit = False
 
-    headers_en = ["Time (KST)", "Session", "Description & Lecturer"]
+    headers_en = ["Time (KST)", "Session Type", "Details & Lecturers"]
     for i, h in enumerate(headers_en):
         c = table_en.cell(0, i)
         c.width = widths[i]
@@ -249,11 +252,13 @@ def build_docx():
         r.font.size = Pt(9.5)
 
     rows_en = [
-        ("09:00 – 09:10", "Welcome & Setup", "Workshop orientation, Docker/environment checks & W&B intro"),
-        ("09:10 – 10:30", "Lecture 1 (80 min)", "AI/ML Foundations and Closed-Loop Control for Particle Accelerators\n(Chong Shik Park, Ph.D., Korea University, Sejong)"),
-        ("10:40 – 12:00", "Lecture 2 (80 min)", "Agentic AI for Accelerator Research: Osprey Applications\n(Thorsten Hellert, Ph.D., LBNL)"),
-        ("12:00 – 13:30", "Lunch & Networking", "Lunch break and scientific networking"),
-        ("13:30 – 17:00", "Mini-Hackathon & Awards", "Beam Orbit Alignment Benchmark Challenge (Tracks 1, 2, 3)\nW&B Live Leaderboard review, awards presentation & closing")
+        ("09:00 – 09:10", "Welcome & Orientation", "Opening remarks, workshop objectives, setup verification & W&B intro"),
+        ("09:10 – 10:30", "Lecture 1", "AI/ML Foundations and Closed-Loop Control for Particle Accelerators\n(Lecturer: Chong Shik Park, Ph.D., Korea University, Sejong)"),
+        ("10:30 – 10:40", "Break & Discussion", "Intermission and Q&A"),
+        ("10:40 – 12:00", "Lecture 2", "Agentic AI for Accelerator Research: Osprey Applications\n(Lecturer: Thorsten Hellert, Ph.D., LBNL)"),
+        ("12:00 – 13:30", "Lunch & Networking", "Complimentary lunch and attendee collaboration"),
+        ("13:30 – 16:30", "Mini-Hackathon", "Beam Orbit Alignment Benchmark Challenge (Tracks 1, 2, 3)\nSupervised Neural Surrogate (MLP), Reinforcement Learning (RL), Bayesian Optimization (BO)"),
+        ("16:30 – 17:00", "Leaderboard Awards", "W&B Live Leaderboard review, awards presentation & closing remarks")
     ]
 
     for row_idx, data in enumerate(rows_en, start=1):
