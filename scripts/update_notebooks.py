@@ -78,9 +78,12 @@ from src import (
 # ------------------------------------------------------------------------------
 # Hackathon Configuration (Customize for Your Team!)
 # ------------------------------------------------------------------------------
-TEAM_NAME = "Team_Alpha"                    # <-- CHANGE THIS: Your registered team name!
-WANDB_PROJECT = "accelerator-orbit-hackathon" # [DO NOT CHANGE] Workshop project name for live leaderboard
-WANDB_ENTITY = None                          # [DO NOT CHANGE] Leave None for personal account or preset workspace
+# >>> [PARTICIPANT MODIFY HERE]: Change to your registered team name!
+TEAM_NAME = "Team_Alpha"
+
+# >>> [DO NOT MODIFY]: Official workshop competition settings
+WANDB_PROJECT = "accelerator-orbit-hackathon" # [DO NOT CHANGE] Official project name for live leaderboard
+WANDB_ENTITY = None                          # [DO NOT CHANGE] Preset workshop entity
 USE_WANDB = True                             # [DO NOT CHANGE] Keep True to submit scores to the live leaderboard
 
 print(f"Setup complete! Ready to compete as: {TEAM_NAME}")"""
@@ -101,6 +104,7 @@ The 2D schematic diagram below illustrates the arrangement of steering magnets, 
 # Cell 3: Step 1 Code
 # ------------------------------------------------------------------------------
 c3_code = """# Step 1: Display 2D Accelerator Beamline Schematic Diagram
+# [DO NOT MODIFY - Diagnostic Lattice Visualization]
 fig = draw_beamline(save_path="img/beamline.png", show=True)"""
 
 # ------------------------------------------------------------------------------
@@ -128,15 +132,19 @@ The accelerator simulator is encapsulated in a standardized **Gymnasium** enviro
 # Cell 5: Step 2 Code
 # ------------------------------------------------------------------------------
 c5_code = """# Step 2: Instantiate Standardized Hackathon Gymnasium Environment
-# Tip for Track 2 (RL): You can customize reward/penalty weights or pass a custom reward_fn!
+# ==============================================================================
+# [OPTIONAL TODO / CAN MODIFY FOR RL POLICY TRAINING & OPTIMIZATION]
+# ==============================================================================
+# You can customize reward/penalty weights or pass a custom reward_fn callback:
 env = AcceleratorOrbitGymEnv(
-    rms_weight=10.0,      # Penalty weight for orbit RMS error
-    action_weight=0.01,   # Penalty weight for corrector kick effort
-    step_penalty=0.5,     # [TRY MODIFYING THIS] Step penalty to incentivize faster convergence!
-    success_bonus=50.0    # Completion bonus upon reaching RMS < 0.030 mm
+    rms_weight=10.0,      # [CAN MODIFY] Penalty weight for orbit RMS error
+    action_weight=0.01,   # [CAN MODIFY] Penalty weight for corrector kick effort
+    step_penalty=0.5,     # [CAN MODIFY] Step penalty to incentivize faster convergence!
+    success_bonus=50.0    # [CAN MODIFY] Completion bonus upon reaching RMS < 0.030 mm
+    # reward_fn=None      # [CAN MODIFY] Optional: pass custom_reward_fn(rms, action, term, trunc, step)
 )
 
-# Reset to canonical test seed 42 to inspect initial uncorrected orbit distortion
+# [DO NOT MODIFY]: Reset to canonical test seed 42 to inspect initial uncorrected orbit
 obs, info = env.reset(seed=42)
 
 print("=" * 68)
@@ -166,14 +174,16 @@ Here, we collect 1,500 simulation shots (80% train, 20% test) across currents $[
 # Cell 7: Step 3 Code (Participant with TODO 1 & Hints)
 # ------------------------------------------------------------------------------
 c7_code_part = """# Step 3: Offline Data Generation & Surrogate Training
-# Generate 1500 training samples covering [-3.0, +3.0] A with non-linear saturation and noise
+# [OPTIONAL CAN MODIFY]: You can increase n_samples (e.g. 2000, 3000) or adjust sampling range:
 X_offline, Y_offline = generate_offline_dataset(
     env,
-    n_samples=1500,
-    current_range=(-3.0, 3.0),
-    noise_std=0.010,
+    n_samples=1500,               # [CAN MODIFY] Number of training samples
+    current_range=(-3.0, 3.0),    # [CAN MODIFY] Current sampling range in Amperes
+    noise_std=0.010,              # [DO NOT MODIFY] Physical sensor noise floor (0.010 mm)
     random_state=42
 )
+
+# [DO NOT MODIFY]: Standard 80/20 train/test evaluation split
 X_train, X_test, Y_train, Y_test = train_test_split(X_offline, Y_offline, test_size=0.20, random_state=42)
 print(f"Dataset generated: X_train shape={X_train.shape}, Y_train shape={Y_train.shape}")
 
@@ -214,19 +224,31 @@ print(f"Dataset generated: X_train shape={X_train.shape}, Y_train shape={Y_train
 #   • Accuracy Benchmark: Target test RMSE is < 0.015 mm (near the 0.010 mm sensor noise floor).
 # ==============================================================================
 
+# ------------------------------------------------------------------------------
 # 1. Train Linear Baseline
+# ------------------------------------------------------------------------------
+# >>> [OPTIONAL CAN MODIFY]: Tune alpha regularization parameter:
 linear_model = Ridge(alpha=1.0).fit(X_train, Y_train)
+
+# [DO NOT MODIFY]: Test set RMSE evaluation
 rmse_linear = root_mean_squared_error(Y_test, linear_model.predict(X_test))
 
+# ------------------------------------------------------------------------------
 # 2. Train Multi-Layer Perceptron (MLP) Neural Surrogate
+# ------------------------------------------------------------------------------
+# >>> [PARTICIPANT MODIFY HERE - TODO 1] <<<
+# Tune hidden_layer_sizes, activation, alpha, learning_rate_init, max_iter to minimize test RMSE:
 surrogate_model = MLPRegressor(
-    hidden_layer_sizes=(128, 64, 32),
-    activation='relu',
-    solver='adam',
-    alpha=1e-4,
-    max_iter=400,
+    hidden_layer_sizes=(128, 64, 32),  # [CAN MODIFY] e.g. (128, 128) or (256, 128, 64)
+    activation='relu',                # [CAN MODIFY] 'relu', 'tanh', etc.
+    solver='adam',                    # [CAN MODIFY] 'adam', 'lbfgs'
+    alpha=1e-4,                       # [CAN MODIFY] L2 regularization strength
+    learning_rate_init=0.001,         # [CAN MODIFY] Initial learning rate
+    max_iter=400,                     # [CAN MODIFY] Training epochs
     random_state=42
 ).fit(X_train, Y_train)
+
+# [DO NOT MODIFY]: Test set RMSE evaluation
 rmse_mlp = root_mean_squared_error(Y_test, surrogate_model.predict(X_test))
 
 print("=" * 68)
@@ -261,10 +283,16 @@ where `obs` has shape `(12,)` and the returned action is an array of shape `(6,)
 # ------------------------------------------------------------------------------
 c9_code_part = """# Step 4: Define Benchmark Controllers
 
+# ------------------------------------------------------------------------------
 # 1. Baseline 0: Classical Linear ORM Pseudo-Inverse Controller (from src)
+# ------------------------------------------------------------------------------
+# [DO NOT MODIFY - Standard Reference Baseline 0]:
 b0 = ClassicalSVDController(env.R, gain=0.45)
 
+# ------------------------------------------------------------------------------
 # 2. Baseline 1: Supervised Forward Surrogate + SciPy Inversion Optimizer (from src)
+# ------------------------------------------------------------------------------
+# [OPTIONAL CAN MODIFY]: Uses your trained surrogate_model from TODO 1 above:
 b1 = SupervisedMLPController(surrogate_model)
 
 # ==============================================================================
@@ -357,22 +385,40 @@ b1 = SupervisedMLPController(surrogate_model)
 #      policy to land close to the 0.010 mm sensor noise floor, unlocking huge precision scores!
 # ==============================================================================
 
+# >>> [PARTICIPANT MODIFY HERE - TODO 2 (CHALLENGE TRACK 2)] <<<
 class MyCustomRLAgent:
     \"\"\"Track 2: Participant Custom Closed-Loop Policy Agent.\"\"\"
     def __init__(self, R_matrix, gain=0.45):
+        # [CAN MODIFY] Precomputed pseudo-inverse or learned matrix representation
         self.base_R_pinv = np.linalg.pinv(R_matrix.T)
+        
+        # [CAN MODIFY] Initial feedback gain alpha (Try 0.55 - 0.72!)
         self.gain = gain
+        
+        # [CAN MODIFY] Learned residual weights, biases, or neural policy parameters
         self.W_tune = np.zeros((6, 12), dtype=np.float64)
         self.bias = np.zeros(6, dtype=np.float64)
 
     def act(self, obs, info=None):
+        \"\"\"
+        [PARTICIPANT TODO]: Compute delta current kicks (shape (6,)) bounded in [-0.8, 0.8] A.
+        \"\"\"
         step_idx = info.get("step", 0) if info else 0
+
+        # >>> [CAN MODIFY]: Dynamic / adaptive gain calculation:
         action_phys = - self.gain * (self.base_R_pinv @ obs)
+
+        # >>> [CAN MODIFY]: Residual learned kick or non-linear saturation compensation:
         action_learned = self.W_tune @ obs + self.bias
         action = action_phys + 0.05 * np.tanh(action_learned)
+
+        # >>> [CAN MODIFY]: Damping factor to prevent limit-cycle oscillations around 0.030 mm:
         damping = 1.0 / (1.0 + 0.03 * step_idx)
+
+        # [DO NOT MODIFY HARDWARE CLIP BOUNDS]: Output must remain within [-0.8, +0.8] A
         return np.clip(action * damping, -0.8, 0.8)
 
+# >>> [CAN MODIFY]: Instantiate your custom controller:
 b2 = MyCustomRLAgent(env.R, gain=0.45)
 print("All three competitor controllers initialized successfully.")"""
 
@@ -413,8 +459,11 @@ When `USE_WANDB = True`, telemetry, seed breakdowns, and scores are automaticall
 # Cell 11: Step 5 Code (Clean call to benchmark engine)
 # ------------------------------------------------------------------------------
 c11_code_part = """# Step 5: Standardized Evaluation Harness with Weights & Biases Logging
-# Evaluates each competitor controller across 30 standardized seeds (range 1 to 31)
-# Telemetry, seed breakdowns, and scores are automatically uploaded to W&B
+# ==============================================================================
+# [DO NOT MODIFY - Standardized 30-Seed Evaluation Protocol]
+# ==============================================================================
+# Evaluates each competitor controller across 30 standardized seeds (range 1 to 31).
+# Telemetry, seed breakdowns, and scores are automatically uploaded to W&B.
 print("Running Official Hackathon Benchmark across 30 Test Seeds...")
 
 res_b0 = evaluate_hackathon_benchmark(env, b0, agent_name="Baseline0_LinearSVD", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)
@@ -442,6 +491,9 @@ In this step, we evaluate each controller on canonical test seed 42 to inspect:
 # Cell 13: Step 6 Code
 # ------------------------------------------------------------------------------
 c13_code = """# Step 6: Generate Dual Trajectory Overlay & Dynamic Convergence Curves
+# ==============================================================================
+# [DO NOT MODIFY - Canonical Diagnostic Visualization]
+# ==============================================================================
 fig = plot_benchmark_trajectories(
     env,
     controllers={
@@ -465,6 +517,9 @@ Run this single summary cell during team presentations to display your official 
 # Cell 15: Step 7 Code
 # ------------------------------------------------------------------------------
 c15_code = """# Step 7: Final Team Showcase Presentation Summary
+# ==============================================================================
+# [DO NOT MODIFY - Automated Showcase Scorecard for Presentation]
+# ==============================================================================
 best_agent_name, best_metrics = max(
     [("Track 2 (RL Closed-Loop Agent)", res_b2),
      ("Baseline 1 (Supervised MLP)", res_b1),
@@ -524,13 +579,22 @@ print('Generated Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb (formula
 solution_cells = list(participant_cells)
 c9_code_sol = """# Step 4: Define Benchmark Controllers
 
+# ------------------------------------------------------------------------------
 # 1. Baseline 0: Classical Linear ORM Pseudo-Inverse Controller (from src)
+# ------------------------------------------------------------------------------
+# [Reference Baseline 0]:
 b0 = ClassicalSVDController(env.R, gain=0.45)
 
+# ------------------------------------------------------------------------------
 # 2. Baseline 1: Supervised Forward Surrogate + SciPy Inversion Optimizer (from src)
+# ------------------------------------------------------------------------------
+# [Reference Baseline 1]:
 b1 = SupervisedMLPController(surrogate_model)
 
+# ------------------------------------------------------------------------------
 # 3. Track 2: Reference Closed-Loop RL / Adaptive Agent (from src)
+# ------------------------------------------------------------------------------
+# [Reference Solution Agent]:
 b2 = RLOrbitChallengeAgent(env.R, gain=0.45)
 
 print("All three competitor controllers initialized successfully.")"""
