@@ -31,11 +31,12 @@ RUN pip install --upgrade pip setuptools wheel && \
     pip install -e ".[dev]" && \
     python -m ipykernel install --name=ai4acc --display-name="Python (ai4acc)"
 
-# Copy all remaining project files (notebooks, lecture notes, docs, img, setup script)
+# Copy all participant project files (notebooks, lecture notes, slide decks, docs, img)
 COPY . .
 
-# Ensure solution notebooks are excluded from participant container image
-RUN rm -f /workspace/notebooks/*Solution*.ipynb
+# Ensure solution notebooks and internal maintenance scripts are excluded from participant container
+RUN rm -f /workspace/notebooks/*Solution*.ipynb && \
+    rm -rf /workspace/scripts
 
 # Expose default Jupyter port
 EXPOSE 8888
