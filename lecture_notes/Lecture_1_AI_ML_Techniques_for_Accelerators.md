@@ -1,6 +1,8 @@
 # Lecture 1: AI/ML Foundations and Closed-Loop Control for Particle Accelerators
+## Physics Foundations, Neural Surrogates, Reinforcement Learning, and Bayesian Optimization
 
 **Author:** Chong Shik Park, Ph.D.  
+**Affiliation:** Korea University, Sejong  
 **Date:** November 3, 2026  
 **Target Audience:** Graduate Students & Early-Career Postdoctoral Researchers in Accelerator Physics and Engineering  
 
@@ -84,7 +86,7 @@ flowchart LR
 ```
 
 ### 2.2 Transverse Beam Dynamics & Hill's Equation
-Transverse particle motion along the longitudinal beam coordinate $s$ in a linear uncoupled lattice is governed by **Hill's Equation**:
+Transverse particle motion along the longitudinal beam coordinate $s$ in a linear uncoupled lattice is governed by **Hill's Equation** ([Wiedemann, 2015](https://doi.org/10.1007/978-3-319-18317-6)):
 $$\frac{d^2 x(s)}{ds^2} + K(s) x(s) = 0$$
 where $K(s) = \frac{e}{p} \frac{\partial B_y(s)}{\partial x}$ represents the alternating quadrupole focusing strength ($K > 0$ for focusing `QF`, $K < 0$ for defocusing `QD`).
 
@@ -99,7 +101,7 @@ When a localized angular deflection (kick) $\theta_j = \Delta x'_j = \frac{e B L
 
 $$R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_i) - \psi(s_j)| - \pi \nu \right)$$
 
-In vector notation, for $M$ BPMs and $N$ correctors:
+For $M$ BPMs and $N$ dipole steerers, the linear response is encapsulated by the matrix $\mathbf{R} \in \mathbb{R}^{N \times M}$ ([Minty & Zimmermann, 2003](https://doi.org/10.1007/978-3-662-08581-3)):
 $$\mathbf{Y}_{\text{linear}} = \mathbf{R} \cdot \boldsymbol{\theta} = \mathbf{I} \cdot \mathbf{R}$$
 where $\mathbf{R} \in \mathbb{R}^{N \times M}$ is the **Orbit Response Matrix (ORM)**.
 
@@ -342,7 +344,7 @@ Total Offline Experimental Dataset (1,500 Simulation Shots)
 ---
 
 ### 3.9 Challenge Implementation & Empirical Validation
-In Step 3 of [`notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb), we compare the Linear Ridge baseline against the MLP Neural Surrogate:
+In Step 3 of [`notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb), we compare the Linear Ridge baseline against the MLP Neural Surrogate:
 
 ```python
 # Train Regularized Linear Baseline
@@ -502,19 +504,28 @@ obs, reward, terminated, truncated, info = env.step(action)
 - **Termination:** `terminated = True` if $\text{RMS} < 0.030\text{ mm}$ (`is_success = True`).
 - **Truncation:** `truncated = True` if `step >= 20` (`is_success = False`).
 
-### 5.2 Standardized 30-Seed Evaluation Protocol
+### 5.2 The Three Parallel Challenge Tracks
+Participants solve the beam alignment challenge by competing in one or more parallel algorithmic tracks within `Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`:
+1. **Track 1 (Supervised Digital Twin Inversion, `TODO 1`):**  
+   Train a non-linear Multi-Layer Perceptron ($f_{\boldsymbol{\theta}}$) on offline tracking data to model the cubic iron core saturation. In operations, solve a bounded optimization problem per step via SciPy `L-BFGS-B` to invert the digital twin.
+2. **Track 2 (Closed-Loop Reinforcement Learning Policy, `TODO 2`):**  
+   Design a fast continuous policy agent integrating an analytical Moore-Penrose pseudo-inverse physics prior with learned residual offsets and adaptive step damping $\gamma(t) = 1.0 / (1.0 + \kappa \cdot t)$. Customize environment reward weights to directly optimize convergence speed and current economy.
+3. **Track 3 (Bayesian Optimization Controller, `TODO 3`):**  
+   Fit a Gaussian Process surrogate with Matérn-5/2 kernel and diagnostic noise floor. Optimize a Lower Confidence Bound (LCB) acquisition function to balance epistemic uncertainty exploration against exploitation of predicted orbit corrections under non-linear saturation.
+
+### 5.3 Standardized 30-Seed Evaluation Protocol
 To prevent evaluation bias or seed cherry-picking, all controllers are evaluated over **30 standardized evaluation seeds** (`seeds = range(1, 31)`), spanning a wide spectrum of initial misalignments ($0.4\text{ mm} \le \text{RMS}_0 \le 1.1\text{ mm}$).
 
-### 5.3 The Official Hackathon Scoring Formula
+### 5.4 The Official Hackathon Scoring Formula
 $$\text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text{Steps}}) + \left(\frac{0.03}{\max(\overline{\text{RMS}}, 0.005)} \times 20.0\right) - (2.0 \times \overline{\|\mathbf{I}\|})$$
 
 #### Scoring Components Breakdown:
-1. **Success Rate ($10 \times \%$):** Up to **1,000.0 points** for $100\%$ convergence across all 30 seeds.
-2. **Speed Penalty ($-2 \times \overline{\text{Steps}}$):** Penalizes sluggish policies. Converging in 1.5 steps incurs only $-3.0$ points, while taking 10 steps costs $-20.0$ points.
-3. **Precision Bonus ($\frac{0.03}{\text{RMS}} \times 20$):** Rewards sub-micron orbit precision. An RMS of $0.015\text{ mm}$ yields $+40.0$ points.
-4. **Current Economy Penalty ($-2 \times \overline{\|\mathbf{I}\|}$):** Penalizes excessive corrector current norms, protecting power supplies and preventing magnet saturation.
+1. **Success Rate ($10.0 \times \%$):** Up to **1,000.0 points** for $100\%$ convergence across all 30 seeds.
+2. **Speed Penalty ($-2.0 \times \overline{\text{Steps}}$):** Penalizes sluggish policies. Converging in 1.5 steps incurs only $-3.0$ points, while taking 10 steps costs $-20.0$ points.
+3. **Sub-Micron Precision Bonus ($\frac{0.03}{\text{RMS}} \times 20.0$):** Rewards sub-$30\ \mu\text{m}$ alignment (reaching $0.015\text{ mm}$ yields $+40.0$ points).
+4. **Current Economy Penalty ($-2.0 \times \overline{\|\mathbf{I}\|}$):** Penalizes excessive corrector current norms, protecting power supplies and preventing magnet saturation.
 
-### 5.4 Reference Benchmark Results
+### 5.5 Reference Benchmark Results
 Across the 30 standardized seeds, our four competitor implementations produce:
 
 | Rank | Controller Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Total Score |
@@ -544,7 +555,7 @@ Across the 30 standardized seeds, our four competitor implementations produce:
 4. **Edelen, A., et al.** (2020). *Machine learning for orders-of-magnitude speedup in multiobjective optimization of particle accelerator beamlines*. Physical Review Accelerators and Beams, 23(4), 044601.
 5. **Emma, C., et al.** (2021). *Virtual diagnostic for beam profile reconstruction using deep neural networks at LCLS*. Nature Communications, 12(1), 348.
 6. **Tennant, C., et al.** (2020). *Supervised machine learning for failure prediction in superconducting radio-frequency cavities at CEBAF*. Machine Learning: Science and Technology, 1(3), 035005.
-7. **Kain, V., et al.** (2020). *Sample-efficient reinforcement learning for CERN accelerator control*. Physical Review Accelerators and Beams, 23(12), 124801.
-8. **Hellert, T., et al.** (2024). *Autonomous accelerator tuning using large language model agents and Osprey*. Physical Review Accelerators and Beams, 27(6), 064601.
+7. **Hellert, T., et al.** (2024). *Autonomous accelerator tuning using large language model agents and Osprey*. Physical Review Accelerators and Beams, 27(6), 064601.
+8. **Wiedemann, H.** (2015). *Particle Accelerator Physics* (4th ed.). Springer.
 9. **Minty, M. G., & Zimmermann, F.** (2003). *Measurement and Control of Charged Particle Beams*. Springer.
-10. **Wiedemann, H.** (2015). *Particle Accelerator Physics* (4th ed.). Springer.
+10. **Kain, V., et al.** (2020). *Sample-efficient reinforcement learning for CERN accelerator control*. Physical Review Accelerators and Beams, 23(12), 124801.

@@ -90,6 +90,7 @@
     {\large\color{darkgray} Physics Foundations, Neural Surrogates, Reinforcement Learning, and Bayesian Optimization} \\[0.5em]
     \rule{\textwidth}{1.2pt} \\[0.5em]
     \textbf{Chong Shik Park, Ph.D.} \\[0.2em]
+    {\normalsize\color{darkgray} Korea University, Sejong} \\[0.2em]
     {\small\color{darkgray} November 3, 2026}
 \end{center}
 
@@ -111,7 +112,7 @@ Over the past decade, Artificial Intelligence (AI) and Machine Learning (ML) hav
 
 The landscape of AI applications in particle accelerators is broadly categorized into five foundational pillars:
 \begin{enumerate}
-    \item \textbf{Surrogate Modeling \& Fast Digital Twins~\cite{edelen2018neural, edelen2020opportunities}:}
+    \item \textbf{Surrogate Modeling \& Fast Digital Twins~\cite{edelen2020opportunities, edelen2018neural}:}
     High-fidelity numerical particle tracking codes (such as \texttt{ELEGANT}, \texttt{MAD-X}, and \texttt{OPAL}) simulate complex beam dynamics, space-charge forces, and collective effects, but require minutes to hours per run. Deep neural networks (Multi-Layer Perceptrons, Convolutional Networks, and Physics-Informed Neural Networks) learn fast surrogate representations capable of evaluating beamline outcomes in sub-millisecond execution times. These ultra-fast surrogates serve as digital twins for real-time model-predictive control, online trajectory correction, and rapid parametric sensitivity analysis.
 
     \item \textbf{Multi-Objective Autonomous Optimization \& Tuning~\cite{roussel2023turnkey, edelen2020machine}:}
@@ -144,7 +145,7 @@ Orbit distortions arise from multiple sources:
 \end{itemize}
 
 \subsection{Transverse Beam Dynamics \& Hill's Equation}
-In an uncoupled linear transport channel, the transverse displacement $x(s)$ as a function of path length $s$ is governed by \textbf{Hill's Equation}:
+In an uncoupled linear transport channel, the transverse displacement $x(s)$ as a function of path length $s$ is governed by \textbf{Hill's Equation}~\cite{wiedemann2015particle}:
 \begin{equation}
     \frac{d^2 x(s)}{ds^2} + K(s) x(s) = 0
 \end{equation}
@@ -161,7 +162,7 @@ When an angular kick $\theta_j = \Delta x'_j = \frac{e B L}{p}$ is applied by a 
 \begin{equation}
     R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_i) - \psi(s_j)| - \pi \nu \right)
 \end{equation}
-For $M$ BPMs and $N$ dipole steerers, the linear response is encapsulated by the matrix $\mathbf{R} \in \mathbb{R}^{N \times M}$:
+For $M$ BPMs and $N$ dipole steerers, the linear response is encapsulated by the matrix $\mathbf{R} \in \mathbb{R}^{N \times M}$~\cite{minty2003measurement}:
 \begin{equation}
     \mathbf{Y}_{\text{linear}} = \mathbf{I} \cdot \mathbf{R}
 \end{equation}
@@ -514,22 +515,48 @@ class BayesianOptimizationController:
 \section{Mini-Hackathon Problem Formulation \& Gymnasium Contract}
 
 \subsection{Gymnasium Environment Specification (\texttt{AcceleratorOrbitGymEnv})}
+The benchmark simulation models the 15-meter transport line wrapped inside a standard Farama Gymnasium environment interface:
 \begin{itemize}
-    \item \textbf{Observation Space:} $\text{Box}(-10.0, +10.0, \text{shape}=(12,), \text{dtype}=\text{float32})$ (BPM readings in mm).
-    \item \textbf{Action Space:} $\text{Box}(-0.8, +0.8, \text{shape}=(6,), \text{dtype}=\text{float32})$ (Incremental kicks $\Delta \mathbf{I}$ in Amperes).
-    \item \textbf{State Update:} $\mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \Delta \mathbf{I}_t, -5.0, 5.0)$.
-    \item \textbf{Reward Function:}
+    \item \textbf{Observation Space:} $\text{Box}(-10.0, +10.0, \text{shape}=(12,), \text{dtype}=\text{float32})$ (Transverse BPM readings in mm).
+    \item \textbf{Action Space:} $\text{Box}(-0.8, +0.8, \text{shape}=(6,), \text{dtype}=\text{float32})$ (Per-step delta currents $\Delta \mathbf{I}$ in Amperes).
+    \item \textbf{State Dynamics:} Cumulative magnet current $\mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \Delta \mathbf{I}_t, -5.0, +5.0)\text{ A}$, accounting for non-linear core saturation $-0.015 \cdot \mathbf{I}^3 \cdot \mathbf{R}$ and Gaussian diagnostic jitter $\sigma = 0.010\text{ mm}$.
+    \item \textbf{Termination Criteria:} Triggered when $\text{RMS} < 0.030\text{ mm}$ (success); truncated if step count reaches $20$ (failure).
+    \item \textbf{Step Reward:}
     \begin{equation}
         r_t = - \text{RMS}_{t+1} - 0.01 \cdot \|\Delta \mathbf{I}_t\|_2 + (50.0 \text{ if } \text{RMS}_{t+1} < 0.030\text{ mm} \text{ else } 0.0)
     \end{equation}
-    \item \textbf{Success Criteria:} Terminated when $\text{RMS} < 0.030\text{ mm}$; truncated if step count reaches $20$.
 \end{itemize}
 
-\subsection{Standardized 30-Seed Evaluation \& Official Scoring Formula}
-Controllers are evaluated across 30 standardized seeds (\texttt{range(1, 31)}). The official benchmark score is defined as:
+\subsection{The Three Parallel Challenge Tracks}
+Participants solve the beam alignment challenge by competing in one or more parallel algorithmic tracks within \texttt{Single\_Notebook\_Beam\_Orbit\_Predictor\_Participant.ipynb}:
+\begin{enumerate}
+    \item \textbf{Track 1 (Supervised Digital Twin Inversion, \texttt{TODO 1}):}
+    Train a non-linear Multi-Layer Perceptron ($f_{\boldsymbol{\theta}}$) on offline tracking data to model the cubic iron core saturation. In operations, solve a bounded optimization problem per step via SciPy \texttt{L-BFGS-B} to invert the digital twin.
+    
+    \item \textbf{Track 2 (Closed-Loop Reinforcement Learning Policy, \texttt{TODO 2}):}
+    Design a fast continuous policy agent integrating an analytical Moore-Penrose pseudo-inverse physics prior with learned residual offsets and adaptive step damping $\gamma(t) = 1.0 / (1.0 + \kappa \cdot t)$. Customize environment reward weights to directly optimize convergence speed and current economy.
+    
+    \item \textbf{Track 3 (Bayesian Optimization Controller, \texttt{TODO 3}):}
+    Fit a Gaussian Process surrogate with Mat\'ern-5/2 kernel and diagnostic noise floor. Optimize a Lower Confidence Bound (LCB) acquisition function to balance epistemic uncertainty exploration against exploitation of predicted orbit corrections under non-linear saturation.
+\end{enumerate}
+
+\subsection{Standardized 30-Seed Evaluation \& Multi-Objective Scoring Formula}
+To eliminate evaluation bias, all competitor policies are evaluated across \textbf{30 standardized evaluation seeds} (\texttt{range(1, 31)}).
+The official challenge score is evaluated via:
 \begin{equation}
     \text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text{Steps}}) + \left(\frac{0.03}{\max(\overline{\text{RMS}}, 0.005)} \times 20.0\right) - (2.0 \times \overline{\|\mathbf{I}\|})
 \end{equation}
+
+\noindent\textbf{Scoring Components Breakdown:}
+\begin{itemize}
+    \item \textbf{Success Rate ($10.0 \times \%$):} Up to $1,000.0\text{ points}$ for achieving $100\%$ convergence across all 30 test seeds.
+    \item \textbf{Speed Penalty ($-2.0 \times \overline{\text{Steps}}$):} Penalizes slow policies (converging in $1.5$ steps costs $-3.0\text{ pts}$, while $10$ steps costs $-20.0\text{ pts}$).
+    \item \textbf{Sub-Micron Precision Bonus ($\frac{0.03}{\text{RMS}} \times 20.0$):} Rewards sub-$30\ \mu\text{m}$ alignment (reaching $0.015\text{ mm}$ yields $+40.0\text{ pts}$).
+    \item \textbf{Current Economy Penalty ($-2.0 \times \overline{\|\mathbf{I}\|}$):} Penalizes excessive corrector current norms to protect power supplies and minimize magnetic saturation.
+\end{itemize}
+
+\subsection{Reference Benchmark Results}
+Official baseline and challenge policy performance across the 30 standardized evaluation seeds is summarized in Table~\ref{tab:leaderboard}.
 
 \begin{table}[h!]
 \centering
@@ -572,10 +599,10 @@ Controllers are evaluated across 30 standardized seeds (\texttt{range(1, 31)}). 
     \bibitem{edelen2020machine} Edelen, A., et al. (2020). Machine learning for orders-of-magnitude speedup in multiobjective optimization of particle accelerator beamlines. \textit{Physical Review Accelerators and Beams}, 23(4), 044601.
     \bibitem{emma2021virtual} Emma, C., et al. (2021). Virtual diagnostic for beam profile reconstruction using deep neural networks at LCLS. \textit{Nature Communications}, 12(1), 348.
     \bibitem{tennant2020supervised} Tennant, C., et al. (2020). Supervised machine learning for failure prediction in superconducting radio-frequency cavities at CEBAF. \textit{Machine Learning: Science and Technology}, 1(3), 035005.
-    \bibitem{kain2020sample} Kain, V., et al. (2020). Sample-efficient reinforcement learning for CERN accelerator control. \textit{Physical Review Accelerators and Beams}, 23(12), 124801.
     \bibitem{hellert2024autonomous} Hellert, T., et al. (2024). Autonomous accelerator tuning using large language model agents and Osprey. \textit{Physical Review Accelerators and Beams}, 27(6), 064601.
-    \bibitem{minty2003measurement} Minty, M. G., \& Zimmermann, F. (2003). \textit{Measurement and Control of Charged Particle Beams}. Springer.
     \bibitem{wiedemann2015particle} Wiedemann, H. (2015). \textit{Particle Accelerator Physics} (4th ed.). Springer.
+    \bibitem{minty2003measurement} Minty, M. G., \& Zimmermann, F. (2003). \textit{Measurement and Control of Charged Particle Beams}. Springer.
+    \bibitem{kain2020sample} Kain, V., et al. (2020). Sample-efficient reinforcement learning for CERN accelerator control. \textit{Physical Review Accelerators and Beams}, 23(12), 124801.
 \end{thebibliography}
 \end{small}
 
