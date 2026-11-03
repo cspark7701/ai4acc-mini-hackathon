@@ -91,7 +91,8 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 ├── pyproject.toml                                    # Standard Python package & build metadata (PEP 517/621)
 ├── .gitignore                                        # Standard Git ignore rules (LaTeX, Python, W&B)
 │
-├── docs/                                             # Supporting workshop documentation (.docx guides)
+├── docs/                                             # Supporting workshop documentation & setup guides
+│   ├── DOCKER_GUIDE.md                               # Complete Docker, Docker Compose & Docker Hub user guide
 │   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide
 │   ├── Hackathon Project Guide.docx                  # Full challenge rules, physics spec, and scoring breakdown
 │   ├── Mini-Hackathon Participant Instructions.docx   # Quick-reference participant milestone checklist
@@ -192,7 +193,8 @@ docker run -it --rm \
 ```
 
 Once launched, open **`http://localhost:8888`** in your browser. All packages (`gymnasium`, `scikit-learn`, `wandb`, `jupyterlab`, `notebook`) are pre-installed and ready to use!
-Access the Jupyter Lab interface in your browser at `http://localhost:8888`.
+
+For detailed usage, Docker Hub publishing instructions, and troubleshooting (port conflicts, empty directory mounts, W&B keys), see the full **[`docs/DOCKER_GUIDE.md`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/DOCKER_GUIDE.md)**.
 
 ---
 
