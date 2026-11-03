@@ -13,8 +13,9 @@ services:
     ports:
       - "8888:8888"
     volumes:
-      # Mount notebooks and src so changes made inside Jupyter persist on your host
-      - ./notebooks:/workspace/notebooks
+      # Mount ONLY the participant notebook and src so changes made inside Jupyter persist on your host
+      # while keeping the reference solution notebook isolated and private
+      - ./notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
       - ./src:/workspace/src
     environment:
       - WANDB_API_KEY=${WANDB_API_KEY:-}

@@ -176,7 +176,7 @@ A standalone [`Dockerfile`](file:///home/cspark/Work/projects/ai4acc-mini-hackat
 
 **Using Docker Compose (Recommended):**
 ```bash
-# Build image and start Jupyter Lab (notebooks are live-mounted to persist edits)
+# Build image and start Jupyter Lab (participant notebook is live-mounted to persist edits)
 docker compose up
 ```
 
@@ -185,10 +185,10 @@ docker compose up
 # 1. Build the image
 docker build -t ai4acc-hackathon-2026 .
 
-# 2. Run container with live notebook volume mount
+# 2. Run container with live participant notebook mount
 docker run -it --rm \
   -p 8888:8888 \
-  -v "${PWD}/notebooks:/workspace/notebooks" \
+  -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
   -v "${PWD}/src:/workspace/src" \
   ai4acc-hackathon-2026
 ```

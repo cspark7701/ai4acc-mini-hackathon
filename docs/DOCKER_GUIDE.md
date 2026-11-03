@@ -14,17 +14,17 @@ With **Docker Compose**, the launch command is identical across all operating sy
 docker compose up
 ```
 
-| Operating System | Supported Terminals | Path Syntax for `-v` (CLI only) |
+| Operating System | Supported Terminals | Path Syntax for Participant Notebook Mount (`-v`) |
 | :--- | :--- | :--- |
-| **Windows** | **PowerShell** | `-v "${PWD}/notebooks:/workspace/notebooks"` |
-| **Windows** | **Command Prompt (`cmd.exe`)** | `-v "%cd%\notebooks:/workspace/notebooks"` |
-| **Windows** | **Git Bash** | `-v "/$(pwd)/notebooks:/workspace/notebooks"` |
-| **Windows** | **WSL 2 (Ubuntu)** | `-v "${PWD}/notebooks:/workspace/notebooks"` |
-| **macOS** | **Terminal / iTerm2 (zsh / bash)** | `-v "${PWD}/notebooks:/workspace/notebooks"` |
-| **Linux** | **Bash / Zsh / Any terminal** | `-v "${PWD}/notebooks:/workspace/notebooks"` |
+| **Windows** | **PowerShell** | `-v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
+| **Windows** | **Command Prompt (`cmd.exe`)** | `-v "%cd%\notebooks\Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
+| **Windows** | **Git Bash** | `-v "/$(pwd)/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
+| **Windows** | **WSL 2 (Ubuntu)** | `-v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
+| **macOS** | **Terminal / iTerm2 (zsh / bash)** | `-v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
+| **Linux** | **Bash / Zsh / Any terminal** | `-v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
 
 > [!TIP]
-> If participants run **`docker compose up`**, they don't have to worry about shell-specific path syntax (`${PWD}` vs `%cd%`) at all—Docker Compose handles path resolution natively on every OS!
+> If participants run **`docker compose up`**, they don't have to worry about shell-specific path syntax (`${PWD}` vs `%cd%`) at all—Docker Compose handles path resolution natively on every OS and automatically mounts only the participant notebook!
 
 ---
 
@@ -95,25 +95,25 @@ docker build -t ai4acc-hackathon-2026 .
 
 ### Step 2: Run the Container
 
-#### Option A: Standalone Container (All files baked in)
-The image already contains all source code, lecture notes, and challenge notebooks internally:
+#### Option A: Standalone Container (Participant files baked in)
+The image already contains all source code, lecture notes, and the participant challenge notebook internally (the reference solution notebook is completely excluded from the container):
 ```bash
 docker run -it --rm -p 8888:8888 ai4acc-hackathon-2026
 ```
 
 #### Option B: Live Volume Mounting (Saves edits to host machine)
-To ensure any code or notebook edits made inside Jupyter persist directly into your local host files, mount the `notebooks` and `src` directories:
+To ensure any code or notebook edits made inside Jupyter persist directly into your local host files while keeping the reference solution private, mount only the participant notebook and the `src` directory:
 
 ```bash
 docker run -it --rm \
   -p 8888:8888 \
-  -v "${PWD}/notebooks:/workspace/notebooks" \
+  -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
   -v "${PWD}/src:/workspace/src" \
   ai4acc-hackathon-2026
 ```
 
 > [!IMPORTANT]
-> Always execute the command from the repository root directory. If run from another folder, `${PWD}/notebooks` will point to a non-existent host path, causing Docker to mount an empty directory.
+> Always execute the command from the repository root directory. Mounting only `Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb` guarantees that attendees' work is preserved on the host in real time while ensuring the reference solution notebook is withheld and inaccessible inside the container environment.
 
 ---
 
@@ -159,7 +159,7 @@ Once pushed, participants do not need to clone the repo or build the image. They
 ```bash
 docker run -it --rm \
   -p 8888:8888 \
-  -v "${PWD}/notebooks:/workspace/notebooks" \
+  -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
   -v "${PWD}/src:/workspace/src" \
   <your-username>/ai4acc-hackathon-2026:latest
 ```
@@ -172,7 +172,10 @@ docker run -it --rm \
 - **Cause:** Another process on your host machine (such as a local Jupyter server or another Docker container) is already listening on port `8888`.
 - **Fix 1 (Map to another port, e.g., 8889):**
   ```bash
-  docker run -it --rm -p 8889:8888 -v "${PWD}/notebooks:/workspace/notebooks" -v "${PWD}/src:/workspace/src" ai4acc-hackathon-2026
+  docker run -it --rm -p 8889:8888 \
+    -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
+    -v "${PWD}/src:/workspace/src" \
+    ai4acc-hackathon-2026
   ```
   Then access Jupyter at **`http://localhost:8889`**.
 - **Fix 2 (Stop the host process):**
@@ -187,14 +190,14 @@ docker run -it --rm \
 - **Cause:** A trailing whitespace immediately after a line-continuation backslash (`\ `) in your shell command.
 - **Fix:** Avoid spaces after backslashes, or run the command on a single contiguous line:
   ```bash
-  docker run -it --rm -p 8888:8888 -v "${PWD}/notebooks:/workspace/notebooks" -v "${PWD}/src:/workspace/src" ai4acc-hackathon-2026
+  docker run -it --rm -p 8888:8888 -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" -v "${PWD}/src:/workspace/src" ai4acc-hackathon-2026
   ```
 
 ---
 
 ### Issue 3: `notebooks` or `src` Directory Appears Empty in Jupyter
-- **Cause:** The `docker run` command was executed from outside the project root directory (e.g. from `~`), causing `${PWD}/notebooks` to evaluate to an empty path on the host that shadowed the container's built-in files.
-- **Fix:** Ensure you `cd` into the project root before running, or use absolute paths:
+- **Cause:** The `docker run` command was executed from outside the project root directory (e.g. from `~`), causing `${PWD}/notebooks/...` to evaluate to an empty path on the host.
+- **Fix:** Ensure you `cd` into the project root before running, or use `docker compose`:
   ```bash
   cd /home/cspark/Work/projects/ai4acc-mini-hackathon
   docker compose up
@@ -208,7 +211,8 @@ To pass your Weights & Biases credentials into the container:
 docker run -it --rm \
   -p 8888:8888 \
   -e WANDB_API_KEY="<your-wandb-api-key>" \
-  -v "${PWD}/notebooks:/workspace/notebooks" \
+  -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
+  -v "${PWD}/src:/workspace/src" \
   ai4acc-hackathon-2026
 ```
 Or simply run `wandb login` in the first cell of the notebook.

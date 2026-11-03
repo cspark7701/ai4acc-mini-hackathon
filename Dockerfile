@@ -34,6 +34,9 @@ RUN pip install --upgrade pip setuptools wheel && \
 # Copy all remaining project files (notebooks, lecture notes, docs, img, setup script)
 COPY . .
 
+# Ensure solution notebooks are excluded from participant container image
+RUN rm -f /workspace/notebooks/*Solution*.ipynb
+
 # Expose default Jupyter port
 EXPOSE 8888
 

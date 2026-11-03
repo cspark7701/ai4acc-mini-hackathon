@@ -17,11 +17,16 @@ __pycache__/
 build/
 dist/
 
+# Solution notebook (withheld from participant container)
+notebooks/*Solution*.ipynb
+
 # Jupyter checkpoints
 .ipynb_checkpoints/
+**/.ipynb_checkpoints/
 
 # Experiment tracking & logging
 wandb/
+**/wandb/
 
 # LaTeX build artifacts
 *.aux
