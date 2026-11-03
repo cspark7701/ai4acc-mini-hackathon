@@ -5,7 +5,7 @@
 **Affiliation:**  
 - Department of Accelerator Science, Korea University, Sejong 30019, Republic of Korea  
 - Center for Accelerator Research, Korea University, Sejong 30019, Republic of Korea  
-**Date:** November 3, 2026  
+**Date:** November 19, 2026  
 **Target Audience:** Graduate Students & Early-Career Postdoctoral Researchers in Accelerator Physics and Engineering  
 
 ---

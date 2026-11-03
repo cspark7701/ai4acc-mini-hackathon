@@ -64,7 +64,7 @@ def build_docx():
 
     p_meta = doc.add_paragraph()
     p_meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r_meta = p_meta.add_run("2026년 11월 3일 (화) 09:00 – 17:00 | KOMAC / KAERI (한국원자력연구원 양성자과학연구단)\n")
+    r_meta = p_meta.add_run("2026년 11월 19일 (목) 09:00 – 17:00 | KOMAC / KAERI (한국원자력연구원 양성자과학연구단)\n")
     r_meta.font.size = Pt(9.5)
     r_meta.font.color.rgb = MUTED
     r_reg = p_meta.add_run("참가 등록 (Indico): https://indico.korea.ac.kr/event/114/")

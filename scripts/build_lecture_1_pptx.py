@@ -3,7 +3,7 @@
 AI Applications in Accelerators Tutorial & Mini-Hackathon
 Lecture 1: AI/ML Foundations & Closed-Loop Control
 Author: Chong Shik Park, Ph.D. (Korea University, Sejong)
-Date: November 3, 2026
+Date: November 19, 2026
 
 Design enhancements addressing user requests:
 1) Title page title font size adjusted so it fits on a single unwrapped line.
@@ -103,7 +103,7 @@ def create_presentation():
         # Left date
         tb_left = slide.shapes.add_textbox(Inches(0.5), Inches(7.05), Inches(2.5), Inches(0.35))
         tf_l = tb_left.text_frame
-        add_text_run(tf_l.paragraphs[0], "November 3, 2026", size=Pt(10), color=MUTED)
+        add_text_run(tf_l.paragraphs[0], "November 19, 2026", size=Pt(10), color=MUTED)
 
         # Center citation
         tb_center = slide.shapes.add_textbox(Inches(3.0), Inches(7.05), Inches(7.333), Inches(0.35))
@@ -201,7 +201,7 @@ def create_presentation():
 
     p_a3 = tf_auth.add_paragraph()
     p_a3.space_before = Pt(6)
-    add_text_run(p_a3, "Date: November 3, 2026   |   Audience: Accelerator Physicists, Postdocs, Engineers & Graduate Students", size=Pt(11), color=MUTED)
+    add_text_run(p_a3, "Date: November 19, 2026   |   Audience: Accelerator Physicists, Postdocs, Engineers & Graduate Students", size=Pt(11), color=MUTED)
 
     add_footer(s1, 1)
 

@@ -10,7 +10,7 @@
 
 본 행사는 최신 인공지능(AI) 및 머신러닝(ML) 기법을 입자 가속기 물리 모델링, 폐루프 빔 궤도 제어, 그리고 에이전틱 자율 운전 워크플로우에 접목하는 이론적 기초와 실습 역량을 집중적으로 함양하는 1일 집중 튜토리얼 및 챌린지입니다.
 
-- **일시:** 2026년 11월 3일 (화) 09:00 – 17:00
+- **일시:** 2026년 11월 19일 (목) 09:00 – 17:00
 - **장소:** KOMAC / KAERI (한국원자력연구원 양성자과학연구단)
 - **참가 등록 (Indico):** [https://indico.korea.ac.kr/event/114/](https://indico.korea.ac.kr/event/114/)
 - **주요 대상:** 가속기 물리 및 제어 박사후연구원, 대학원생 및 학부생
@@ -114,7 +114,7 @@ We cordially invite researchers, engineers, postdoctoral scholars, and graduate 
 
 This intensive, full-day educational session and competition bridges cutting-edge Artificial Intelligence (AI) and Machine Learning (ML) techniques with physical beam dynamics, closed-loop accelerator orbit correction, and agentic autonomous operational workflows.
 
-- **Date & Time:** Tuesday, November 3, 2026 | 09:00 – 17:00 KST
+- **Date & Time:** Thursday, November 19, 2026 | 09:00 – 17:00 KST
 - **Location:** KOMAC / KAERI (Korea Multi-purpose Accelerator Complex / Korea Atomic Energy Research Institute)
 - **Registration (Indico):** [https://indico.korea.ac.kr/event/114/](https://indico.korea.ac.kr/event/114/)
 - **Target Audience:** Undergraduate and graduate students, postdocs in accelerator physics and techonologies
