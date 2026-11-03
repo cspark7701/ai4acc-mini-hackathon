@@ -170,25 +170,17 @@ jupyter lab notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
    wandb.login()
    ```
 
-### Option D: Docker Container (One-Click Setup)
+### Option D: Docker Container (Zero-Installation, One-Command Setup)
 
-A standalone [`Dockerfile`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Dockerfile) and [`docker-compose.yml`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docker-compose.yml) are provided for a completely reproducible, pre-configured environment:
+Run the official pre-configured hackathon container directly in any terminal (no Git clone or local Python installation required):
 
-**Using Docker Compose (Recommended):**
 ```bash
-# Build image and start Jupyter Lab (participant notebook is live-mounted to persist edits)
-docker compose up
+docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
-**Using the Docker CLI directly:**
-```bash
-# Run container with live participant notebook mount (automatically pulls image from Docker Hub):
-docker run -it --rm \
-  -p 8888:8888 \
-  -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
-  -v "${PWD}/src:/workspace/src" \
-  cspark7701/ai4acc-hackathon-2026:latest
-```
+Once launched, open **`http://localhost:8888`** in your browser. All packages (`gymnasium`, `scikit-learn`, `wandb`, `jupyterlab`, `notebook`) and the challenge notebook are pre-installed and ready to use!
+
+*(If you have cloned the repository and prefer Docker Compose, you can also run `docker compose up`).*
 
 Once launched, open **`http://localhost:8888`** in your browser. All packages (`gymnasium`, `scikit-learn`, `wandb`, `jupyterlab`, `notebook`) are pre-installed and ready to use!
 

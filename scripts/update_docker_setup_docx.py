@@ -1,19 +1,11 @@
 """
-Update docx guides for participants with the official Docker run command:
-cspark7701/ai4acc-hackathon-2026:latest
+Update docx guides for participants with the universal Docker run command:
+docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 """
 import docx
-from docx.shared import Pt, RGBColor, Inches
-from docx.oxml import OxmlElement, parse_xml
-from docx.oxml.ns import nsdecls, qn
+from docx.shared import Pt, RGBColor
 
-DOCKER_CMD = (
-    'docker run -it --rm \\\n'
-    '    -p 8888:8888 \\\n'
-    '    -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \\\n'
-    '    -v "${PWD}/src:/workspace/src" \\\n'
-    '    cspark7701/ai4acc-hackathon-2026:latest'
-)
+DOCKER_CMD = "docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest"
 
 def update_docker_guide_docx():
     path = "docs/Docker Desktop Setup Guide.docx"
@@ -28,7 +20,7 @@ def update_docker_guide_docx():
     
     # Update P30
     p30 = doc.paragraphs[30]
-    p30.text = "If running via standard Docker CLI, ensure you execute from the project root directory. To preserve attendees' live progress while keeping the reference solution private, only the participant notebook (Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb) and src directory are mounted:"
+    p30.text = "Run the official container directly in your terminal. All required Python packages, simulation models, and the participant challenge notebook are pre-installed:"
     for r in p30.runs:
         r.font.name = "Calibri"
         
@@ -38,37 +30,37 @@ def update_docker_guide_docx():
     t2_p.text = DOCKER_CMD
     for r in t2_p.runs:
         r.font.name = "Consolas"
-        r.font.size = Pt(9)
+        r.font.size = Pt(9.5)
         
     # Update Table 3 (Command Prompt cmd.exe)
     t3_cell = doc.tables[3].rows[0].cells[0]
     t3_p = t3_cell.paragraphs[0]
-    t3_p.text = (
-        'docker run -it --rm -p 8888:8888 '
-        '-v "%cd%\\notebooks\\Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" '
-        '-v "%cd%\\src:/workspace/src" '
-        'cspark7701/ai4acc-hackathon-2026:latest'
-    )
+    t3_p.text = DOCKER_CMD
     for r in t3_p.runs:
         r.font.name = "Consolas"
-        r.font.size = Pt(9)
+        r.font.size = Pt(9.5)
         
     # Update P45 (port troubleshooting)
     p45 = doc.paragraphs[45]
-    if "docker run -it --rm -p 8889:8888" in p45.text:
+    if "8888" in p45.text:
         p45.text = (
             "Port 8888 in use error: If port 8888 is already occupied by a local Jupyter instance, change the port mapping to 8889: "
-            "docker run -it --rm -p 8889:8888 -v \"${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb\" -v \"${PWD}/src:/workspace/src\" cspark7701/ai4acc-hackathon-2026:latest "
+            "docker run -it --rm -p 8889:8888 cspark7701/ai4acc-hackathon-2026:latest "
             "... and browse to http://localhost:8889."
         )
+        for r in p45.runs:
+            r.font.name = "Calibri"
         
     # Update P46
     p46 = doc.paragraphs[46]
     p46.clear()
-    r1 = p46.add_run("Empty notebooks directory or missing file: ")
+    r1 = p46.add_run("Saving your work: ")
     r1.font.name = "Calibri"
     r1.bold = True
-    r2 = p46.add_run("Ensure your terminal is located inside the repository root directory before running docker run with -v. Alternatively, use docker compose up which avoids shell path issues entirely and automatically mounts only the participant notebook.")
+    r2 = p46.add_run(
+        "Inside JupyterLab, you can save your changes and download a copy of your completed notebook at any time via File -> Download. "
+        "Running the benchmark cells automatically logs your official challenge score and convergence telemetry to the cloud W&B leaderboard."
+    )
     r2.font.name = "Calibri"
     
     doc.save(path)
@@ -81,7 +73,7 @@ def update_participant_instructions_docx():
     
     # Update Step 1 (P7)
     for p in doc.paragraphs:
-        if "Step 1: Open Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" in p.text:
+        if "Step 1:" in p.text:
             p.clear()
             r_title = p.add_run("Step 1: Launch Environment & Open Participant Notebook\n")
             r_title.bold = True
@@ -89,18 +81,18 @@ def update_participant_instructions_docx():
             r_title.font.size = Pt(10.5)
             
             r_desc = p.add_run(
-                "Open Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb. "
-                "For local container deployment, execute the official Docker command from the repository root directory:\n"
+                "Run the official container in any terminal (no git clone or virtual environment required):\n"
             )
             r_desc.font.name = "Calibri"
             r_desc.font.size = Pt(10)
             
             r_code = p.add_run(DOCKER_CMD + "\n")
             r_code.font.name = "Consolas"
-            r_code.font.size = Pt(8.5)
+            r_code.font.size = Pt(9)
             r_code.font.color.rgb = RGBColor(0x1B, 0x36, 0x5D)
+            r_code.bold = True
             
-            r_foot = p.add_run("Once launched, navigate to http://localhost:8888 in your web browser to start the challenge.")
+            r_foot = p.add_run("Once launched, browse to http://localhost:8888 and open Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb to begin.")
             r_foot.font.name = "Calibri"
             r_foot.font.size = Pt(9.5)
             r_foot.italic = True

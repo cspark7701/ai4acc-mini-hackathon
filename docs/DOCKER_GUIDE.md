@@ -9,22 +9,21 @@ This guide explains system requirements, terminal options across operating syste
 ### Do participants need PowerShell?
 **No, PowerShell is NOT mandatory.** Participants can use **any terminal** of their choice on Windows, macOS, or Linux. 
 
-With **Docker Compose**, the launch command is identical across all operating systems and shells:
+Because all required libraries, simulation models, and the participant challenge notebook are baked into the pre-compiled image, the launch command is identical and universal across all operating systems and shells:
 ```bash
-docker compose up
+docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
-| Operating System | Supported Terminals | Path Syntax for Participant Notebook Mount (`-v`) |
+| Operating System | Supported Terminals | Launch Command |
 | :--- | :--- | :--- |
-| **Windows** | **PowerShell** | `-v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
-| **Windows** | **Command Prompt (`cmd.exe`)** | `-v "%cd%\notebooks\Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
-| **Windows** | **Git Bash** | `-v "/$(pwd)/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
-| **Windows** | **WSL 2 (Ubuntu)** | `-v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
-| **macOS** | **Terminal / iTerm2 (zsh / bash)** | `-v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
-| **Linux** | **Bash / Zsh / Any terminal** | `-v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb"` |
+| **Windows** | **Command Prompt (`cmd.exe`)** | `docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
+| **Windows** | **PowerShell** | `docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
+| **Windows** | **Git Bash / WSL 2** | `docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
+| **macOS** | **Terminal / iTerm2 (zsh / bash)** | `docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
+| **Linux** | **Bash / Zsh / Any terminal** | `docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
 
 > [!TIP]
-> If participants run **`docker compose up`**, they don't have to worry about shell-specific path syntax (`${PWD}` vs `%cd%`) at all—Docker Compose handles path resolution natively on every OS and automatically mounts only the participant notebook!
+> **Zero Setup Required:** Attendees do not need to clone the git repository, configure local Python virtual environments, or worry about shell-specific volume mount path syntax. Once the container is running, open **`http://localhost:8888`** in your browser.
 
 ---
 
@@ -93,27 +92,17 @@ cd /home/cspark/Work/projects/ai4acc-mini-hackathon
 docker build -t ai4acc-hackathon-2026 .
 ```
 
-### Step 2: Run the Container
+### Step 2: Run the Official Challenge Container
 
-#### Option A: Standalone Container (Participant files baked in)
-The image already contains all source code, lecture notes, and the participant challenge notebook internally (the reference solution notebook is completely excluded from the container):
+Run the official container directly in your terminal:
 ```bash
 docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
-#### Option B: Live Volume Mounting (Saves edits to host machine)
-To ensure any code or notebook edits made inside Jupyter persist directly into your local host files while keeping the reference solution private, mount only the participant notebook and the `src` directory:
-
-```bash
-docker run -it --rm \
-  -p 8888:8888 \
-  -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
-  -v "${PWD}/src:/workspace/src" \
-  cspark7701/ai4acc-hackathon-2026:latest
-```
-
-> [!IMPORTANT]
-> Always execute the command from the repository root directory. Mounting only `Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb` guarantees that attendees' work is preserved on the host in real time while ensuring the reference solution notebook is withheld and inaccessible inside the container environment.
+> [!NOTE]
+> The pre-compiled image contains all dependencies, simulation models, and the participant challenge notebook (`Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`). The reference solution notebook is completely excluded to protect competition integrity.
+>
+> *(Participants can save their notebook inside JupyterLab and download a local copy at any time via **File → Download**).*
 
 ---
 
@@ -180,11 +169,7 @@ docker push <your-username>/ai4acc-hackathon-2026:latest
 ### Step 5: Participant Usage from Docker Hub
 Once pushed, participants do not need to clone the repo or build the image. They can simply run:
 ```bash
-docker run -it --rm \
-  -p 8888:8888 \
-  -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
-  -v "${PWD}/src:/workspace/src" \
-  cspark7701/ai4acc-hackathon-2026:latest
+docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
 ---
@@ -195,10 +180,7 @@ docker run -it --rm \
 - **Cause:** Another process on your host machine (such as a local Jupyter server or another Docker container) is already listening on port `8888`.
 - **Fix 1 (Map to another port, e.g., 8889):**
   ```bash
-  docker run -it --rm -p 8889:8888 \
-    -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
-    -v "${PWD}/src:/workspace/src" \
-    cspark7701/ai4acc-hackathon-2026:latest
+  docker run -it --rm -p 8889:8888 cspark7701/ai4acc-hackathon-2026:latest
   ```
   Then access Jupyter at **`http://localhost:8889`**.
 - **Fix 2 (Stop the host process):**
@@ -209,33 +191,18 @@ docker run -it --rm \
 
 ---
 
-### Issue 2: `bash: -v: command not found` or `invalid reference format`
-- **Cause:** A trailing whitespace immediately after a line-continuation backslash (`\ `) in your shell command.
-- **Fix:** Avoid spaces after backslashes, or run the command on a single contiguous line:
-  ```bash
-  docker run -it --rm -p 8888:8888 -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" -v "${PWD}/src:/workspace/src" cspark7701/ai4acc-hackathon-2026:latest
-  ```
+### Issue 2: Saving Your Work from the Container
+- **Download from Browser:** In the JupyterLab file browser, simply right-click `Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb` and select **Download** (or use **File → Download**).
+- **Weights & Biases (W&B):** When you run the evaluation benchmark cells, your challenge scores, telemetry, and figures are automatically and permanently logged to your W&B cloud dashboard.
 
 ---
 
-### Issue 3: `notebooks` or `src` Directory Appears Empty in Jupyter
-- **Cause:** The `docker run` command was executed from outside the project root directory (e.g. from `~`), causing `${PWD}/notebooks/...` to evaluate to an empty path on the host.
-- **Fix:** Ensure you `cd` into the project root before running, or use `docker compose`:
-  ```bash
-  cd /home/cspark/Work/projects/ai4acc-mini-hackathon
-  docker compose up
-  ```
-
----
-
-### Issue 4: Weights & Biases (W&B) Logging Inside Docker
-To pass your Weights & Biases credentials into the container:
+### Issue 3: Weights & Biases (W&B) Logging Inside Docker
+To pass your Weights & Biases credentials into the container at launch:
 ```bash
 docker run -it --rm \
   -p 8888:8888 \
   -e WANDB_API_KEY="<your-wandb-api-key>" \
-  -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
-  -v "${PWD}/src:/workspace/src" \
   cspark7701/ai4acc-hackathon-2026:latest
 ```
-Or simply run `wandb login` in the first cell of the notebook.
+Or simply run `wandb.login()` in the first cell of the notebook.
