@@ -1,11 +1,11 @@
-# 📢 가속기 AI 활용 튜토리얼 & 미니 해커톤
-# AI Applications in Accelerators Tutorial & Mini-Hackathon
+# 📢 가속기 AI 튜토리얼 세션 & 미니 해커톤
+# AI Tutorial Session for Accelerators & Mini-Hackathon
 
 ---
 
 ## 🌟 워크숍 개요
 
-**가속기 AI 활용 튜토리얼 & 미니 해커톤**에 참가하시는 모든 연구원, 엔지니어, 대학원생 여러분을 진심으로 환영합니다!
+**가속기 AI 튜토리얼 세션 & 미니 해커톤**에 참가하시는 모든 연구원, 엔지니어, 대학원생 여러분을 진심으로 환영합니다!
 
 본 워크숍은 최신 인공지능(AI) 및 머신러닝(ML) 기법을 입자 가속기 물리 모델링, 폐루프 빔 궤도 제어, 그리고 에이전틱 자율 운전 워크플로우에 접목하는 이론적 기초와 실습 역량을 집중적으로 함양하는 1일 집중 튜토리얼 및 챌린지입니다.
 
@@ -40,11 +40,31 @@
 - 실습 및 오후 미니 해커톤 참가를 위해 **개인 노트북과 충전 어댑터**를 필히 지참해 주시기 바랍니다.
 - 현장 와이파이(Wi-Fi) 무선 인터넷이 제공됩니다.
 
-### 2. 운영체제 및 Docker Desktop 설치 안내 (Windows / Mac / Linux)
+### 2. 운영체제 및 Docker Desktop 사전 설치 안내 (Windows / Mac / Linux)
 - **Windows, macOS, Linux** 등 참가자분께서 평소 사용하시는 어떠한 운영체제(OS) 환경이든 모두 지원합니다.
-- 본 실습에서는 원활하고 안정적인 환경 구동을 위해 Docker를 활용합니다.
-- **Windows 또는 Mac(macOS) 노트북을 사용하시는 참가자분께서는 워크숍 참가 전 사전에 Docker Desktop 앱을 반드시 설치해 주시기 바랍니다.**
-- Linux 환경 사용자의 경우 별도의 GUI 앱 없이 터미널 기본 Docker Engine(`docker-ce` 또는 `docker.io` 및 `docker compose`)을 준비해 주시면 됩니다.
+- 본 실습에서는 의존성 충돌 없는 원활한 환경 구동을 위해 Docker를 활용합니다. 참가자 여러분께서는 아래 안내에 따라 사전에 환경을 준비해 주시기 바랍니다.
+
+#### 🪟 Windows 사용자 (Docker Desktop + WSL 2 활성화):
+1. [Docker Desktop 공식 웹사이트](https://www.docker.com/products/docker-desktop/)에서 Windows용 설치 프로그램을 다운로드하여 설치합니다.
+2. **WSL 2 (Windows Subsystem for Linux) 활성화:**
+   - 관리자 권한으로 PowerShell 또는 명령 프롬프트(CMD)를 실행한 후 다음 명령어를 입력합니다:
+     ```powershell
+     wsl --install
+     ```
+     *(이미 WSL이 설치된 경우 `wsl --update` 실행)*
+   - Docker Desktop 설정(Settings $\rightarrow$ General)에서 **"Use the WSL 2 based engine"** 옵션이 체크되어 있는지 확인합니다.
+3. 시스템 재부팅 요청이 있을 경우 재부팅 후 Docker Desktop 앱을 실행해 둡니다.
+
+#### 🍎 Mac (macOS) 사용자:
+1. [Docker Desktop 공식 웹사이트](https://www.docker.com/products/docker-desktop/)에서 본인의 Mac 칩 사양(Apple Silicon M1/M2/M3/M4 또는 Intel 칩)에 맞는 버전을 다운로드하여 설치합니다.
+2. 설치 후 Docker Desktop 앱을 실행하여 초기 권한 및 백그라운드 서비스 등록을 완료합니다.
+
+#### 🐧 Linux 사용자:
+- 별도의 GUI 앱 없이 터미널에서 패키지 관리자를 통해 Docker 엔진과 Docker Compose 플러그인을 설치합니다:
+  ```bash
+  sudo apt update && sudo apt install -y docker.io docker-compose-plugin
+  sudo usermod -aG docker $USER
+  ```
 
 ### 3. Weights & Biases (W&B) 무료 계정 사전 생성
 - 본 미니 해커톤은 머신러닝 실험 추적 및 라이브 리더보드 플랫폼인 **Weights & Biases (W&B)**를 활용합니다.
@@ -56,7 +76,7 @@
 ## ✅ 참가 전 체크리스트 (Readiness Checklist)
 
 - [ ] 개인 노트북 및 전원 어댑터 준비 완료
-- [ ] Docker Desktop 앱 설치 완료 (Windows / macOS 사용자) 또는 Docker Engine 준비 완료 (Linux 사용자)
+- [ ] Docker Desktop 설치 및 실행 확인 (Windows: WSL 2 활성화 확인, macOS: 앱 실행 확인) 또는 Linux Docker Engine 준비 완료
 - [ ] [wandb.ai](https://wandb.ai) 무료 계정 생성 및 API 키 확인
 
 ---
@@ -64,7 +84,7 @@
 
 ## 🌟 Workshop Overview
 
-We cordially invite researchers, engineers, postdoctoral scholars, and graduate students to the **AI Applications in Accelerators Tutorial & Mini-Hackathon**!
+We cordially invite researchers, engineers, postdoctoral scholars, and graduate students to the **AI Tutorial Session for Accelerators & Mini-Hackathon**!
 
 This intensive, full-day educational workshop and competition bridges cutting-edge Artificial Intelligence (AI) and Machine Learning (ML) techniques with physical beam dynamics, closed-loop accelerator orbit correction, and agentic autonomous operational workflows.
 
@@ -99,11 +119,31 @@ To guarantee a seamless and productive hands-on experience, please review the fo
 - All participants are requested to **bring their personal laptop and power adapter** for the morning tutorials and the afternoon hackathon.
 - High-speed venue Wi-Fi connectivity will be provided.
 
-### 2. Operating Systems & Docker Desktop Installation (Windows, macOS, Linux)
+### 2. Operating Systems & Docker Desktop Setup Instructions (Windows, macOS, Linux)
 - You are welcome to use **any operating system: Windows, macOS, or Linux**.
-- Hands-on exercises and challenge environments are packaged using Docker for consistent and reproducible execution.
-- **Participants using Windows or Mac (macOS) laptops are requested to install the Docker Desktop app prior to attending the workshop.**
-- Linux users may use their standard command-line Docker Engine (`docker-ce` or `docker.io` and `docker compose`).
+- Hands-on exercises and challenge environments are packaged using Docker for consistent and reproducible execution. Please prepare your system before attending:
+
+#### 🪟 Windows Users (Docker Desktop + WSL 2):
+1. Download and install Docker Desktop from the [official website](https://www.docker.com/products/docker-desktop/).
+2. **Enable WSL 2 (Windows Subsystem for Linux):**
+   - Open PowerShell or Command Prompt as Administrator and run:
+     ```powershell
+     wsl --install
+     ```
+     *(If WSL is already installed, execute `wsl --update`)*
+   - In Docker Desktop Settings $\rightarrow$ General, verify that **"Use the WSL 2 based engine"** is checked.
+3. Restart your computer if prompted, and ensure Docker Desktop is running before the workshop.
+
+#### 🍎 Mac (macOS) Users:
+1. Download and install Docker Desktop from the [official website](https://www.docker.com/products/docker-desktop/) selecting the installer matching your hardware (Apple Silicon for M1/M2/M3/M4 or Intel chip).
+2. Launch Docker Desktop and complete initial system permission grants.
+
+#### 🐧 Linux Users:
+- No GUI app is required. Install Docker Engine and the Docker Compose plugin via your distribution's package manager:
+  ```bash
+  sudo apt update && sudo apt install -y docker.io docker-compose-plugin
+  sudo usermod -aG docker $USER
+  ```
 
 ### 3. Create a Free Weights & Biases (W&B) Account in Advance
 - The hackathon utilizes **Weights & Biases (W&B)** for real-time experiment tracking, telemetry visualization, and the live competition leaderboard.
@@ -115,5 +155,5 @@ To guarantee a seamless and productive hands-on experience, please review the fo
 ## ✅ Pre-Workshop Readiness Checklist
 
 - [ ] Personal laptop and power adapter ready
-- [ ] Docker Desktop app installed (Windows / macOS users) or Docker Engine ready (Linux users)
+- [ ] Docker Desktop installed and verified running (Windows: WSL 2 enabled, macOS: app launched) or Linux Docker Engine ready
 - [ ] Free [wandb.ai](https://wandb.ai) account created & API key retrieved from [wandb.ai/authorize](https://wandb.ai/authorize)

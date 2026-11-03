@@ -53,12 +53,12 @@ def build_docx():
     # Document Title
     p_title = doc.add_paragraph()
     p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run_title = p_title.add_run("가속기 AI 활용 튜토리얼 & 미니 해커톤\n")
+    run_title = p_title.add_run("가속기 AI 튜토리얼 세션 & 미니 해커톤\n")
     run_title.font.size = Pt(20)
     run_title.font.bold = True
     run_title.font.color.rgb = PRIMARY
 
-    run_sub = p_title.add_run("AI Applications in Accelerators Tutorial & Mini-Hackathon")
+    run_sub = p_title.add_run("AI Tutorial Session for Accelerators & Mini-Hackathon")
     run_sub.font.size = Pt(13)
     run_sub.font.bold = True
     run_sub.font.color.rgb = SECONDARY
@@ -79,7 +79,7 @@ def build_docx():
 
     p_intro_ko = doc.add_paragraph()
     p_intro_ko.add_run(
-        "가속기 AI 활용 튜토리얼 & 미니 해커톤에 참가하시는 연구원, 엔지니어, 대학원생 여러분을 환영합니다. "
+        "가속기 AI 튜토리얼 세션 & 미니 해커톤에 참가하시는 연구원, 엔지니어, 대학원생 여러분을 환영합니다. "
         "본 워크숍은 가속기 빔 물리 모델링, 신경망 대리모델 디지털 트윈, 폐루프 궤도 정렬 제어(RL, BO), 그리고 "
         "에이전틱 자율 운전 워크플로우를 포괄하는 1일 집중 이론 교육 및 실습 챌린지입니다."
     )
@@ -103,10 +103,11 @@ def build_docx():
     r_b1.bold = True
     p_box.add_run("실습 및 오후 미니 해커톤 참가를 위해 개인 노트북과 전원 충전기를 반드시 지참해 주십시오.\n")
 
-    r_b2 = p_box.add_run("2. 운영체제 및 Docker Desktop 설치 (Windows / Mac / Linux): ")
+    r_b2 = p_box.add_run("2. 운영체제 및 Docker Desktop 사전 설치 (WSL 2 활성화): ")
     r_b2.bold = True
     p_box.add_run(
-        "모든 OS를 완벽히 지원합니다. Windows 또는 Mac(macOS) 노트북을 사용하시는 참가자분께서는 워크숍 참가 전 사전에 Docker Desktop 앱을 반드시 설치해 주시기 바랍니다. "
+        "모든 OS를 완벽히 지원합니다. Windows 또는 Mac(macOS) 노트북을 사용하시는 참가자분께서는 사전에 Docker Desktop 앱을 반드시 설치해 주시기 바랍니다. "
+        "특히 Windows 사용자는 PowerShell(관리자 권한)에서 'wsl --install'을 실행하여 WSL 2 기반 엔진을 활성화해 주십시오. "
         "(Linux 환경은 기본 Docker Engine CLI 사용)\n"
     )
 
@@ -172,7 +173,7 @@ def build_docx():
     p_intro_en = doc.add_paragraph()
     p_intro_en.add_run(
         "We cordially invite researchers, engineers, postdoctoral scholars, and graduate students to the "
-        "AI Applications in Accelerators Tutorial & Mini-Hackathon at KOMAC / KAERI. This intensive, one-day workshop "
+        "AI Tutorial Session for Accelerators & Mini-Hackathon at KOMAC / KAERI. This intensive, one-day workshop "
         "covers the full arc from beam physics foundations and neural surrogate digital twins to closed-loop orbit control "
         "(RL, Bayesian Optimization) and agentic operations."
     )
@@ -196,11 +197,12 @@ def build_docx():
     r_eb1.bold = True
     p_box_en.add_run("Please bring your personal laptop and power adapter for hands-on exercises and the afternoon hackathon.\n")
 
-    r_eb2 = p_box_en.add_run("2. Operating Systems & Docker Desktop Setup (Windows, macOS, Linux): ")
+    r_eb2 = p_box_en.add_run("2. Operating Systems & Docker Desktop Setup (WSL 2 for Windows): ")
     r_eb2.bold = True
     p_box_en.add_run(
-        "All platforms are supported. Participants using Windows or Mac (macOS) laptops are requested to install the Docker Desktop app "
-        "prior to attending the workshop. (Linux users may use standard Docker Engine CLI).\n"
+        "All platforms are supported. Participants using Windows or Mac (macOS) laptops are requested to install Docker Desktop "
+        "prior to attending the workshop. On Windows, please ensure the WSL 2 backend is enabled by running 'wsl --install' in PowerShell. "
+        "(Linux users may use standard Docker Engine CLI).\n"
     )
 
     r_eb3 = p_box_en.add_run("3. Create a Free Weights & Biases Account: ")
