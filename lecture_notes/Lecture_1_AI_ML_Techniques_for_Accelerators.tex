@@ -38,7 +38,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\color{darkgray}\textbf{AI Applications in Accelerators Tutorial \& Mini-Hackathon}}
-\fancyhead[R]{\small\color{darkgray}KOMAC / KAERI}
+\fancyhead[R]{\small\color{darkgray}Lecture Notes}
 \fancyfoot[L]{\small\color{darkgray}Lecture 1: AI/ML \& Surrogate Modeling (Chong Shik Park)}
 \fancyfoot[R]{\small\thepage}
 \renewcommand{\headrulewidth}{0.6pt}
@@ -67,7 +67,7 @@
 }
 \lstset{style=pythonstyle}
 
-% TColorBox Configuration
+% TColorBox Configuration (Unbreakable boxes kept intact on a single page)
 \tcbuselibrary{skins,breakable}
 \newtcolorbox{infobox}[1][]{
     enhanced,
@@ -79,7 +79,7 @@
     title=#1,
     left=4mm, right=4mm, top=3mm, bottom=3mm,
     boxrule=0.8pt,
-    breakable
+    unbreakable
 }
 
 \begin{document}
@@ -90,9 +90,7 @@
     {\large\color{darkgray} Physics Foundations, Forward Neural Digital Twins, and Closed-Loop Orbit Control} \\[0.5em]
     \rule{\textwidth}{1.2pt} \\[0.5em]
     \textbf{Event:} AI Applications in Accelerators Tutorial \& Mini-Hackathon \\
-    \textbf{Venue:} Korea Multi-purpose Accelerator Complex (KOMAC) / KAERI \\
-    \textbf{Speaker:} Dr.~Chong Shik Park \quad $|$ \quad \textbf{Duration:} 80 Minutes (09:10 -- 10:30) \\
-    \textbf{Companion Challenge Notebook:} \texttt{Single\_Notebook\_Beam\_Orbit\_Predictor.ipynb}
+    \textbf{Speaker:} Dr.~Chong Shik Park
 \end{center}
 
 \vspace{0.5em}
@@ -101,42 +99,43 @@
 Modern particle accelerator facilities operate with thousands of tightly coupled magnet actuators and diagnostics under sub-micron beam stability tolerances. Classical linear feedback systems face fundamental bottlenecks in non-linear regimes where magnetic core saturation and power supply limits degrade control fidelity. This lecture provides the theoretical and computational foundation bridging transverse beam dynamics, Hill's equation, and the Orbit Response Matrix (ORM) with cutting-edge supervised machine learning and reinforcement learning. We explore the design and training of neural surrogate digital twins to model cubic saturation, compare classical singular value decomposition (SVD) with model-based bounded optimization (\texttt{L-BFGS-B}), and investigate physics-informed closed-loop policy agents with adaptive damping for the afternoon Beam Orbit Alignment Mini-Hackathon.
 \end{abstract}
 
+\clearpage
+
 \tableofcontents
-\vspace{1em}
-\hrule
-\vspace{1.5em}
 
-\section{Lecture Timeline \& Curriculum Overview}
+\clearpage
 
-\begin{table}[h!]
-\centering
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}llp{10.5cm}@{}}
-\toprule
-\textbf{Time} & \textbf{Duration} & \textbf{Core Module Focus} \\
-\midrule
-09:10 -- 09:25 & 15 min & \textbf{Part 1: Motivation \& Accelerator Physics Foundations} \\
- & & Operational stability requirements, Hill's equation, betatron oscillation, ORM derivation, and hackathon lattice geometry. \\
-09:25 -- 09:50 & 25 min & \textbf{Part 2: Machine Learning Fundamentals \& Neural Surrogate Modeling} \\
- & & Neurons, layers (input/hidden/output), activation functions (ReLU), MSE/RMSE, Adam optimizer, train/val/test splits, bias-variance tradeoff, and MLP digital twins. \\
-09:50 -- 10:10 & 20 min & \textbf{Part 3: Closed-Loop Control Paradigms} \\
- & & Baseline 0 (Classical SVD pseudo-inverse), Baseline 1 (SciPy \texttt{L-BFGS-B} digital twin inversion), and Track 2 (RL policy agent with dynamic damping). \\
-10:10 -- 10:25 & 15 min & \textbf{Part 4: Mini-Hackathon Problem Formulation \& Gymnasium Contract} \\
- & & Environment spaces, reward formulation, 30-seed evaluation protocol, scoring formula trade-offs, and live Weights \& Biases (W\&B) telemetry. \\
-10:25 -- 10:30 & 5 min & \textbf{Part 5: Summary, Q\&A \& Transition to Lecture 2} \\
- & & Key takeaways and transition to Dr.~Thorsten Hellert's Agentic AI \& Osprey session. \\
-\bottomrule
-\end{tabular}%
-}
-\caption{Curriculum timeline for the 80-minute morning session.}
-\end{table}
+\section{Introduction: AI Applications in Modern Particle Accelerators}
+
+Over the past decade, Artificial Intelligence (AI) and Machine Learning (ML) have evolved from experimental proofs-of-concept into mission-critical operational tools across modern particle accelerator facilities, including synchrotron light sources, free-electron lasers (XFELs), spallation neutron sources, high-intensity hadron linacs, and energy-frontier colliders. Modern accelerators operate with thousands of distributed, non-linearly coupled magnet actuators, radiofrequency (RF) accelerating stations, and high-rate diagnostic monitors under stringent beam quality and stability demands.
+
+The landscape of AI applications in particle accelerators is broadly categorized into five foundational pillars:
+\begin{enumerate}
+    \item \textbf{Surrogate Modeling \& Fast Digital Twins:}
+    High-fidelity numerical particle tracking codes (such as \texttt{ELEGANT}, \texttt{MAD-X}, and \texttt{OPAL}) simulate complex beam dynamics, space-charge forces, and collective effects, but require minutes to hours per run. Deep neural networks (Multi-Layer Perceptrons, Convolutional Networks, and Physics-Informed Neural Networks) learn fast surrogate representations capable of evaluating beamline outcomes in sub-millisecond execution times. These ultra-fast surrogates serve as digital twins for real-time model-predictive control, online trajectory correction, and rapid parametric sensitivity analysis.
+
+    \item \textbf{Multi-Objective Autonomous Optimization \& Tuning:}
+    Commissioning and daily operations involve optimizing conflicting performance objectives---such as maximizing beam transmission and photon brightness while minimizing transverse emittance and beam halo. Bayesian Optimization (BO) with Gaussian Processes, combined with active learning and exploration-exploitation acquisition functions, enables sample-efficient multi-objective optimization directly on physical machines, converging in dozens of shots compared to thousands of iterations required by brute-force parameter scans.
+
+    \item \textbf{Virtual Diagnostics \& Non-Destructive Phase Space Reconstruction:}
+    Critical beam properties---such as 6D phase space, bunch slice emittance, and femtosecond current profiles---often require interceptive diagnostics (e.g., transverse deflection cavities, wire scanners, or screens) that disrupt or destroy the beam. Virtual diagnostics leverage supervised machine learning to accurately reconstruct unmeasured or destructive bunch characteristics shot-by-shot from non-invasive upstream RF probes, magnet currents, and Beam Position Monitor (BPM) signals.
+
+    \item \textbf{Anomaly Detection, Fault Prediction \& Machine Protection:}
+    Unscheduled beam downtime in multi-megawatt hadron linacs and synchrotron facilities incurs heavy scientific and operational costs. Unsupervised machine learning (autoencoders, isolation forests) continuously monitors archival and real-time telemetry to detect subtle precursor drift patterns, while deep sequence models predict high-voltage RF breakdowns, ion source dropouts, and superconducting cavity quenches milliseconds before catastrophic failure, triggering proactive mitigation and machine protection interlocks.
+
+    \item \textbf{Agentic AI \& Autonomous Operation Workflows:}
+    Moving beyond single-purpose neural networks, modern research explores autonomous agent architectures (such as \textit{Osprey} and LLM-driven scientific agents). These systems integrate large language models with standardized Python control APIs, simulation engines, and diagnostic databases, enabling high-level natural language operational commands (e.g., ``align the transport line orbit and optimize injection efficiency'') to be autonomously planned, validated, and executed under strict domain guardrails.
+\end{enumerate}
 
 ---
 
-\section{Part 1: Motivation \& Accelerator Physics Foundations (15 min)}
+\section{Motivation \& Accelerator Physics Foundations}
 
 \subsection{The Operational Stability Challenge}
 In synchrotron light sources, free-electron lasers (XFELs), and medical linacs, particle beam stability must be sustained at sub-micron levels to maintain photon brightness and collision luminosity. 
+
+Transverse orbit stability is equally vital in \textbf{hadron linacs} (high-intensity proton and heavy-ion linear accelerators). In modern high-power hadron facilities, uncorrected beam trajectory offsets through accelerating RF cavities and focusing quadrupoles induce strong non-linear space-charge forces, emittance growth, and halo formation. Because high-intensity hadron beams carry enormous beam power, even minute fractional beam losses (exceeding $1\text{ W/m}$ or $10^{-5}$ of total current) induce severe structural radioactivation, prohibiting hands-on maintenance and risking superconducting cavity quenches or vacuum chamber damage.
+
 Orbit distortions arise from multiple sources:
 \begin{itemize}
     \item \textbf{Slow Drifts:} Thermal expansion of girders, diurnal ambient temperature shifts, and ground motion.
@@ -199,7 +198,7 @@ The complete physical forward response equation is:
 
 ---
 
-\section{Part 2: Machine Learning Fundamentals \& Neural Surrogate Modeling (25 min)}
+\section{Machine Learning Fundamentals \& Neural Surrogate Modeling}
 
 \subsection{Machine Learning Taxonomy in Accelerators}
 Machine Learning (ML) algorithms automatically extract functional mappings from numerical tracking simulations or machine archives without requiring explicit analytical re-derivation. In accelerator operations, ML encompasses three main paradigms:
@@ -425,7 +424,7 @@ The holdout error of the MLP ($0.0118\text{ mm}$) closely approaches the theoret
 
 ---
 
-\section{Part 3: Closed-Loop Control Paradigms (25 min)}
+\section{Closed-Loop Control Paradigms}
 
 \subsection{Baseline 0: Classical SVD Pseudo-Inverse Controller}
 In standard accelerator control rooms, Singular Value Decomposition (SVD) of the transpose response matrix $\mathbf{R}^T = \mathbf{U} \boldsymbol{\Sigma} \mathbf{V}^T$ provides the Moore-Penrose pseudo-inverse:
@@ -474,7 +473,7 @@ The dynamic damping factor $\gamma(t)$ decays control authority as the beam appr
 
 ---
 
-\section{Part 4: Mini-Hackathon Problem Formulation \& Gymnasium Contract (15 min)}
+\section{Mini-Hackathon Problem Formulation \& Gymnasium Contract}
 
 \subsection{Gymnasium Environment Specification (\texttt{AcceleratorOrbitGymEnv})}
 \begin{itemize}
@@ -513,7 +512,7 @@ Controllers are evaluated across 30 standardized seeds (\texttt{range(1, 31)}). 
 
 ---
 
-\section{Part 5: Summary, Q\&A \& Transition to Lecture 2 (5 min)}
+\section{Summary \& Q\&A}
 
 \begin{infobox}[Summary Takeaways]
 \begin{enumerate}

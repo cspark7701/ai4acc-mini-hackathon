@@ -1,17 +1,14 @@
 # Lecture 1: Introduction to AI/ML and Surrogate Modeling for Accelerators
 
 **Event:** AI Applications in Accelerators Tutorial & Mini-Hackathon  
-**Venue:** Korea Multi-purpose Accelerator Complex (KOMAC) / Korea Atomic Energy Research Institute (KAERI)  
 **Speaker:** Dr. Chong Shik Park  
 **Target Audience:** Graduate Students & Early-Career Postdoctoral Researchers in Accelerator Physics and Engineering  
-**Duration:** 80 Minutes (09:10 – 10:30)  
-**Companion Challenge Notebook:** [`notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb)
 
 ---
 
 ## 🎯 Executive Lecture Abstract
 
-Modern particle accelerator facilities—such as synchrotron light sources, free-electron lasers (FELs), spallation neutron sources, and high-energy colliders—operate with thousands of coupled parameters under strict sub-micron beam stability tolerances. Traditional beam-based feedback and numerical simulation codes face severe computational bottlenecks in real-time non-linear regimes.
+Modern particle accelerator facilities—such as synchrotron light sources, free-electron lasers (FELs), spallation neutron sources, hadron linacs, and high-energy colliders—operate with thousands of coupled parameters under strict sub-micron beam stability tolerances. Traditional beam-based feedback and numerical simulation codes face severe computational bottlenecks in real-time non-linear regimes.
 
 This lecture provides the rigorous theoretical and computational bridge between **accelerator beam physics** and **machine learning techniques**, focusing directly on the physical system and control paradigms implemented in the afternoon **Beam Orbit Alignment Mini-Hackathon**:
 1. How transverse betatron oscillations and quadrupole optics generate the linear **Orbit Response Matrix (ORM)**.
@@ -23,27 +20,57 @@ This lecture provides the rigorous theoretical and computational bridge between 
    - Model-based bounded optimization (`L-BFGS-B`),
    - Closed-loop Reinforcement Learning (RL) policies with physics-informed priors and adaptive damping.
 
----
-
-## ⏱️ Lecture Timeline (80 Minutes)
-
-| Time | Duration | Section | Core Topics |
-| :--- | :---: | :--- | :--- |
-| **09:10 – 09:25** | 15 min | [Part 1: Motivation & Accelerator Physics Foundations](#part-1-motivation--accelerator-physics-foundations) | Challenges in accelerator control, Hill's equation, betatron motion, ORM derivation, hackathon lattice geometry. |
-| **09:25 – 09:50** | 25 min | [Part 2: Machine Learning Fundamentals & Neural Surrogate Modeling](#part-2-machine-learning-fundamentals--neural-surrogate-modeling) | Neurons, layers (input/hidden/output), activation functions (ReLU), MSE/RMSE, Adam optimizer, train/val/test splits, bias-variance tradeoff, and MLP digital twins. |
-| **09:50 – 10:10** | 20 min | [Part 3: Closed-Loop Control Paradigms](#part-3-closed-loop-control-paradigms) | Classical SVD pseudo-inverse, model-based batch inversion via SciPy, and continuous RL policy formulation with physics priors. |
-| **10:10 – 10:25** | 15 min | [Part 4: Mini-Hackathon Problem Formulation & Gymnasium Contract](#part-4-mini-hackathon-problem-formulation--gymnasium-contract) | Observation/action spaces, reward shaping, 30-seed evaluation protocol, scoring trade-offs, and live W&B telemetry. |
-| **10:25 – 10:30** | 5 min | [Part 5: Summary, Q&A & Transition to Lecture 2](#part-5-summary-qa--transition-to-lecture-2) | Open questions, takeaways, and handoff to Thorsten Hellert's Agentic AI & Osprey session. |
+<div style="page-break-after: always;"></div>
 
 ---
 
-## Part 1: Motivation & Accelerator Physics Foundations (15 min)
+## 📑 Table of Contents
 
-### 1.1 The Operational Challenge in Modern Accelerators
-In modern storage rings and linear accelerators (LINACs), the beam trajectory must be stabilized to within a fraction of the transverse beam size—often **sub-micron or tens of micrometers** RMS:
-- **Thermal and mechanical drifts:** Ground motion, magnet support thermal expansion, and cooling water temperature fluctuations introduce continuous orbit drift.
-- **Dynamic perturbations:** Power supply ripples, vibrating cryomodules, and stray electromagnetic fields.
-- **High dimensionality & coupling:** Adjusting one dipole corrector kick introduces orbit changes around the entire ring or transport line.
+1. [Introduction: AI Applications in Modern Particle Accelerators](#1-introduction-ai-applications-in-modern-particle-accelerators)
+2. [Motivation & Accelerator Physics Foundations](#2-motivation--accelerator-physics-foundations)
+3. [Machine Learning Fundamentals & Neural Surrogate Modeling](#3-machine-learning-fundamentals--neural-surrogate-modeling)
+4. [Closed-Loop Control Paradigms](#4-closed-loop-control-paradigms)
+5. [Mini-Hackathon Problem Formulation & Gymnasium Contract](#5-mini-hackathon-problem-formulation--gymnasium-contract)
+6. [Summary & Q&A](#6-summary--qa)
+
+<div style="page-break-after: always;"></div>
+
+---
+
+## 1. Introduction: AI Applications in Modern Particle Accelerators
+
+Over the past decade, Artificial Intelligence (AI) and Machine Learning (ML) have evolved from experimental proofs-of-concept into mission-critical operational tools across modern particle accelerator facilities, including synchrotron light sources, free-electron lasers (XFELs), spallation neutron sources, high-intensity hadron linacs, and energy-frontier colliders. Modern accelerators operate with thousands of distributed, non-linearly coupled magnet actuators, radiofrequency (RF) accelerating stations, and high-rate diagnostic monitors under stringent beam quality and stability demands.
+
+The landscape of AI applications in particle accelerators is broadly categorized into five foundational pillars:
+
+1. **Surrogate Modeling & Fast Digital Twins:**  
+   High-fidelity numerical particle tracking codes (such as `ELEGANT`, `MAD-X`, and `OPAL`) simulate complex beam dynamics, space-charge forces, and collective effects, but require minutes to hours per run. Deep neural networks (Multi-Layer Perceptrons, Convolutional Networks, and Physics-Informed Neural Networks) learn fast surrogate representations capable of evaluating beamline outcomes in sub-millisecond execution times. These ultra-fast surrogates serve as digital twins for real-time model-predictive control, online trajectory correction, and rapid parametric sensitivity analysis.
+
+2. **Multi-Objective Autonomous Optimization & Tuning:**  
+   Commissioning and daily operations involve optimizing conflicting performance objectives—such as maximizing beam transmission and photon brightness while minimizing transverse emittance and beam halo. Bayesian Optimization (BO) with Gaussian Processes, combined with active learning and exploration-exploitation acquisition functions, enables sample-efficient multi-objective optimization directly on physical machines, converging in dozens of shots compared to thousands of iterations required by brute-force parameter scans.
+
+3. **Virtual Diagnostics & Non-Destructive Phase Space Reconstruction:**  
+   Critical beam properties—such as 6D phase space, bunch slice emittance, and femtosecond current profiles—often require interceptive diagnostics (e.g., transverse deflection cavities, wire scanners, or screens) that disrupt or destroy the beam. Virtual diagnostics leverage supervised machine learning to accurately reconstruct unmeasured or destructive bunch characteristics shot-by-shot from non-invasive upstream RF probes, magnet currents, and Beam Position Monitor (BPM) signals.
+
+4. **Anomaly Detection, Fault Prediction & Machine Protection:**  
+   Unscheduled beam downtime in multi-megawatt hadron linacs and synchrotron facilities incurs heavy scientific and operational costs. Unsupervised machine learning (autoencoders, isolation forests) continuously monitors archival and real-time telemetry to detect subtle precursor drift patterns, while deep sequence models predict high-voltage RF breakdowns, ion source dropouts, and superconducting cavity quenches milliseconds before catastrophic failure, triggering proactive mitigation and machine protection interlocks.
+
+5. **Agentic AI & Autonomous Operation Workflows:**  
+   Moving beyond single-purpose neural networks, modern research explores autonomous agent architectures (such as *Osprey* and LLM-driven scientific agents). These systems integrate large language models with standardized Python control APIs, simulation engines, and diagnostic databases, enabling high-level natural language operational commands (e.g., "align the transport line orbit and optimize injection efficiency") to be autonomously planned, validated, and executed under strict domain guardrails.
+
+---
+
+## 2. Motivation & Accelerator Physics Foundations
+
+### 2.1 The Operational Challenge in Modern Accelerators
+In modern storage rings, linear accelerators (LINACs), and light sources, the beam trajectory must be stabilized to within a fraction of the transverse beam size—often **sub-micron or tens of micrometers** RMS.
+
+Transverse orbit stability is equally vital in **hadron linacs** (high-intensity proton and heavy-ion linear accelerators). In modern multi-megawatt hadron machines, uncorrected beam trajectory offsets through accelerating RF cavities and focusing quadrupoles induce strong non-linear space-charge forces, emittance growth, and halo formation. Because high-intensity hadron beams carry enormous beam power, even minute fractional beam losses (exceeding $1\text{ W/m}$ or $10^{-5}$ of total current) induce severe structural radioactivation, prohibiting hands-on maintenance and risking superconducting cavity quenches or vacuum chamber damage.
+
+Orbit distortions arise from multiple sources:
+- **Slow Drifts:** Thermal expansion of girders, diurnal ambient temperature shifts, and ground motion.
+- **Dynamic Jitter:** Mechanical vibration from cooling water pumps, cryocoolers, and power supply ripple.
+- **High Actuator Coupling:** Deflecting a single dipole corrector causes betatron wave propagation across the entire transport line.
 
 ```mermaid
 flowchart LR
@@ -55,7 +82,7 @@ flowchart LR
     F --> B
 ```
 
-### 1.2 Transverse Beam Dynamics & Hill's Equation
+### 2.2 Transverse Beam Dynamics & Hill's Equation
 Transverse particle motion along the longitudinal beam coordinate $s$ in a linear uncoupled lattice is governed by **Hill's Equation**:
 $$\frac{d^2 x(s)}{ds^2} + K(s) x(s) = 0$$
 where $K(s) = \frac{e}{p} \frac{\partial B_y(s)}{\partial x}$ represents the alternating quadrupole focusing strength ($K > 0$ for focusing `QF`, $K < 0$ for defocusing `QD`).
@@ -66,7 +93,7 @@ $$x(s) = \sqrt{\epsilon \beta(s)} \cos\left( \psi(s) + \phi_0 \right)$$
 - $\psi(s) = \int_0^s \frac{d\bar{s}}{\beta(\bar{s})}$: The betatron phase advance.
 - $\nu = \frac{1}{2\pi} \oint \frac{ds}{\beta(s)}$: The betatron tune (total phase advance in units of $2\pi$).
 
-### 1.3 Derivation of the Orbit Response Matrix (ORM)
+### 2.3 Derivation of the Orbit Response Matrix (ORM)
 When a localized angular deflection (kick) $\theta_j = \Delta x'_j = \frac{e B L}{p}$ is applied by a dipole steering corrector at position $s_j$, it introduces a closed-orbit distortion observed by a Beam Position Monitor (BPM) at position $s_i$:
 
 $$R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_i) - \psi(s_j)| - \pi \nu \right)$$
@@ -75,7 +102,7 @@ In vector notation, for $M$ BPMs and $N$ correctors:
 $$\mathbf{Y}_{\text{linear}} = \mathbf{R} \cdot \boldsymbol{\theta} = \mathbf{I} \cdot \mathbf{R}$$
 where $\mathbf{R} \in \mathbb{R}^{N \times M}$ is the **Orbit Response Matrix (ORM)**.
 
-### 1.4 The Mini-Hackathon Lattice Geometry
+### 2.4 The Mini-Hackathon Lattice Geometry
 The hackathon environment models a 15-meter transport line:
 - **12 Beam Position Monitors ($M = 12$):** Evenly distributed from $s = 1.0\text{ m}$ to $s = 15.0\text{ m}$.
 - **6 Dipole Correctors ($N = 6$):** 3 Horizontal (`HCM1-3`) and 3 Vertical (`VCM1-3`) positioned between $s = 0.2\text{ m}$ and $s = 8.0\text{ m}$.
@@ -87,7 +114,7 @@ The hackathon environment models a 15-meter transport line:
  |===[HCM1]==[QF1]==[BPM1]==[VCM1]==[QD1]==[BPM2] ... [HCM3]==[QF3]==[BPM12]===> Beam Axis
 ```
 
-### 1.5 Real-World Non-Linearities & Physical Imperfections
+### 2.5 Real-World Non-Linearities & Physical Imperfections
 Ideal linear ORM assumes pure dipoles and noiseless diagnostics. In reality, accelerators exhibit:
 1. **Magnetic Core Saturation:** High coil currents drive iron yokes into saturation, reducing effective kick efficiency. In our simulator:
    $$\mathbf{Y}_{\text{sat}} = - 0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R})$$
@@ -101,9 +128,9 @@ $$\mathbf{Y} = \mathbf{I} \cdot \mathbf{R} - 0.015 \cdot (\mathbf{I}^3 \cdot \ma
 
 ---
 
-## Part 2: Machine Learning Fundamentals & Neural Surrogate Modeling (25 min)
+## 3. Machine Learning Fundamentals & Neural Surrogate Modeling
 
-### 2.1 Machine Learning Taxonomy in Accelerators
+### 3.1 Machine Learning Taxonomy in Accelerators
 Machine Learning (ML) algorithms automatically extract functional relationships from experimental or simulated data without explicit analytical programming. In accelerator physics, ML is organized into three major paradigms:
 1. **Supervised Learning:** Learning a functional mapping $\mathbf{Y} = f(\mathbf{X})$ from paired inputs $\mathbf{X}$ (e.g., magnet currents) to targets $\mathbf{Y}$ (e.g., BPM offsets, beam emittance, photon flux). Used for **Surrogate Modeling / Digital Twins**.
 2. **Unsupervised Learning:** Discovering latent structures, clustering, and dimensionality reduction in unlabeled data (e.g., Principal Component Analysis (PCA) on BPM histories for betatron mode decomposition, autoencoders for anomaly detection).
@@ -119,13 +146,13 @@ graph TD
 
 ---
 
-### 2.2 Foundational ML Paradigms: Forward Supervised Learning vs. Reinforcement Learning
+### 3.2 Foundational ML Paradigms: Forward Supervised Learning vs. Reinforcement Learning
 
 To successfully design autonomous beam alignment systems, it is essential to understand the fundamental distinction between **Forward Supervised Learning** (learning a digital twin of the accelerator to be inverted) and **Reinforcement Learning** (learning a closed-loop policy agent that directly interacts with the machine).
 
 ![Forward Supervised Learning vs. Reinforcement Learning Paradigms in Accelerators](../img/forward_sl_and_rl_schematic.png)
 
-#### 2.2.1 Forward Supervised Learning: Surrogate Digital Twin & Online Inversion (Track 1)
+#### 3.2.1 Forward Supervised Learning: Surrogate Digital Twin & Online Inversion (Track 1)
 In Forward Supervised Learning, the algorithm learns an input-to-output mapping from static, pre-collected datasets without directly steering the physical machine during training:
 1. **Offline Training Phase:** 
    - We sample $N$ random corrector current vectors $\mathbf{I} \in \mathbb{R}^6$ (e.g., $N = 1,500$ shots over $[-3.0\text{ A}, +3.0\text{ A}]$) and pass them through high-fidelity tracking simulations or physical machine excitation steps.
@@ -138,7 +165,7 @@ In Forward Supervised Learning, the algorithm learns an input-to-output mapping 
      $$\Delta \mathbf{I}^* = \arg\min_{\Delta \mathbf{I}} \left\| \mathbf{Y}_{\text{obs}} + f_{\boldsymbol{\theta}}(\Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2 \quad \text{subject to } \Delta \mathbf{I} \in [-0.8\text{ A}, +0.8\text{ A}]^6$$
    - **Key Advantage:** Extremely fast convergence (often 2–3 iterations) because the surrogate accurately anticipates magnetic saturation.
 
-#### 2.2.2 Reinforcement Learning: Closed-Loop Policy Control (Track 2)
+#### 3.2.2 Reinforcement Learning: Closed-Loop Policy Control (Track 2)
 In Reinforcement Learning (RL), the system is formulated as a sequential **Markov Decision Process (MDP)** $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, where an agent policy learns through continuous trial-and-error interaction:
 1. **State Space ($\mathcal{S}$):** Current transverse beam displacements at diagnostic stations, $\mathbf{s}_t = \mathbf{Y}_t \in \mathbb{R}^{12}$, bounded in $[-10.0\text{ mm}, +10.0\text{ mm}]$.
 2. **Action Space ($\mathcal{A}$):** Corrective magnet current adjustments, $\mathbf{a}_t = \Delta \mathbf{I}_t \in \mathbb{R}^6$, constrained by hardware delta limits $[-0.8\text{ A}, +0.8\text{ A}]$.
@@ -151,7 +178,7 @@ In Reinforcement Learning (RL), the system is formulated as a sequential **Marko
    $$\Delta \mathbf{I}_t = \gamma(t) \cdot \left[ - \alpha (\mathbf{R}^T)^\dagger \mathbf{Y}_t + \mathbf{W}_{\text{tune}} \mathbf{Y}_t + \mathbf{b} \right], \quad \gamma(t) = \frac{1.0}{1.0 + 0.03 \cdot t}$$
    - **Key Advantage:** Ultra-low latency ($\approx 0.2\text{ ms}$ forward pass) and direct real-time adaptability without requiring iterative numerical optimization loops.
 
-#### 2.2.3 Comparative Architectural Analysis: Forward SL vs. Closed-Loop RL
+#### 3.2.3 Comparative Architectural Analysis: Forward SL vs. Closed-Loop RL
 
 | Dimension | Forward Supervised Learning (Track 1) | Reinforcement Learning (Track 2) |
 | :--- | :--- | :--- |
@@ -166,7 +193,7 @@ In Reinforcement Learning (RL), the system is formulated as a sequential **Marko
 
 ---
 
-### 2.3 Biological & Artificial Neurons: The Mathematical Building Block
+### 3.3 Biological & Artificial Neurons: The Mathematical Building Block
 An **artificial neuron** (percepton) is the fundamental computational atom of a neural network:
 
 ```
@@ -187,7 +214,7 @@ Inputs       Weights
 
 ---
 
-### 2.4 Why Activation Functions are Essential: Breaking Linearity
+### 3.4 Why Activation Functions are Essential: Breaking Linearity
 > [!IMPORTANT]
 > **Why can't we just stack linear matrix layers?**  
 > If all activation functions were identity mappings ($\sigma(z) = z$), a 3-layer network would compute:
@@ -211,7 +238,7 @@ Inputs       Weights
 
 ---
 
-### 2.5 Multi-Layer Perceptron (MLP) Anatomy: Layers & Information Flow
+### 3.5 Multi-Layer Perceptron (MLP) Anatomy: Layers & Information Flow
 A **Multi-Layer Perceptron (MLP)** or deep feedforward neural network connects neurons in sequential layers, transforming low-dimensional corrector kicks into non-linear orbit distortions:
 
 ![Multi-Layer Perceptron (MLP) Surrogate Architecture](../img/mlp_schematic.png)
@@ -238,7 +265,7 @@ A **Multi-Layer Perceptron (MLP)** or deep feedforward neural network connects n
 
 ---
 
-### 2.6 Loss Functions, Loss Rates & Evaluation Metrics: MSE vs. RMSE
+### 3.6 Loss Functions, Loss Rates & Evaluation Metrics: MSE vs. RMSE
 
 To train a neural network, we must quantify the error between network predictions $\hat{\mathbf{Y}}$ and physical ground truth observations $\mathbf{Y}$.
 
@@ -254,7 +281,7 @@ To train a neural network, we must quantify the error between network prediction
 
 ---
 
-### 2.7 Optimization Algorithms: Gradient Descent, Learning Rate, and Adam
+### 3.7 Optimization Algorithms: Gradient Descent, Learning Rate, and Adam
 
 The network parameters $\boldsymbol{\theta} = \{\mathbf{W}^{(l)}, \mathbf{b}^{(l)}\}$ are optimized by minimizing the loss function $\mathcal{L}(\boldsymbol{\theta})$ via **backpropagation** (chain rule computation of gradients $\nabla_{\boldsymbol{\theta}} \mathcal{L}$).
 
@@ -288,7 +315,7 @@ In our challenge notebook, we configure `solver='adam'`. Adam combines the advan
 
 ---
 
-### 2.8 Rigorous Dataset Partitioning: Train, Validation, and Test (Holdout) Splits
+### 3.8 Rigorous Dataset Partitioning: Train, Validation, and Test (Holdout) Splits
 
 A neural network with 11,596 parameters can easily memorize random noise if not evaluated correctly. We enforce strict data partitioning:
 
@@ -313,7 +340,7 @@ Total Offline Experimental Dataset (1,500 Simulation Shots)
 
 ---
 
-### 2.9 Challenge Implementation & Empirical Validation
+### 3.9 Challenge Implementation & Empirical Validation
 In Step 3 of [`notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor.ipynb), we compare the Linear Ridge baseline against the MLP Neural Surrogate:
 
 ```python
@@ -345,7 +372,7 @@ rmse_mlp = root_mean_squared_error(Y_test, surrogate_model.predict(X_test))
 
 ---
 
-## Part 3: Closed-Loop Control Paradigms (20 min)
+## 4. Closed-Loop Control Paradigms
 
 Having established the forward mapping, we examine three control paradigms evaluated in the benchmark.
 
@@ -361,7 +388,7 @@ graph TD
     M2 -->|"Delta I = Damping(t) * [Phys_Prior + Learned_Residual]"| Env
 ```
 
-### 3.1 Baseline 0: Classical Linear SVD Pseudo-Inverse Control
+### 4.1 Baseline 0: Classical Linear SVD Pseudo-Inverse Control
 In classical accelerator operations, Singular Value Decomposition (SVD) of the response matrix $\mathbf{R}^T = \mathbf{U} \boldsymbol{\Sigma} \mathbf{V}^T$ provides the Moore-Penrose pseudo-inverse:
 $$(\mathbf{R}^T)^\dagger = \mathbf{V} \boldsymbol{\Sigma}^{-1} \mathbf{U}^T$$
 The corrective kick vector is calculated by:
@@ -372,7 +399,7 @@ where $\alpha \in (0, 1]$ is the feedback loop gain (typically $\alpha \approx 0
 - ✅ **Pros:** Instantaneous computation ($< 0.1\text{ ms}$); mathematically guaranteed convergence in purely linear regimes.
 - ❌ **Cons:** Ignores non-linear saturation; high gains ($\alpha > 0.6$) cause overshooting and limit-cycle oscillations when magnets enter saturated regions.
 
-### 3.2 Baseline 1: Supervised Surrogate + SciPy Bounded Inversion
+### 4.2 Baseline 1: Supervised Surrogate + SciPy Bounded Inversion
 Instead of inverting an analytical matrix, Baseline 1 leverages the trained neural digital twin $\hat{\mathbf{Y}} = f_{\boldsymbol{\theta}}(\Delta \mathbf{I})$ directly within an optimization loop:
 
 $$\min_{\Delta \mathbf{I}} \mathcal{L}(\Delta \mathbf{I}) = \left\| \mathbf{Y}_{\text{obs}} + f_{\boldsymbol{\theta}}(\Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2$$
@@ -402,7 +429,7 @@ class SupervisedMLPController:
 - Because $f_{\boldsymbol{\theta}}$ accurately predicts cubic soft saturation, the optimizer chooses kicks that anticipate saturation falloff.
 - As demonstrated on test seed 42, Baseline 1 reaches convergence ($\text{RMS} < 0.03\text{ mm}$) in **just 2 to 3 steps**, compared to 6 steps for classical SVD.
 
-### 3.3 Track 2: Closed-Loop RL & Physics-Informed Policy Agents
+### 4.3 Track 2: Closed-Loop RL & Physics-Informed Policy Agents
 While numerical optimization per step is powerful, iterative gradient solvers add execution latency ($\sim 15 - 30\text{ ms}$). A direct continuous policy network maps observation directly to control actions in a single forward pass ($\sim 0.2\text{ ms}$).
 
 #### Physics-Informed Residual Policy Architecture
@@ -418,9 +445,9 @@ $$\gamma(t) = \frac{1.0}{1.0 + \kappa \cdot t}, \quad \kappa \approx 0.03$$
 
 ---
 
-## Part 4: Mini-Hackathon Problem Formulation & Gymnasium Contract (15 min)
+## 5. Mini-Hackathon Problem Formulation & Gymnasium Contract
 
-### 4.1 The Gymnasium Environment Contract
+### 5.1 The Gymnasium Environment Contract
 The simulation is wrapped inside a standard [Farama Gymnasium](https://gymnasium.farama.org/) environment:
 
 ```python
@@ -437,10 +464,10 @@ obs, reward, terminated, truncated, info = env.step(action)
 - **Termination:** `terminated = True` if $\text{RMS} < 0.030\text{ mm}$ (`is_success = True`).
 - **Truncation:** `truncated = True` if `step >= 20` (`is_success = False`).
 
-### 4.2 Standardized 30-Seed Evaluation Protocol
+### 5.2 Standardized 30-Seed Evaluation Protocol
 To prevent evaluation bias or seed cherry-picking, all controllers are evaluated over **30 standardized evaluation seeds** (`seeds = range(1, 31)`), spanning a wide spectrum of initial misalignments ($0.4\text{ mm} \le \text{RMS}_0 \le 1.1\text{ mm}$).
 
-### 4.3 The Official Hackathon Scoring Formula
+### 5.3 The Official Hackathon Scoring Formula
 $$\text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text{Steps}}) + \left(\frac{0.03}{\max(\overline{\text{RMS}}, 0.005)} \times 20.0\right) - (2.0 \times \overline{\|\mathbf{I}\|})$$
 
 #### Scoring Components Breakdown:
@@ -449,7 +476,7 @@ $$\text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text
 3. **Precision Bonus ($\frac{0.03}{\text{RMS}} \times 20$):** Rewards sub-micron orbit precision. An RMS of $0.020\text{ mm}$ yields $+30.0$ points; $0.010\text{ mm}$ yields $+60.0$ points.
 4. **Current Economy Penalty ($-2 \times \overline{\|\mathbf{I}\|}$):** Penalizes excessive corrector current norms, protecting power supplies and preventing magnet saturation.
 
-### 4.4 Reference Benchmark Results
+### 5.4 Reference Benchmark Results
 Across the 30 standardized seeds, our three baseline reference implementations produce:
 
 | Rank | Controller Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Total Score |
@@ -460,7 +487,7 @@ Across the 30 standardized seeds, our three baseline reference implementations p
 
 ---
 
-## Part 5: Summary, Q&A & Transition to Lecture 2 (5 min)
+## 6. Summary & Q&A
 
 ### Key Takeaways from Lecture 1:
 1. **Machine Learning Foundations:** Neural networks are compositions of linear transformations and non-linear activations (ReLU). Without non-linearity, networks collapse into simple matrix multiplications equivalent to linear ORM.
