@@ -4,12 +4,17 @@
 # AI Applications in Accelerators Tutorial & Mini-Hackathon (KOMAC / KAERI)
 # ==============================================================================
 # Usage:
-#   ./scripts/docker_publish.sh [DOCKERHUB_USERNAME] [TAG] [--multi-arch]
+#   ./scripts/docker_publish.sh [DOCKERHUB_USERNAME] [TAG] [--single-arch|--multi-arch]
+#
+# Defaults:
+#   Tag          : latest
+#   Architecture : Multi-arch (linux/amd64 + linux/arm64) by default
 #
 # Examples:
-#   ./scripts/docker_publish.sh
-#   ./scripts/docker_publish.sh kaeri-acc latest
-#   ./scripts/docker_publish.sh kaeri-acc 2026.1 --multi-arch
+#   ./scripts/docker_publish.sh                     # Interactively prompts for username (multi-arch)
+#   ./scripts/docker_publish.sh <username>          # <username>/ai4acc-hackathon-2026:latest (multi-arch)
+#   ./scripts/docker_publish.sh <username> 2026.1   # Custom tag (multi-arch)
+#   ./scripts/docker_publish.sh <username> latest --single-arch
 # ==============================================================================
 
 set -euo pipefail
@@ -21,22 +26,26 @@ cd "${REPO_ROOT}"
 
 # Show help if requested
 if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
-    echo "Usage: $0 [DOCKERHUB_USERNAME] [TAG] [--multi-arch]"
+    echo "Usage: $0 [DOCKERHUB_USERNAME] [TAG] [--single-arch|--multi-arch]"
     echo ""
-    echo "Arguments:"
-    echo "  DOCKERHUB_USERNAME   Docker Hub username or organization (prompted if omitted)"
-    echo "  TAG                  Image tag (default: latest)"
-    echo "  --multi-arch         Build linux/amd64 and linux/arm64 multi-platform image via buildx"
+    echo "Defaults:"
+    echo "  Tag          : latest"
+    echo "  Architecture : Multi-architecture (linux/amd64 + linux/arm64) via buildx"
+    echo ""
+    echo "Options:"
+    echo "  --multi-arch   Build for both linux/amd64 and linux/arm64 (Default)"
+    echo "  --single-arch  Build only for local host architecture ($(uname -m))"
     echo ""
     echo "Examples:"
-    echo "  $0"
-    echo "  $0 kaeri-acc"
-    echo "  $0 kaeri-acc latest"
-    echo "  $0 kaeri-acc 2026.1 --multi-arch"
+    echo "  $0                                   # Interactively prompts for username, builds multi-arch"
+    echo "  $0 <username>                        # Publishes <username>/ai4acc-hackathon-2026:latest (multi-arch)"
+    echo "  $0 <username> 2026.1                 # Custom tag with multi-arch"
+    echo "  $0 <username> latest --single-arch   # Local host architecture only"
     exit 0
 fi
 
 IMAGE_NAME="ai4acc-hackathon-2026"
+DEFAULT_TAG="latest"
 
 echo "===================================================================="
 echo "   AI Applications in Accelerators Mini-Hackathon (KOMAC / KAERI)"
@@ -58,37 +67,51 @@ if ! docker info >/dev/null 2>&1; then
     exit 1
 fi
 
-# 3. Resolve Docker Hub Username
-USERNAME="${1:-${DOCKER_USERNAME:-}}"
+# 3. Resolve Docker Hub Username (prompt until non-empty)
+USERNAME=""
+if [ -n "${1:-}" ] && [ "${1:-}" != "--single-arch" ] && [ "${1:-}" != "--multi-arch" ]; then
+    USERNAME="$1"
+elif [ -n "${DOCKER_USERNAME:-}" ]; then
+    USERNAME="${DOCKER_USERNAME}"
+fi
+
 while [ -z "${USERNAME}" ]; do
     read -rp "Enter Docker Hub username: " USERNAME
     USERNAME="$(echo "${USERNAME}" | tr -d '[:space:]')"
     if [ -z "${USERNAME}" ]; then
-        echo "   Username cannot be empty. Please enter a valid Docker Hub username."
+        echo "   Username cannot be empty. Please enter your Docker Hub username."
     fi
 done
 
-# 4. Resolve Image Tag
-TAG="${2:-${DOCKER_TAG:-latest}}"
+# 4. Resolve Image Tag (default: latest)
+if [ -n "${2:-}" ] && [ "${2:-}" != "--single-arch" ] && [ "${2:-}" != "--multi-arch" ]; then
+    TAG="$2"
+elif [ -n "${DOCKER_TAG:-}" ]; then
+    TAG="${DOCKER_TAG}"
+else
+    read -rp "Enter image tag [default: ${DEFAULT_TAG}]: " INPUT_TAG
+    TAG="${INPUT_TAG:-${DEFAULT_TAG}}"
+fi
+TAG="$(echo "${TAG}" | tr -d '[:space:]')"
+
 TARGET_IMAGE="${USERNAME}/${IMAGE_NAME}:${TAG}"
 LOCAL_IMAGE="${IMAGE_NAME}:${TAG}"
 
-# 5. Resolve Multi-Arch Flag
-MULTI_ARCH=false
+# 5. Resolve Architecture Mode (default: multi-arch)
+MULTI_ARCH=true
 for arg in "$@"; do
-    if [ "${arg}" = "--multi-arch" ]; then
+    if [ "${arg}" = "--single-arch" ]; then
+        MULTI_ARCH=false
+    elif [ "${arg}" = "--multi-arch" ]; then
         MULTI_ARCH=true
     fi
 done
 
-if [ "$#" -lt 3 ] && [ "${MULTI_ARCH}" = false ]; then
-    echo ""
-    echo "Select build mode:"
-    echo "  1) Standard build (Single architecture: $(uname -m), fast)"
-    echo "  2) Multi-architecture build (linux/amd64 + linux/arm64 for Intel/AMD & Apple Silicon)"
-    read -rp "Choice [1/2, default: 1]: " BUILD_CHOICE
-    if [ "${BUILD_CHOICE}" = "2" ]; then
-        MULTI_ARCH=true
+if [ "$#" -eq 0 ]; then
+    read -rp "Build multi-architecture image (linux/amd64 + linux/arm64)? [Y/n, default: Y]: " ARCH_CHOICE
+    ARCH_CHOICE="$(echo "${ARCH_CHOICE:-Y}" | tr '[:upper:]' '[:lower:]')"
+    if [ "${ARCH_CHOICE}" = "n" ] || [ "${ARCH_CHOICE}" = "no" ]; then
+        MULTI_ARCH=false
     fi
 fi
 
@@ -96,7 +119,7 @@ echo ""
 echo "--------------------------------------------------------------------"
 echo "Target Image   : ${TARGET_IMAGE}"
 echo "Local Alias    : ${LOCAL_IMAGE}"
-echo "Architecture   : $( [ "${MULTI_ARCH}" = true ] && echo "linux/amd64,linux/arm64 (buildx)" || uname -m )"
+echo "Architecture   : $( [ "${MULTI_ARCH}" = true ] && echo "linux/amd64,linux/arm64 (buildx multi-arch)" || echo "$(uname -m) (single-arch)" )"
 echo "--------------------------------------------------------------------"
 echo ""
 
@@ -109,7 +132,7 @@ fi
 
 # 7. Authenticate with Docker Hub
 echo "🔑 Step 1: Docker Hub Authentication"
-echo "   Logging in as '${USERNAME}'..."
+echo "   Authenticating as '${USERNAME}'..."
 docker login -u "${USERNAME}"
 echo "   Authentication confirmed."
 echo ""
@@ -128,17 +151,16 @@ if [ "${MULTI_ARCH}" = true ]; then
     fi
     docker buildx inspect --bootstrap >/dev/null
 
-    echo "   Compiling and pushing multi-platform image..."
+    echo "   Compiling and pushing multi-platform image manifest to Docker Hub..."
     docker buildx build \
         --platform linux/amd64,linux/arm64 \
         -t "${TARGET_IMAGE}" \
         --push \
         .
     
-    echo "   Multi-architecture manifest pushed successfully!"
+    echo "   Multi-architecture image manifest published successfully!"
 else
-    echo "🔨 Step 2: Building Local Image"
-    # Build once with both local name and Hub namespace tag
+    echo "🔨 Step 2: Building Local Image ($(uname -m))"
     docker build \
         -t "${LOCAL_IMAGE}" \
         -t "${TARGET_IMAGE}" \

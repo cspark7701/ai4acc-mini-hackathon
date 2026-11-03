@@ -132,13 +132,13 @@ If workshop organizers wish to distribute a pre-compiled image so attendees can 
 
 > [!TIP]
 > **One-Command Automated Publishing Script:**
-> An interactive publishing script is provided at [`scripts/docker_publish.sh`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/scripts/docker_publish.sh). It handles pre-flight Docker checks, solution privacy verification, multi-arch builds, authentication, and publishing:
+> An automated publishing script is provided at [`scripts/docker_publish.sh`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/scripts/docker_publish.sh). It handles pre-flight Docker checks, solution privacy verification, multi-arch builds (`linux/amd64` + `linux/arm64` by default), authentication, and publishing:
 > ```bash
-> # Interactive mode:
+> # Interactive mode (prompts for username, uses 'latest' tag and multi-arch by default):
 > ./scripts/docker_publish.sh
 > 
-> # Or with parameters:
-> ./scripts/docker_publish.sh <your-username> latest [--multi-arch]
+> # Or specify parameters:
+> ./scripts/docker_publish.sh <your-username> latest [--single-arch]
 > ```
 
 ### Step 1: Build the Image Locally
@@ -170,11 +170,6 @@ If you built the image locally as `ai4acc-hackathon-2026`, tag it with your Dock
 ```bash
 # Format: docker tag <local-image> <dockerhub-username>/<repo-name>:<tag>
 docker tag ai4acc-hackathon-2026 <your-username>/ai4acc-hackathon-2026:latest
-```
-
-*Example for user `kaeri-acc`:*
-```bash
-docker tag ai4acc-hackathon-2026 kaeri-acc/ai4acc-hackathon-2026:latest
 ```
 
 ### Step 4: Push to Docker Hub
