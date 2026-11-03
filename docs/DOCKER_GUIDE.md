@@ -98,7 +98,7 @@ docker build -t ai4acc-hackathon-2026 .
 #### Option A: Standalone Container (Participant files baked in)
 The image already contains all source code, lecture notes, and the participant challenge notebook internally (the reference solution notebook is completely excluded from the container):
 ```bash
-docker run -it --rm -p 8888:8888 ai4acc-hackathon-2026
+docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
 #### Option B: Live Volume Mounting (Saves edits to host machine)
@@ -109,7 +109,7 @@ docker run -it --rm \
   -p 8888:8888 \
   -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
   -v "${PWD}/src:/workspace/src" \
-  ai4acc-hackathon-2026
+  cspark7701/ai4acc-hackathon-2026:latest
 ```
 
 > [!IMPORTANT]
@@ -184,7 +184,7 @@ docker run -it --rm \
   -p 8888:8888 \
   -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
   -v "${PWD}/src:/workspace/src" \
-  <your-username>/ai4acc-hackathon-2026:latest
+  cspark7701/ai4acc-hackathon-2026:latest
 ```
 
 ---
@@ -198,7 +198,7 @@ docker run -it --rm \
   docker run -it --rm -p 8889:8888 \
     -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
     -v "${PWD}/src:/workspace/src" \
-    ai4acc-hackathon-2026
+    cspark7701/ai4acc-hackathon-2026:latest
   ```
   Then access Jupyter at **`http://localhost:8889`**.
 - **Fix 2 (Stop the host process):**
@@ -213,7 +213,7 @@ docker run -it --rm \
 - **Cause:** A trailing whitespace immediately after a line-continuation backslash (`\ `) in your shell command.
 - **Fix:** Avoid spaces after backslashes, or run the command on a single contiguous line:
   ```bash
-  docker run -it --rm -p 8888:8888 -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" -v "${PWD}/src:/workspace/src" ai4acc-hackathon-2026
+  docker run -it --rm -p 8888:8888 -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" -v "${PWD}/src:/workspace/src" cspark7701/ai4acc-hackathon-2026:latest
   ```
 
 ---
@@ -236,6 +236,6 @@ docker run -it --rm \
   -e WANDB_API_KEY="<your-wandb-api-key>" \
   -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
   -v "${PWD}/src:/workspace/src" \
-  ai4acc-hackathon-2026
+  cspark7701/ai4acc-hackathon-2026:latest
 ```
 Or simply run `wandb login` in the first cell of the notebook.

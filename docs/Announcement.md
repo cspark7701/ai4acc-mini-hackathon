@@ -89,6 +89,16 @@
     
     *(참고: docker 그룹 추가 후 변경사항 적용을 위해 터미널 재로그인이 필요합니다.)*
 
+- **공식 해커톤 Docker 컨테이너 실행 명령:**
+  ```bash
+  docker run -it --rm \
+      -p 8888:8888 \
+      -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
+      -v "${PWD}/src:/workspace/src" \
+      cspark7701/ai4acc-hackathon-2026:latest
+  ```
+  *(프로젝트 루트 디렉토리에서 위 명령어를 실행한 후, 웹 브라우저에서 `http://localhost:8888`로 접속하면 JupyterLab이 시작됩니다.)*
+
 ### 3. Weights & Biases (W&B) 무료 계정 사전 생성
 
 - 본 미니 해커톤은 머신러닝 실험 추적 및 라이브 리더보드 플랫폼인 **Weights & Biases (W&B)**를 활용합니다.
@@ -192,6 +202,16 @@ To guarantee a seamless and productive hands-on experience, please review the fo
     ```
     
     *(Note: Log out and log back in after adding your user to the docker group for changes to take effect).*
+
+- **Official Hackathon Docker Container Run Command:**
+  ```bash
+  docker run -it --rm \
+      -p 8888:8888 \
+      -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
+      -v "${PWD}/src:/workspace/src" \
+      cspark7701/ai4acc-hackathon-2026:latest
+  ```
+  *(Execute this command from the repository root directory, then browse to `http://localhost:8888` to begin).*
 
 ### 3. Create a Free Weights & Biases (W&B) Account in Advance
 

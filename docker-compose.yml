@@ -8,7 +8,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ai4acc-hackathon-2026:latest
+    image: cspark7701/ai4acc-hackathon-2026:latest
     container_name: ai4acc-hackathon-2026
     ports:
       - "8888:8888"

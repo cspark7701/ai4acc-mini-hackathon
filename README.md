@@ -182,15 +182,12 @@ docker compose up
 
 **Using the Docker CLI directly:**
 ```bash
-# 1. Build the image
-docker build -t ai4acc-hackathon-2026 .
-
-# 2. Run container with live participant notebook mount
+# Run container with live participant notebook mount (automatically pulls image from Docker Hub):
 docker run -it --rm \
   -p 8888:8888 \
   -v "${PWD}/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb" \
   -v "${PWD}/src:/workspace/src" \
-  ai4acc-hackathon-2026
+  cspark7701/ai4acc-hackathon-2026:latest
 ```
 
 Once launched, open **`http://localhost:8888`** in your browser. All packages (`gymnasium`, `scikit-learn`, `wandb`, `jupyterlab`, `notebook`) are pre-installed and ready to use!
