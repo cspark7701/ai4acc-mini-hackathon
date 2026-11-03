@@ -3,7 +3,8 @@ scripts/update_notebooks.py
 Regenerate streamlined hackathon notebooks:
 - Imports core simulation, controllers, and benchmarks from src/
 - Adds comprehensive instructions and newbie examples for TODO 1 and TODO 2
-- Eliminates boilerplate code so participants modify minimally
+- Hides the raw proprietary scoring formula in the participant notebook
+- Adds strategic tuning cheat-sheet and hints showing which values to modify to get higher scores
 """
 import json
 
@@ -149,7 +150,7 @@ Here, we collect 1,500 simulation shots (80% train, 20% test) across currents $[
 2. **A Multi-Layer Perceptron (MLP):** A deep neural network capable of fitting the non-linear cubic saturation curve."""
 
 # ------------------------------------------------------------------------------
-# Cell 7: Step 3 Code (Participant with TODO 1 & Examples)
+# Cell 7: Step 3 Code (Participant with TODO 1 & Hints)
 # ------------------------------------------------------------------------------
 c7_code_part = """# Step 3: Offline Data Generation & Surrogate Training
 # Generate 1500 training samples covering [-3.0, +3.0] A with non-linear saturation and noise
@@ -191,9 +192,13 @@ print(f"Dataset generated: X_train shape={X_train.shape}, Y_train shape={Y_train
 #   )
 #   surrogate_model.fit(X_train, Y_train)
 #
-# EXPERIMENTING & TUNING TIPS:
-#   • Try different hidden layer structures: e.g. (64, 64), (128, 64), (256, 128, 64).
-#   • Compare test RMSE: Target is < 0.015 mm (near the 0.010 mm sensor noise floor).
+# ------------------------------------------------------------------------------
+# 💡 HINTS TO GET HIGHER SCORES:
+#   • Network Architecture: Try wider or deeper layers like (128, 128), (256, 128, 64).
+#     A more expressive surrogate provides a more accurate gradient for the optimizer in Track 1!
+#   • Training Sample Size: Increasing n_samples (e.g. 2000 or 3000) improves test generalization.
+#   • Regularization: Tune alpha (e.g., 1e-4 vs 1e-5) to avoid overfitting the sensor noise.
+#   • Accuracy Benchmark: Target test RMSE is < 0.015 mm (near the 0.010 mm sensor noise floor).
 # ==============================================================================
 
 # 1. Train Linear Baseline
@@ -238,7 +243,7 @@ where `obs` has shape `(12,)` and the returned action is an array of shape `(6,)
    $$\\Delta \\mathbf{I}_t = \\text{damping}(t) \\cdot \\left[ - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y} + \\mathbf{W}_{\\text{tune}} \\mathbf{Y} + \\mathbf{b} \\right]$$"""
 
 # ------------------------------------------------------------------------------
-# Cell 9: Step 4 Code (Participant with TODO 2 & Examples)
+# Cell 9: Step 4 Code (Participant with TODO 2 & Hints)
 # ------------------------------------------------------------------------------
 c9_code_part = """# Step 4: Define Benchmark Controllers
 
@@ -253,10 +258,7 @@ b1 = SupervisedMLPController(surrogate_model)
 # ==============================================================================
 # INSTRUCTIONS FOR PARTICIPANTS:
 # Implement your closed-loop policy by writing the act(obs, info) method.
-# Your agent takes current BPM readings obs (12,) and returns delta currents action (6,).
-#
-# Scoring is based on:
-#   Score = (Success Rate * 10) - (2 * Mean Steps) + (0.03 / Mean RMS * 20) - (2 * Mean Current Norm)
+# Your agent receives current BPM readings obs (12,) and returns delta currents action (6,).
 #
 # ------------------------------------------------------------------------------
 # EXAMPLES FOR NEWBIE PARTICIPANTS:
@@ -288,9 +290,32 @@ b1 = SupervisedMLPController(surrogate_model)
 #           damping = 1.0 / (1.0 + 0.03 * step)
 #           return np.clip(action * damping, -0.8, 0.8)
 #
-# TUNING HINTS:
-#   • Gain (alpha): Try values in [0.40, 0.55]. Too high (>0.6) overcorrects due to non-linearity.
-#   • Damping rate: Try decay in [0.01, 0.05] to prevent limit-cycle oscillations around 0.03 mm.
+# ------------------------------------------------------------------------------
+# 💡 STRATEGIC TUNING HINTS: WHICH VALUES TO MODIFY TO GET HIGHER SCORES!
+#
+# 1. Feedback Gain (alpha): Default is 0.45.
+#    • Increasing gain to 0.55–0.72 dramatically speeds up convergence (reduces step count).
+#    • Warning: If gain is too high (>0.75), the policy may overshoot due to non-linear saturation!
+#
+# 2. Adaptive Gain Scheduling:
+#    • Instead of fixed gain, check the current RMS error:
+#        rms = np.sqrt(np.mean(obs**2))
+#        gain = 0.72 if rms > 0.15 else (0.55 if rms > 0.05 else 0.38)
+#    • This takes large strides when far away, and delicate micro-steps near the 0.030 mm target!
+#
+# 3. Dynamic Damping (gamma):
+#    • damping = 1.0 / (1.0 + gamma * step).
+#    • Tuning gamma in [0.015, 0.035] suppresses limit-cycle oscillations around 0.030 mm.
+#
+# 4. Non-Linear Cubic Desaturation Compensation:
+#    • The magnet response softens as B(I) ~ I - 0.015 * I^3.
+#    • Apply analytical series inversion to your kick:
+#        delta_I_corrected = delta_I_lin + 0.015 * (delta_I_lin ** 3)
+#    • This compensates for iron core softening in 1 shot!
+#
+# 5. Energy Efficiency (Current Norm):
+#    • Avoid unnecessary opposing kicks between adjacent correctors; keeping total current
+#      low gives an energy-efficiency score bonus!
 # ==============================================================================
 
 class MyCustomRLAgent:
@@ -313,21 +338,42 @@ b2 = MyCustomRLAgent(env.R, gain=0.45)
 print("All three competitor controllers initialized successfully.")"""
 
 # ------------------------------------------------------------------------------
-# Cell 10: Section 5 Markdown
+# Cell 10: Section 5 Markdown (Hides formula, adds multi-objective description & cheat-sheet)
 # ------------------------------------------------------------------------------
-c10_md = """---
+c10_md_part = """---
 ## 5. Standardized Benchmark Evaluation & Live W&B Scoring
 
-Agents are evaluated across **30 standardized evaluation seeds** (`seeds = range(1, 31)`) to ensure fair comparison.
-The **Official Hackathon Scoring Formula** rewards high success, fast convergence, low final RMS, and energy efficiency:
-$$\\text{Score} = (\\text{Success Rate} \\times 10.0) - (2.0 \\times \\overline{\\text{Steps}}) + \\left(\\frac{0.03}{\\max(\\overline{\\text{RMS}}, 0.005)} \\times 20.0\\right) - (2.0 \\times \\overline{\\|\\mathbf{I}\\|})$$
+To ensure fair and rigorous comparison, agents are evaluated across **30 standardized evaluation seeds** (`seeds = range(1, 31)`) featuring diverse physical drift perturbations.
 
-When `USE_WANDB = True`, metrics and detailed seed breakdowns are logged in real time to **Weights & Biases (W&B)**."""
+### 🎯 Official Multi-Objective Evaluation Criteria
+The benchmark evaluation engine (`src/benchmark.py`) computes an aggregated **Hackathon Benchmark Score** evaluating four competitive dimensions:
+1. **Alignment Success Rate (%):** Did the agent achieve $\\text{RMS} < 0.030\\text{ mm}$ within the 20-step budget? (Primary requirement).
+2. **Convergence Speed (Mean Steps):** Reaching the target in fewer steps earns substantial speed bonuses.
+3. **Residual Precision (Final RMS):** Pushing residual orbit error below the $0.030\\text{ mm}$ threshold down towards the $0.010\\text{ mm}$ sensor noise floor earns significant precision bonuses!
+4. **Actuator Current Efficiency (Mean Norm):** Minimizing cumulative corrector currents $\\overline{\\|\\mathbf{I}\\|}$ preserves magnet power supplies and avoids energy penalties.
+
+*(Note: The exact proprietary weighting coefficients are encapsulated inside the evaluation engine in `src/benchmark.py`)*.
+
+---
+
+### 💡 Strategic Tuning Cheat-Sheet: How to Beat the Baseline Leaderboard!
+
+| Tuning Target | What to Modify | Impact on Performance & Score |
+| :--- | :--- | :--- |
+| **Faster Convergence** | Feedback gain $\\alpha \\in [0.55, 0.72]$ in `act()` | Cuts mean steps from 6 down to 3, earning a large speed bonus. |
+| **Adaptive Gain Schedule** | Dynamic gain based on current RMS in `act()` | Aggressive kicks when far (`> 0.15 mm`); fine-tuned kicks when close (`< 0.05 mm`). |
+| **Precision RMS Bonus** | Damping cooling factor $\\gamma \\in [0.015, 0.035]$ | Prevents terminal oscillations, allowing the beam to land near the $0.010\\text{ mm}$ noise floor. |
+| **Non-Linear Boost** | $\\Delta \\mathbf{I}_{\\text{act}} = \\Delta \\mathbf{I}_{\\text{lin}} + 0.015 \\cdot \\Delta \\mathbf{I}_{\\text{lin}}^3$ | Cancels cubic iron saturation in one shot, avoiding under-correction. |
+| **Track 1 Optimizer Fix** | Bound search to `[(-0.8, 0.8)]` & warm-start | Prevents action clipping and boosts Track 1 success rate dramatically! |
+
+When `USE_WANDB = True`, telemetry, seed breakdowns, and scores are automatically uploaded to **Weights & Biases (W&B)**."""
 
 # ------------------------------------------------------------------------------
-# Cell 11: Step 5 Code
+# Cell 11: Step 5 Code (Clean call to benchmark engine)
 # ------------------------------------------------------------------------------
-c11_code = """# Step 5: Standardized Evaluation Harness with Weights & Biases Logging
+c11_code_part = """# Step 5: Standardized Evaluation Harness with Weights & Biases Logging
+# Evaluates each competitor controller across 30 standardized seeds (range 1 to 31)
+# Telemetry, seed breakdowns, and scores are automatically uploaded to W&B
 print("Running Official Hackathon Benchmark across 30 Test Seeds...")
 
 res_b0 = evaluate_hackathon_benchmark(env, b0, agent_name="Baseline0_LinearSVD", team_name=TEAM_NAME, use_wandb=USE_WANDB, project=WANDB_PROJECT, entity=WANDB_ENTITY)
@@ -397,6 +443,9 @@ print(f"  • Mean Corrector Norm    : {best_metrics['mean_norm']:.2f} A")
 print(f"  • Mean Policy Latency    : {best_metrics['mean_latency']:.2f} ms")
 print("=" * 68)"""
 
+# ------------------------------------------------------------------------------
+# Assembly
+# ------------------------------------------------------------------------------
 participant_cells = [
     make_cell('markdown', c0_md),
     make_cell('code', c1_code),
@@ -408,8 +457,8 @@ participant_cells = [
     make_cell('code', c7_code_part),
     make_cell('markdown', c8_md),
     make_cell('code', c9_code_part),
-    make_cell('markdown', c10_md),
-    make_cell('code', c11_code),
+    make_cell('markdown', c10_md_part),
+    make_cell('code', c11_code_part),
     make_cell('markdown', c12_md),
     make_cell('code', c13_code),
     make_cell('markdown', c14_md),
@@ -428,8 +477,9 @@ participant_nb = {
 
 with open('notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb', 'w') as f:
     json.dump(participant_nb, f, indent=1)
-print('Generated Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb')
+print('Generated Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb (formula hidden, hints added)')
 
+# Solution Notebook: includes the reference Track 2 agent in Step 4
 solution_cells = list(participant_cells)
 c9_code_sol = """# Step 4: Define Benchmark Controllers
 
