@@ -8,8 +8,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ai4acc-mini-hackathon:latest
-    container_name: ai4acc-hackathon
+    image: ai4acc-hackathon-2026:latest
+    container_name: ai4acc-hackathon-2026
     ports:
       - "8888:8888"
     volumes:

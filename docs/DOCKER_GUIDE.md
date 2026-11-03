@@ -51,11 +51,11 @@ When you build the container using the provided [`Dockerfile`](file:///home/cspa
 
 | Environment | Image Name | Storage Location | Accessibility |
 | :--- | :--- | :--- | :--- |
-| **Local Build** | `ai4acc-hackathon:latest` | Local host machine | Available only on the machine where it was built |
-| **Docker Hub Registry** | `<username>/ai4acc-hackathon:latest` | Public / Private Cloud Registry (`hub.docker.com`) | Available worldwide via `docker pull` |
+| **Local Build** | `ai4acc-hackathon-2026:latest` | Local host machine | Available only on the machine where it was built |
+| **Docker Hub Registry** | `<username>/ai4acc-hackathon-2026:latest` | Public / Private Cloud Registry (`hub.docker.com`) | Available worldwide via `docker pull` |
 
 > [!NOTE]
-> By default, `ai4acc-hackathon` is a **locally built image**. It is not automatically uploaded to Docker Hub. If organizers wish to distribute a pre-built image to participants without requiring them to build it locally, see [Section 4: Publishing to Docker Hub](#-4-publishing-to-docker-hub-for-organizers).
+> By default, `ai4acc-hackathon-2026` is a **locally built image**. It is not automatically uploaded to Docker Hub. If organizers wish to distribute a pre-built image to participants without requiring them to build it locally, see [Section 4: Publishing to Docker Hub](#-4-publishing-to-docker-hub-for-organizers).
 
 ---
 
@@ -90,7 +90,7 @@ Once started, open your web browser to **`http://localhost:8888`**.
 ### Step 1: Build the Image Locally
 ```bash
 cd /home/cspark/Work/projects/ai4acc-mini-hackathon
-docker build -t ai4acc-hackathon .
+docker build -t ai4acc-hackathon-2026 .
 ```
 
 ### Step 2: Run the Container
@@ -98,7 +98,7 @@ docker build -t ai4acc-hackathon .
 #### Option A: Standalone Container (All files baked in)
 The image already contains all source code, lecture notes, and challenge notebooks internally:
 ```bash
-docker run -it --rm -p 8888:8888 ai4acc-hackathon
+docker run -it --rm -p 8888:8888 ai4acc-hackathon-2026
 ```
 
 #### Option B: Live Volume Mounting (Saves edits to host machine)
@@ -109,7 +109,7 @@ docker run -it --rm \
   -p 8888:8888 \
   -v "${PWD}/notebooks:/workspace/notebooks" \
   -v "${PWD}/src:/workspace/src" \
-  ai4acc-hackathon
+  ai4acc-hackathon-2026
 ```
 
 > [!IMPORTANT]
@@ -138,20 +138,20 @@ docker login
 *(Enter your Docker Hub username and personal access token / password)*.
 
 ### Step 2: Tag the Local Image
-Tag the local `ai4acc-hackathon` image with your Docker Hub account namespace:
+Tag the local `ai4acc-hackathon-2026` image with your Docker Hub account namespace:
 ```bash
 # Format: docker tag <local-image> <dockerhub-username>/<repo-name>:<tag>
-docker tag ai4acc-hackathon <your-username>/ai4acc-hackathon:latest
+docker tag ai4acc-hackathon-2026 <your-username>/ai4acc-hackathon-2026:latest
 ```
 
 *Example for user `kaeri-acc`:*
 ```bash
-docker tag ai4acc-hackathon kaeri-acc/ai4acc-hackathon:latest
+docker tag ai4acc-hackathon-2026 kaeri-acc/ai4acc-hackathon-2026:latest
 ```
 
 ### Step 3: Push to Docker Hub
 ```bash
-docker push <your-username>/ai4acc-hackathon:latest
+docker push <your-username>/ai4acc-hackathon-2026:latest
 ```
 
 ### Step 4: Participant Usage from Docker Hub
@@ -161,7 +161,7 @@ docker run -it --rm \
   -p 8888:8888 \
   -v "${PWD}/notebooks:/workspace/notebooks" \
   -v "${PWD}/src:/workspace/src" \
-  <your-username>/ai4acc-hackathon:latest
+  <your-username>/ai4acc-hackathon-2026:latest
 ```
 
 ---
@@ -172,7 +172,7 @@ docker run -it --rm \
 - **Cause:** Another process on your host machine (such as a local Jupyter server or another Docker container) is already listening on port `8888`.
 - **Fix 1 (Map to another port, e.g., 8889):**
   ```bash
-  docker run -it --rm -p 8889:8888 -v "${PWD}/notebooks:/workspace/notebooks" -v "${PWD}/src:/workspace/src" ai4acc-hackathon
+  docker run -it --rm -p 8889:8888 -v "${PWD}/notebooks:/workspace/notebooks" -v "${PWD}/src:/workspace/src" ai4acc-hackathon-2026
   ```
   Then access Jupyter at **`http://localhost:8889`**.
 - **Fix 2 (Stop the host process):**
@@ -187,7 +187,7 @@ docker run -it --rm \
 - **Cause:** A trailing whitespace immediately after a line-continuation backslash (`\ `) in your shell command.
 - **Fix:** Avoid spaces after backslashes, or run the command on a single contiguous line:
   ```bash
-  docker run -it --rm -p 8888:8888 -v "${PWD}/notebooks:/workspace/notebooks" -v "${PWD}/src:/workspace/src" ai4acc-hackathon
+  docker run -it --rm -p 8888:8888 -v "${PWD}/notebooks:/workspace/notebooks" -v "${PWD}/src:/workspace/src" ai4acc-hackathon-2026
   ```
 
 ---
@@ -209,6 +209,6 @@ docker run -it --rm \
   -p 8888:8888 \
   -e WANDB_API_KEY="<your-wandb-api-key>" \
   -v "${PWD}/notebooks:/workspace/notebooks" \
-  ai4acc-hackathon
+  ai4acc-hackathon-2026
 ```
 Or simply run `wandb login` in the first cell of the notebook.
