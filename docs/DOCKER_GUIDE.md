@@ -130,6 +130,17 @@ docker run -it --rm \
 
 If workshop organizers wish to distribute a pre-compiled image so attendees can skip the local build step:
 
+> [!TIP]
+> **One-Command Automated Publishing Script:**
+> An interactive publishing script is provided at [`scripts/docker_publish.sh`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/scripts/docker_publish.sh). It handles pre-flight Docker checks, solution privacy verification, multi-arch builds, authentication, and publishing:
+> ```bash
+> # Interactive mode:
+> ./scripts/docker_publish.sh
+> 
+> # Or with parameters:
+> ./scripts/docker_publish.sh <your-username> latest [--multi-arch]
+> ```
+
 ### Step 1: Build the Image Locally
 From the repository root directory, build the challenge image (the reference solution notebook is automatically excluded via `.dockerignore`):
 ```bash
