@@ -78,10 +78,10 @@ from src import (
 # ------------------------------------------------------------------------------
 # Hackathon Configuration (Customize for Your Team!)
 # ------------------------------------------------------------------------------
-TEAM_NAME = "Team_Alpha"                    # <-- Change this to your registered team name!
-WANDB_PROJECT = "accelerator-orbit-hackathon" # Workshop project name
-WANDB_ENTITY = None                          # Set to your W&B team/organization handle, or None
-USE_WANDB = True                             # Set to False if running completely offline
+TEAM_NAME = "Team_Alpha"                    # <-- CHANGE THIS: Your registered team name!
+WANDB_PROJECT = "accelerator-orbit-hackathon" # [DO NOT CHANGE] Workshop project name for live leaderboard
+WANDB_ENTITY = None                          # [DO NOT CHANGE] Leave None for personal account or preset workspace
+USE_WANDB = True                             # [DO NOT CHANGE] Keep True to submit scores to the live leaderboard
 
 print(f"Setup complete! Ready to compete as: {TEAM_NAME}")"""
 
