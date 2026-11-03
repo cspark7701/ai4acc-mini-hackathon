@@ -65,9 +65,13 @@ def build_docx():
 
     p_meta = doc.add_paragraph()
     p_meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r_meta = p_meta.add_run("2026년 11월 3일 (화) 09:00 – 17:00 | KOMAC / KAERI (한국원자력연구원 양성자과학연구단)")
+    r_meta = p_meta.add_run("2026년 11월 3일 (화) 09:00 – 17:00 | KOMAC / KAERI (한국원자력연구원 양성자과학연구단)\n")
     r_meta.font.size = Pt(9.5)
     r_meta.font.color.rgb = MUTED
+    r_reg = p_meta.add_run("참가 등록 (Indico): https://indico.korea.ac.kr/event/114/")
+    r_reg.font.size = Pt(9.5)
+    r_reg.font.bold = True
+    r_reg.font.color.rgb = SECONDARY
 
     doc.add_paragraph().paragraph_format.space_after = Pt(6)
 
@@ -99,11 +103,15 @@ def build_docx():
     r_box_title.font.color.rgb = PRIMARY
     r_box_title.font.size = Pt(11)
 
-    r_b1 = p_box.add_run("1. 개인 노트북 지참 (BYOD): ")
+    r_b0 = p_box.add_run("1. 참가 등록 (Indico): ")
+    r_b0.bold = True
+    p_box.add_run("사전 등록 링크(https://indico.korea.ac.kr/event/114/)에서 참가 신청을 완료해 주십시오.\n")
+
+    r_b1 = p_box.add_run("2. 개인 노트북 지참 (BYOD): ")
     r_b1.bold = True
     p_box.add_run("실습 및 오후 미니 해커톤 참가를 위해 개인 노트북과 전원 충전기를 반드시 지참해 주십시오.\n")
 
-    r_b2 = p_box.add_run("2. 운영체제 및 Docker Desktop 사전 설치 (WSL 2 활성화): ")
+    r_b2 = p_box.add_run("3. 운영체제 및 Docker Desktop 사전 설치 (WSL 2 활성화): ")
     r_b2.bold = True
     p_box.add_run(
         "모든 OS를 완벽히 지원합니다. Windows 또는 Mac(macOS) 노트북을 사용하시는 참가자분께서는 사전에 Docker Desktop 앱을 반드시 설치해 주시기 바랍니다. "
@@ -111,7 +119,7 @@ def build_docx():
         "(Linux 환경: Ubuntu/Debian은 'apt install docker.io docker-compose-plugin', CentOS/RHEL은 'dnf install docker-ce docker-compose-plugin' 사용)\n"
     )
 
-    r_b3 = p_box.add_run("3. Weights & Biases (W&B) 무료 계정 사전 생성: ")
+    r_b3 = p_box.add_run("4. Weights & Biases (W&B) 무료 계정 사전 생성: ")
     r_b3.bold = True
     p_box.add_run(
         "실시간 벤치마크 및 리더보드 연동을 위해 wandb.ai에서 무료 개인 계정을 생성하고 API 키를 확인해 오시기 바랍니다. "
@@ -193,11 +201,15 @@ def build_docx():
     r_box_title_en.font.color.rgb = PRIMARY
     r_box_title_en.font.size = Pt(11)
 
-    r_eb1 = p_box_en.add_run("1. Bring Your Own Laptop (BYOD): ")
+    r_eb0 = p_box_en.add_run("1. Workshop Registration (Indico): ")
+    r_eb0.bold = True
+    p_box_en.add_run("Please complete your online registration at https://indico.korea.ac.kr/event/114/ prior to the event.\n")
+
+    r_eb1 = p_box_en.add_run("2. Bring Your Own Laptop (BYOD): ")
     r_eb1.bold = True
     p_box_en.add_run("Please bring your personal laptop and power adapter for hands-on exercises and the afternoon hackathon.\n")
 
-    r_eb2 = p_box_en.add_run("2. Operating Systems & Docker Desktop Setup (WSL 2 for Windows): ")
+    r_eb2 = p_box_en.add_run("3. Operating Systems & Docker Desktop Setup (WSL 2 for Windows): ")
     r_eb2.bold = True
     p_box_en.add_run(
         "All platforms are supported. Participants using Windows or Mac (macOS) laptops are requested to install Docker Desktop "
@@ -205,7 +217,7 @@ def build_docx():
         "(Linux: Ubuntu/Debian via apt, CentOS/RHEL via dnf using the official docker-ce repository).\n"
     )
 
-    r_eb3 = p_box_en.add_run("3. Create a Free Weights & Biases Account: ")
+    r_eb3 = p_box_en.add_run("4. Create a Free Weights & Biases Account: ")
     r_eb3.bold = True
     p_box_en.add_run(
         "Sign up for a free account at wandb.ai and obtain your API key from wandb.ai/authorize before the event "

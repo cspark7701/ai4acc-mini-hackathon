@@ -11,6 +11,7 @@
 
 - **일시:** 2026년 11월 3일 (화) 09:00 – 17:00
 - **장소:** KOMAC / KAERI (한국원자력연구원 양성자과학연구단)
+- **참가 등록 (Indico):** [https://indico.korea.ac.kr/event/114/](https://indico.korea.ac.kr/event/114/)
 - **주요 대상:** 가속기 물리 및 제어 연구원, 박사후연구원, 대학원생 및 도메인 엔지니어
 - **강사진:**
   - **박종식 박사 (Chong Shik Park, Ph.D.)** — 고려대학교 세종캠퍼스 (Korea University, Sejong)
@@ -86,6 +87,7 @@
 
 ## ✅ 참가 전 체크리스트 (Readiness Checklist)
 
+- [ ] Indico 워크숍 사전 참가 등록 완료 ([https://indico.korea.ac.kr/event/114/](https://indico.korea.ac.kr/event/114/))
 - [ ] 개인 노트북 및 전원 어댑터 준비 완료
 - [ ] Docker Desktop 설치 및 실행 확인 (Windows: WSL 2 활성화 확인, macOS: 앱 실행 확인) 또는 Linux Docker Engine 준비 완료
 - [ ] [wandb.ai](https://wandb.ai) 무료 계정 생성 및 API 키 확인
@@ -101,6 +103,7 @@ This intensive, full-day educational workshop and competition bridges cutting-ed
 
 - **Date & Time:** Tuesday, November 3, 2026 | 09:00 – 17:00 KST
 - **Location:** KOMAC / KAERI (Korea Multi-purpose Accelerator Complex / Korea Atomic Energy Research Institute)
+- **Registration (Indico):** [https://indico.korea.ac.kr/event/114/](https://indico.korea.ac.kr/event/114/)
 - **Target Audience:** Graduate students, postdocs, accelerator physicists, and domain control engineers
 - **Distinguished Instructors:**
   - **Chong Shik Park, Ph.D.** — Korea University, Sejong
@@ -176,6 +179,7 @@ To guarantee a seamless and productive hands-on experience, please review the fo
 
 ## ✅ Pre-Workshop Readiness Checklist
 
+- [ ] Workshop registration completed on Indico ([https://indico.korea.ac.kr/event/114/](https://indico.korea.ac.kr/event/114/))
 - [ ] Personal laptop and power adapter ready
 - [ ] Docker Desktop installed and verified running (Windows: WSL 2 enabled, macOS: app launched) or Linux Docker Engine ready
 - [ ] Free [wandb.ai](https://wandb.ai) account created & API key retrieved from [wandb.ai/authorize](https://wandb.ai/authorize)
