@@ -2,7 +2,9 @@
 ## Physics Foundations, Neural Surrogates, Reinforcement Learning, and Bayesian Optimization
 
 **Author:** Chong Shik Park, Ph.D.  
-**Affiliation:** Korea University, Sejong  
+**Affiliation:**  
+- Department of Accelerator Science, Korea University, Sejong 30019, Republic of Korea  
+- Center for Accelerator Research, Korea University, Sejong 30019, Republic of Korea  
 **Date:** November 3, 2026  
 **Target Audience:** Graduate Students & Early-Career Postdoctoral Researchers in Accelerator Physics and Engineering  
 
