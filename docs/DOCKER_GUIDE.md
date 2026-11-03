@@ -130,15 +130,32 @@ docker run -it --rm \
 
 If workshop organizers wish to distribute a pre-compiled image so attendees can skip the local build step:
 
-### Step 1: Sign Up / Log In to Docker Hub
+### Step 1: Build the Image Locally
+From the repository root directory, build the challenge image (the reference solution notebook is automatically excluded via `.dockerignore`):
+```bash
+docker build -t ai4acc-hackathon-2026 .
+```
+*(Alternatively, you can build directly with your target Docker Hub namespace:)*
+```bash
+docker build -t <your-username>/ai4acc-hackathon-2026:latest .
+```
+
+> [!TIP]
+> **Multi-Architecture Support (Intel/AMD + Apple Silicon):**
+> Workshop participants may use either x86_64 (Windows/Linux/Intel Mac) or ARM64 (Apple Silicon M1/M2/M3/M4). To build and push a unified multi-platform manifest directly to Docker Hub:
+> ```bash
+> docker buildx build --platform linux/amd64,linux/arm64 -t <your-username>/ai4acc-hackathon-2026:latest --push .
+> ```
+
+### Step 2: Sign Up / Log In to Docker Hub
 Ensure you have an account on [Docker Hub](https://hub.docker.com). In your terminal, authenticate:
 ```bash
 docker login
 ```
 *(Enter your Docker Hub username and personal access token / password)*.
 
-### Step 2: Tag the Local Image
-Tag the local `ai4acc-hackathon-2026` image with your Docker Hub account namespace:
+### Step 3: Tag the Local Image
+If you built the image locally as `ai4acc-hackathon-2026`, tag it with your Docker Hub account namespace:
 ```bash
 # Format: docker tag <local-image> <dockerhub-username>/<repo-name>:<tag>
 docker tag ai4acc-hackathon-2026 <your-username>/ai4acc-hackathon-2026:latest
@@ -149,12 +166,12 @@ docker tag ai4acc-hackathon-2026 <your-username>/ai4acc-hackathon-2026:latest
 docker tag ai4acc-hackathon-2026 kaeri-acc/ai4acc-hackathon-2026:latest
 ```
 
-### Step 3: Push to Docker Hub
+### Step 4: Push to Docker Hub
 ```bash
 docker push <your-username>/ai4acc-hackathon-2026:latest
 ```
 
-### Step 4: Participant Usage from Docker Hub
+### Step 5: Participant Usage from Docker Hub
 Once pushed, participants do not need to clone the repo or build the image. They can simply run:
 ```bash
 docker run -it --rm \
