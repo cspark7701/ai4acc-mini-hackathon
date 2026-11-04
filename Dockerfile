@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     curl \
     git \
+    pandoc \
     && rm -rf /var/lib/apt/lists/*
 
 # Set workspace directory
