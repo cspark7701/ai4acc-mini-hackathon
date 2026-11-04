@@ -30,6 +30,23 @@ A comprehensive tournament was executed with **10 autonomous competitor agents**
 
 ---
 
+## 📈 Direct Comparison: Notebook As-Is Baselines vs. Agent Optimized Policies
+
+To measure the exact performance gain achieved by the agents, the default participant notebook was executed strictly **as-is** (with untuned baseline parameters) across the identical 30 seeds (`range(1, 31)`):
+
+### 1. Benchmark Scores: Notebook As-Is vs. Best Agent Results
+
+| Controller / Track | Notebook As-Is Score | Agent Optimized Score | Winning Agent / Method | Score Delta ($\Delta$) | Mean Steps Gain | Final RMS Gain |
+| :--- | :---: | :---: | :--- | :---: | :---: | :---: |
+| **Track 3 (Bayesian Optimization)** | **1032.0 pts** | **1035.4 pts** | **`Agent_A4_DualStageDecay`** | **+3.4 pts** | 1.6 $\rightarrow$ **1.6** | 0.0162 $\rightarrow$ **0.0149 mm** |
+| **Track 2 (RL / Adaptive Policy)** | **1011.1 pts** | **1020.0 pts** | **`Agent_B6_AggressiveGain`** | **+8.9 pts** | 6.1 $\rightarrow$ **3.4 steps** | 0.0239 $\rightarrow$ **0.0210 mm** |
+| **Track 2 (Analytical Cubic Hybrid)** | **1011.1 pts** | **1016.5 pts** | **`Agent_B10_OptimalStaticHybrid`** | **+5.4 pts** | 6.1 $\rightarrow$ **4.0 steps** | 0.0239 $\rightarrow$ **0.0228 mm** |
+| **Track 2 (Episode Callback Tuner)** | **1011.1 pts** | **1014.3 pts** | **`Agent_A3_MetaEpisodeTuner`** | **+3.2 pts** | 6.1 $\rightarrow$ **4.9 steps** | 0.0239 $\rightarrow$ **0.0231 mm** |
+| **Baseline 1 (Supervised MLP)** | **1014.0 pts** | **1014.0 pts** | *Reference Baseline 1* | Baseline | 3.3 steps | 0.0266 mm |
+| **Baseline 0 (Linear ORM SVD)** | **1013.1 pts** | **1013.1 pts** | *Reference Baseline 0* | Baseline | 5.6 steps | 0.0230 mm |
+
+---
+
 ## 🥊 Method Comparison: Which Strategy Beats Others?
 
 ### 1. Overall Champion: **Track 3 (Bayesian Optimization Controller)**
