@@ -8,6 +8,7 @@ dist/*.whl
 dist/*.tar.gz
 dist/*.zip
 dist/ai4acc-hackathon/
+worktrees/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
