@@ -34,8 +34,10 @@ def trained_surrogates(env):
     mlp = MLPRegressor(hidden_layer_sizes=(64, 32), max_iter=200, random_state=42)
     mlp.fit(X, Y)
 
-    # GP
-    gp_kernel = Matern(length_scale=1.0, nu=2.5) + WhiteKernel(noise_level=0.01**2)
+    # GP: Fix noise floor to the known physical sensor jitter variance (0.010 mm)^2
+    gp_kernel = Matern(length_scale=1.5, nu=2.5) + WhiteKernel(
+        noise_level=0.01**2, noise_level_bounds="fixed"
+    )
     gp = GaussianProcessRegressor(kernel=gp_kernel, alpha=0.0, normalize_y=True, random_state=42)
     gp.fit(X[:150], Y[:150])
 

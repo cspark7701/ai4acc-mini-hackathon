@@ -56,7 +56,9 @@ def run_agent_simulation(agent_config):
     surrogate.fit(X_train, Y_train)
 
     # GP Surrogate for Track 3
-    gp_kernel = Matern(length_scale=1.0, nu=2.5) + WhiteKernel(noise_level=env.noise_std**2)
+    gp_kernel = Matern(length_scale=1.5, nu=2.5) + WhiteKernel(
+        noise_level=env.noise_std**2, noise_level_bounds="fixed"
+    )
     gp_surrogate = GaussianProcessRegressor(kernel=gp_kernel, alpha=0.0, normalize_y=True, random_state=42 + agent_id)
     gp_surrogate.fit(X_train[:250], Y_train[:250])
 
