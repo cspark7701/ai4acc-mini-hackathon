@@ -1,0 +1,492 @@
+[
+  {
+    "agent_id": 4,
+    "agent_name": "Agent_A4_DualStageDecay",
+    "cohort": "Cohort_A_Callback",
+    "strategy": "Step callback: Dual-stage precision braking (fine control < 0.050 mm and sub-0.032 mm)",
+    "best_track": "Track 3 (Bayesian Optimization)",
+    "best_score": 1035.357305796362,
+    "best_success_rate": 100.0,
+    "best_mean_steps": 1.5666666666666667,
+    "best_mean_rms": 0.014870159390072028,
+    "best_mean_norm": 0.9293128738800684,
+    "track2_score": 203.46310588095287,
+    "track2_steps": 17.766666666666666,
+    "track2_rms": 0.08249755377570787,
+    "all_tracks": {
+      "Baseline 0 (Linear SVD)": {
+        "success_rate": 100.0,
+        "mean_steps": 5.6,
+        "mean_rms": 0.023019112211962543,
+        "mean_norm": 0.9019142071406047,
+        "mean_latency": 1.9167423248291016,
+        "score": 1013.0614687385861
+      },
+      "Baseline 1 (Supervised MLP)": {
+        "success_rate": 3.3333333333333335,
+        "mean_steps": 19.366666666666667,
+        "mean_rms": 0.04109898464133342,
+        "mean_norm": 0.9544870714346568,
+        "mean_latency": 4239.652911822001,
+        "score": 7.289926662981191
+      },
+      "Track 2 (RL/Adaptive Agent)": {
+        "success_rate": 23.333333333333332,
+        "mean_steps": 17.766666666666666,
+        "mean_rms": 0.08249755377570787,
+        "mean_norm": 0.804918521642685,
+        "mean_latency": 2.693359057108561,
+        "score": 203.46310588095287
+      },
+      "Track 3 (Bayesian Optimization)": {
+        "success_rate": 100.0,
+        "mean_steps": 1.5666666666666667,
+        "mean_rms": 0.014870159390072028,
+        "mean_norm": 0.9293128738800684,
+        "mean_latency": 941.4634704589844,
+        "score": 1035.357305796362
+      }
+    }
+  },
+  {
+    "agent_id": 9,
+    "agent_name": "Agent_B9_UltraConservative",
+    "cohort": "Cohort_B_NoCallback",
+    "strategy": "No callback: Low gain (0.42) with minimal damping for maximum current norm efficiency",
+    "best_track": "Track 3 (Bayesian Optimization)",
+    "best_score": 1034.3486007210824,
+    "best_success_rate": 100.0,
+    "best_mean_steps": 1.5666666666666667,
+    "best_mean_rms": 0.015251010035475096,
+    "best_mean_norm": 0.9298612852891286,
+    "track2_score": 1010.6760253377079,
+    "track2_steps": 6.433333333333334,
+    "track2_rms": 0.02367321973045667,
+    "all_tracks": {
+      "Baseline 0 (Linear SVD)": {
+        "success_rate": 100.0,
+        "mean_steps": 5.6,
+        "mean_rms": 0.023019112211962543,
+        "mean_norm": 0.9019142071406047,
+        "mean_latency": 0.8872667948404948,
+        "score": 1013.0614687385861
+      },
+      "Baseline 1 (Supervised MLP)": {
+        "success_rate": 20.0,
+        "mean_steps": 16.333333333333332,
+        "mean_rms": 0.042112203501164916,
+        "mean_norm": 0.932212378581365,
+        "mean_latency": 2671.637145678202,
+        "score": 179.71656009085333
+      },
+      "Track 2 (RL/Adaptive Agent)": {
+        "success_rate": 100.0,
+        "mean_steps": 6.433333333333334,
+        "mean_rms": 0.02367321973045667,
+        "mean_norm": 0.9012014339367549,
+        "mean_latency": 0.5016088485717773,
+        "score": 1010.6760253377079
+      },
+      "Track 3 (Bayesian Optimization)": {
+        "success_rate": 100.0,
+        "mean_steps": 1.5666666666666667,
+        "mean_rms": 0.015251010035475096,
+        "mean_norm": 0.9298612852891286,
+        "mean_latency": 130.61474959055582,
+        "score": 1034.3486007210824
+      }
+    }
+  },
+  {
+    "agent_id": 6,
+    "agent_name": "Agent_B6_AggressiveGain",
+    "cohort": "Cohort_B_NoCallback",
+    "strategy": "No callback: Fixed aggressive feedback gain (alpha=0.68) with strong damping (gamma=0.038)",
+    "best_track": "Track 3 (Bayesian Optimization)",
+    "best_score": 1033.704645531298,
+    "best_success_rate": 100.0,
+    "best_mean_steps": 1.5666666666666667,
+    "best_mean_rms": 0.015505161881446839,
+    "best_mean_norm": 0.9294057856003444,
+    "track2_score": 1020.0175269012091,
+    "track2_steps": 3.4,
+    "track2_rms": 0.020956063425789276,
+    "all_tracks": {
+      "Baseline 0 (Linear SVD)": {
+        "success_rate": 100.0,
+        "mean_steps": 5.6,
+        "mean_rms": 0.023019112211962543,
+        "mean_norm": 0.9019142071406047,
+        "mean_latency": 1.7496347427368164,
+        "score": 1013.0614687385861
+      },
+      "Baseline 1 (Supervised MLP)": {
+        "success_rate": 56.666666666666664,
+        "mean_steps": 11.933333333333334,
+        "mean_rms": 0.03136317891379197,
+        "mean_norm": 0.9319649040699005,
+        "mean_latency": 3160.112237930298,
+        "score": 560.0667840027663
+      },
+      "Track 2 (RL/Adaptive Agent)": {
+        "success_rate": 100.0,
+        "mean_steps": 3.4,
+        "mean_rms": 0.020956063425789276,
+        "mean_norm": 0.9069023261467616,
+        "mean_latency": 0.6551583607991537,
+        "score": 1020.0175269012091
+      },
+      "Track 3 (Bayesian Optimization)": {
+        "success_rate": 100.0,
+        "mean_steps": 1.5666666666666667,
+        "mean_rms": 0.015505161881446839,
+        "mean_norm": 0.9294057856003444,
+        "mean_latency": 1014.7113800048828,
+        "score": 1033.704645531298
+      }
+    }
+  },
+  {
+    "agent_id": 10,
+    "agent_name": "Agent_B10_OptimalStaticHybrid",
+    "cohort": "Cohort_B_NoCallback",
+    "strategy": "No callback: Analytical cubic kick + tuned static gain (0.60) + tuned static damping (0.030)",
+    "best_track": "Track 3 (Bayesian Optimization)",
+    "best_score": 1033.506405755645,
+    "best_success_rate": 100.0,
+    "best_mean_steps": 1.5333333333333334,
+    "best_mean_rms": 0.015612318242589632,
+    "best_mean_norm": 0.9290597905715307,
+    "track2_score": 1016.4734345455795,
+    "track2_steps": 4.033333333333333,
+    "track2_rms": 0.022771070462961993,
+    "all_tracks": {
+      "Baseline 0 (Linear SVD)": {
+        "success_rate": 100.0,
+        "mean_steps": 5.6,
+        "mean_rms": 0.023019112211962543,
+        "mean_norm": 0.9019142071406047,
+        "mean_latency": 2.644141515096029,
+        "score": 1013.0614687385861
+      },
+      "Baseline 1 (Supervised MLP)": {
+        "success_rate": 100.0,
+        "mean_steps": 4.833333333333333,
+        "mean_rms": 0.0272787906229496,
+        "mean_norm": 0.9366480549176533,
+        "mean_latency": 1309.1554880142212,
+        "score": 1010.4551472081474
+      },
+      "Track 2 (RL/Adaptive Agent)": {
+        "success_rate": 100.0,
+        "mean_steps": 4.033333333333333,
+        "mean_rms": 0.022771070462961993,
+        "mean_norm": 0.9045605957508087,
+        "mean_latency": 1.0301589965820312,
+        "score": 1016.4734345455795
+      },
+      "Track 3 (Bayesian Optimization)": {
+        "success_rate": 100.0,
+        "mean_steps": 1.5333333333333334,
+        "mean_rms": 0.015612318242589632,
+        "mean_norm": 0.9290597905715307,
+        "mean_latency": 636.1870765686035,
+        "score": 1033.506405755645
+      }
+    }
+  },
+  {
+    "agent_id": 7,
+    "agent_name": "Agent_B7_CubicCompensator",
+    "cohort": "Cohort_B_NoCallback",
+    "strategy": "No callback: Analytical cubic inverse series desaturation kick (dI + 0.015*dI^3) with moderate gain (0.54)",
+    "best_track": "Track 3 (Bayesian Optimization)",
+    "best_score": 1033.450317833933,
+    "best_success_rate": 100.0,
+    "best_mean_steps": 1.5333333333333334,
+    "best_mean_rms": 0.015636678195248048,
+    "best_mean_norm": 0.9271683007478714,
+    "track2_score": 1016.361048254795,
+    "track2_steps": 4.7,
+    "track2_rms": 0.021763253087798754,
+    "all_tracks": {
+      "Baseline 0 (Linear SVD)": {
+        "success_rate": 100.0,
+        "mean_steps": 5.6,
+        "mean_rms": 0.023019112211962543,
+        "mean_norm": 0.9019142071406047,
+        "mean_latency": 2.038113276163737,
+        "score": 1013.0614687385861
+      },
+      "Baseline 1 (Supervised MLP)": {
+        "success_rate": 70.0,
+        "mean_steps": 13.433333333333334,
+        "mean_rms": 0.03163160576174657,
+        "mean_norm": 0.9324662874142329,
+        "mean_latency": 2907.519745826721,
+        "score": 690.2367707021391
+      },
+      "Track 2 (RL/Adaptive Agent)": {
+        "success_rate": 100.0,
+        "mean_steps": 4.7,
+        "mean_rms": 0.021763253087798754,
+        "mean_norm": 0.9041797856489817,
+        "mean_latency": 2.4768670399983725,
+        "score": 1016.361048254795
+      },
+      "Track 3 (Bayesian Optimization)": {
+        "success_rate": 100.0,
+        "mean_steps": 1.5333333333333334,
+        "mean_rms": 0.015636678195248048,
+        "mean_norm": 0.9271683007478714,
+        "mean_latency": 800.7346312204996,
+        "score": 1033.450317833933
+      }
+    }
+  },
+  {
+    "agent_id": 8,
+    "agent_name": "Agent_B8_DeepTwinInversion",
+    "cohort": "Cohort_B_NoCallback",
+    "strategy": "No callback: Deep MLP digital twin (256-128-64) with dense sampling (3000 pts) and low L2 regularizer",
+    "best_track": "Track 3 (Bayesian Optimization)",
+    "best_score": 1032.949671265207,
+    "best_success_rate": 100.0,
+    "best_mean_steps": 1.5333333333333334,
+    "best_mean_rms": 0.01584513271227479,
+    "best_mean_norm": 0.9250899374485015,
+    "track2_score": 1013.0540589947768,
+    "track2_steps": 5.533333333333333,
+    "track2_rms": 0.0231463140497605,
+    "all_tracks": {
+      "Baseline 0 (Linear SVD)": {
+        "success_rate": 100.0,
+        "mean_steps": 5.6,
+        "mean_rms": 0.023019112211962543,
+        "mean_norm": 0.9019142071406047,
+        "mean_latency": 2.0975510279337564,
+        "score": 1013.0614687385861
+      },
+      "Baseline 1 (Supervised MLP)": {
+        "success_rate": 100.0,
+        "mean_steps": 2.5,
+        "mean_rms": 0.024730031844228506,
+        "mean_norm": 0.9225097328424454,
+        "mean_latency": 623.6961444218954,
+        "score": 1017.4169792158909
+      },
+      "Track 2 (RL/Adaptive Agent)": {
+        "success_rate": 100.0,
+        "mean_steps": 5.533333333333333,
+        "mean_rms": 0.0231463140497605,
+        "mean_norm": 0.9006641109784445,
+        "mean_latency": 1.2647231419881184,
+        "score": 1013.0540589947768
+      },
+      "Track 3 (Bayesian Optimization)": {
+        "success_rate": 100.0,
+        "mean_steps": 1.5333333333333334,
+        "mean_rms": 0.01584513271227479,
+        "mean_norm": 0.9250899374485015,
+        "mean_latency": 412.65564759572345,
+        "score": 1032.949671265207
+      }
+    }
+  },
+  {
+    "agent_id": 5,
+    "agent_name": "Agent_A5_EnergyAwareLimiter",
+    "cohort": "Cohort_A_Callback",
+    "strategy": "Step callback: Energy-aware current limiting callback suppressing opposing kick oscillations",
+    "best_track": "Track 3 (Bayesian Optimization)",
+    "best_score": 1032.2908766662306,
+    "best_success_rate": 100.0,
+    "best_mean_steps": 1.5333333333333334,
+    "best_mean_rms": 0.01612296119953195,
+    "best_mean_norm": 0.9282321145137151,
+    "track2_score": 342.16899064006947,
+    "track2_steps": 16.9,
+    "track2_rms": 0.05452792234718799,
+    "all_tracks": {
+      "Baseline 0 (Linear SVD)": {
+        "success_rate": 100.0,
+        "mean_steps": 5.6,
+        "mean_rms": 0.023019112211962543,
+        "mean_norm": 0.9019142071406047,
+        "mean_latency": 2.3508151372273765,
+        "score": 1013.0614687385861
+      },
+      "Baseline 1 (Supervised MLP)": {
+        "success_rate": 0.0,
+        "mean_steps": 20.0,
+        "mean_rms": 0.07225376243392627,
+        "mean_norm": 0.9509125759204229,
+        "mean_latency": 4977.801863352458,
+        "score": -33.59775931791724
+      },
+      "Track 2 (RL/Adaptive Agent)": {
+        "success_rate": 36.666666666666664,
+        "mean_steps": 16.9,
+        "mean_rms": 0.05452792234718799,
+        "mean_norm": 0.8506064116954803,
+        "mean_latency": 5.181090037027995,
+        "score": 342.16899064006947
+      },
+      "Track 3 (Bayesian Optimization)": {
+        "success_rate": 100.0,
+        "mean_steps": 1.5333333333333334,
+        "mean_rms": 0.01612296119953195,
+        "mean_norm": 0.9282321145137151,
+        "mean_latency": 929.1945298512777,
+        "score": 1032.2908766662306
+      }
+    }
+  },
+  {
+    "agent_id": 1,
+    "agent_name": "Agent_A1_AdaptiveDamp",
+    "cohort": "Cohort_A_Callback",
+    "strategy": "Step callback: Terminal gain decay when RMS < 0.040 mm to stop limit-cycle overshoot",
+    "best_track": "Track 3 (Bayesian Optimization)",
+    "best_score": 1031.1224177051038,
+    "best_success_rate": 100.0,
+    "best_mean_steps": 1.5333333333333334,
+    "best_mean_rms": 0.016647579288110136,
+    "best_mean_norm": 0.9260958184798559,
+    "track2_score": 341.2417776249551,
+    "track2_steps": 16.933333333333334,
+    "track2_rms": 0.05925331593801578,
+    "all_tracks": {
+      "Baseline 0 (Linear SVD)": {
+        "success_rate": 100.0,
+        "mean_steps": 5.6,
+        "mean_rms": 0.023019112211962543,
+        "mean_norm": 0.9019142071406047,
+        "mean_latency": 1.9160032272338867,
+        "score": 1013.0614687385861
+      },
+      "Baseline 1 (Supervised MLP)": {
+        "success_rate": 56.666666666666664,
+        "mean_steps": 14.233333333333333,
+        "mean_rms": 0.032396989253660045,
+        "mean_norm": 0.9320815851291021,
+        "mean_latency": 3062.6550594965615,
+        "score": 554.8560763279913
+      },
+      "Track 2 (RL/Adaptive Agent)": {
+        "success_rate": 36.666666666666664,
+        "mean_steps": 16.933333333333334,
+        "mean_rms": 0.05925331593801578,
+        "mean_norm": 0.8421189745267232,
+        "mean_latency": 6.726034482320149,
+        "score": 341.2417776249551
+      },
+      "Track 3 (Bayesian Optimization)": {
+        "success_rate": 100.0,
+        "mean_steps": 1.5333333333333334,
+        "mean_rms": 0.016647579288110136,
+        "mean_norm": 0.9260958184798559,
+        "mean_latency": 853.353468577067,
+        "score": 1031.1224177051038
+      }
+    }
+  },
+  {
+    "agent_id": 3,
+    "agent_name": "Agent_A3_MetaEpisodeTuner",
+    "cohort": "Cohort_A_Callback",
+    "strategy": "Episode callback: Cross-seed dynamic meta-tuning of gain and damping based on prior seed latency",
+    "best_track": "Track 3 (Bayesian Optimization)",
+    "best_score": 1028.5110431329933,
+    "best_success_rate": 100.0,
+    "best_mean_steps": 1.5666666666666667,
+    "best_mean_rms": 0.017908373506118853,
+    "best_mean_norm": 0.9297518521547318,
+    "track2_score": 1014.3358318461434,
+    "track2_steps": 4.933333333333334,
+    "track2_rms": 0.023072251863777638,
+    "all_tracks": {
+      "Baseline 0 (Linear SVD)": {
+        "success_rate": 100.0,
+        "mean_steps": 5.6,
+        "mean_rms": 0.023019112211962543,
+        "mean_norm": 0.9019142071406047,
+        "mean_latency": 1.0506470998128254,
+        "score": 1013.0614687385861
+      },
+      "Baseline 1 (Supervised MLP)": {
+        "success_rate": 20.0,
+        "mean_steps": 16.333333333333332,
+        "mean_rms": 0.03841126170009375,
+        "mean_norm": 0.93294937312603,
+        "mean_latency": 3799.3375539779663,
+        "score": 181.08785353308366
+      },
+      "Track 2 (RL/Adaptive Agent)": {
+        "success_rate": 100.0,
+        "mean_steps": 4.933333333333334,
+        "mean_rms": 0.023072251863777638,
+        "mean_norm": 0.9013827264308929,
+        "mean_latency": 1.7791271209716797,
+        "score": 1014.3358318461434
+      },
+      "Track 3 (Bayesian Optimization)": {
+        "success_rate": 100.0,
+        "mean_steps": 1.5666666666666667,
+        "mean_rms": 0.017908373506118853,
+        "mean_norm": 0.9297518521547318,
+        "mean_latency": 914.6566152572632,
+        "score": 1028.5110431329933
+      }
+    }
+  },
+  {
+    "agent_id": 2,
+    "agent_name": "Agent_A2_MomentumBraking",
+    "cohort": "Cohort_A_Callback",
+    "strategy": "Step callback: High-speed distant kick (boost gain) + hard braking near boundary",
+    "best_track": "Track 3 (Bayesian Optimization)",
+    "best_score": 1027.1674795164968,
+    "best_success_rate": 100.0,
+    "best_mean_steps": 1.5333333333333334,
+    "best_mean_rms": 0.018694145480791728,
+    "best_mean_norm": 0.9307318379481634,
+    "track2_score": 1010.677251238602,
+    "track2_steps": 6.366666666666666,
+    "track2_rms": 0.02380076510210832,
+    "all_tracks": {
+      "Baseline 0 (Linear SVD)": {
+        "success_rate": 100.0,
+        "mean_steps": 5.6,
+        "mean_rms": 0.023019112211962543,
+        "mean_norm": 0.9019142071406047,
+        "mean_latency": 1.4434576034545898,
+        "score": 1013.0614687385861
+      },
+      "Baseline 1 (Supervised MLP)": {
+        "success_rate": 96.66666666666667,
+        "mean_steps": 6.5,
+        "mean_rms": 0.02701359490553538,
+        "mean_norm": 0.9371029208103816,
+        "mean_latency": 1601.8961429595947,
+        "score": 974.0034994557117
+      },
+      "Track 2 (RL/Adaptive Agent)": {
+        "success_rate": 100.0,
+        "mean_steps": 6.366666666666666,
+        "mean_rms": 0.02380076510210832,
+        "mean_norm": 0.899344527721405,
+        "mean_latency": 1.6016403834025066,
+        "score": 1010.677251238602
+      },
+      "Track 3 (Bayesian Optimization)": {
+        "success_rate": 100.0,
+        "mean_steps": 1.5333333333333334,
+        "mean_rms": 0.018694145480791728,
+        "mean_norm": 0.9307318379481634,
+        "mean_latency": 1020.6989606221517,
+        "score": 1027.1674795164968
+      }
+    }
+  }
+]

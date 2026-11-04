@@ -30,6 +30,8 @@ def run_agent_simulation(agent_config):
     from src.benchmark import evaluate_hackathon_benchmark
     from src.controllers import ClassicalSVDController, BayesianOptimizationController
     from sklearn.neural_network import MLPRegressor
+    from sklearn.gaussian_process import GaussianProcessRegressor
+    from sklearn.gaussian_process.kernels import Matern, WhiteKernel
     import scipy.optimize as opt
 
     env = AcceleratorOrbitGymEnv()
@@ -52,6 +54,11 @@ def run_agent_simulation(agent_config):
         random_state=42 + agent_id
     )
     surrogate.fit(X_train, Y_train)
+
+    # GP Surrogate for Track 3
+    gp_kernel = Matern(length_scale=1.0, nu=2.5) + WhiteKernel(noise_level=env.noise_std**2)
+    gp_surrogate = GaussianProcessRegressor(kernel=gp_kernel, alpha=0.0, normalize_y=True, random_state=42 + agent_id)
+    gp_surrogate.fit(X_train[:250], Y_train[:250])
 
     # Base MLP Controller
     class SupervisedAgent:
@@ -92,7 +99,7 @@ def run_agent_simulation(agent_config):
     b0 = ClassicalSVDController(env.R, gain=0.45)
     b1 = SupervisedAgent(surrogate, l2_reg=agent_config.get("l2_reg", 1e-4))
     b2 = CustomRLAgent(env.R, base_gain=gain, base_gamma=gamma, cubic=use_cubic_comp)
-    b3 = BayesianOptimizationController(env.R, initial_points=4, opt_restarts=3)
+    b3 = BayesianOptimizationController(gp_surrogate, kappa=0.0, l2_reg=1e-4)
 
     # -------------------------------------------------------------
     # Callbacks Configuration
