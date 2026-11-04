@@ -6,6 +6,8 @@ __pycache__/
 build/
 dist/*.whl
 dist/*.tar.gz
+dist/*.zip
+dist/ai4acc-hackathon/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
