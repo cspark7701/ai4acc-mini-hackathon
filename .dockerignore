@@ -15,7 +15,6 @@ __pycache__/
 *$py.class
 *.egg-info/
 build/
-dist/
 .pytest_cache/
 **/.pytest_cache/
 

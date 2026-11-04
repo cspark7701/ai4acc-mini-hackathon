@@ -168,8 +168,8 @@ else
     echo "   Local build complete: ${LOCAL_IMAGE} & ${TARGET_IMAGE}"
     echo ""
 
-    # 9. Automated Sanity Inspection (Solution isolation check)
-    echo "🔍 Step 3: Verifying Solution Isolation in Built Image"
+    # 9. Automated Sanity Inspection (Solution isolation & participant files check)
+    echo "🔍 Step 3: Verifying Solution Isolation & Participant Assets in Built Image"
     SOLUTION_FOUND="$(docker run --rm "${LOCAL_IMAGE}" find /workspace/notebooks -name "*Solution*" 2>/dev/null || true)"
     if [ -n "${SOLUTION_FOUND}" ]; then
         echo "❌ SECURITY ALERT: Reference solution file detected inside container image:"
@@ -179,8 +179,10 @@ else
     fi
 
     NOTEBOOK_COUNT="$(docker run --rm "${LOCAL_IMAGE}" sh -c 'ls -1 /workspace/notebooks/*.ipynb 2>/dev/null | wc -l')"
+    DIST_COUNT="$(docker run --rm "${LOCAL_IMAGE}" sh -c 'ls -1 /workspace/dist/* 2>/dev/null | wc -l')"
     echo "   Verified: Solution notebook is absent from container."
     echo "   Participant notebook count in /workspace/notebooks: ${NOTEBOOK_COUNT}"
+    echo "   Launcher scripts count in /workspace/dist: ${DIST_COUNT}"
     echo ""
 
     # 10. Push to Docker Hub
