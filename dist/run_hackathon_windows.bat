@@ -41,15 +41,19 @@ if %ERRORLEVEL% neq 0 (
 echo [OK] Docker daemon is running.
 echo.
 echo [*] Launching container: cspark7701/ai4acc-hackathon-2026:latest ...
-echo [*] JupyterLab will start at: http://localhost:8888
+echo [*] Opening JupyterLab automatically in your default browser...
+echo [*] If it does not open, visit: http://localhost:8888/lab
 echo [*] Press Ctrl+C in this window when you wish to stop the environment.
 echo ======================================================================
 echo.
 
-:: 3. Launch container
+:: 3. Launch browser automatically in parallel after a 3-second delay
+start /b cmd /c "timeout /t 3 /nobreak >nul && start http://localhost:8888/lab"
+
+:: 4. Launch container
 docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 
-:: 4. Prevent window from closing abruptly on exit or failure
+:: 5. Prevent window from closing abruptly on exit or failure
 echo.
 echo ======================================================================
 echo Container stopped.

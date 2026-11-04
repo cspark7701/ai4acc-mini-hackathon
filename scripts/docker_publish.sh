@@ -178,11 +178,11 @@ else
         exit 1
     fi
 
-    NOTEBOOK_COUNT="$(docker run --rm "${LOCAL_IMAGE}" sh -c 'ls -1 /workspace/notebooks/*.ipynb 2>/dev/null | wc -l')"
-    DIST_COUNT="$(docker run --rm "${LOCAL_IMAGE}" sh -c 'ls -1 /workspace/dist/* 2>/dev/null | wc -l')"
+    NOTEBOOK_COUNT="$(docker run --rm "${LOCAL_IMAGE}" sh -c 'ls -1 /workspace/*.ipynb 2>/dev/null | wc -l')"
+    PDF_COUNT="$(docker run --rm "${LOCAL_IMAGE}" sh -c 'ls -1 /workspace/*.pdf 2>/dev/null | wc -l')"
     echo "   Verified: Solution notebook is absent from container."
-    echo "   Participant notebook count in /workspace/notebooks: ${NOTEBOOK_COUNT}"
-    echo "   Launcher scripts count in /workspace/dist: ${DIST_COUNT}"
+    echo "   Participant notebook count in /workspace: ${NOTEBOOK_COUNT}"
+    echo "   Participant lecture/slide PDF count in /workspace: ${PDF_COUNT}"
     echo ""
 
     # 10. Push to Docker Hub

@@ -45,12 +45,23 @@ fi
 echo -e "${GREEN}[OK] Docker daemon is running.${NC}"
 echo ""
 echo -e "[*] Launching container: ${YELLOW}cspark7701/ai4acc-hackathon-2026:latest${NC} ..."
-echo -e "[*] JupyterLab will start at: ${GREEN}http://localhost:8888${NC}"
+echo -e "[*] Opening JupyterLab automatically in your default browser..."
+echo -e "[*] If it does not open, visit: ${GREEN}http://localhost:8888/lab${NC}"
 echo -e "[*] Press ${YELLOW}Ctrl+C${NC} in this terminal when you wish to stop the environment."
 echo -e "${BLUE}======================================================================${NC}"
 echo ""
 
-# 3. Launch container
+# 3. Open browser in background after delay (macOS: open, Linux: xdg-open)
+(
+    sleep 3
+    if command -v open &> /dev/null; then
+        open "http://localhost:8888/lab"
+    elif command -v xdg-open &> /dev/null; then
+        xdg-open "http://localhost:8888/lab" &> /dev/null
+    fi
+) &
+
+# 4. Launch container
 docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 
 echo ""

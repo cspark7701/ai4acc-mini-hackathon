@@ -4,7 +4,8 @@ __pycache__/
 *$py.class
 *.egg-info/
 build/
-dist/
+dist/*.whl
+dist/*.tar.gz
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
