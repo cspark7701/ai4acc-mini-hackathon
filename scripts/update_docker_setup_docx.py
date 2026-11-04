@@ -20,7 +20,7 @@ def update_docker_guide_docx():
     
     # Update P30
     p30 = doc.paragraphs[30]
-    p30.text = "Run the official container directly in your terminal. All required Python packages, simulation models, and the participant challenge notebook are pre-installed:"
+    p30.text = "You can launch the official container by double-clicking run_hackathon_windows.bat (on Windows) or running the command below in any terminal. All required Python packages, simulation models, and the participant challenge notebook are pre-installed:"
     for r in p30.runs:
         r.font.name = "Calibri"
         
@@ -81,7 +81,7 @@ def update_participant_instructions_docx():
             r_title.font.size = Pt(10.5)
             
             r_desc = p.add_run(
-                "Run the official container in any terminal (no git clone or virtual environment required):\n"
+                "Windows users can simply double-click run_hackathon_windows.bat. Or run the official container in any terminal (no git clone or virtual environment required):\n"
             )
             r_desc.font.name = "Calibri"
             r_desc.font.size = Pt(10)

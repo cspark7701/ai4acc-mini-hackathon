@@ -89,11 +89,14 @@
     
     *(참고: docker 그룹 추가 후 변경사항 적용을 위해 터미널 재로그인이 필요합니다.)*
 
-- **공식 해커톤 Docker 컨테이너 실행 명령:**
-  ```bash
-  docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
-  ```
-  *(어떤 터미널에서든 위 단 한 줄의 명령어를 실행한 후, 웹 브라우저에서 `http://localhost:8888`로 접속하시면 즉시 실습을 시작하실 수 있습니다.)*
+- **공식 해커톤 Docker 컨테이너 실행:**
+  - **Windows 간편 실행:** 배포된 `run_hackathon_windows.bat` 파일을 **더블 클릭**하면 자동으로 Docker 엔진 상태를 점검하고 컨테이너를 실행합니다.
+  - **macOS / Linux 간편 실행:** 터미널에서 `./run_hackathon_mac_linux.sh` 실행 (또는 더블 클릭).
+  - **직접 터미널 명령어 입력:**
+    ```bash
+    docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+    ```
+  *(어떤 터미널에서든 위 단 한 줄의 명령어를 실행하거나 배치 파일을 더블 클릭한 후, 웹 브라우저에서 `http://localhost:8888`로 접속하시면 즉시 실습을 시작하실 수 있습니다.)*
 
 ### 3. Weights & Biases (W&B) 무료 계정 사전 생성
 
@@ -199,11 +202,14 @@ To guarantee a seamless and productive hands-on experience, please review the fo
     
     *(Note: Log out and log back in after adding your user to the docker group for changes to take effect).*
 
-- **Official Hackathon Docker Container Run Command:**
-  ```bash
-  docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
-  ```
-  *(Execute this single command in any terminal, then browse to `http://localhost:8888` to begin).*
+- **Official Hackathon Docker Container Launch:**
+  - **Windows (Double-Click):** Simply **double-click** `run_hackathon_windows.bat`. It will automatically check your Docker Desktop engine and launch the environment.
+  - **macOS / Linux:** Run `./run_hackathon_mac_linux.sh` in your terminal.
+  - **Direct Terminal Command:**
+    ```bash
+    docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+    ```
+  *(After launching via the script or command, open your web browser and browse to `http://localhost:8888` to begin).*
 
 ### 3. Create a Free Weights & Biases (W&B) Account in Advance
 
