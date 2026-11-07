@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Simulation environment, benchmark harness, and baseline controllers for the AI Applications in Accelerators Tutorial & Mini-Hackathon."
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "MIT" }
+license = "MIT"
 authors = [
     { name = "Chong Shik Park", email = "kuphy@korea.ac.kr" },
 ]
@@ -27,7 +27,6 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
