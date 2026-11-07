@@ -59,6 +59,9 @@ dev = [
 Homepage = "https://github.com/cspark/ai4acc-mini-hackathon"
 Repository = "https://github.com/cspark/ai4acc-mini-hackathon.git"
 
+[tool.setuptools]
+package-dir = {"" = "."}
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["src*"]
