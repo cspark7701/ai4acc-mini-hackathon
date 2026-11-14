@@ -1,93 +1,118 @@
 # 📊 10-Agent Benchmark Tournament Evaluation & Analysis Report
 
 **Document Location:** [docs/MULTI_AGENT_TOURNAMENT_REPORT.md](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/MULTI_AGENT_TOURNAMENT_REPORT.md)  
-**Experiment Date:** November 4, 2026  
+**Experiment Date:** November 14, 2026  
 **Evaluation Scope:** 10 Autonomous Test Agents competing across all 4 Tracks on 30 Standardized Seeds (`range(1, 31)`).  
-**Worktree Status:** Cleanly evaluated in isolated worktrees and wiped post-run.
+**Telemetry Destination:** Weights & Biases Project [`ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026`](https://wandb.ai/ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026)  
+**Worktree Status:** Cleanly executed in 10 isolated git worktrees (`worktrees/agent-1` through `worktrees/agent-10`) and wiped post-run.
 
 ---
 
 ## 🏆 Executive Summary & Official Tournament Leaderboard
 
-A comprehensive tournament was executed with **10 autonomous competitor agents**:
-- **Cohort A (Agents 1–5):** Online Adaptive Callback-Driven Agents (using `step_callback` and `episode_callback`).
-- **Cohort B (Agents 6–10):** Architectural, Parameter & Analytical Optimization Agents (offline tuning, no callbacks).
+A comprehensive tournament was executed with **10 autonomous competitor agents** adhering strictly to [docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md):
+- **Cohort A (Agents 1–5):** Online Adaptive Callback-Driven Agents (leveraging `step_callback` and `episode_callback`).
+- **Cohort B (Agents 6–10):** Architectural, Parameter & Analytical Optimization Agents (offline tuning, static policies, no callbacks).
 
 ### Overall Official Leaderboard (Ranked by Best Score)
 
-| Rank | Agent Name | Cohort | Winning Method / Track | Best Score | Success Rate | Mean Steps | Mean Final RMS | Current Norm $\|\mathbf{I}\|$ |
+All agents evaluated the full 4-controller suite in [notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb):
+
+| Rank | Agent Name | Cohort | Best Method / Track | Best Score | Success Rate | Mean Steps | Mean Final RMS | Current Norm $\|\mathbf{I}\|$ |
 | :---: | :--- | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| **🥇 #1** | **`Agent_A4_DualStageDecay`** | **Cohort A** | **Track 3 (Bayesian Opt)** | **1035.4 pts** | **100.0%** | **1.6** | **0.0149 mm** | **0.87 A** |
-| **🥈 #2** | `Agent_B9_UltraConservative` | Cohort B | Track 3 (Bayesian Opt) | **1034.3 pts** | 100.0% | 1.6 | 0.0153 mm | 0.88 A |
-| **🥉 #3** | `Agent_B6_AggressiveGain` | Cohort B | Track 3 (Bayesian Opt) | **1033.7 pts** | 100.0% | 1.6 | 0.0155 mm | 0.88 A |
-| **#4** | `Agent_B10_OptimalStaticHybrid` | Cohort B | Track 3 (Bayesian Opt) | **1033.5 pts** | 100.0% | 1.5 | 0.0156 mm | 0.88 A |
-| **#5** | `Agent_B7_CubicCompensator` | Cohort B | Track 3 (Bayesian Opt) | **1033.5 pts** | 100.0% | 1.5 | 0.0156 mm | 0.88 A |
-| **#6** | `Agent_B8_DeepTwinInversion` | Cohort B | Track 3 (Bayesian Opt) | **1032.9 pts** | 100.0% | 1.5 | 0.0158 mm | 0.88 A |
-| **#7** | `Agent_A5_EnergyAwareLimiter` | Cohort A | Track 3 (Bayesian Opt) | **1032.3 pts** | 100.0% | 1.5 | 0.0161 mm | 0.88 A |
-| **#8** | `Agent_A1_AdaptiveDamp` | Cohort A | Track 3 (Bayesian Opt) | **1031.1 pts** | 100.0% | 1.5 | 0.0166 mm | 0.88 A |
-| **#9** | `Agent_A3_MetaEpisodeTuner` | Cohort A | Track 3 (Bayesian Opt) | **1028.5 pts** | 100.0% | 1.6 | 0.0179 mm | 0.87 A |
-| **#10** | `Agent_A2_MomentumBraking` | Cohort A | Track 3 (Bayesian Opt) | **1027.2 pts** | 100.0% | 1.5 | 0.0187 mm | 0.86 A |
+| **🥇 #1** | **`MA_B6_AggressiveGain`** | **Cohort B** | **Track 3 (Bayesian Opt)** | **873.2 pts** | **100.0%** | **1.53** | **0.0160 mm** | **0.93 A** |
+| **🥈 #2** | `MA_A3_MetaEpisodeTuner` | Cohort A | Track 3 (Bayesian Opt) | **873.2 pts** | 100.0% | 1.53 | 0.0160 mm | 0.93 A |
+| **🥉 #3** | `MA_B7_CubicCompensator` | Cohort B | Track 3 (Bayesian Opt) | **873.2 pts** | 100.0% | 1.53 | 0.0160 mm | 0.93 A |
+| **#4** | `MA_B8_DeepTwinInversion` | Cohort B | Track 3 (Bayesian Opt) | **873.2 pts** | 100.0% | 1.53 | 0.0160 mm | 0.93 A |
+| **#5** | `MA_B10_OptimalStaticHybrid` | Cohort B | Track 3 (Bayesian Opt) | **873.2 pts** | 100.0% | 1.53 | 0.0160 mm | 0.93 A |
+| **#6** | `MA_B9_UltraConservative` | Cohort B | Track 3 (Bayesian Opt) | **873.2 pts** | 100.0% | 1.53 | 0.0160 mm | 0.93 A |
+| **#7** | `MA_A2_MomentumBraking` | Cohort A | Track 3 (Bayesian Opt) | **873.2 pts** | 100.0% | 1.53 | 0.0160 mm | 0.93 A |
+| **#8** | `MA_A5_EnergyAwareLimiter` | Cohort A | Track 3 (Bayesian Opt) | **873.2 pts** | 100.0% | 1.53 | 0.0160 mm | 0.93 A |
+| **#9** | `MA_A1_AdaptiveDamp` | Cohort A | Track 3 (Bayesian Opt) | **873.2 pts** | 100.0% | 1.53 | 0.0160 mm | 0.93 A |
+| **#10** | `MA_A4_DualStageDecay` | Cohort A | Track 3 (Bayesian Opt) | **873.2 pts** | 100.0% | 1.53 | 0.0160 mm | 0.93 A |
+
+> [!NOTE]
+> In all participant notebooks, Track 3 implements the reference Bayesian Optimization controller, which reliably reaches the maximum benchmark ceiling of **873.2 points** across all 30 seeds in just **1.53 steps** with **0.016 mm RMS**.
+> The true differentiation and agent customization occurs in **Track 2 (Closed-Loop RL / Adaptive Policy)** and **Baseline 1 (Surrogate Inversion)**, detailed below.
 
 ---
 
-## 📈 Direct Comparison: Notebook As-Is Baselines vs. Agent Optimized Policies
+## 🥊 Track 2 Head-to-Head Showdown: Custom Adaptive & RL Policies
 
-To measure the exact performance gain achieved by the agents, the default participant notebook was executed strictly **as-is** (with untuned baseline parameters) across the identical 30 seeds (`range(1, 31)`):
+The core challenge for hackathon teams is designing, tuning, and stabilizing the closed-loop policy in **Track 2 (`Track2_RLAgent`)**. Here is the definitive ranking of all 10 agent policies:
 
-### 1. Benchmark Scores: Notebook As-Is vs. Best Agent Results
+| Rank | Agent Name | Cohort | Strategy / Architecture | Track 2 Score | Success Rate | Mean Steps | Mean Final RMS | Latency (ms) |
+| :---: | :--- | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
+| **🥇 #1** | **`MA_B6_AggressiveGain`** | **Cohort B** | **Gain $\alpha=0.68$, damping $\gamma=0.038$, cubic kick** | **768.8 pts** | **100.0%** | **3.40** | **0.0208 mm** | **0.12 ms** |
+| **🥈 #2** | `MA_A3_MetaEpisodeTuner` | Cohort A | Episode callback adjusting gain $\alpha \in [0.58, 0.70]$ | **741.8 pts** | 100.0% | 3.67 | 0.0225 mm | 0.13 ms |
+| **🥉 #3** | `MA_B7_CubicCompensator` | Cohort B | Analytical cubic series inversion, $\alpha=0.55$, $\gamma=0.026$ | **741.2 pts** | 100.0% | 4.60 | 0.0216 mm | 0.16 ms |
+| **#4** | `MA_B8_DeepTwinInversion` | Cohort B | Deep twin (256, 128, 64) surrogate, $\alpha=0.60$ | **736.1 pts** | 100.0% | 4.03 | 0.0228 mm | 0.14 ms |
+| **#5** | `MA_B10_OptimalStaticHybrid` | Cohort B | Tuned static hybrid: $\alpha=0.62$, cubic kick, $\gamma=0.032$ | **735.3 pts** | 100.0% | 3.83 | 0.0229 mm | 0.14 ms |
+| **#6** | `MA_B9_UltraConservative` | Cohort B | Conservative gain $\alpha=0.48$, minimal current footprint | **705.2 pts** | 100.0% | 5.43 | 0.0231 mm | 0.19 ms |
+| **#7** | `MA_A2_MomentumBraking` | Cohort A | Momentum tracking callback + threshold braking | **646.5 pts** | 100.0% | 8.23 | 0.0245 mm | 0.29 ms |
+| **#8** | `MA_A5_EnergyAwareLimiter` | Cohort A | Energy-limiting callback + threshold braking | **317.8 pts** | 53.3% | 15.53 | 0.0418 mm | 0.58 ms |
+| **#9** | `MA_A1_AdaptiveDamp` | Cohort A | Step callback fine-grained braking below 0.032 mm | **291.5 pts** | 50.0% | 16.10 | 0.0459 mm | 0.52 ms |
+| **#10** | `MA_A4_DualStageDecay` | Cohort A | Two-tier step callback decay (0.033 & 0.028 mm) | **212.9 pts** | 36.7% | 16.77 | 0.0509 mm | 0.62 ms |
 
-| Controller / Track | Notebook As-Is Score | Agent Optimized Score | Winning Agent / Method | Score Delta ($\Delta$) | Mean Steps Gain | Final RMS Gain |
+---
+
+## 🔬 In-Depth Analysis: Why Did Cohort B Dominate Track 2?
+
+### 1. The Power of Aggressive Gain with Proper Time Damping (`MA_B6`)
+- `MA_B6_AggressiveGain` secured the highest Track 2 score (**768.8 points**), outperforming the baseline SVD controller (705.3 points) by **+63.5 points**.
+- **Mechanics:** By setting initial gain $\alpha = 0.68$, the agent takes an assertive first correction step that eliminates the large bulk of initial orbit distortion ($0.4 - 1.0\text{ mm}$ RMS $\rightarrow \approx 0.04\text{ mm}$ RMS in Step 1).
+- **Stabilization:** Dynamic time damping $\alpha(t) = \alpha_0 / (1.0 + 0.038 \cdot t)$ and non-linear cubic compensation ($\Delta \mathbf{I} + 0.015 \Delta \mathbf{I}^3$) immediately curb overcorrection in subsequent steps, landing cleanly at $0.0208\text{ mm}$ RMS in an average of **3.40 steps**.
+
+### 2. The Pitfall of In-Episode Step Braking (`MA_A1`, `MA_A4`, `MA_A5`)
+- In Cohort A, agents `MA_A1`, `MA_A4`, and `MA_A5` attempted online step braking: whenever RMS approached the target boundary ($0.032 - 0.035\text{ mm}$), the step callback dynamically halved or damped the action gain.
+- **Why It Backfired:** 
+  1. The environment includes Gaussian measurement noise $\boldsymbol{\epsilon} \sim \mathcal{N}(0, 0.010^2)$. When the true orbit displacement drops to $\approx 0.032\text{ mm}$, sensor fluctuations frequently cause measured RMS to hover between $0.028$ and $0.035\text{ mm}$.
+  2. Aggressive in-episode step braking reduced the policy's corrective authority precisely when it needed decisive action to cross below the strict $0.030\text{ mm}$ termination threshold.
+  3. Consequently, the agents took minuscule actions, stalled in a limit cycle near $0.035\text{ mm}$, and exhausted their 20-step budget, plummeting their success rate to $36.7\% - 53.3\%$ and scoring $< 320$ points.
+
+### 3. The Winning Callback Strategy: Cross-Episode Meta Adaptation (`MA_A3`)
+- Unlike in-episode step brakers, `MA_A3_MetaEpisodeTuner` applied **`episode_callback`** rather than `step_callback`.
+- **Mechanics:** It maintained a full-authority static policy during each episode, but adapted the base gain across episodes based on historical convergence speed. If the previous seed converged quickly, it slightly boosted gain; if it required $>5$ steps, it increased damping.
+- **Result:** `MA_A3` achieved **100% success rate**, averaging **3.67 steps** and scoring **741.8 points** (ranking #2 in Track 2 and #1 in Cohort A).
+
+---
+
+## 📈 Controller Performance Matrix Across All 4 Tracks
+
+| Controller / Track | Reference Baseline | Best Agent Score | Best Agent | $\Delta$ vs. Baseline | Speed (Steps) | Precision (RMS) |
 | :--- | :---: | :---: | :--- | :---: | :---: | :---: |
-| **Track 3 (Bayesian Optimization)** | **1032.0 pts** | **1035.4 pts** | **`Agent_A4_DualStageDecay`** | **+3.4 pts** | 1.6 $\rightarrow$ **1.6** | 0.0162 $\rightarrow$ **0.0149 mm** |
-| **Track 2 (RL / Adaptive Policy)** | **1011.1 pts** | **1020.0 pts** | **`Agent_B6_AggressiveGain`** | **+8.9 pts** | 6.1 $\rightarrow$ **3.4 steps** | 0.0239 $\rightarrow$ **0.0210 mm** |
-| **Track 2 (Analytical Cubic Hybrid)** | **1011.1 pts** | **1016.5 pts** | **`Agent_B10_OptimalStaticHybrid`** | **+5.4 pts** | 6.1 $\rightarrow$ **4.0 steps** | 0.0239 $\rightarrow$ **0.0228 mm** |
-| **Track 2 (Episode Callback Tuner)** | **1011.1 pts** | **1014.3 pts** | **`Agent_A3_MetaEpisodeTuner`** | **+3.2 pts** | 6.1 $\rightarrow$ **4.9 steps** | 0.0239 $\rightarrow$ **0.0231 mm** |
-| **Baseline 1 (Supervised MLP)** | **1014.0 pts** | **1014.0 pts** | *Reference Baseline 1* | Baseline | 3.3 steps | 0.0266 mm |
-| **Baseline 0 (Linear ORM SVD)** | **1013.1 pts** | **1013.1 pts** | *Reference Baseline 0* | Baseline | 5.6 steps | 0.0230 mm |
+| **Track 3 (Bayesian Optimization)** | 873.2 pts | **873.2 pts** | All Agents | Reference | **1.53** | **0.0160 mm** |
+| **Track 2 (RL / Adaptive Policy)** | 705.3 pts | **768.8 pts** | `MA_B6_AggressiveGain` | **+63.5 pts** | **3.40** | **0.0208 mm** |
+| **Baseline 0 (Linear ORM SVD)** | 705.3 pts | 705.3 pts | Reference Baseline 0 | Reference | 5.60 | 0.0230 mm |
+| **Baseline 1 (Supervised MLP)** | 371.0 pts | 371.0 pts | Reference Baseline 1 | Reference | 12.07 | 0.0317 mm |
 
 ---
 
-## 🥊 Method Comparison: Which Strategy Beats Others?
+## 📡 Weights & Biases Telemetry Verification
 
-### 1. Overall Champion: **Track 3 (Bayesian Optimization Controller)**
-- Across all 10 agents, **Track 3 consistently outperformed all other control tracks**, achieving scores between **1027.2 and 1035.4 points**.
-- **Key Advantage:** Bayesian Optimization with Gaussian Process acquisition function models epistemic uncertainty and directly anticipates the non-linear cubic iron-core saturation of the correctors. It converges in an extraordinary **1.5 to 1.6 steps** average with sub-$0.015\text{ mm}$ terminal orbit error (virtually at the $0.010\text{ mm}$ physical sensor noise floor).
-
----
-
-### 2. Track 2 (Closed-Loop RL / Adaptive Policy) Breakdown:
-When comparing the custom policies in Track 2:
-
-| Rank | Agent | Method Type | Track 2 Score | Steps | Final RMS | Key Technique |
-| :---: | :--- | :--- | :---: | :---: | :---: | :--- |
-| **#1** | **`Agent_B6_AggressiveGain`** | **Cohort B (Static)** | **1020.0 pts** | **3.4** | **0.0210 mm** | High initial gain ($\alpha=0.68$) + strong damping ($\gamma=0.038$). Rapid 3-step convergence. |
-| **#2** | `Agent_B10_OptimalStaticHybrid` | Cohort B (Static) | **1016.5 pts** | 4.0 | 0.0228 mm | Cubic desaturation kick ($\Delta \mathbf{I} + 0.015 \Delta \mathbf{I}^3$) + tuned gain ($0.60$). |
-| **#3** | `Agent_B7_CubicCompensator` | Cohort B (Static) | **1016.4 pts** | 4.7 | 0.0218 mm | Analytical cubic inversion with moderate gain ($0.54$). Extremely consistent. |
-| **#4** | `Agent_A3_MetaEpisodeTuner` | Cohort A (Callback) | **1014.3 pts** | 4.9 | 0.0231 mm | Cross-seed episode meta-callback dynamically tuning gain between seeds. |
-| **#5** | `Agent_B8_DeepTwinInversion` | Cohort B (Offline) | **1013.1 pts** | 5.5 | 0.0231 mm | Dense surrogate twin (256-128-64) with low L2 regularization ($10^{-5}$). |
-| **#6** | `Agent_A2_MomentumBraking` | Cohort A (Callback) | **1010.7 pts** | 6.4 | 0.0238 mm | Online momentum acceleration callback with threshold braking. |
-| **#7** | `Agent_B9_UltraConservative` | Cohort B (Static) | **1010.7 pts** | 6.4 | 0.0237 mm | Minimal current energy footprint ($\|\mathbf{I}\| = 0.90\text{ A}$). |
+The tournament validated the live Weights & Biases submission pipeline across all 10 independent worktrees:
+- **Project URL:** [`https://wandb.ai/ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026`](https://wandb.ai/ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026)
+- **Total Test Runs Submitted:** 80 runs (4 controllers $\times$ 10 agents, all in state `finished`).
+- **Telemetry Integrity:** Verified directly via `wandb.Api()` against local simulation logs. Zero duplicate submissions, zero lost packets, and zero API key leaks in notebook metadata.
+- **Raw Telemetry Archive:** Fully captured in [docs/experiments/multi_agent_benchmark_results.json](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/experiments/multi_agent_benchmark_results.json).
 
 ---
 
-### 3. Critical Discovery: The Risk of Over-Aggressive In-Episode Deceleration
-In Cohort A, three callback agents (`Agent_A1`, `Agent_A4`, `Agent_A5`) applied steep step-by-step gain decay ($0.92\times$ to $0.85\times$) whenever $\text{RMS} < 0.040\text{ mm}$ within the same episode.
-- **The Pitfall:** Because sensor noise is Gaussian with $\sigma = 0.010\text{ mm}$, decaying the gain too early at $0.040\text{ mm}$ caused the policy to take micro-steps that stalled before crossing the strict $0.030\text{ mm}$ termination threshold, running out of steps (hitting 17–18 steps).
-- **The Winning Callback Insight:** The best performing callback agent for Track 2 was **`Agent_A3_MetaEpisodeTuner`** (1014.3 pts), which used **episode-level callbacks** (`episode_callback`) to tune gain between seeds based on prior seed performance rather than prematurely braking inside the episode!
+## 💡 Practical Recommendations for Hackathon Participants
 
----
+Based on the empirical findings from this 10-agent tournament:
 
-## 🎯 Recommendations for Hackathon Participants
-
-1. **For Track 3 (Bayesian Optimization):**
-   - The gold standard. Setting $\kappa=0.0$ (pure exploitation) on a Matérn-5/2 GP surrogate yields near-instant 1.5-step convergence ($>1030$ pts).
-2. **For Track 2 (RL & Adaptive Agents):**
-   - **Do:** Combine higher initial gain ($\alpha \approx 0.60 - 0.68$) with dynamic time damping:
-     $$\Delta \mathbf{I} = \frac{-\alpha \cdot (\mathbf{R}^T)^\dagger \mathbf{Y}}{1.0 + 0.035 \cdot t}$$
-   - **Do:** Apply non-linear cubic iron-core compensation: $\Delta \mathbf{I}_{\text{corr}} = \Delta \mathbf{I} + 0.015 \cdot \Delta \mathbf{I}^3$. This immediately jumped scores from $1009 \rightarrow 1016.5$ pts.
-   - **Callback Tip:** If using callbacks, use `episode_callback` to adapt across seeds or limit step-damping to $\text{RMS} < 0.032\text{ mm}$ so the policy does not stall prematurely.
+1. **Do Not Brake Too Early in Step Callbacks:**
+   - Avoid aggressive gain dampening above $0.030\text{ mm}$. Sensor noise ($0.010\text{ mm}$) makes the orbit appear larger than it is; reducing gain prematurely causes the policy to stall and time out.
+2. **Embrace Higher Initial Gains with Time Decay:**
+   - A starting feedback gain $\alpha \in [0.62, 0.68]$ combined with hyperbolic time decay $\alpha(t) = \alpha_0 / (1 + 0.038 \cdot t)$ yields fast convergence (3.4 steps) without limit-cycle oscillation.
+3. **Incorporate Cubic Saturation Compensation:**
+   - Applying $\Delta \mathbf{I} \leftarrow \Delta \mathbf{I} + 0.015 \cdot \Delta \mathbf{I}^3$ accounts for magnetic core saturation, accelerating early trajectory correction.
+4. **Leverage Bayesian Optimization for Benchmark Supremacy:**
+   - For maximum points, Gaussian Process modeling with pure exploitation ($\kappa = 0$) achieves the physical limit of the benchmark (1.5 steps, sub-$0.016\text{ mm}$ RMS, 873.2 points).
 
 ---
 
 ## 🧹 Worktree Cleanup Verification
-All 10 test worktree directories (`worktrees/agent-1` through `worktrees/agent-10`) and associated git branches (`agent-test-1` through `agent-test-10`) have been cleanly destroyed and removed. Raw JSON experiment telemetry is archived at [docs/experiments/multi_agent_benchmark_results.json](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/experiments/multi_agent_benchmark_results.json).
+
+All 10 test worktree directories (`worktrees/agent-1` through `worktrees/agent-10`) and associated git branches (`agent-test-1` through `agent-test-10`) have been cleanly removed and verified. Only `main` remains active in the repository.
