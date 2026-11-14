@@ -97,8 +97,12 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 │   ├── DOCKER_INSTALL_GUIDE.md                       # Docker installation steps for Linux, macOS & Windows
 │   ├── DOCKER_SETUP_GUIDE.md                         # Participant pre-workshop image download, test & workshop-day guide
 │   ├── DOCKER_GUIDE.md                               # Complete Docker, Docker Compose & Docker Hub user guide
-│   ├── PARTICIPANT_MODIFICATION_GUIDE.md             # What participants may change for each controller
+│   ├── PARTICIPANT_MODIFICATION_GUIDE.md             # What participants may change for each controller, and callback rules
 │   ├── WANDB_LEADERBOARD_GUIDE.md                    # W&B leaderboard guide for the organizer and participants
+│   ├── MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md         # Protocol for the 10-agent benchmark with live W&B submission
+│   ├── MULTI_AGENT_WANDB_REPORT.md                   # Report of the 10-agent W&B submission test (2026-11-14)
+│   ├── MULTI_AGENT_TOURNAMENT_REPORT.md              # Earlier 10-agent tournament report (previous scoring formula)
+│   ├── experiments/                                  # Multi-agent results log and each agent's executed notebook
 │   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide
 │   ├── Hackathon Project Guide.docx                  # Full challenge rules, physics spec, and scoring breakdown
 │   ├── Mini-Hackathon Participant Instructions.docx   # Quick-reference participant milestone checklist
@@ -107,7 +111,7 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 ├── lecture_notes/                                    # Master lecture notes for Session 1 (Dr. Chong Shik Park)
 │   ├── Lecture_1_AI_ML_Techniques_for_Accelerators.md    # Session 1 master notes (Markdown)
 │   ├── Lecture_1_AI_ML_Techniques_for_Accelerators.tex   # Session 1 LaTeX source
-│   └── Lecture_1_AI_ML_Techniques_for_Accelerators.pdf   # Compiled lecture monograph (PDF, 9 pages)
+│   └── Lecture_1_AI_ML_Techniques_for_Accelerators.pdf   # Compiled lecture monograph (PDF, 15 pages)
 │
 ├── notebooks/                                        # Interactive Jupyter challenge notebooks
 │   ├── Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb  # Primary challenge notebook for participants (with TODOs)
@@ -245,16 +249,17 @@ Measured with the current code and the Solution notebook settings:
 
 ## 🛠️ Participant Workflow & Instructions
 
-Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb):
+Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb). What you may change in each step is listed in [`docs/PARTICIPANT_MODIFICATION_GUIDE.md`](docs/PARTICIPANT_MODIFICATION_GUIDE.md).
 
 1. **Step 0 & 1:** Run environment setup and visualize the accelerator lattice schematic.
 2. **Step 2:** Instantiate the `AcceleratorOrbitGymEnv` simulation environment.
 3. **Step 3 (TODO 1):** Train the forward surrogate models (Linear Ridge and Multi-Layer Perceptron) on offline beam data and inspect holdout RMSE.
-4. **Step 4 (Baseline 0 & 1):** Test the classical SVD controller and the SciPy `L-BFGS-B` surrogate inversion controller.
-5. **Step 4 (TODO 2 / Track 2):** Implement and tune your custom closed-loop RL feedback policy agent (damping schedules, gain, reward shaping).
+4. **Step 4 (Baseline 0 & Baseline 1 / Track 1):** Baseline 0, the classical SVD controller, is a fixed reference. Baseline 1 inverts your TODO 1 surrogate with SciPy `L-BFGS-B`, so a more accurate surrogate improves its score.
+5. **Step 4 (TODO 2 / Track 2):** Implement and tune your custom closed-loop policy agent: gain (up to about 1.0), saturation compensation on the total current from `info["currents"]`, damping schedules and reward shaping.
 6. **Step 4 (TODO 3 / Track 3):** Implement and tune your sample-efficient Bayesian Optimization controller with GaussianProcessRegressor and Lower Confidence Bound (LCB) acquisition.
-7. **Step 5:** Run `evaluate_hackathon_benchmark(...)` across all 30 evaluation seeds and inspect the live W&B run URL.
-8. **Step 6 & 7:** Generate trajectory alignment plots and prepare your team's 3-minute showcase presentation.
+7. **Step 4 (optional callbacks):** Register `step_callback` / `episode_callback` functions for Baseline 1, Track 2 and Track 3 in the `CALLBACKS` dictionary at the end of Step 4. Baseline 0 always runs without callbacks.
+8. **Step 5:** Run the locked benchmark cell, which evaluates all four controllers on the 30 seeds, passes your `CALLBACKS`, and logs each run to W&B with its URL and score.
+9. **Step 6 & 7:** Generate trajectory alignment plots and prepare your team's 3-minute showcase presentation.
 
 ---
 
@@ -262,11 +267,14 @@ Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](f
 
 For detailed guidelines, refer to the included guides:
 - [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (Markdown)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
-- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 14-page PDF monograph.
+- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 15-page PDF monograph.
 - [Lecture 1 LaTeX Source](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.tex) — LaTeX document source code.
 - [Hackathon Project Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Hackathon%20Project%20Guide.docx) — Complete rules, physics derivations, and scoring breakdown.
 - [Technical Preparation Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Technical%20Preparation.docx) — Detailed lecture syllabus, setup recommendations, and schedule.
 - [Mini-Hackathon Participant Instructions (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Mini-Hackathon%20Participant%20Instructions.docx) — Quick participant checklist.
 - [W&B Leaderboard Guide](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/WANDB_LEADERBOARD_GUIDE.md) — Leaderboard setup for the organizer and submission steps for participants.
+- [Participant Modification Guide](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/PARTICIPANT_MODIFICATION_GUIDE.md) — What participants may change for each controller, and the callback rules.
+- [Docker Installation Guide](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/DOCKER_INSTALL_GUIDE.md) and [Docker Setup Guide](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/DOCKER_SETUP_GUIDE.md) — Pre-workshop Docker installation, image download and test.
+- [Multi-Agent Benchmark Protocol](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md) and [W&B Submission Test Report](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/MULTI_AGENT_WANDB_REPORT.md) — 10-agent benchmark protocol and the verified results of its W&B run.
 - [Docker Desktop Setup Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Docker%20Desktop%20Setup%20Guide.docx) — Containerized deployment instructions.
 - [AGENTS.md](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.
