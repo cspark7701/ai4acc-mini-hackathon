@@ -20,7 +20,7 @@ def evaluate_hackathon_benchmark(
     team_name: str = "Team_Alpha",
     seeds: Sequence[int] = range(1, 31),
     use_wandb: bool = True,
-    project: str = "accelerator-orbit-hackathon",
+    project: str = "ai4acc-mini-hackathon-2026",
     entity: Optional[str] = None,
     step_callback: Optional[Callable[[Dict[str, Any], Any], None]] = None,
     episode_callback: Optional[Callable[[Dict[str, Any], Any], None]] = None,

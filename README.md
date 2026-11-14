@@ -95,6 +95,7 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 │
 ├── docs/                                             # Supporting workshop documentation & setup guides
 │   ├── DOCKER_GUIDE.md                               # Complete Docker, Docker Compose & Docker Hub user guide
+│   ├── WANDB_LEADERBOARD_GUIDE.md                    # Organizer guide for creating the W&B leaderboard project
 │   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide
 │   ├── Hackathon Project Guide.docx                  # Full challenge rules, physics spec, and scoring breakdown
 │   ├── Mini-Hackathon Participant Instructions.docx   # Quick-reference participant milestone checklist
@@ -191,12 +192,13 @@ For detailed usage, Docker Hub publishing instructions, and troubleshooting (por
 ## 📊 Weights & Biases (W&B) Leaderboard
 
 All evaluations automatically push telemetry and scoring to the live workshop leaderboard.
+Organizers: see **[`docs/WANDB_LEADERBOARD_GUIDE.md`](docs/WANDB_LEADERBOARD_GUIDE.md)** for creating the `ai4acc-mini-hackathon-2026` leaderboard project.
 
 1. **Sign Up / Log In:** Create an account at [wandb.ai](https://wandb.ai).
 2. **Retrieve API Key:** Obtain your personal API key from [wandb.ai/authorize](https://wandb.ai/authorize).
 3. **Configure in Notebook:**
    ```python
-   WANDB_PROJECT = "accelerator-orbit-hackathon"
+   WANDB_PROJECT = "ai4acc-mini-hackathon-2026"
    WANDB_ENTITY = None                 # [DO NOT CHANGE] Preset workshop entity
    TEAM_NAME = "Team_01"               # Assigned team name
    ```
