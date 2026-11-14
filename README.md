@@ -99,7 +99,6 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 │   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide
 │   ├── Hackathon Project Guide.docx                  # Full challenge rules, physics spec, and scoring breakdown
 │   ├── Mini-Hackathon Participant Instructions.docx   # Quick-reference participant milestone checklist
-│   ├── W&B Workspace Setup Guide.docx                # Step-by-step W&B team and leaderboard setup guide
 │   └── Docker Desktop Setup Guide.docx               # Offline and container contingency deployment guide
 │
 ├── lecture_notes/                                    # Master lecture notes for Session 1 (Dr. Chong Shik Park)
@@ -257,6 +256,6 @@ For detailed guidelines, refer to the included guides:
 - [Hackathon Project Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Hackathon%20Project%20Guide.docx) — Complete rules, physics derivations, and scoring breakdown.
 - [Technical Preparation Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Technical%20Preparation.docx) — Detailed lecture syllabus, setup recommendations, and schedule.
 - [Mini-Hackathon Participant Instructions (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Mini-Hackathon%20Participant%20Instructions.docx) — Quick participant checklist.
-- [W&B Workspace Setup Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/W&B%20Workspace%20Setup%20Guide.docx) — Live dashboard and team administration guide.
+- [W&B Leaderboard Guide](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/WANDB_LEADERBOARD_GUIDE.md) — Leaderboard setup for the organizer and submission steps for participants.
 - [Docker Desktop Setup Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Docker%20Desktop%20Setup%20Guide.docx) — Containerized deployment instructions.
 - [AGENTS.md](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.
