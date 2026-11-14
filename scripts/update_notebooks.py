@@ -79,7 +79,7 @@ def update_participant_notebook():
         "\n",
         "# >>> [DO NOT MODIFY]: Official workshop competition settings\n",
         "WANDB_PROJECT = \"ai4acc-mini-hackathon-2026\" # [DO NOT CHANGE] Official project name for live leaderboard\n",
-        "WANDB_ENTITY = None                          # [DO NOT CHANGE] Preset workshop entity\n",
+        "WANDB_ENTITY = \"ai4acc-mini-hackathon-2026\"  # [DO NOT CHANGE] Preset workshop entity\n",
         "USE_WANDB = True                             # [DO NOT CHANGE] Keep True to submit scores to the live leaderboard\n",
         "\n",
         "print(f\"Setup complete! Ready to compete as: {TEAM_NAME}\")\n"
@@ -343,7 +343,7 @@ def update_solution_notebook():
         "\n",
         "# >>> [DO NOT MODIFY]: Official workshop competition settings\n",
         "WANDB_PROJECT = \"ai4acc-mini-hackathon-2026\" # [DO NOT CHANGE] Official project name for live leaderboard\n",
-        "WANDB_ENTITY = None                          # [DO NOT CHANGE] Preset workshop entity\n",
+        "WANDB_ENTITY = \"ai4acc-mini-hackathon-2026\"  # [DO NOT CHANGE] Preset workshop entity\n",
         "USE_WANDB = False                            # Offline local evaluation mode for solution notebook\n",
         "\n",
         "print(f\"Setup complete! Ready to compete as: {TEAM_NAME}\")\n"

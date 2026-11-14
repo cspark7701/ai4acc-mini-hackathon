@@ -27,7 +27,9 @@ their own account and never appear on the shared leaderboard.
 | **Open project** | Create the project under the organizer's own account and set its visibility to **Open**. | No team is available. Anyone with a W&B account can then submit runs, including people outside the workshop. |
 
 The name of the team (or the organizer's username for an open project) is the
-`WANDB_ENTITY` value used below.
+`WANDB_ENTITY` value. For this workshop the entity is the W&B team
+`ai4acc-mini-hackathon-2026`, the same name as the project, so the leaderboard address is
+`https://wandb.ai/ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026`.
 
 ## 2. Create the project
 
@@ -41,20 +43,21 @@ creating it beforehand lets you set the visibility before anyone submits.
 
 ## 3. Point the notebooks at the project
 
-The project name is already preset in the notebooks, `README.md`,
-`scripts/update_notebooks.py` and `src/benchmark.py`. Only the entity must be filled in.
-In the configuration cell of both notebooks:
+The project and entity are already preset in the notebooks, `README.md` and
+`scripts/update_notebooks.py`. The configuration cell of both notebooks reads:
 
 ```python
 WANDB_PROJECT = "ai4acc-mini-hackathon-2026"  # Official project name for live leaderboard
-WANDB_ENTITY = "<your-team-or-username>"      # Entity chosen in step 1
+WANDB_ENTITY = "ai4acc-mini-hackathon-2026"   # Preset workshop entity (W&B team)
 TEAM_NAME = "Team_01"                         # Assigned team name
 ```
 
-`WANDB_ENTITY` ships as `None`. With `None`, W&B uses each participant's default
-entity, which is their personal account. Set the real entity in the notebooks (and in
-`scripts/update_notebooks.py`, which regenerates them) before distributing the
-notebooks or building the Docker image.
+The W&B team `ai4acc-mini-hackathon-2026` must exist and participants must be members of
+it (or the project must be open) before they submit; otherwise `wandb.init` fails with a
+permission error and the harness falls back to local reporting. If you use a different
+entity, change `WANDB_ENTITY` in both notebooks and in `scripts/update_notebooks.py`,
+which regenerates them, then rebuild the Docker image. Setting it to `None` sends each
+participant's runs to their personal account instead of the shared leaderboard.
 
 ## 4. Turn the runs table into a leaderboard
 

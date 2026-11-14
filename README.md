@@ -199,8 +199,8 @@ Organizers: see **[`docs/WANDB_LEADERBOARD_GUIDE.md`](docs/WANDB_LEADERBOARD_GUI
 3. **Configure in Notebook:**
    ```python
    WANDB_PROJECT = "ai4acc-mini-hackathon-2026"
-   WANDB_ENTITY = None                 # [DO NOT CHANGE] Preset workshop entity
-   TEAM_NAME = "Team_01"               # Assigned team name
+   WANDB_ENTITY = "ai4acc-mini-hackathon-2026"   # [DO NOT CHANGE] Preset workshop entity
+   TEAM_NAME = "Team_01"                         # Assigned team name
    ```
 4. **Logged Telemetry:**
    - Summary scalar metrics: `challenge_score`, `success_rate_pct`, `mean_steps`, `mean_final_rms_mm`, `mean_current_norm_A`, `mean_latency_ms`.
