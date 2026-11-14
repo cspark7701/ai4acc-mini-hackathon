@@ -194,7 +194,7 @@ For detailed usage, Docker Hub publishing instructions, and troubleshooting (por
 All evaluations automatically push telemetry and scoring to the live workshop leaderboard.
 See **[`docs/WANDB_LEADERBOARD_GUIDE.md`](docs/WANDB_LEADERBOARD_GUIDE.md)** for how the organizer creates the `ai4acc-mini-hackathon-2026` leaderboard and how participants join and submit.
 
-1. **Workshop participants:** Start the environment with the launcher from the organizer's bundle. It passes the shared leaderboard key in `wandb_key.txt` to the container, so no account or login is needed to submit.
+1. **Workshop participants:** Start the environment with the launcher from the organizer's bundle. It passes the shared leaderboard key in `wandb.apikey` to the container, so no account or login is needed to submit.
 2. **Outside the workshop:** Create an account at [wandb.ai](https://wandb.ai), obtain your API key from [wandb.ai/authorize](https://wandb.ai/authorize), and set `WANDB_ENTITY` to your own account.
 3. **Configure in Notebook:**
    ```python

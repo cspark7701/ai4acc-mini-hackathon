@@ -123,7 +123,7 @@ def build_docx():
     r_b3 = p_box.add_run("4. Weights & Biases (W&B) 라이브 리더보드 (계정 생성 불필요): ")
     r_b3.bold = True
     p_box.add_run(
-        "W&B 계정 가입이나 API 키 발급은 필요하지 않습니다. 당일 배포되는 실행 파일이 워크숍 공용 키 파일(wandb_key.txt)을 "
+        "W&B 계정 가입이나 API 키 발급은 필요하지 않습니다. 당일 배포되는 실행 파일이 워크숍 공용 키 파일(wandb.apikey)을 "
         "컨테이너에 자동으로 전달하여 결과가 리더보드에 바로 등록됩니다. 키 파일은 실행 파일과 같은 폴더에 두시고, "
         "팀별로 고유한 팀 이름을 정해 주시기 바랍니다. (네트워크가 없어도 벤치마크 실행 가능)"
     )
@@ -227,7 +227,7 @@ def build_docx():
     r_eb3.bold = True
     p_box_en.add_run(
         "You do not need a W&B account or API key. The launchers handed out on the day pass the workshop's shared key file "
-        "(wandb_key.txt) to the container automatically, so results go straight to the live leaderboard. Keep the key file in the "
+        "(wandb.apikey) to the container automatically, so results go straight to the live leaderboard. Keep the key file in the "
         "same folder as the launcher and choose a unique team name. (The benchmark also runs without network access)."
     )
 

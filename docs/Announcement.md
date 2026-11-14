@@ -101,8 +101,8 @@
 ### 3. Weights & Biases (W&B) 라이브 리더보드 (계정 생성 불필요)
 
 - 본 미니 해커톤은 머신러닝 실험 추적 및 라이브 리더보드 플랫폼인 **Weights & Biases (W&B)**를 활용합니다.
-- **W&B 계정 가입이나 API 키 발급은 필요하지 않습니다.** 당일 배포되는 실행 파일(`run_hackathon_windows.bat` / `run_hackathon_mac_linux.sh`)이 함께 제공되는 워크숍 공용 키 파일(`wandb_key.txt`)을 컨테이너에 자동으로 전달하므로, 벤치마크 결과가 리더보드에 바로 등록됩니다.
-- `wandb_key.txt` 파일은 실행 파일과 **같은 폴더**에 그대로 두시고, 워크숍 외부로 공유하지 말아 주시기 바랍니다.
+- **W&B 계정 가입이나 API 키 발급은 필요하지 않습니다.** 당일 배포되는 실행 파일(`run_hackathon_windows.bat` / `run_hackathon_mac_linux.sh`)이 함께 제공되는 워크숍 공용 키 파일(`wandb.apikey`)을 컨테이너에 자동으로 전달하므로, 벤치마크 결과가 리더보드에 바로 등록됩니다.
+- `wandb.apikey` 파일은 실행 파일과 **같은 폴더**에 그대로 두시고, 워크숍 외부로 공유하지 말아 주시기 바랍니다.
 - 각 팀은 당일 **고유한 팀 이름**을 정해 노트북의 `TEAM_NAME`에 입력합니다. 리더보드는 행사장 화면을 통해 실시간으로 확인하실 수 있습니다. *(네트워크가 없는 경우에도 벤치마크 실행 및 로컬 점수 확인은 가능합니다.)*
 
 ---
@@ -215,8 +215,8 @@ To guarantee a seamless and productive hands-on experience, please review the fo
 ### 3. Weights & Biases (W&B) Live Leaderboard (No Account Needed)
 
 - The hackathon utilizes **Weights & Biases (W&B)** for real-time experiment tracking, telemetry visualization, and the live competition leaderboard.
-- **You do not need a W&B account or API key.** The launchers handed out on the day (`run_hackathon_windows.bat` / `run_hackathon_mac_linux.sh`) pass the workshop's shared key file (`wandb_key.txt`) to the container automatically, so your benchmark results go straight to the leaderboard.
-- Keep `wandb_key.txt` in the **same folder** as the launcher, and please do not share it outside the workshop.
+- **You do not need a W&B account or API key.** The launchers handed out on the day (`run_hackathon_windows.bat` / `run_hackathon_mac_linux.sh`) pass the workshop's shared key file (`wandb.apikey`) to the container automatically, so your benchmark results go straight to the leaderboard.
+- Keep `wandb.apikey` in the **same folder** as the launcher, and please do not share it outside the workshop.
 - Each team chooses a **unique team name** on the day and enters it as `TEAM_NAME` in the notebook. The leaderboard is shown live on the room display. *(Without network access you can still run the benchmark and see your score locally.)*
 
 ---

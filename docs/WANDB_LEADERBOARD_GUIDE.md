@@ -35,7 +35,7 @@ team appears inside it as rows labelled with its `TEAM_NAME`.
 
 Submissions are authenticated with one shared **service account key**, not with personal
 keys. The key is never stored in the notebooks, the git repository or the Docker image.
-It lives in a file named `wandb_key.txt` that is handed out with the launchers.
+It lives in a file named `wandb.apikey` that is handed out with the launchers.
 
 The leaderboard address is:
 
@@ -72,21 +72,21 @@ though the project is Team-only and participants are not members.
 
 ### A3b. Distribute the key with the launchers
 
-1. Save the key as a single line in `dist/wandb_key.txt`. The file is listed in
+1. Save the key as a single line in `dist/wandb.apikey`. The file is listed in
    `.gitignore` and `.dockerignore`, so it cannot be committed or baked into the image.
-2. Run `./scripts/create_bundle.sh`. It copies `wandb_key.txt` into the bundle next to
+2. Run `./scripts/create_bundle.sh`. It copies `wandb.apikey` into the bundle next to
    `run_hackathon_windows.bat` and `run_hackathon_mac_linux.sh`.
 3. Hand out the bundle on the day (USB drive or a private download link). Do not post the
    bundle or the key publicly.
 
-At launch, each launcher reads `wandb_key.txt` from its own folder and passes it to the
+At launch, each launcher reads `wandb.apikey` from its own folder and passes it to the
 container as the `WANDB_API_KEY` environment variable. The W&B library uses that variable
 automatically, so the notebooks need no key and no `wandb.login()`.
 
 Limits to be aware of:
 
 - The key is kept out of sight, not secret from participants: anyone can open
-  `wandb_key.txt` or read the variable inside the container.
+  `wandb.apikey` or read the variable inside the container.
 - Every run shows the service account as its author. `TEAM_NAME` is the only thing that
   tells hackathon teams apart.
 - A Team-only project is visible to team members only. Participants see the leaderboard
@@ -146,7 +146,7 @@ update live as new runs arrive.
 ### B1. Start the environment with the launcher
 
 Keep the files from the organizer's bundle together in one folder, including
-`wandb_key.txt`, and start the environment with the launcher:
+`wandb.apikey`, and start the environment with the launcher:
 
 - **Windows:** double-click `run_hackathon_windows.bat`.
 - **macOS / Linux:** run `./run_hackathon_mac_linux.sh`.
@@ -157,7 +157,7 @@ need a W&B account or `wandb.login()` to submit.
 If you start the container by hand, pass the key yourself:
 
 ```bash
-docker run -it --rm -p 8888:8888 -e WANDB_API_KEY="$(cat wandb_key.txt)" cspark7701/ai4acc-hackathon-2026:latest
+docker run -it --rm -p 8888:8888 -e WANDB_API_KEY="$(cat wandb.apikey)" cspark7701/ai4acc-hackathon-2026:latest
 ```
 
 ### B2. Choose a unique hackathon team name
@@ -190,7 +190,7 @@ Your rank appears on the leaderboard shown on the room display.
 
 ## Troubleshooting
 
-- **`[!] No W&B key found` at launch:** `wandb_key.txt` is not in the same folder as the
+- **`[!] No W&B key found` at launch:** `wandb.apikey` is not in the same folder as the
   launcher. Copy it there and start the launcher again.
 - **Permission or login error on `wandb.init`:** the container was started without the key,
   or the key has expired or been revoked. Restart with the launcher; if it persists, the

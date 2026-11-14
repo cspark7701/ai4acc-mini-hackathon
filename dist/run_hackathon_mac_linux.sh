@@ -79,11 +79,11 @@ echo ""
 
 # 5. Launch container
 # Optional shared W&B leaderboard key: taken from the environment or from
-# wandb_key.txt next to this script, and passed to the container by name so
+# wandb.apikey next to this script, and passed to the container by name so
 # the key itself never appears on the command line.
 WANDB_ARGS=()
-if [ -z "${WANDB_API_KEY:-}" ] && [ -f "${SCRIPT_DIR}/wandb_key.txt" ]; then
-    WANDB_API_KEY="$(tr -d '[:space:]' < "${SCRIPT_DIR}/wandb_key.txt")"
+if [ -z "${WANDB_API_KEY:-}" ] && [ -f "${SCRIPT_DIR}/wandb.apikey" ]; then
+    WANDB_API_KEY="$(tr -d '[:space:]' < "${SCRIPT_DIR}/wandb.apikey")"
 fi
 if [ -n "${WANDB_API_KEY:-}" ]; then
     export WANDB_API_KEY

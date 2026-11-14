@@ -40,7 +40,7 @@ docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
    - **Storage:** ~2.5 GB free disk space (base image + dependencies).
    - **Architecture:** Works on both x86_64 (Intel/AMD) and ARM64 (Apple Silicon M1/M2/M3/M4).
 4. **Weights & Biases Leaderboard Key (workshop participants):**
-   - No account is needed. Keep `wandb_key.txt` from the organizer's bundle next to the launcher; it submits your scores to the live leaderboard.
+   - No account is needed. Keep `wandb.apikey` from the organizer's bundle next to the launcher; it submits your scores to the live leaderboard.
 
 ---
 
@@ -198,11 +198,11 @@ docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ---
 
 ### Issue 3: Weights & Biases (W&B) Logging Inside Docker
-The launchers (`run_hackathon_windows.bat`, `run_hackathon_mac_linux.sh`) read `wandb_key.txt` from their own folder and pass it to the container automatically. If you start the container by hand, pass the key yourself:
+The launchers (`run_hackathon_windows.bat`, `run_hackathon_mac_linux.sh`) read `wandb.apikey` from their own folder and pass it to the container automatically. If you start the container by hand, pass the key yourself:
 ```bash
 docker run -it --rm \
   -p 8888:8888 \
-  -e WANDB_API_KEY="$(cat wandb_key.txt)" \
+  -e WANDB_API_KEY="$(cat wandb.apikey)" \
   cspark7701/ai4acc-hackathon-2026:latest
 ```
 Outside the workshop, run `wandb.login()` in the first cell of the notebook with your own account and set `WANDB_ENTITY` to it.

@@ -11,7 +11,7 @@
 #     ├── ai4acc-image.tar.gz      (Compressed Docker image)
 #     ├── run_hackathon_windows.bat          (Double-click launcher for Windows)
 #     ├── run_hackathon_mac_linux.sh         (Launcher for macOS & Linux)
-#     ├── wandb_key.txt            (Shared W&B leaderboard key, if dist/wandb_key.txt exists)
+#     ├── wandb.apikey            (Shared W&B leaderboard key, if dist/wandb.apikey exists)
 #     └── README.txt               (Quick offline instructions)
 #   dist/ai4acc-hackathon.zip      (Compressed distribution archive)
 # ==============================================================================
@@ -92,12 +92,12 @@ chmod +x "${OUTPUT_DIR}/run_hackathon_mac_linux.sh"
 
 # Include the shared W&B leaderboard key if the organizer has placed it in dist/.
 # The key file is git-ignored and must never be committed or baked into the image.
-WANDB_KEY_FILE="${REPO_ROOT}/dist/wandb_key.txt"
+WANDB_KEY_FILE="${REPO_ROOT}/dist/wandb.apikey"
 if [ -f "${WANDB_KEY_FILE}" ]; then
-    cp "${WANDB_KEY_FILE}" "${OUTPUT_DIR}/wandb_key.txt"
-    echo "[OK] Included shared W&B leaderboard key (wandb_key.txt)."
+    cp "${WANDB_KEY_FILE}" "${OUTPUT_DIR}/wandb.apikey"
+    echo "[OK] Included shared W&B leaderboard key (wandb.apikey)."
 else
-    echo "[!] dist/wandb_key.txt not found: bundle will not submit to the leaderboard automatically."
+    echo "[!] dist/wandb.apikey not found: bundle will not submit to the leaderboard automatically."
 fi
 
 # 8. Generate README.txt
@@ -122,7 +122,7 @@ HOW TO RUN:
 
 NOTES:
 - Works 100% offline without Wi-Fi or internet connection.
-- Keep wandb_key.txt in the same folder as the launcher. It lets your runs reach
+- Keep wandb.apikey in the same folder as the launcher. It lets your runs reach
   the leaderboard; do not share it outside the workshop.
 - When connected to Wi-Fi, benchmark runs will automatically sync live scores to
   the Weights & Biases (W&B) competition leaderboard.
