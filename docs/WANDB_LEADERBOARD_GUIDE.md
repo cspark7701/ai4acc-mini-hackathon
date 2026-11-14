@@ -52,14 +52,14 @@ https://wandb.ai/ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026
 1. Log in at [wandb.ai](https://wandb.ai) with the organizer account.
 2. Create a team (left sidebar or account menu → **Create a team**).
 3. Give it the handle `ai4acc-mini-hackathon-2026`. It must match `WANDB_ENTITY` exactly.
-4. Check the seat limit of your plan against the number of participants. Free plans
-   restrict team size; academic plans allow more.
+4. Participants do not join the team; only the organizers need seats. Submissions come
+   through the service account key created in A3.
 
 ### A2. Create the project
 
 1. Open the team page and click **Create new project**.
 2. Name it `ai4acc-mini-hackathon-2026`. It must match `WANDB_PROJECT` exactly.
-3. Set the visibility to **Team**, so only invited participants can submit.
+3. Set the visibility to **Team**, so only team members and the shared service key can submit.
 
 ### A3. Create the service account key
 

@@ -134,8 +134,3 @@ A message starting with `Hello from Docker!` means the installation is complete.
   `sudo usermod -aG docker $USER`, then log out and back in.
 - **`wsl --install` fails on Windows:** make sure virtualization is enabled in the
   BIOS/UEFI settings and that Windows is up to date, then try again.
-
-## Next step
-
-Continue with [`DOCKER_SETUP_GUIDE.md`](DOCKER_SETUP_GUIDE.md): download the challenge
-image, test it, and read what to expect on the day of the workshop.

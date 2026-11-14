@@ -205,4 +205,3 @@ docker run -it --rm \
   -e WANDB_API_KEY="$(cat wandb.apikey)" \
   cspark7701/ai4acc-hackathon-2026:latest
 ```
-Outside the workshop, run `wandb.login()` in the first cell of the notebook with your own account and set `WANDB_ENTITY` to it.
