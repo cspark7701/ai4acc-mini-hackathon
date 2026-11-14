@@ -140,6 +140,21 @@ update live as new runs arrive.
    Participant notebook, to confirm that the shared key reaches the container.
 3. Delete the test runs, or keep the baselines as reference rows on the leaderboard.
 
+### A7. Reset the leaderboard
+
+`scripts/cleanup_wandb.py` deletes runs from the leaderboard project. It reads the key from
+`WANDB_API_KEY` or `dist/wandb.apikey`, lists the matching runs, and deletes nothing unless you
+pass `--delete`; deleting then asks you to type the project name (skip with `--yes`).
+
+```bash
+python scripts/cleanup_wandb.py --all                         # list every run (no changes)
+python scripts/cleanup_wandb.py --team-prefix MA_ --delete    # delete only the multi-agent test runs
+python scripts/cleanup_wandb.py --team Team_Alpha --delete    # delete one team's runs (repeatable)
+python scripts/cleanup_wandb.py --all --delete                # reset the whole leaderboard
+```
+
+Deleted runs cannot be restored. Run the script with a Python that has `wandb` installed.
+
 ---
 
 ## Part B — Participant: submit to the leaderboard
@@ -199,7 +214,8 @@ Your rank appears on the leaderboard shown on the room display.
 - **Runs do not appear on the leaderboard:** `WANDB_ENTITY` or `WANDB_PROJECT` was changed
   or misspelled, so the run went somewhere else. The printed run URL shows where it landed.
 - **Two teams show up under one name:** both used the same `TEAM_NAME`. One team must
-  rename and rerun; the organizer can delete the mislabelled runs.
+  rename and rerun; the organizer can delete the mislabelled runs with
+  `scripts/cleanup_wandb.py --team <name> --delete`.
 - **One team shows up under two names:** teammates typed `TEAM_NAME` differently. Use the
   registered spelling and rerun.
 - **No network:** the harness falls back to local reporting and prints the score in the notebook.
