@@ -78,7 +78,23 @@ echo ""
 ) &
 
 # 5. Launch container
-docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+# Optional shared W&B leaderboard key: taken from the environment or from
+# wandb_key.txt next to this script, and passed to the container by name so
+# the key itself never appears on the command line.
+WANDB_ARGS=()
+if [ -z "${WANDB_API_KEY:-}" ] && [ -f "${SCRIPT_DIR}/wandb_key.txt" ]; then
+    WANDB_API_KEY="$(tr -d '[:space:]' < "${SCRIPT_DIR}/wandb_key.txt")"
+fi
+if [ -n "${WANDB_API_KEY:-}" ]; then
+    export WANDB_API_KEY
+    WANDB_ARGS=(-e WANDB_API_KEY)
+    echo -e "${GREEN}[OK] W&B leaderboard key loaded.${NC}"
+else
+    echo -e "${YELLOW}[!] No W&B key found: scores will be reported locally unless you run wandb.login().${NC}"
+fi
+echo ""
+
+docker run -it --rm -p 8888:8888 ${WANDB_ARGS[@]+"${WANDB_ARGS[@]}"} cspark7701/ai4acc-hackathon-2026:latest
 
 echo ""
 echo -e "${BLUE}======================================================================${NC}"

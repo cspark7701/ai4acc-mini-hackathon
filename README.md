@@ -95,7 +95,7 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 │
 ├── docs/                                             # Supporting workshop documentation & setup guides
 │   ├── DOCKER_GUIDE.md                               # Complete Docker, Docker Compose & Docker Hub user guide
-│   ├── WANDB_LEADERBOARD_GUIDE.md                    # Organizer guide for creating the W&B leaderboard project
+│   ├── WANDB_LEADERBOARD_GUIDE.md                    # W&B leaderboard guide for the organizer and participants
 │   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide
 │   ├── Hackathon Project Guide.docx                  # Full challenge rules, physics spec, and scoring breakdown
 │   ├── Mini-Hackathon Participant Instructions.docx   # Quick-reference participant milestone checklist
@@ -192,15 +192,15 @@ For detailed usage, Docker Hub publishing instructions, and troubleshooting (por
 ## 📊 Weights & Biases (W&B) Leaderboard
 
 All evaluations automatically push telemetry and scoring to the live workshop leaderboard.
-Organizers: see **[`docs/WANDB_LEADERBOARD_GUIDE.md`](docs/WANDB_LEADERBOARD_GUIDE.md)** for creating the `ai4acc-mini-hackathon-2026` leaderboard project.
+See **[`docs/WANDB_LEADERBOARD_GUIDE.md`](docs/WANDB_LEADERBOARD_GUIDE.md)** for how the organizer creates the `ai4acc-mini-hackathon-2026` leaderboard and how participants join and submit.
 
-1. **Sign Up / Log In:** Create an account at [wandb.ai](https://wandb.ai).
-2. **Retrieve API Key:** Obtain your personal API key from [wandb.ai/authorize](https://wandb.ai/authorize).
+1. **Workshop participants:** Start the environment with the launcher from the organizer's bundle. It passes the shared leaderboard key in `wandb_key.txt` to the container, so no account or login is needed to submit.
+2. **Outside the workshop:** Create an account at [wandb.ai](https://wandb.ai), obtain your API key from [wandb.ai/authorize](https://wandb.ai/authorize), and set `WANDB_ENTITY` to your own account.
 3. **Configure in Notebook:**
    ```python
    WANDB_PROJECT = "ai4acc-mini-hackathon-2026"
    WANDB_ENTITY = "ai4acc-mini-hackathon-2026"   # [DO NOT CHANGE] Preset workshop entity
-   TEAM_NAME = "Team_01"                         # Assigned team name
+   TEAM_NAME = "Team_01"                         # Your unique hackathon team name
    ```
 4. **Logged Telemetry:**
    - Summary scalar metrics: `challenge_score`, `success_rate_pct`, `mean_steps`, `mean_final_rms_mm`, `mean_current_norm_A`, `mean_latency_ms`.

@@ -78,3 +78,7 @@ scripts/
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Shared W&B leaderboard key (secret; must never be baked into the image)
+wandb_key.txt
+**/wandb_key.txt

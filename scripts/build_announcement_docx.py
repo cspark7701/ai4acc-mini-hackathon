@@ -120,11 +120,12 @@ def build_docx():
         "• 공식 컨테이너 원클릭 실행: docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest\n"
     )
 
-    r_b3 = p_box.add_run("4. Weights & Biases (W&B) 무료 계정 사전 생성: ")
+    r_b3 = p_box.add_run("4. Weights & Biases (W&B) 라이브 리더보드 (계정 생성 불필요): ")
     r_b3.bold = True
     p_box.add_run(
-        "실시간 벤치마크 및 리더보드 연동을 위해 wandb.ai에서 무료 개인 계정을 생성하고 API 키를 확인해 오시기 바랍니다. "
-        "(오프라인 모드도 지원하므로 미가입자도 벤치마크 실행 가능)"
+        "W&B 계정 가입이나 API 키 발급은 필요하지 않습니다. 당일 배포되는 실행 파일이 워크숍 공용 키 파일(wandb_key.txt)을 "
+        "컨테이너에 자동으로 전달하여 결과가 리더보드에 바로 등록됩니다. 키 파일은 실행 파일과 같은 폴더에 두시고, "
+        "팀별로 고유한 팀 이름을 정해 주시기 바랍니다. (네트워크가 없어도 벤치마크 실행 가능)"
     )
 
     doc.add_paragraph().paragraph_format.space_after = Pt(4)
@@ -222,11 +223,12 @@ def build_docx():
         "• One-command container launch: docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest\n"
     )
 
-    r_eb3 = p_box_en.add_run("4. Create a Free Weights & Biases Account: ")
+    r_eb3 = p_box_en.add_run("4. Weights & Biases Live Leaderboard (No Account Needed): ")
     r_eb3.bold = True
     p_box_en.add_run(
-        "Sign up for a free account at wandb.ai and obtain your API key from wandb.ai/authorize before the event "
-        "for live competition leaderboard logging. (Offline and anonymous modes are also supported)."
+        "You do not need a W&B account or API key. The launchers handed out on the day pass the workshop's shared key file "
+        "(wandb_key.txt) to the container automatically, so results go straight to the live leaderboard. Keep the key file in the "
+        "same folder as the launcher and choose a unique team name. (The benchmark also runs without network access)."
     )
 
     doc.add_paragraph().paragraph_format.space_after = Pt(4)

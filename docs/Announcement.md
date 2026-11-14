@@ -98,11 +98,12 @@
     ```
   *(어떤 터미널에서든 위 단 한 줄의 명령어를 실행하거나 배치 파일을 더블 클릭한 후, 웹 브라우저에서 `http://localhost:8888`로 접속하시면 즉시 실습을 시작하실 수 있습니다.)*
 
-### 3. Weights & Biases (W&B) 무료 계정 사전 생성
+### 3. Weights & Biases (W&B) 라이브 리더보드 (계정 생성 불필요)
 
 - 본 미니 해커톤은 머신러닝 실험 추적 및 라이브 리더보드 플랫폼인 **Weights & Biases (W&B)**를 활용합니다.
-- 워크숍 참가 전 [wandb.ai](https://wandb.ai) (또는 [wandb.ai/site/ko](https://wandb.ai/site/ko))에서 **무료 개인 계정**을 미리 가입해 주시기 바랍니다.
-- 가입 후 [wandb.ai/authorize](https://wandb.ai/authorize)에서 발급되는 본인의 API 키를 메모해 오시면, 튜토리얼 당일 단 한 줄의 코드로 자신의 제어 알고리즘 결과를 라이브 리더보드에 등록하실 수 있습니다. *(오프라인 및 익명 모드도 지원하므로 미가입자도 벤치마크 실행 자체는 가능합니다.)*
+- **W&B 계정 가입이나 API 키 발급은 필요하지 않습니다.** 당일 배포되는 실행 파일(`run_hackathon_windows.bat` / `run_hackathon_mac_linux.sh`)이 함께 제공되는 워크숍 공용 키 파일(`wandb_key.txt`)을 컨테이너에 자동으로 전달하므로, 벤치마크 결과가 리더보드에 바로 등록됩니다.
+- `wandb_key.txt` 파일은 실행 파일과 **같은 폴더**에 그대로 두시고, 워크숍 외부로 공유하지 말아 주시기 바랍니다.
+- 각 팀은 당일 **고유한 팀 이름**을 정해 노트북의 `TEAM_NAME`에 입력합니다. 리더보드는 행사장 화면을 통해 실시간으로 확인하실 수 있습니다. *(네트워크가 없는 경우에도 벤치마크 실행 및 로컬 점수 확인은 가능합니다.)*
 
 ---
 
@@ -111,7 +112,7 @@
 - [ ] Indico 워크숍 사전 참가 등록 완료 ([https://indico.korea.ac.kr/event/114/](https://indico.korea.ac.kr/event/114/))
 - [ ] 개인 노트북 및 전원 어댑터 준비 완료
 - [ ] Docker Desktop 설치 및 실행 확인 (Windows: WSL 2 활성화 확인, macOS: 앱 실행 확인) 또는 Linux Docker Engine 준비 완료
-- [ ] [wandb.ai](https://wandb.ai) 무료 계정 생성 및 API 키 확인
+- [ ] 해커톤 팀 이름 구상 (W&B 계정 가입은 필요하지 않습니다)
 
 ---
 
@@ -211,11 +212,12 @@ To guarantee a seamless and productive hands-on experience, please review the fo
     ```
   *(After launching via the script or command, open your web browser and browse to `http://localhost:8888` to begin).*
 
-### 3. Create a Free Weights & Biases (W&B) Account in Advance
+### 3. Weights & Biases (W&B) Live Leaderboard (No Account Needed)
 
 - The hackathon utilizes **Weights & Biases (W&B)** for real-time experiment tracking, telemetry visualization, and the live competition leaderboard.
-- Please register for a **free personal account** at [wandb.ai](https://wandb.ai) prior to the tutorial.
-- After signing up, obtain your API authorization key at [wandb.ai/authorize](https://wandb.ai/authorize). Having this ready allows you to link your notebook runs to the live leaderboard in seconds. *(Offline and anonymous logging modes are also supported for attendees who prefer not to create an account).*
+- **You do not need a W&B account or API key.** The launchers handed out on the day (`run_hackathon_windows.bat` / `run_hackathon_mac_linux.sh`) pass the workshop's shared key file (`wandb_key.txt`) to the container automatically, so your benchmark results go straight to the leaderboard.
+- Keep `wandb_key.txt` in the **same folder** as the launcher, and please do not share it outside the workshop.
+- Each team chooses a **unique team name** on the day and enters it as `TEAM_NAME` in the notebook. The leaderboard is shown live on the room display. *(Without network access you can still run the benchmark and see your score locally.)*
 
 ---
 
@@ -224,4 +226,4 @@ To guarantee a seamless and productive hands-on experience, please review the fo
 - [ ] Workshop registration completed on Indico ([https://indico.korea.ac.kr/event/114/](https://indico.korea.ac.kr/event/114/))
 - [ ] Personal laptop and power adapter ready
 - [ ] Docker Desktop installed and verified running (Windows: WSL 2 enabled, macOS: app launched) or Linux Docker Engine ready
-- [ ] Free [wandb.ai](https://wandb.ai) account created & API key retrieved from [wandb.ai/authorize](https://wandb.ai/authorize)
+- [ ] A hackathon team name in mind (no W&B account is needed)

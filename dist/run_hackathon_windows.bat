@@ -72,7 +72,20 @@ echo.
 start /b cmd /c "timeout /t 3 /nobreak >nul && start http://localhost:8888/lab"
 
 :: 5. Launch container
-docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+:: Optional shared W&B leaderboard key: taken from the environment or from
+:: wandb_key.txt next to this script, and passed to the container by name so
+:: the key itself never appears on the command line.
+set "WANDB_ARGS="
+if not defined WANDB_API_KEY if exist "%~dp0wandb_key.txt" set /p WANDB_API_KEY=<"%~dp0wandb_key.txt"
+if defined WANDB_API_KEY (
+    set "WANDB_ARGS=-e WANDB_API_KEY"
+    echo [OK] W^&B leaderboard key loaded.
+) else (
+    echo [!] No W^&B key found: scores will be reported locally unless you run wandb.login^(^).
+)
+echo.
+
+docker run -it --rm -p 8888:8888 %WANDB_ARGS% cspark7701/ai4acc-hackathon-2026:latest
 
 echo.
 echo ======================================================================

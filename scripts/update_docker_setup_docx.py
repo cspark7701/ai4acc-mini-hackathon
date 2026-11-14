@@ -88,7 +88,7 @@ def update_participant_instructions_docx():
             r_title.font.size = Pt(10.5)
             
             r_desc = p.add_run(
-                "Windows users can simply double-click run_hackathon_windows.bat. Or run the official container in any terminal (no git clone or virtual environment required):\n"
+                "Double-click run_hackathon_windows.bat (Windows) or run ./run_hackathon_mac_linux.sh (macOS / Linux); the launcher also passes the leaderboard key. Or run the official container in any terminal (no git clone or virtual environment required):\n"
             )
             r_desc.font.name = "Calibri"
             r_desc.font.size = Pt(10)

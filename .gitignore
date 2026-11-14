@@ -8,6 +8,9 @@ dist/*.whl
 dist/*.tar.gz
 dist/*.zip
 dist/ai4acc-hackathon/
+
+# Shared W&B leaderboard key (secret; distributed with the event bundle only)
+wandb_key.txt
 worktrees/
 
 # Jupyter Notebook checkpoints
