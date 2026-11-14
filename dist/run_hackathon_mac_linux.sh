@@ -5,6 +5,8 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
 # Terminal color helpers
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -44,6 +46,20 @@ fi
 
 echo -e "${GREEN}[OK] Docker daemon is running.${NC}"
 echo ""
+
+# 3. Check if image is loaded; if not, load from offline archive
+if ! docker image inspect cspark7701/ai4acc-hackathon-2026:latest &> /dev/null; then
+    if [ -f "${SCRIPT_DIR}/ai4acc-image.tar.gz" ]; then
+        echo -e "[*] First-time setup: Loading offline Docker image..."
+        echo "    (This takes about 30-45 seconds, please wait)"
+        docker load -i "${SCRIPT_DIR}/ai4acc-image.tar.gz"
+        echo -e "${GREEN}[OK] Image successfully installed into Docker!${NC}"
+        echo ""
+    else
+        echo -e "[*] Pulling image from Docker Hub..."
+    fi
+fi
+
 echo -e "[*] Launching container: ${YELLOW}cspark7701/ai4acc-hackathon-2026:latest${NC} ..."
 echo -e "[*] Opening JupyterLab automatically in your default browser..."
 echo -e "[*] If it does not open, visit: ${GREEN}http://localhost:8888/lab${NC}"
@@ -51,7 +67,7 @@ echo -e "[*] Press ${YELLOW}Ctrl+C${NC} in this terminal when you wish to stop t
 echo -e "${BLUE}======================================================================${NC}"
 echo ""
 
-# 3. Open browser in background after delay (macOS: open, Linux: xdg-open)
+# 4. Open browser in background after delay (macOS: open, Linux: xdg-open)
 (
     sleep 3
     if command -v open &> /dev/null; then
@@ -61,7 +77,7 @@ echo ""
     fi
 ) &
 
-# 4. Launch container
+# 5. Launch container
 docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 
 echo ""

@@ -7,52 +7,59 @@ from docx.shared import Pt, RGBColor
 
 DOCKER_CMD = "docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest"
 
+def find_paragraph(doc, predicate, description):
+    """Return (index, paragraph) of the first paragraph matching predicate.
+
+    Paragraphs are located by content rather than position so that inserting
+    or reordering paragraphs fails loudly instead of editing the wrong text.
+    """
+    for i, p in enumerate(doc.paragraphs):
+        if predicate(p.text):
+            return i, p
+    raise LookupError(f"Paragraph not found in docx: {description}")
+
+
+def set_text(paragraph, text, font="Calibri", size=None):
+    paragraph.text = text
+    for r in paragraph.runs:
+        r.font.name = font
+        if size is not None:
+            r.font.size = size
+
+
 def update_docker_guide_docx():
     path = "docs/Docker Desktop Setup Guide.docx"
     doc = docx.Document(path)
-    
-    # Update subtitle P1
-    p1 = doc.paragraphs[1]
-    if "Container:" in p1.text:
-        p1.text = "AI Applications in Accelerators Tutorial & Mini-Hackathon • Container: cspark7701/ai4acc-hackathon-2026:latest"
-        for r in p1.runs:
-            r.font.name = "Calibri"
-    
-    # Update P30
-    p30 = doc.paragraphs[30]
-    p30.text = "You can launch the official container by double-clicking run_hackathon_windows.bat (on Windows) or running the command below in any terminal. All required Python packages, simulation models, and the participant challenge notebook are pre-installed:"
-    for r in p30.runs:
-        r.font.name = "Calibri"
-        
-    # Update Table 2 (Bash/PowerShell/macOS/Linux)
-    t2_cell = doc.tables[2].rows[0].cells[0]
-    t2_p = t2_cell.paragraphs[0]
-    t2_p.text = DOCKER_CMD
-    for r in t2_p.runs:
-        r.font.name = "Consolas"
-        r.font.size = Pt(9.5)
-        
-    # Update Table 3 (Command Prompt cmd.exe)
-    t3_cell = doc.tables[3].rows[0].cells[0]
-    t3_p = t3_cell.paragraphs[0]
-    t3_p.text = DOCKER_CMD
-    for r in t3_p.runs:
-        r.font.name = "Consolas"
-        r.font.size = Pt(9.5)
-        
-    # Update P45 (port troubleshooting)
-    p45 = doc.paragraphs[45]
-    if "8888" in p45.text:
-        p45.text = (
-            "Port 8888 in use error: If port 8888 is already occupied by a local Jupyter instance, change the port mapping to 8889: "
-            "docker run -it --rm -p 8889:8888 cspark7701/ai4acc-hackathon-2026:latest "
-            "... and browse to http://localhost:8889."
-        )
-        for r in p45.runs:
-            r.font.name = "Calibri"
-        
-    # Update P46
-    p46 = doc.paragraphs[46]
+
+    # Subtitle
+    _, p_sub = find_paragraph(doc, lambda t: "Container:" in t, "subtitle containing 'Container:'")
+    set_text(p_sub, "AI Applications in Accelerators Tutorial & Mini-Hackathon • Container: cspark7701/ai4acc-hackathon-2026:latest")
+
+    # Intro paragraph directly below the "Method B" heading
+    i_b, _ = find_paragraph(doc, lambda t: t.startswith("Method B:"), "heading 'Method B:'")
+    set_text(
+        doc.paragraphs[i_b + 1],
+        "You can launch the official container by double-clicking run_hackathon_windows.bat (on Windows) or running the command below in any terminal. All required Python packages, simulation models, and the participant challenge notebook are pre-installed:",
+    )
+
+    # Command tables (Bash/PowerShell/macOS/Linux and cmd.exe)
+    cmd_cells = [t.rows[0].cells[0] for t in doc.tables if t.rows[0].cells[0].text.startswith("docker run")]
+    if len(cmd_cells) != 2:
+        raise LookupError(f"Expected 2 'docker run' command tables in docx, found {len(cmd_cells)}")
+    for cell in cmd_cells:
+        set_text(cell.paragraphs[0], DOCKER_CMD, font="Consolas", size=Pt(9.5))
+
+    # Port troubleshooting
+    _, p_port = find_paragraph(doc, lambda t: t.startswith("Port 8888 in use error"), "'Port 8888 in use error'")
+    set_text(
+        p_port,
+        "Port 8888 in use error: If port 8888 is already occupied by a local Jupyter instance, change the port mapping to 8889: "
+        "docker run -it --rm -p 8889:8888 cspark7701/ai4acc-hackathon-2026:latest "
+        "... and browse to http://localhost:8889.",
+    )
+
+    # Saving your work
+    _, p46 = find_paragraph(doc, lambda t: t.startswith("Saving your work"), "'Saving your work'")
     p46.clear()
     r1 = p46.add_run("Saving your work: ")
     r1.font.name = "Calibri"

@@ -197,7 +197,7 @@ All evaluations automatically push telemetry and scoring to the live workshop le
 3. **Configure in Notebook:**
    ```python
    WANDB_PROJECT = "accelerator-orbit-hackathon"
-   WANDB_ENTITY = None                 # Assigned workshop team entity (or leave None for personal)
+   WANDB_ENTITY = None                 # [DO NOT CHANGE] Preset workshop entity
    TEAM_NAME = "Team_01"               # Assigned team name
    ```
 4. **Logged Telemetry:**

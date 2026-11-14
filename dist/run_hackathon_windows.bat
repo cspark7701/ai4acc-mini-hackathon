@@ -8,7 +8,7 @@ echo                Docker Environment Launcher
 echo ======================================================================
 echo.
 
-:: 1. Check if Docker is installed and in PATH
+:: 1. Check if Docker is installed
 where docker >nul 2>nul
 if %ERRORLEVEL% neq 0 (
     color 0C
@@ -40,6 +40,27 @@ if %ERRORLEVEL% neq 0 (
 
 echo [OK] Docker daemon is running.
 echo.
+
+:: 3. Check if image is loaded; if not, load from offline archive
+docker image inspect cspark7701/ai4acc-hackathon-2026:latest >nul 2>nul
+if %ERRORLEVEL% neq 0 (
+    if exist "%~dp0ai4acc-image.tar.gz" (
+        echo [*] First-time setup: Loading offline Docker image...
+        echo     (This takes about 30-45 seconds, please wait)
+        docker load -i "%~dp0ai4acc-image.tar.gz"
+        if errorlevel 1 (
+            color 0C
+            echo [ERROR] Failed to load ai4acc-image.tar.gz!
+            pause
+            exit /b 1
+        )
+        echo [OK] Image successfully installed into Docker!
+        echo.
+    ) else (
+        echo [*] Downloading image from Docker Hub: cspark7701/ai4acc-hackathon-2026:latest ...
+    )
+)
+
 echo [*] Launching container: cspark7701/ai4acc-hackathon-2026:latest ...
 echo [*] Opening JupyterLab automatically in your default browser...
 echo [*] If it does not open, visit: http://localhost:8888/lab
@@ -47,13 +68,12 @@ echo [*] Press Ctrl+C in this window when you wish to stop the environment.
 echo ======================================================================
 echo.
 
-:: 3. Launch browser automatically in parallel after a 3-second delay
+:: 4. Launch browser automatically in parallel after 3 seconds
 start /b cmd /c "timeout /t 3 /nobreak >nul && start http://localhost:8888/lab"
 
-:: 4. Launch container
+:: 5. Launch container
 docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 
-:: 5. Prevent window from closing abruptly on exit or failure
 echo.
 echo ======================================================================
 echo Container stopped.
