@@ -94,6 +94,8 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 ├── .gitignore                                        # Standard Git ignore rules (LaTeX, Python, W&B)
 │
 ├── docs/                                             # Supporting workshop documentation & setup guides
+│   ├── DOCKER_INSTALL_GUIDE.md                       # Docker installation steps for Linux, macOS & Windows
+│   ├── DOCKER_SETUP_GUIDE.md                         # Participant pre-workshop image download, test & workshop-day guide
 │   ├── DOCKER_GUIDE.md                               # Complete Docker, Docker Compose & Docker Hub user guide
 │   ├── WANDB_LEADERBOARD_GUIDE.md                    # W&B leaderboard guide for the organizer and participants
 │   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide

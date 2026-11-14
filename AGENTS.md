@@ -154,6 +154,7 @@ Files:
 - **Title:** Concise single line summarizing the change in imperative mood (e.g., `Add...`, `Implement...`, `Update...`).
 - **Body:** Multi-sentence paragraph explaining *why* the change was made, technical context, and how it was validated.
 - **Files:** A literal `Files:` heading followed by git status indicator flags (`M` for modified, `A` for added, `D` for deleted, `R` for renamed) and the affected file paths.
+- **No attribution trailers:** The message must end with the `Files:` list. Do not append `Co-Authored-By:` lines (for example `Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>`), "Generated with" notices, or any other AI-assistant attribution trailer.
 
 ### Standard Example:
 ```text
