@@ -1061,8 +1061,9 @@ def create_presentation():
 
     p = tf27.paragraphs[0]
     add_text_run(p, "1. If Your Controller Oscillates or Diverges Near Target:\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p, "   • Check your feedback gain α. Any gain > 0.6 will overcorrect when magnets enter saturated regions.\n"
-                    "   • Implement harmonic step damping: γ(t) = 1.0 / (1.0 + κ · t). Attenuating authority at step 4+ eliminates sensor-noise limit cycles.\n\n", size=Pt(13.5), color=DARK_GRAY)
+    add_text_run(p, "   • Check your feedback gain α. With the plain pseudo-inverse, gains up to about 1.0 converge fastest (1.6 steps at 1.0 vs. 5.6 at 0.45); above about 1.0 the controller overshoots.\n"
+                    "   • Compensate the cubic saturation on the total current from info[\"currents\"]: with gain 1.0 this lands in about 1.5 steps.\n"
+                    "   • Without compensation, harmonic step damping γ(t) = 1.0 / (1.0 + κ · t) suppresses sensor-noise limit cycles near the target.\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p2 = tf27.add_paragraph()
     add_text_run(p2, "2. If Your Neural Surrogate Has High Generalization Error:\n", bold=True, size=Pt(15), color=NAVY)

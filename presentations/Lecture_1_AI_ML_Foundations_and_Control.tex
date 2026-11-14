@@ -769,8 +769,9 @@
   \drawcard{0.8}{1.4}{11.733}{5.3}{Engineering Best Practices for Orbit Control}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
     {\fs{15}{18}\bfseries\color{navy}1. If Your Controller Oscillates or Diverges Near Target:}\\[0.3em]
-    $\bullet$ Check your feedback gain $\alpha$. Any gain $> 0.6$ will overcorrect when magnets enter saturated regions.\\
-    $\bullet$ Implement harmonic step damping: $\gamma(t) = 1.0 / (1.0 + \kappa \cdot t)$. Attenuating authority at step 4+ eliminates sensor-noise limit cycles.\\[0.9em]
+    $\bullet$ Check your feedback gain $\alpha$. With the plain pseudo-inverse, gains up to about $1.0$ converge fastest (1.6 steps at $1.0$ vs.\ 5.6 at $0.45$); above about $1.0$ the controller overshoots.\\
+    $\bullet$ Compensate the cubic saturation on the total current from \texttt{info[\"currents\"]}: with gain $1.0$ this lands in about 1.5 steps.\\
+    $\bullet$ Without compensation, harmonic step damping $\gamma(t) = 1.0 / (1.0 + \kappa \cdot t)$ suppresses sensor-noise limit cycles near the target.\\[0.9em]
     {\fs{15}{18}\bfseries\color{navy}2. If Your Neural Surrogate Has High Generalization Error:}\\[0.3em]
     $\bullet$ Ensure your training dataset covers steerer excitations across $[-3.0, +3.0]\text{ A}$ so that non-linear cubic saturation is well-sampled.\\
     $\bullet$ Use ReLU activations and small L2 penalty ($\alpha = 10^{-4}$) to avoid overfitting.\\[0.9em]

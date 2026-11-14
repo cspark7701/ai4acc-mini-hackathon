@@ -16,7 +16,7 @@ Ten autonomous agents compete simultaneously to maximize the official accelerato
 
 - **Cohort B (Agents 6 – 10): Architectural & Hyperparameter Exploration**
   - **Strategy:** Do **NOT** modify or add callback functions.
-  - **Focus:** Explore diverse architectural strategies, forward surrogate training hyperparameters (e.g. MLP hidden layer depths, activations, regularizers in `TODO 1`), policy feedback gains $\alpha \in [0.45, 0.72]$, analytical cubic desaturation kicks, damping factor functions ($\gamma$), and reward shaping in `TODO 2`.
+  - **Focus:** Explore diverse architectural strategies, forward surrogate training hyperparameters (e.g. MLP hidden layer depths, activations, regularizers in `TODO 1`), policy feedback gains $\alpha \in [0.45, 1.0]$, analytical cubic desaturation kicks, damping factor functions ($\gamma$), and reward shaping in `TODO 2`.
   - **Rule:** Rely purely on offline learning, policy parameter tuning, and analytical compensations.
 
 ---
@@ -88,24 +88,20 @@ Target file: `notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`.
       if current_rms < 0.040:
           agent.gain *= 0.95
   ```
-  Pass the callback to the notebook's benchmark calls, keeping their W&B arguments:
+  Register the callback in the notebook's `CALLBACKS` dictionary at the end of the Step 4 cell; the locked Step 5 benchmark cell passes it on. Callbacks are allowed for Baseline 1, Track 2 and Track 3 only, not Baseline 0:
   ```python
-  res_b2 = evaluate_hackathon_benchmark(
-      env, b2,
-      agent_name="Track2_RLAgent",
-      team_name=TEAM_NAME,
-      use_wandb=USE_WANDB,
-      project=WANDB_PROJECT,
-      entity=WANDB_ENTITY,
-      step_callback=custom_step_callback
-  )
+  CALLBACKS = {
+      "b1": {"step_callback": None, "episode_callback": None},
+      "b2": {"step_callback": custom_step_callback, "episode_callback": None},
+      "b3": {"step_callback": None, "episode_callback": None},
+  }
   ```
 
 - **If in Cohort B (Agents 6–10):**
   Do not use callbacks. Optimize `TODO 1` surrogate architecture and `TODO 2` policy dynamics:
   - Hyperparameter sweeps on `MLPRegressor(hidden_layer_sizes=..., alpha=...)`.
-  - Tuning `gain` $\in [0.50, 0.72]$ and damping function `damping = 1.0 / (1.0 + gamma * step)`.
-  - Non-linear cubic desaturation: $\Delta \mathbf{I} + 0.015 \cdot \Delta \mathbf{I}^3$.
+  - Tuning `gain` $\in [0.45, 1.0]$ and damping function `damping = 1.0 / (1.0 + gamma * step)`.
+  - Non-linear cubic saturation compensation on the total current from `info[\"currents\"]` (invert $\mathbf{I} - 0.015\,\mathbf{I}^3$; see TODO 2 hint 4).
 
 ### Step 3: Offline Tuning
 Explore and tune with standalone scripts that call the benchmark with W&B off, so no exploratory run reaches the leaderboard:

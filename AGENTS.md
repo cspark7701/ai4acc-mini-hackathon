@@ -214,6 +214,7 @@ for step in range(env.max_steps):
 
 ## 💡 Practical Advice for AI Agents Assisting Participants
 
-- **If an agent's policy diverges or oscillates:** Check the feedback gain $\alpha$. A gain above $0.6$ often causes overcorrection in non-linear regimes. Introduce step damping: $\alpha_t = \alpha_0 / (1.0 + \gamma \cdot t)$.
+- **If an agent's policy diverges or oscillates:** Check the feedback gain $\alpha$. With the plain pseudo-inverse, gains up to about $1.0$ converge fastest (about 1.6 steps at $1.0$ versus 5.6 at $0.45$); above that the policy overshoots. Compensate the cubic saturation using the total currents in `info["currents"]`, or introduce step damping: $\alpha_t = \alpha_0 / (1.0 + \gamma \cdot t)$.
+- **Callbacks:** participants may register `step_callback` / `episode_callback` for Baseline 1, Track 2 and Track 3 in the notebook's `CALLBACKS` dictionary (Step 4); Baseline 0 always runs without callbacks.
 - **If the surrogate model exhibits high holdout error:** Ensure sample coverage in offline training covers $[-3.0, 3.0]$ A and that the non-linear cubic term is represented.
 - **If W&B logging fails:** Ensure `wandb.login()` was called or that `WANDB_ENTITY` matches the team's organization handle. If offline, the harness gracefully falls back to local reporting.
