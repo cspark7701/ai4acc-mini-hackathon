@@ -17,7 +17,7 @@ class TestAcceleratorOrbitGymEnv:
         assert env.n_correctors == 6
         assert env.target_rms == 0.030
         assert env.noise_std == 0.010
-        assert env.max_steps == 20
+        assert env.max_steps == 50
         assert env.R.shape == (6, 12)
         assert env.action_space.shape == (6,)
         assert env.observation_space.shape == (12,)
@@ -78,18 +78,18 @@ class TestAcceleratorOrbitGymEnv:
         assert next_info["step"] == 1
 
     def test_truncation_at_max_steps(self):
-        """Test environment truncates when step count reaches max_steps (20)."""
+        """Test environment truncates when step count reaches max_steps (50)."""
         env = AcceleratorOrbitGymEnv()
         env.reset(seed=42)
 
-        for step in range(1, 20):
+        for step in range(1, 50):
             obs, reward, terminated, truncated, info = env.step(np.zeros(6))
             assert not truncated
             assert info["step"] == step
 
         obs, reward, terminated, truncated, info = env.step(np.zeros(6))
         assert truncated
-        assert info["step"] == 20
+        assert info["step"] == 50
 
     def test_custom_reward_function(self):
         """Test custom reward callback function hook."""

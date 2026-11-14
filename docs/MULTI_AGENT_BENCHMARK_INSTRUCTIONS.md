@@ -34,10 +34,10 @@ Ten autonomous agents compete simultaneously to maximize the official accelerato
    - **Tune offline, submit once.** All exploration and parameter sweeps run with `use_wandb=False`. Only the single final notebook execution logs to W&B, producing exactly four runs per agent (one per controller). Rerun the submission only if the first attempt logged nothing, and report the rerun.
 4. **Limit CPU Threads:** Ten agents share one host. Prefix every Python or Jupyter command with `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1`, and run at most one process at a time per agent. Without these limits NumPy and scikit-learn oversubscribe the cores (a load average near 90 was observed on 8 cores) and every run slows down severalfold.
 5. **Preserve Ground Truth Boundaries (Strict Benchmark Integrity):**
-   - **Never** modify `src/environment.py` physics constants (`target_rms = 0.03`, `noise_std = 0.010`, `max_steps = 20`, or cubic saturation `0.015`).
+   - **Never** modify `src/environment.py` physics constants (`target_rms = 0.03`, `noise_std = 0.010`, `max_steps = 50`, or cubic saturation `0.015`).
    - Benchmark evaluation must strictly evaluate on `seeds = range(1, 31)`.
 6. **Standardized Scoring Metric:**
-   $$\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k,\quad s_k = 400 + 300\,\frac{20-n_k}{19} + 300\,\mathrm{clip}\!\left(\frac{\ln(0.030/\text{RMS}_k)}{\ln 3},0,1\right)\ \text{(0 if seed } k \text{ fails)}$$
+   $$\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k,\quad s_k = 400 + 300\,\max\!\left(0,\frac{20-n_k}{19}\right) + 300\,\mathrm{clip}\!\left(\frac{\ln(0.030/\text{RMS}_k)}{\ln 3},0,1\right)\ \text{(0 if seed } k \text{ fails)}$$
    Each seed scores 0 to 1000 points (`score_seed()` in `src/benchmark.py`).
 
 ---

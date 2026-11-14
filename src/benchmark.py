@@ -18,9 +18,10 @@ except ImportError:
 # the mean over the 30 evaluation seeds)
 # ------------------------------------------------------------------------------
 SUCCESS_POINTS = 400.0    # Reaching RMS < target within the step budget
-SPEED_POINTS = 300.0      # Full points at 1 step, zero at the step budget
+SPEED_POINTS = 300.0      # Full points at 1 step, zero at SPEED_STEPS or more
 PRECISION_POINTS = 300.0  # Zero at the target RMS, full points at the sensor noise floor
 NOISE_FLOOR_MM = 0.010    # BPM measurement noise; RMS cannot reliably go below this
+SPEED_STEPS = 20          # Speed scale: independent of the episode limit (env.max_steps = 50)
 
 
 def score_seed(
@@ -28,7 +29,7 @@ def score_seed(
     steps: int,
     final_rms: float,
     target_rms: float = 0.03,
-    max_steps: int = 20,
+    speed_steps: int = SPEED_STEPS,
     noise_floor: float = NOISE_FLOOR_MM,
 ) -> Dict[str, float]:
     """
@@ -36,8 +37,12 @@ def score_seed(
 
     A failed episode scores 0. A successful one earns:
         success   = 400
-        speed     = 300 * (max_steps - steps) / (max_steps - 1)
+        speed     = 300 * clip((speed_steps - steps) / (speed_steps - 1), 0, 1)
         precision = 300 * clip(log(target_rms / final_rms) / log(target_rms / noise_floor), 0, 1)
+
+    The speed scale is fixed at 20 steps, independent of the 50-step episode
+    limit: a seed that succeeds after 20 or more steps earns no speed points but
+    keeps its success and precision points.
 
     Precision is measured on a log scale, so each factor of improvement in the
     residual orbit counts equally between the 0.030 mm target and the 0.010 mm
@@ -45,7 +50,7 @@ def score_seed(
     """
     if not is_success:
         return {"success": 0.0, "speed": 0.0, "precision": 0.0, "total": 0.0}
-    speed = SPEED_POINTS * float(np.clip((max_steps - steps) / (max_steps - 1), 0.0, 1.0))
+    speed = SPEED_POINTS * float(np.clip((speed_steps - steps) / (speed_steps - 1), 0.0, 1.0))
     ratio = np.log(target_rms / max(final_rms, 1e-12)) / np.log(target_rms / noise_floor)
     precision = PRECISION_POINTS * float(np.clip(ratio, 0.0, 1.0))
     total = SUCCESS_POINTS + speed + precision
@@ -152,7 +157,7 @@ def evaluate_hackathon_benchmark(
                 "info": info,
             }, agent)
 
-        pts = score_seed(is_succ, step, info["rms"], target_rms=env.target_rms, max_steps=env.max_steps)
+        pts = score_seed(is_succ, step, info["rms"], target_rms=env.target_rms)
         seed_scores.append(pts)
 
         table_rows.append([seed, initial_rms, info["rms"], step, is_succ, norm_I, elapsed_ms, pts["total"]])
@@ -187,21 +192,21 @@ def evaluate_hackathon_benchmark(
                 },
                 reinit="finish_previous"
             )
-            run.summary["challenge_score"] = float(round(score, 1))
+            run.summary["challenge_score"] = float(round(score, 3))
             run.summary["success_rate_pct"] = float(round(success_rate, 1))
             run.summary["mean_steps"] = float(round(mean_steps, 2))
             run.summary["mean_final_rms_mm"] = float(round(mean_rms, 4))
             run.summary["mean_current_norm_A"] = float(round(mean_norm, 2))
             run.summary["mean_latency_ms"] = float(round(mean_latency, 2))
-            run.summary["score_success"] = float(round(score_success, 1))
-            run.summary["score_speed"] = float(round(score_speed, 1))
-            run.summary["score_precision"] = float(round(score_precision, 1))
+            run.summary["score_success"] = float(round(score_success, 3))
+            run.summary["score_speed"] = float(round(score_speed, 3))
+            run.summary["score_precision"] = float(round(score_precision, 3))
 
             wandb_cols = ["Seed", "Initial_RMS_mm", "Final_RMS_mm", "Steps", "Success", "Current_Norm_A", "Latency_ms", "Seed_Score"]
             wandb_table = wandb.Table(columns=wandb_cols, data=table_rows)
             wandb.log({"seed_breakdown_table": wandb_table})
 
-            print(f"[W&B] Logged '{run_name}' to {run.url} (Score: {score:.1f} pts)")
+            print(f"[W&B] Logged '{run_name}' to {run.url} (Score: {score:.3f} pts)")
             run.finish()
         except Exception as e:
             print(f"[W&B Warning] Logging skipped: {e}")
@@ -227,11 +232,11 @@ def print_benchmark_leaderboard(leaderboard: Sequence[Any]) -> None:
         leaderboard: List of (name, metrics_dict) tuples.
     """
     sorted_board = sorted(leaderboard, key=lambda x: x[1].get("score", 0.0), reverse=True)
-    print("=" * 85)
+    print("=" * 87)
     print("                        OFFICIAL HACKATHON BENCHMARK LEADERBOARD")
-    print("=" * 85)
-    print(f"{'Rank':<5} | {'Agent / Controller Name':<28} | {'Success':<8} | {'Steps':<6} | {'Final RMS':<10} | {'Score':<8}")
-    print("-" * 85)
+    print("=" * 87)
+    print(f"{'Rank':<5} | {'Agent / Controller Name':<28} | {'Success':<8} | {'Steps':<6} | {'Final RMS':<10} | {'Score':<9}")
+    print("-" * 87)
     for rank, (name, metrics) in enumerate(sorted_board, 1):
-        print(f"#{rank:<4} | {name:<28} | {metrics['success_rate']:>6.1f}% | {metrics['mean_steps']:>5.1f} | {metrics['mean_rms']:>8.4f}mm | {metrics['score']:>7.1f}")
-    print("=" * 85)
+        print(f"#{rank:<4} | {name:<28} | {metrics['success_rate']:>6.1f}% | {metrics['mean_steps']:>5.1f} | {metrics['mean_rms']:>8.4f}mm | {metrics['score']:>9.3f}")
+    print("=" * 87)

@@ -61,7 +61,7 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
   - Realistic Gaussian diagnostic noise: $\epsilon \sim \mathcal{N}(0, 0.010\text{ mm})$
 - **Goal Condition:** Bring Root-Mean-Square (RMS) beam orbit error below threshold:
   $$\text{RMS} = \sqrt{\frac{1}{12}\sum_{i=1}^{12} Y_i^2} < 0.030\text{ mm}$$
-  within a budget of **20 control steps**.
+  within a budget of **50 control steps**.
 
 ---
 
@@ -218,13 +218,13 @@ Controller performance is evaluated across **30 standardized test seeds** (`seed
 
 $$\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k, \qquad
 s_k = \begin{cases}
-400 + 300\,\dfrac{20 - n_k}{19} + 300\,\text{clip}\!\left(\dfrac{\ln(0.030/\text{RMS}_k)}{\ln(0.030/0.010)},\,0,\,1\right) & \text{if seed } k \text{ succeeds} \\
+400 + 300\,\max\!\left(0,\,\dfrac{20 - n_k}{19}\right) + 300\,\text{clip}\!\left(\dfrac{\ln(0.030/\text{RMS}_k)}{\ln(0.030/0.010)},\,0,\,1\right) & \text{if seed } k \text{ succeeds} \\
 0 & \text{otherwise}
 \end{cases}$$
 
-- **Per-seed score $s_k$ (0 to 1000 points):** a seed that does not reach $\text{RMS} < 0.030\text{ mm}$ within 20 steps scores 0. A successful seed earns:
+- **Per-seed score $s_k$ (0 to 1000 points):** a seed that does not reach $\text{RMS} < 0.030\text{ mm}$ within 50 steps scores 0. A successful seed earns:
   - **Success (400 pts):** for reaching the target at all.
-  - **Speed (up to 300 pts):** full points when converging in 1 step ($n_k = 1$), falling linearly to 0 at the 20-step budget.
+  - **Speed (up to 300 pts):** full points when converging in 1 step ($n_k = 1$), falling linearly to 0 at 20 steps (episodes may run up to 50 steps).
   - **Precision (up to 300 pts):** 0 at the $0.030\text{ mm}$ target, rising on a log scale to full points at the $0.010\text{ mm}$ sensor noise floor. Each factor of improvement in residual orbit counts equally; $0.017\text{ mm}$ earns about half.
 - **Score:** the mean of $s_k$ over the 30 seeds, from 0 to 1000. Failures cost the most, so robustness comes first; among robust controllers, speed and landing precision separate the ranks.
 - **Current norm** $\overline{\|\mathbf{I}\|}$ is still reported but not scored: it is set mainly by the size of the initial distortion and varies by only a few percent between controllers.
@@ -238,7 +238,7 @@ Measured with the current code and the Solution notebook settings:
 | 🥇 | **Track 3: Bayesian Optimization Controller** | 100.0% | 1.5 steps | 0.0160 mm | 0.93 A | **873.2 pts** |
 | 🥈 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | 0.0230 mm | 0.90 A | **705.3 pts** |
 | 🥉 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 0.90 A | **686.9 pts** |
-| 4 | **Baseline 1: Supervised MLP Surrogate Inversion** | 56.7% | 12.1 steps | 0.0317 mm | 0.95 A | **371.0 pts** |
+| 4 | **Baseline 1: Supervised MLP Surrogate Inversion** | 73.3% | 22.2 steps | 0.0301 mm | 0.95 A | **441.6 pts** |
 
 ---
 

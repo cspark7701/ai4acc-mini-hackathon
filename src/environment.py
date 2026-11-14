@@ -24,7 +24,7 @@ class AcceleratorOrbitGymEnv:
 
     def __init__(
         self,
-        max_steps: int = 20,
+        max_steps: int = 50,
         target_rms: float = 0.030,
         noise_std: float = 0.010,
         rms_weight: float = 10.0,

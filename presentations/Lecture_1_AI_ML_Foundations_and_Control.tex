@@ -369,7 +369,7 @@
     -- $-0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R})$: Non-linear iron core soft saturation. At high excitation currents, the iron yoke reaches magnetic saturation, decreasing steerer kick efficiency by 6\% (at 2 A) up to 24\% (at 4 A).\\
     -- $\mathbf{Y}_0$: Initial orbit distortion caused by random quadrupole transverse misalignments (producing $0.40\text{ mm}$ to $1.10\text{ mm}$ RMS error across seeds).\\
     -- $\boldsymbol{\epsilon}$: Diagnostic Gaussian measurement jitter ($\sigma = 10\ \mu\text{m}$).\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Convergence Target:} \textbf{\color{successgreen}Drive orbit error below $\text{RMS} < 0.030\text{ mm}$ ($30\ \mu\text{m}$) within 20 control steps.}
+    {\bfseries\color{navy}$\bullet$ Convergence Target:} \textbf{\color{successgreen}Drive orbit error below $\text{RMS} < 0.030\text{ mm}$ ($30\ \mu\text{m}$) within 50 control steps.}
   }
 
   \slidefooter{11}
@@ -562,8 +562,8 @@
     {\bfseries\color{navy}$\bullet$ Why Supervised Inversion Outperforms Classical SVD:}\\[0.3em]
     -- Because $f_{\boldsymbol{\theta}}$ captures the cubic saturation falloff, the optimizer automatically calculates higher current demands for saturated correctors.\\
     -- Solver: SciPy \texttt{L-BFGS-B} converges in 8--15 iterations per control step ($\sim 15 - 25\text{ ms}$ latency).\\
-    -- \textbf{Result:} Only as good as the surrogate: with the reference MLP (test RMSE 0.11 mm) it succeeds on 56.7\% of seeds. Improving the surrogate is TODO 1.\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}56.7\% success rate, 12.1 mean steps, 371.0 total score (Rank \#4).}
+    -- \textbf{Result:} Only as good as the surrogate: with the reference MLP (test RMSE 0.11 mm) it succeeds on 73.3\% of seeds. Improving the surrogate is TODO 1.\\[0.8em]
+    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}73.3\% success rate, 22.2 mean steps, 441.6 total score (Rank \#4).}
   }
 
   \slidefooter{19}
@@ -684,7 +684,7 @@
     $\bullet$ \textbf{Step Reward Function:}\\[0.3em]
     \centering{\fs{14}{17}\bfseries\color{primaryblue}$r_t = - \text{RMS}_{t+1} - 0.01 \cdot \|\Delta\mathbf{I}\|_2 + ( 50.0 \text{ if } \text{RMS}_{t+1} < 0.030\text{ mm else } 0.0 )$}\\[0.7em]
     \raggedright
-    $\bullet$ \textbf{Termination Criteria:} \texttt{terminated = True} when $\text{RMS} < 0.030\text{ mm}$ (success); \texttt{truncated = True} when $\text{step} \ge 20$ (budget exhausted).
+    $\bullet$ \textbf{Termination Criteria:} \texttt{terminated = True} when $\text{RMS} < 0.030\text{ mm}$ (success); \texttt{truncated = True} when $\text{step} \ge 50$ (budget exhausted).
   }
 
   \slidefooter{24}
@@ -700,7 +700,7 @@
   \drawcard{0.8}{1.4}{11.733}{5.3}{The Official Hackathon Scoring Formula}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
     \textbf{Standardized Evaluation Suite:} \texttt{seeds = range(1, 31)} (30 evaluation seeds)\\[0.5em]
-    \centering{\fs{14}{19}\bfseries\color{primaryblue}$\text{Score} = \frac{1}{30}\sum_{k} s_k, \quad s_k = 400 + 300\,\frac{20-n_k}{19} + 300\,\mathrm{clip}\!\left(\frac{\ln(0.030/\text{RMS}_k)}{\ln 3},0,1\right)$ \;(0 if seed $k$ fails)}\\[0.8em]
+    \centering{\fs{14}{19}\bfseries\color{primaryblue}$\text{Score} = \frac{1}{30}\sum_{k} s_k, \quad s_k = 400 + 300\,\max\!\left(0,\frac{20-n_k}{19}\right) + 300\,\mathrm{clip}\!\left(\frac{\ln(0.030/\text{RMS}_k)}{\ln 3},0,1\right)$ \;(0 if seed $k$ fails)}\\[0.8em]
     \raggedright
     {\bfseries\color{navy}Each seed scores 0--1000 points; the official score is the mean over 30 seeds:}
   }
@@ -714,8 +714,8 @@
         \toprule
         \textbf{\color{primaryblue}Part} & \textbf{\color{primaryblue}Points} & \textbf{\color{primaryblue}How it is earned} \\
         \midrule
-        \textbf{Success} & 400 & The seed reaches $\text{RMS} < 0.030\text{ mm}$ within 20 steps. A failed seed scores 0 overall. \\
-        \textbf{Speed} & up to 300 & 300 for converging in 1 step, falling linearly to 0 at 20 steps. \\
+        \textbf{Success} & 400 & The seed reaches $\text{RMS} < 0.030\text{ mm}$ within 50 steps. A failed seed scores 0 overall. \\
+        \textbf{Speed} & up to 300 & 300 for converging in 1 step, falling linearly to 0 at 20 steps or more (episodes run up to 50 steps). \\
         \textbf{Precision} & up to 300 & 0 at the 0.030 mm target, 300 at the 0.010 mm sensor noise floor, on a log scale (0.017 mm earns about 150). \\
         \bottomrule
       \end{tabular}
@@ -751,7 +751,7 @@
         \textbf{\color{gold}Rank 1} & Track 3: Bayesian Optimization (BO) & \textbf{100.0\%} & \textbf{1.5 steps} & \textbf{0.0160 mm} & 0.93 A & \textbf{\color{gold}873.2 pts} \\
         \textbf{\color{primaryblue}Rank 2} & Baseline 0: Classical Linear SVD & 100.0\% & 5.6 steps & 0.0230 mm & 0.90 A & \textbf{\color{primaryblue}705.3 pts} \\
         \textbf{Rank 3} & Track 2: Closed-Loop RL Policy Agent & 100.0\% & 6.1 steps & 0.0239 mm & 0.90 A & 686.9 pts \\
-        \textbf{Rank 4} & Baseline 1: Supervised Neural Inversion (MLP) & 56.7\% & 12.1 steps & 0.0317 mm & 0.95 A & 371.0 pts \\
+        \textbf{Rank 4} & Baseline 1: Supervised Neural Inversion (MLP) & 73.3\% & 22.2 steps & 0.0301 mm & 0.95 A & 441.6 pts \\
         \bottomrule
       \end{tabular}
     };

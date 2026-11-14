@@ -525,7 +525,7 @@ The benchmark simulation models the 15-meter transport line wrapped inside a sta
     \item \textbf{Observation Space:} $\text{Box}(-10.0, +10.0, \text{shape}=(12,), \text{dtype}=\text{float32})$ (Transverse BPM readings in mm).
     \item \textbf{Action Space:} $\text{Box}(-0.8, +0.8, \text{shape}=(6,), \text{dtype}=\text{float32})$ (Per-step delta currents $\Delta \mathbf{I}$ in Amperes).
     \item \textbf{State Dynamics:} Cumulative magnet current $\mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \Delta \mathbf{I}_t, -5.0, +5.0)\text{ A}$, accounting for non-linear core saturation $-0.015 \cdot \mathbf{I}^3 \cdot \mathbf{R}$ and Gaussian diagnostic jitter $\sigma = 0.010\text{ mm}$.
-    \item \textbf{Termination Criteria:} Triggered when $\text{RMS} < 0.030\text{ mm}$ (success); truncated if step count reaches $20$ (failure).
+    \item \textbf{Termination Criteria:} Triggered when $\text{RMS} < 0.030\text{ mm}$ (success); truncated if step count reaches $50$ (failure).
     \item \textbf{Step Reward:}
     \begin{equation}
         r_t = - \text{RMS}_{t+1} - 0.01 \cdot \|\Delta \mathbf{I}_t\|_2 + (50.0 \text{ if } \text{RMS}_{t+1} < 0.030\text{ mm} \text{ else } 0.0)
@@ -551,15 +551,15 @@ Each seed is scored from $0$ to $1000$ points and the official challenge score i
 \begin{equation}
     \text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k, \qquad
     s_k = \begin{cases}
-    400 + 300\,\dfrac{20 - n_k}{19} + 300\,\mathrm{clip}\!\left(\dfrac{\ln(0.030/\text{RMS}_k)}{\ln(0.030/0.010)},\,0,\,1\right) & \text{seed } k \text{ succeeds} \\
+    400 + 300\,\max\!\left(0,\,\dfrac{20 - n_k}{19}\right) + 300\,\mathrm{clip}\!\left(\dfrac{\ln(0.030/\text{RMS}_k)}{\ln(0.030/0.010)},\,0,\,1\right) & \text{seed } k \text{ succeeds} \\
     0 & \text{otherwise}
     \end{cases}
 \end{equation}
 
 \noindent\textbf{Scoring Components Breakdown:}
 \begin{itemize}
-    \item \textbf{Success ($400\text{ pts}$):} Awarded per seed that reaches $\text{RMS} < 0.030\text{ mm}$ within 20 steps; a failed seed scores $0$.
-    \item \textbf{Speed (up to $300\text{ pts}$):} Full points for converging in 1 step, falling linearly to $0$ at the 20-step budget.
+    \item \textbf{Success ($400\text{ pts}$):} Awarded per seed that reaches $\text{RMS} < 0.030\text{ mm}$ within 50 steps; a failed seed scores $0$.
+    \item \textbf{Speed (up to $300\text{ pts}$):} Full points for converging in 1 step, falling linearly to $0$ at 20 steps (episodes may run up to 50 steps).
     \item \textbf{Precision (up to $300\text{ pts}$):} $0$ at the $0.030\text{ mm}$ target, rising on a log scale to full points at the $0.010\text{ mm}$ sensor noise floor ($0.017\text{ mm}$ earns about half).
     \item \textbf{Current norm:} Still reported but not scored, since it is set mainly by the initial distortion and varies by only a few percent between controllers.
 \end{itemize}
@@ -578,7 +578,7 @@ Official baseline and challenge policy performance across the 30 standardized ev
 \textbf{\#1} & Track 3: Bayesian Optimization Controller & \textbf{100.0\%} & \textbf{1.5 steps} & $\mathbf{0.0160\text{ mm}}$ & $0.93\text{ A}$ & $\mathbf{873.2\text{ pts}}$ \\
 \textbf{\#2} & Baseline 0: Classical Linear SVD & 100.0\% & 5.6 steps & $0.0230\text{ mm}$ & $0.90\text{ A}$ & 705.3 pts \\
 \textbf{\#3} & Track 2: Closed-Loop RL Policy & 100.0\% & 6.1 steps & $0.0239\text{ mm}$ & $0.90\text{ A}$ & 686.9 pts \\
-\textbf{\#4} & Baseline 1: Supervised MLP Inversion & 56.7\% & 12.1 steps & $0.0317\text{ mm}$ & $0.95\text{ A}$ & 371.0 pts \\
+\textbf{\#4} & Baseline 1: Supervised MLP Inversion & 73.3\% & 22.2 steps & $0.0301\text{ mm}$ & $0.95\text{ A}$ & 441.6 pts \\
 \bottomrule
 \end{tabular}%
 }

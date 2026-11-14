@@ -90,7 +90,7 @@ class TestBenchmarkHarness:
         captured = capsys.readouterr()
         assert "OFFICIAL HACKATHON BENCHMARK LEADERBOARD" in captured.out
         assert "TestController" in captured.out
-        assert "705.3" in captured.out
+        assert "705.300" in captured.out
 
 
 class TestSeedScore:
@@ -116,3 +116,10 @@ class TestSeedScore:
 
     def test_fewer_steps_score_higher(self):
         assert score_seed(True, 2, 0.02)["total"] > score_seed(True, 8, 0.02)["total"]
+
+    def test_speed_scale_fixed_at_20_steps(self):
+        slow = score_seed(True, 35, 0.02)
+        assert slow["speed"] == pytest.approx(0.0)
+        assert slow["total"] == pytest.approx(400.0 + slow["precision"])
+        assert score_seed(True, 20, 0.02)["speed"] == pytest.approx(0.0)
+        assert score_seed(True, 10, 0.02)["speed"] == pytest.approx(300.0 * 10 / 19)

@@ -49,7 +49,7 @@ $$\mathbf{Y} = \mathbf{I} \cdot \mathbf{R} - 0.015 \cdot (\mathbf{I}^3 \cdot \ma
   - Orbit computation: updates $\mathbf{Y}_{t+1}$ and calculates current RMS:
     $$\text{RMS} = \sqrt{\frac{1}{12}\sum_{i=1}^{12} Y_i^2}$$
   - **Termination (`terminated`):** Triggered if $\text{RMS} < 0.030\text{ mm}$ (`is_success = True`).
-  - **Truncation (`truncated`):** Triggered if step count reaches `max_steps = 20` (`is_success = False`).
+  - **Truncation (`truncated`):** Triggered if step count reaches `max_steps = 50` (`is_success = False`).
   - **Reward:**
     $$r_t = - \text{RMS}_{t+1} - 0.01 \cdot \|\text{action}\|_2 + (50.0 \text{ if terminated else } 0.0)$$
 
@@ -104,13 +104,13 @@ AI agents evaluating controllers must run the standardized benchmark across **30
 ### Official Scoring Formula:
 $$\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k, \qquad
 s_k = \begin{cases}
-400 + 300\,\dfrac{20 - n_k}{19} + 300\,\text{clip}\!\left(\dfrac{\ln(0.030/\text{RMS}_k)}{\ln(0.030/0.010)},\,0,\,1\right) & \text{if seed } k \text{ succeeds} \\
+400 + 300\,\max\!\left(0,\,\dfrac{20 - n_k}{19}\right) + 300\,\text{clip}\!\left(\dfrac{\ln(0.030/\text{RMS}_k)}{\ln(0.030/0.010)},\,0,\,1\right) & \text{if seed } k \text{ succeeds} \\
 0 & \text{otherwise}
 \end{cases}$$
 
-- **Per-seed score $s_k$ (0 to 1000 points):** a seed that does not reach $\text{RMS} < 0.030\text{ mm}$ within 20 steps scores 0. A successful seed earns:
+- **Per-seed score $s_k$ (0 to 1000 points):** a seed that does not reach $\text{RMS} < 0.030\text{ mm}$ within 50 steps scores 0. A successful seed earns:
   - **Success (400 pts):** for reaching the target at all.
-  - **Speed (up to 300 pts):** full points when converging in 1 step ($n_k = 1$), falling linearly to 0 at the 20-step budget.
+  - **Speed (up to 300 pts):** full points when converging in 1 step ($n_k = 1$), falling linearly to 0 at 20 steps (episodes may run up to 50 steps).
   - **Precision (up to 300 pts):** 0 at the $0.030\text{ mm}$ target, rising on a log scale to full points at the $0.010\text{ mm}$ sensor noise floor. Each factor of improvement in residual orbit counts equally; $0.017\text{ mm}$ earns about half.
 - **Score:** the mean of $s_k$ over the 30 seeds, from 0 to 1000. Failures cost the most, so robustness comes first; among robust controllers, speed and landing precision separate the ranks.
 - **Current norm** $\overline{\|\mathbf{I}\|}$ is still reported but not scored: it is set mainly by the size of the initial distortion and varies by only a few percent between controllers.
@@ -118,9 +118,9 @@ s_k = \begin{cases}
 The implementation is `score_seed()` in `src/benchmark.py`.
 
 ### Metrics Tracked in Weights & Biases:
-- `challenge_score`: Official total benchmark score, 0 to 1000 points (reference controllers score 371 to 873).
+- `challenge_score`: Official total benchmark score, 0 to 1000 points (reference controllers score 442 to 873).
 - `score_success`, `score_speed`, `score_precision`: The three components of `challenge_score`, averaged over the 30 seeds.
-- `success_rate_pct`: Percentage of the 30 seeds reaching $\text{RMS} < 0.03\text{ mm}$ within 20 steps.
+- `success_rate_pct`: Percentage of the 30 seeds reaching $\text{RMS} < 0.03\text{ mm}$ within 50 steps.
 - `mean_steps`: Average iterations to reach convergence.
 - `mean_final_rms_mm`: Average residual orbit error across all seeds.
 - `mean_current_norm_A`: Average cumulative corrector current norm $\sqrt{\sum I_k^2}$.
@@ -134,7 +134,7 @@ The implementation is `score_seed()` in `src/benchmark.py`.
 To preserve scientific rigor, academic honesty, and benchmark validity, all AI agents operating in this workspace must abide by the following constraints:
 
 1. **Do Not Alter Physical Constants:**
-   - Never modify `env.R`, `env.target_rms = 0.03`, `env.max_steps = 20`, or the non-linear saturation factor (`0.015`) in `AcceleratorOrbitGymEnv`.
+   - Never modify `env.R`, `env.target_rms = 0.03`, `env.max_steps = 50`, or the non-linear saturation factor (`0.015`) in `AcceleratorOrbitGymEnv`.
    - Never modify or bypass the observation noise $\boldsymbol{\epsilon} \sim \mathcal{N}(0, 0.010)$.
 2. **Preserve Standardized Evaluation Seeds:**
    - Benchmark evaluation must strictly run on `seeds = range(1, 31)`.
@@ -201,7 +201,7 @@ obs, info = env.reset(seed=42)
 print(f"Initial RMS: {info['rms']:.4f} mm")
 
 # 3. Step controller until termination
-for step in range(20):
+for step in range(env.max_steps):
     action = agent.act(obs, info)
     obs, reward, terminated, truncated, info = env.step(action)
     print(f"Step {step+1}: RMS = {info['rms']:.4f} mm, Action Norm = {np.linalg.norm(action):.3f}")
