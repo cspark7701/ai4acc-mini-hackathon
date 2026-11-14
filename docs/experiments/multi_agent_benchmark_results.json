@@ -1,492 +1,790 @@
-[
-  {
-    "agent_id": 4,
-    "agent_name": "Agent_A4_DualStageDecay",
-    "cohort": "Cohort_A_Callback",
-    "strategy": "Step callback: Dual-stage precision braking (fine control < 0.050 mm and sub-0.032 mm)",
-    "best_track": "Track 3 (Bayesian Optimization)",
-    "best_score": 1035.357305796362,
-    "best_success_rate": 100.0,
-    "best_mean_steps": 1.5666666666666667,
-    "best_mean_rms": 0.014870159390072028,
-    "best_mean_norm": 0.9293128738800684,
-    "track2_score": 203.46310588095287,
-    "track2_steps": 17.766666666666666,
-    "track2_rms": 0.08249755377570787,
-    "all_tracks": {
-      "Baseline 0 (Linear SVD)": {
-        "success_rate": 100.0,
-        "mean_steps": 5.6,
-        "mean_rms": 0.023019112211962543,
-        "mean_norm": 0.9019142071406047,
-        "mean_latency": 1.9167423248291016,
-        "score": 1013.0614687385861
+{
+  "experiment": "10-agent benchmark with live W&B submission",
+  "date": "2026-11-14",
+  "scoring": "per-seed 0-1000 (score_seed in src/benchmark.py), mean over seeds range(1,31)",
+  "wandb_project": "ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026",
+  "agents": [
+    {
+      "agent_id": 1,
+      "agent_name": "MA_A1_AdaptiveDamp",
+      "cohort": "A_Callback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 944.7,
+      "tracks": {
+        "Baseline0_LinearSVD": {
+          "wandb_run_name": "MA_A1_AdaptiveDamp_Baseline0_LinearSVD",
+          "wandb_run_id": "6smnzslz",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T12:59:50Z",
+          "challenge_score": 917.4,
+          "score_success": 400,
+          "score_speed": 290.5,
+          "score_precision": 226.9,
+          "success_rate_pct": 100,
+          "mean_steps": 1.6,
+          "mean_final_rms_mm": 0.0133,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 0.37
+        },
+        "Baseline1_SupervisedMLP": {
+          "wandb_run_name": "MA_A1_AdaptiveDamp_Baseline1_SupervisedMLP",
+          "wandb_run_id": "nwll418v",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T12:59:57Z",
+          "challenge_score": 941.8,
+          "score_success": 400,
+          "score_speed": 290.5,
+          "score_precision": 251.3,
+          "success_rate_pct": 100,
+          "mean_steps": 1.6,
+          "mean_final_rms_mm": 0.0118,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 35.05
+        },
+        "Track2_RLAgent": {
+          "wandb_run_name": "MA_A1_AdaptiveDamp_Track2_RLAgent",
+          "wandb_run_id": "0kzdtmge",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:04Z",
+          "challenge_score": 944.7,
+          "score_success": 400,
+          "score_speed": 290.5,
+          "score_precision": 254.2,
+          "success_rate_pct": 100,
+          "mean_steps": 1.6,
+          "mean_final_rms_mm": 0.0116,
+          "mean_current_norm_A": 0.94,
+          "mean_latency_ms": 5.36
+        },
+        "Track3_BayesianOpt": {
+          "wandb_run_name": "MA_A1_AdaptiveDamp_Track3_BayesianOpt",
+          "wandb_run_id": "fwepo8or",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:12Z",
+          "challenge_score": 937.9,
+          "score_success": 400,
+          "score_speed": 290.5,
+          "score_precision": 247.4,
+          "success_rate_pct": 100,
+          "mean_steps": 1.6,
+          "mean_final_rms_mm": 0.0121,
+          "mean_current_norm_A": 0.94,
+          "mean_latency_ms": 55.45
+        }
       },
-      "Baseline 1 (Supervised MLP)": {
-        "success_rate": 3.3333333333333335,
-        "mean_steps": 19.366666666666667,
-        "mean_rms": 0.04109898464133342,
-        "mean_norm": 0.9544870714346568,
-        "mean_latency": 4239.652911822001,
-        "score": 7.289926662981191
+      "summary_of_modifications": "Tracks 1-3 share one callback-driven controller. It knows the corrector currents (synced by step_callback and reset per seed by episode_callback), keeps a running-mean estimate of the static distortion P = obs - f(I), and solves f(I*) = -P by Gauss-Newton for the absolute target current. The forward model f is the analytic ORM with 0.015*I^3 saturation for Track 2, an MLP (64,64) tanh/lbfgs with alpha=1e-5 and max_iter=1500 trained on 3000 samples (test RMSE 0.0115 mm) for Track 1, and the GP posterior mean (Matern 5/2, 300 shots, kappa=0) for Track 3. When I* is more than 0.8 A away, the move is split into equal sub-kicks so the intermediate orbit stays far above 0.030 mm and never ends the episode on a low-precision landing; otherwise a gain-1 landing kick is taken. Baseline 0 is unchanged and only its gain is scheduled by callbacks: 1.0 at episode start, 1.05 when RMS > 0.15 mm, 0.95 below that.",
+      "notes": "All four W&B runs logged in a single nbconvert execution with no warnings. The RMS-based gain_near damping is wired through step_callback, but with an exact model the landing kick always comes from RMS >> 0.06 mm, so gain_near=1.0 was optimal and it never fires. The real gain came from the equal-split 'stay-off-the-boundary' rule, which lifted Track 2 from 919.5 to 944.7 by avoiding accidental 0.027-0.029 mm landings on seeds 12 and 15. The remaining cost is about 12 two-step seeds, caused by the 0.8 A per-step limit when drift exceeds 0.8 A. The perturbation's rank-2 structure (drift along R rows 0-1) was deliberately not exploited. Tuning was cut short on coordinator request because of host overload. The notebook kernel needed PYTHONPATH set to the worktree root. Before the final run, one dry-run attempt (WANDB_MODE=disabled, no key) failed on a notebook edit IndentationError, which was fixed. The W&B submission was executed only once."
+    },
+    {
+      "agent_id": 2,
+      "agent_name": "MA_A2_MomentumBraking",
+      "cohort": "A_Callback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 954.5,
+      "tracks": {
+        "Baseline0_LinearSVD": {
+          "wandb_run_name": "MA_A2_MomentumBraking_Baseline0_LinearSVD",
+          "wandb_run_id": "2pnbu0gx",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:49Z",
+          "challenge_score": 925.9,
+          "score_success": 400,
+          "score_speed": 288.9,
+          "score_precision": 237,
+          "success_rate_pct": 100,
+          "mean_steps": 1.7,
+          "mean_final_rms_mm": 0.0126,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 4.25
+        },
+        "Baseline1_SupervisedMLP": {
+          "wandb_run_name": "MA_A2_MomentumBraking_Baseline1_SupervisedMLP",
+          "wandb_run_id": "yf45tt67",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:03Z",
+          "challenge_score": 916.5,
+          "score_success": 400,
+          "score_speed": 290.5,
+          "score_precision": 225.9,
+          "success_rate_pct": 100,
+          "mean_steps": 1.6,
+          "mean_final_rms_mm": 0.0132,
+          "mean_current_norm_A": 0.94,
+          "mean_latency_ms": 261.55
+        },
+        "Track2_RLAgent": {
+          "wandb_run_name": "MA_A2_MomentumBraking_Track2_RLAgent",
+          "wandb_run_id": "2stc414z",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:09Z",
+          "challenge_score": 954.5,
+          "score_success": 400,
+          "score_speed": 290.5,
+          "score_precision": 264,
+          "success_rate_pct": 100,
+          "mean_steps": 1.6,
+          "mean_final_rms_mm": 0.011,
+          "mean_current_norm_A": 0.94,
+          "mean_latency_ms": 29.07
+        },
+        "Track3_BayesianOpt": {
+          "wandb_run_name": "MA_A2_MomentumBraking_Track3_BayesianOpt",
+          "wandb_run_id": "l5e1mcn8",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:24Z",
+          "challenge_score": 953.8,
+          "score_success": 400,
+          "score_speed": 290.5,
+          "score_precision": 263.3,
+          "success_rate_pct": 100,
+          "mean_steps": 1.6,
+          "mean_final_rms_mm": 0.0112,
+          "mean_current_norm_A": 0.94,
+          "mean_latency_ms": 309.63
+        }
       },
-      "Track 2 (RL/Adaptive Agent)": {
-        "success_rate": 23.333333333333332,
-        "mean_steps": 17.766666666666666,
-        "mean_rms": 0.08249755377570787,
-        "mean_norm": 0.804918521642685,
-        "mean_latency": 2.693359057108561,
-        "score": 203.46310588095287
+      "summary_of_modifications": "Track 2 tracks its own currents, estimates the static orbit distortion p = y - B(I)R (B = I - 0.015 I^3) averaged over the trajectory, and solves the bounded saturation-aware ORM inversion in one shot (gain 1.0). A landing guard stops short (predicted residual >= 0.05 mm) when the 0.8 A limit prevents a full fix, so the episode finishes precisely on step 2 instead of ending at 0.02-0.03 mm. Callbacks: step_callback brakes the gain x0.7 on an orbit sign flip; episode_callback banks each seed's distortion estimate and learns its principal subspace by PCA (min_bank=4, eigenvalue threshold 1e-3), then projects later estimates onto it to filter BPM noise. Baseline 0 is unchanged (gain 0.45) but driven by a MomentumBrakingGainScheduler callback (secant gain from rho=<y',y>/<y,y>, beta=0.8, gain in [0.3,1.4], model look-ahead gain selection, same landing guard). Baseline 1 and Track 3 invert the MLP (3000 samples, (64,64) tanh, adam lr 3e-3, batch 64, alpha 1e-6, 500 epochs, test RMSE 0.042 mm) and the GP (ConstantKernel*Matern(3.0, nu=2.5)+fixed WhiteKernel, 300 shots) around the present currents with the same guard and callbacks.",
+      "notes": "The first nbconvert run failed at cell 7 (IndentationError from my edit script) before any W&B run was created, so the notebook was run a second time. That second run logged all four W&B runs. The episode_callback learns across seeds in order: it uses earlier evaluation seeds' orbit estimates to filter noise on later seeds, worth about +10 pts on Track 2. That is a disclosed online-adaptation choice, not offline training. The TODO 2/3 hint comment blocks in cell 9 were replaced by the implementation; the TODO 1/2/3 headers remain. The W&B run created a local notebooks/wandb/ directory in the worktree. Following the coordinator's overload notice, the end-to-end b1/b3 checks were stopped early; earlier equivalent standalone runs gave 932/940 (noise-dependent). Nothing was committed."
+    },
+    {
+      "agent_id": 3,
+      "agent_name": "MA_A3_MetaEpisodeTuner",
+      "cohort": "A_Callback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 943.1,
+      "tracks": {
+        "Baseline0_LinearSVD": {
+          "wandb_run_name": "MA_A3_MetaEpisodeTuner_Baseline0_LinearSVD",
+          "wandb_run_id": "mm0na9h6",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:14Z",
+          "challenge_score": 906.3,
+          "score_success": 400,
+          "score_speed": 291.1,
+          "score_precision": 215.3,
+          "success_rate_pct": 100,
+          "mean_steps": 1.57,
+          "mean_final_rms_mm": 0.0142,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 1.07
+        },
+        "Baseline1_SupervisedMLP": {
+          "wandb_run_name": "MA_A3_MetaEpisodeTuner_Baseline1_SupervisedMLP",
+          "wandb_run_id": "f5adme5x",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:26Z",
+          "challenge_score": 937.1,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 245.5,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.012,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 198.98
+        },
+        "Track2_RLAgent": {
+          "wandb_run_name": "MA_A3_MetaEpisodeTuner_Track2_RLAgent",
+          "wandb_run_id": "4q1y6irh",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:34Z",
+          "challenge_score": 943.1,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 251.5,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0117,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 19.5
+        },
+        "Track3_BayesianOpt": {
+          "wandb_run_name": "MA_A3_MetaEpisodeTuner_Track3_BayesianOpt",
+          "wandb_run_id": "ezpmv5zx",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:48Z",
+          "challenge_score": 939.9,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 248.3,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0119,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 264.12
+        }
       },
-      "Track 3 (Bayesian Optimization)": {
-        "success_rate": 100.0,
-        "mean_steps": 1.5666666666666667,
-        "mean_rms": 0.014870159390072028,
-        "mean_norm": 0.9293128738800684,
-        "mean_latency": 941.4634704589844,
-        "score": 1035.357305796362
-      }
+      "summary_of_modifications": "Tracks 1-3 share a controller that uses the total corrector currents in info: it estimates the static drift as the within-episode mean of Y_t - f(I_t), then solves a bounded MAP inversion min ||d+f(I+dI)||^2/0.01^2 + (I+dI)^T P (I+dI) with dI in [-0.8,0.8] (L-BFGS-B). The episode_callback meta-tunes P between seeds as the inverse empirical covariance of solved corrector settings from past successful seeds (variance floor 1e-4, enabled after 5 seeds). Forward models: Track 2 uses the analytic physics model I R - 0.015 I^3 R with its Jacobian; Track 1 uses an MLP (64,64) tanh trained with L-BFGS (alpha 1e-5, max_iter 1500, test RMSE 0.012 mm); Track 3 uses the GP posterior mean (Matern-5/2 + fixed WhiteKernel, kappa=0) fit on 1200 points. Baseline 0's instantiation is unchanged (gain 0.45); step/episode callbacks identify the effective loop gain c from (action R, dY) pairs and set gain=1/c (clipped to [0.3,1.1], converging to ~1.01).",
+      "notes": "All four W&B runs logged on a single submission run. Tuning was cut short because the host was overloaded (load ~88 on 8 cores): the MLP sweep was stopped early, and the planned W&B-off dry run of the notebook was skipped at the coordinator's request; the final nbconvert ran with OMP/OPENBLAS/MKL threads set to 1 and PYTHONPATH set to the worktree. Latencies are inflated by the host load. The empirical-Bayes prior exploits the fact that the drift only excites a low-dimensional corrector subspace (learned online across evaluation seeds via episode_callback); about half the seeds need 2 steps because the required correction exceeds the 0.8 A per-step bound. Nothing was committed."
+    },
+    {
+      "agent_id": 4,
+      "agent_name": "MA_A4_DualStageDecay",
+      "cohort": "A_Callback",
+      "best_track": "Track3_BayesianOpt",
+      "best_score": 934.2,
+      "tracks": {
+        "Baseline0_LinearSVD": {
+          "wandb_run_name": "MA_A4_DualStageDecay_Baseline0_LinearSVD",
+          "wandb_run_id": "3mgmzg4n",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:34Z",
+          "challenge_score": 908.6,
+          "score_success": 400,
+          "score_speed": 291.1,
+          "score_precision": 217.6,
+          "success_rate_pct": 100,
+          "mean_steps": 1.57,
+          "mean_final_rms_mm": 0.0139,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 0.37
+        },
+        "Baseline1_SupervisedMLP": {
+          "wandb_run_name": "MA_A4_DualStageDecay_Baseline1_SupervisedMLP",
+          "wandb_run_id": "wpyin718",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:43Z",
+          "challenge_score": 929.7,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 238.1,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0124,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 68.74
+        },
+        "Track2_RLAgent": {
+          "wandb_run_name": "MA_A4_DualStageDecay_Track2_RLAgent",
+          "wandb_run_id": "k2ykjyq3",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:48Z",
+          "challenge_score": 928.6,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 237,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0128,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 0.51
+        },
+        "Track3_BayesianOpt": {
+          "wandb_run_name": "MA_A4_DualStageDecay_Track3_BayesianOpt",
+          "wandb_run_id": "dhit6mo6",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:02:02Z",
+          "challenge_score": 934.2,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 242.6,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0122,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 265.73
+        }
+      },
+      "summary_of_modifications": "Tracks 1-3 use one callback-driven DualStageController: step_callback adds each new BPM reading to a per-episode drift estimate p_hat = mean_t(y_t - f(I_t)) and switches the gain stage at RMS < 0.08 mm, episode_callback resets the estimate, and act() moves the absolute currents toward argmin ||p_hat + f(I)|| (cubic saturation included), clipped to +/-0.8 A. The forward model f is exact R plus cubic physics for Track 2, a tanh MLP (64,64) trained with L-BFGS (4000 samples in [-2,2] A, alpha=1e-5, max_iter=3000, test RMSE 0.0107 mm) for Track 1, and a Matern-5/2 GP (600 shots in [-1.6,1.6] A, hyperparameters fixed at offline ML-II values) for Track 3. Baseline 0 keeps its class; callbacks set its gain to 1.0. The sweep found the best coarse and fine gains were both 1.0 (0.95 and 1.03 cost 45-65 pts), so in practice the precision stage gains come from averaging the drift estimate, not from a lower gain.",
+      "notes": "18 of 30 seeds need a corrector change above 0.8 A, so they cannot finish in one step; the mean of 1.53 steps is close to the limit. Final RMS of about 0.012 mm is set by the 0.010 mm BPM noise plus the error of a single noisy 6-D drift estimate. The notebook ran with --ExecutePreprocessor.kernel_name=rl4aa26-challenge (its metadata names the 'ai4acc' kernel) and OMP/OPENBLAS/MKL_NUM_THREADS=1, as the coordinator asked. The W&B submission ran once, and all four runs logged. A dry run with W&B off came first and caught a bad cell edit, which was fixed before the submission. The GP kernel hyperparameters are fixed because marginal-likelihood fitting took about 6 minutes on the overloaded host. Restricting the drift fit to the 2-D upstream-corrector subspace used by env.reset was not done, because it would exploit the hidden perturbation generator. Uncommitted change: notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb. wandb run directories were written under notebooks/wandb, which git ignores."
+    },
+    {
+      "agent_id": 5,
+      "agent_name": "MA_A5_OnlineResponseFit",
+      "cohort": "A_Callback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 945.9,
+      "tracks": {
+        "Baseline0_LinearSVD": {
+          "wandb_run_name": "MA_A5_OnlineResponseFit_Baseline0_LinearSVD",
+          "wandb_run_id": "s0nd3fnp",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T12:59:55Z",
+          "challenge_score": 906.3,
+          "score_success": 400,
+          "score_speed": 291.1,
+          "score_precision": 215.3,
+          "success_rate_pct": 100,
+          "mean_steps": 1.57,
+          "mean_final_rms_mm": 0.0142,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 0.88
+        },
+        "Baseline1_SupervisedMLP": {
+          "wandb_run_name": "MA_A5_OnlineResponseFit_Baseline1_SupervisedMLP",
+          "wandb_run_id": "wg8twfsa",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:09Z",
+          "challenge_score": 925.4,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 233.9,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0128,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 271.92
+        },
+        "Track2_RLAgent": {
+          "wandb_run_name": "MA_A5_OnlineResponseFit_Track2_RLAgent",
+          "wandb_run_id": "hqrs9sw5",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:25Z",
+          "challenge_score": 945.9,
+          "score_success": 400,
+          "score_speed": 290.5,
+          "score_precision": 255.4,
+          "success_rate_pct": 100,
+          "mean_steps": 1.6,
+          "mean_final_rms_mm": 0.0117,
+          "mean_current_norm_A": 0.94,
+          "mean_latency_ms": 7.93
+        },
+        "Track3_BayesianOpt": {
+          "wandb_run_name": "MA_A5_OnlineResponseFit_Track3_BayesianOpt",
+          "wandb_run_id": "848lja0p",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:47Z",
+          "challenge_score": 926.2,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 234.6,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0128,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 558.93
+        }
+      },
+      "summary_of_modifications": "Track 2 works in corrector-field space B(I)=I-0.015I^3 using info['currents'], inverting the cubic exactly with Newton, scaling (not clipping) kicks to the 0.8 A bound. A step_callback fits per-corrector response gains by RLS (P0=0.01, noise var 2*sigma^2, only correctors with |dB|>0.15 A to avoid closed-loop noise bias), and an episode_callback stores each episode's converged field as a drift estimate whose covariance (after 5 episodes, floor 3e-6) gives a MAP/Tikhonov prior that cuts BPM-noise projection (precision 242->255 pts). Baseline 0 is unchanged but a step_callback fits the scalar ORM response by RLS and sets gain=1/c (705->906); Baseline 1 / Track 3 invert MLP ((64,) tanh, lbfgs, alpha 1e-6, 3000 samples in +/-2 A, test RMSE 0.0103 mm) and GP (DotProduct+Matern-5/2, 400 shots, RMSE 0.0143 mm) surrogates around the present current state with +/-0.8 A bounds, Jacobian warm start, and an RLS response-scale callback.",
+      "notes": "All four W&B runs logged on the single notebook execution (no rerun). A harmless ZMQ 'Address already in use' heartbeat traceback appeared in nbconvert stderr (machine overloaded); execution completed with exit 0. The online gain fit converges to ~1.0 because the env model is exact, so most of the callback gain comes from the learned disturbance prior (Track 2) and the online gain adaptation (Baseline 0). Seeds 1-5 run without the prior. 12/30 seeds need 2 steps because the drift exceeds the 0.8 A per-step bound. Only the participant notebook is modified in the worktree (W&B run dirs under notebooks/wandb are git-ignored); nothing committed."
+    },
+    {
+      "agent_id": 6,
+      "agent_name": "MA_B6_AggressiveGain",
+      "cohort": "B_NoCallback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 955,
+      "tracks": {
+        "Baseline0_LinearSVD": {
+          "wandb_run_name": "MA_B6_AggressiveGain_Baseline0_LinearSVD",
+          "wandb_run_id": "jorq4ifi",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T12:59:09Z",
+          "challenge_score": 705.3,
+          "score_success": 400,
+          "score_speed": 227.4,
+          "score_precision": 78,
+          "success_rate_pct": 100,
+          "mean_steps": 5.6,
+          "mean_final_rms_mm": 0.023,
+          "mean_current_norm_A": 0.9,
+          "mean_latency_ms": 2.79
+        },
+        "Baseline1_SupervisedMLP": {
+          "wandb_run_name": "MA_B6_AggressiveGain_Baseline1_SupervisedMLP",
+          "wandb_run_id": "0advbvby",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T12:59:42Z",
+          "challenge_score": 906.3,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 214.7,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0142,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 859.45
+        },
+        "Track2_RLAgent": {
+          "wandb_run_name": "MA_B6_AggressiveGain_Track2_RLAgent",
+          "wandb_run_id": "rts9v4k3",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:02Z",
+          "challenge_score": 955,
+          "score_success": 400,
+          "score_speed": 291.1,
+          "score_precision": 264,
+          "success_rate_pct": 100,
+          "mean_steps": 1.57,
+          "mean_final_rms_mm": 0.011,
+          "mean_current_norm_A": 0.94,
+          "mean_latency_ms": 3.05
+        },
+        "Track3_BayesianOpt": {
+          "wandb_run_name": "MA_B6_AggressiveGain_Track3_BayesianOpt",
+          "wandb_run_id": "9q273ffm",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:45Z",
+          "challenge_score": 954.2,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 262.6,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.011,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 1229.76
+        }
+      },
+      "summary_of_modifications": "Track 2: I swept the gain from 0.45 to 1.05 with damping gamma in {0, 0.03}. Full gain alpha=1.0 with no damping was best: 919 pts with plain pinv, while 0.95 or 1.05 cost 60-80 pts in landing precision. On top of that, an exact Newton cubic desaturation (uses info['currents']) and a Kalman/Wiener estimate of the disturbance in field space, using a prior covariance learned from training seeds 1000-3999, raised it to 955. Track 3: a physics-informed GP (Ridge mean on [I, I^3] features plus a Matern-5/2 residual GP with a fixed 1e-4 WhiteKernel, 300 points), with state-aware LCB (kappa=0, l2=0) on I+dI against a BPM-space Kalman orbit estimate, scored 954.2. TODO 1: the MLP gets [I, I^3] input features, tanh (32,) hidden layer, lbfgs, alpha=1e-6, max_iter=5000; test RMSE drops from 0.11 to 0.011 mm and Baseline 1 goes from 57% to 100% success (906.3).",
+      "notes": "No callbacks used. The final nbconvert run started before the coordinator's thread-limit message, so it ran without OMP/OPENBLAS=1. I let it finish rather than rerun, to avoid duplicate W&B runs. It was submitted once and all four runs logged. Evaluation was only on seeds 1-30; the priors and models were learned from seeds 1000-3999 and offline datasets. The remaining gap to 1000 is mostly structural: about 17/30 seeds have upstream drift above 0.8 A per step, so they need 2 steps, and the final measurement noise limits precision to about 0.011 mm. I ran the notebook with PYTHONPATH set to the worktree root. W&B local run dirs were written to notebooks/wandb, which git status does not show as untracked."
+    },
+    {
+      "agent_id": 7,
+      "agent_name": "MA_B7_CubicCompensator",
+      "cohort": "B_NoCallback",
+      "best_track": "Track3_BayesianOpt",
+      "best_score": 954.8,
+      "tracks": {
+        "Baseline0_LinearSVD": {
+          "wandb_run_name": "MA_B7_CubicCompensator_Baseline0_LinearSVD",
+          "wandb_run_id": "4a7fxg6w",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T12:59:32Z",
+          "challenge_score": 705.3,
+          "score_success": 400,
+          "score_speed": 227.4,
+          "score_precision": 78,
+          "success_rate_pct": 100,
+          "mean_steps": 5.6,
+          "mean_final_rms_mm": 0.023,
+          "mean_current_norm_A": 0.9,
+          "mean_latency_ms": 2.91
+        },
+        "Baseline1_SupervisedMLP": {
+          "wandb_run_name": "MA_B7_CubicCompensator_Baseline1_SupervisedMLP",
+          "wandb_run_id": "kw8mqxxq",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T12:59:45Z",
+          "challenge_score": 886.6,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 195,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0152,
+          "mean_current_norm_A": 0.92,
+          "mean_latency_ms": 240.73
+        },
+        "Track2_RLAgent": {
+          "wandb_run_name": "MA_B7_CubicCompensator_Track2_RLAgent",
+          "wandb_run_id": "kz3skvge",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T12:59:53Z",
+          "challenge_score": 954.7,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 263.2,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.011,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 59.73
+        },
+        "Track3_BayesianOpt": {
+          "wandb_run_name": "MA_B7_CubicCompensator_Track3_BayesianOpt",
+          "wandb_run_id": "f1r401c0",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:10Z",
+          "challenge_score": 954.8,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 263.2,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.011,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 392.29
+        }
+      },
+      "summary_of_modifications": "TODO 1: MLP surrogate switched to (64,64) tanh, solver lbfgs, alpha=1e-5, max_iter=500 (test RMSE 0.11 -> 0.0141 mm), lifting Baseline 1 to 100% success. TODO 2: model-predictive corrector that inverts the cubic saturation B(I)=I-0.015I^3 on the total current (from info['currents']) by bounded nonlinear least squares (|dI|<=0.8 A, |I|<=5 A), with the distortion estimate projected onto a 2-mode subspace learned by PCA of uncorrected orbits from calibration seeds 1000-1399 and averaged across steps within an episode to suppress BPM noise. TODO 3: same estimator plus a GP (fixed-amplitude 1e-4 Matern-5/2 + fixed WhiteKernel 1e-4, 300 shots) fitted on residuals Y - B(X)R over absolute currents, LCB acquisition with kappa=0, l2=0, L-BFGS-B warm-started from the analytical solution.",
+      "notes": "1-step correction is physically infeasible on 16/30 seeds due to the 0.8 A per-step bound (verified with noiseless bounded least squares), so 1.53 mean steps is the floor; remaining gap to max is precision limited by fresh BPM noise. The GP learns ~zero residual (physics model is exact), so Track 3 ~= Track 2. The distortion-subspace prior uses env.reset on non-evaluation seeds (1000-1399) as calibration data; no evaluation-seed tuning. A first nbconvert attempt was killed before any W&B logging (during MLP fit) to restart with OMP/OPENBLAS/MKL_NUM_THREADS=1 per coordinator; the single submission run logged all four runs. nbconvert used the default python3 kernelspec, which resolved to the repo's ai4acc venv python rather than the rl4aa26-challenge env. A notebooks/wandb/ run directory was left in the worktree (uncommitted). MLP max_iter capped at 500 for runtime under heavy host load (lbfgs had not converged)."
+    },
+    {
+      "agent_id": 8,
+      "agent_name": "MA_B8_DeepTwinInversion",
+      "cohort": "B_NoCallback",
+      "best_track": "Baseline1_SupervisedMLP",
+      "best_score": 920.8,
+      "tracks": {
+        "Baseline0_LinearSVD": {
+          "wandb_run_name": "MA_B8_DeepTwinInversion_Baseline0_LinearSVD",
+          "wandb_run_id": "qj6dr9yu",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T12:59:54Z",
+          "challenge_score": 705.3,
+          "score_success": 400,
+          "score_speed": 227.4,
+          "score_precision": 78,
+          "success_rate_pct": 100,
+          "mean_steps": 5.6,
+          "mean_final_rms_mm": 0.023,
+          "mean_current_norm_A": 0.9,
+          "mean_latency_ms": 2.39
+        },
+        "Baseline1_SupervisedMLP": {
+          "wandb_run_name": "MA_B8_DeepTwinInversion_Baseline1_SupervisedMLP",
+          "wandb_run_id": "3atku4ex",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:38Z",
+          "challenge_score": 920.8,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 229.2,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0131,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 614.9
+        },
+        "Track2_RLAgent": {
+          "wandb_run_name": "MA_B8_DeepTwinInversion_Track2_RLAgent",
+          "wandb_run_id": "7sqkmstp",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:45Z",
+          "challenge_score": 919.5,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 227.9,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0134,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 5.17
+        },
+        "Track3_BayesianOpt": {
+          "wandb_run_name": "MA_B8_DeepTwinInversion_Track3_BayesianOpt",
+          "wandb_run_id": "pv8sw6kn",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:19Z",
+          "challenge_score": 920.3,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 228.7,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0131,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 970.02
+        }
+      },
+      "summary_of_modifications": "TODO 1: the MLP surrogate is now TransformedTargetRegressor(StandardScaler -> MLPRegressor(64,64), tanh, solver='lbfgs', alpha=1e-5, max_iter=5000, tol=1e-12) with standardized targets, trained on the default 1500 samples in [-3,3] A; test RMSE is 0.0130 mm (reference 0.11 mm; noise floor 0.010). Baseline 1 uses a new DeepTwinInversionController that reads the applied currents from info['currents'], estimates Y0 = obs - f(I), and solves min ||Y0 + f(I+dI)||^2 + 1e-4||dI||^2 with L-BFGS-B over dI in [-0.8,0.8], warm-started from the ORM pseudo-inverse. Track 2 is a Gauss-Newton inversion of the known cubic-saturating response (I - 0.015 I^3) R at gain 1.0. Track 3 applies the same current-aware inversion to the GP mean (kappa=0), using an ARD ConstantKernel*Matern-5/2 + learned WhiteKernel fit on 300 shots.",
+      "notes": "No callbacks were used. All three improved controllers hit the physical ceiling: 100% success in 1.53 mean steps. About half the seeds have drift above 0.8 A, so the per-step clip forces a 2-step correction, and final RMS sits near the noise floor at about 0.013 mm. A test run before submission scored 922.0 with the same MLP inverter (benchmark noise differs between runs). The 4000-sample MLP and 600-shot GP experiments were stopped unfinished when the coordinator ordered a wrap-up because the machine was overloaded. The final run used OMP/OPENBLAS/MKL threads=1 and PYTHONPATH set to the worktree root, ran once, and logged all 4 W&B runs successfully. nbconvert left an untracked notebooks/wandb/ run directory in the worktree. Nothing was committed."
+    },
+    {
+      "agent_id": 9,
+      "agent_name": "MA_B9_BayesOptTuner",
+      "cohort": "B_NoCallback",
+      "best_track": "Track3_BayesianOpt",
+      "best_score": 920.9,
+      "tracks": {
+        "Baseline0_LinearSVD": {
+          "wandb_run_name": "MA_B9_BayesOptTuner_Baseline0_LinearSVD",
+          "wandb_run_id": "8b4rxn7g",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:06Z",
+          "challenge_score": 705.3,
+          "score_success": 400,
+          "score_speed": 227.4,
+          "score_precision": 78,
+          "success_rate_pct": 100,
+          "mean_steps": 5.6,
+          "mean_final_rms_mm": 0.023,
+          "mean_current_norm_A": 0.9,
+          "mean_latency_ms": 3.28
+        },
+        "Baseline1_SupervisedMLP": {
+          "wandb_run_name": "MA_B9_BayesOptTuner_Baseline1_SupervisedMLP",
+          "wandb_run_id": "cvkua2lf",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:39Z",
+          "challenge_score": 894,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 202.4,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0148,
+          "mean_current_norm_A": 0.92,
+          "mean_latency_ms": 251.02
+        },
+        "Track2_RLAgent": {
+          "wandb_run_name": "MA_B9_BayesOptTuner_Track2_RLAgent",
+          "wandb_run_id": "3ke4071o",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:00:46Z",
+          "challenge_score": 919.5,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 227.9,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.0134,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 1.2
+        },
+        "Track3_BayesianOpt": {
+          "wandb_run_name": "MA_B9_BayesOptTuner_Track3_BayesianOpt",
+          "wandb_run_id": "h7c2msgt",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:03Z",
+          "challenge_score": 920.9,
+          "score_success": 400,
+          "score_speed": 291.6,
+          "score_precision": 229.4,
+          "success_rate_pct": 100,
+          "mean_steps": 1.53,
+          "mean_final_rms_mm": 0.013,
+          "mean_current_norm_A": 0.94,
+          "mean_latency_ms": 408.28
+        }
+      },
+      "summary_of_modifications": "Track 3: the BO controller is now stateful. It tracks its cumulative corrector setting I_t, estimates the residual distortion p = obs - mu_GP(I_t), and minimises RMS(p + mu_GP(I)) + 1e-4*||I - I_t||^2 over the total setting I in the reachable box [I_t +/- 0.8 A], using L-BFGS-B with 2 starts (a desaturated ORM pseudo-inverse guess and I_t). GP: Matern(1.5, nu=2.5) + fixed WhiteKernel(1e-4), normalize_y, 300 calibration shots, kappa=0. Track 2: stateful ORM inversion with exact Newton inversion of the cubic saturation, gain 1.0. TODO 1: MLP (64,64) tanh, lbfgs, alpha 1e-5, max_iter 1000, giving a test RMSE of 0.0122 mm vs 0.11 mm for the reference; Baseline 1 now succeeds on 100% of seeds.",
+      "notes": "Track 3 scored 928.6 in standalone tuning (GP on a separate 300-shot calibration set, random_state=7) and 920.9 in the notebook (GP on X_train[:300]). Kernel/data variants hardly mattered: ARD Matern on 600 shots scored 920.6 and a cubic polynomial kernel (DotProduct**3, 300 or 1200 shots, error vs the true model 0.0013-0.0037 mm) scored about 927. The score is capped near 930 by physics: about 16/30 seeds need more than 0.8 A on one corrector, so they need 2 steps (mean 1.53), and final RMS is held near 0.012-0.013 mm by BPM noise in the single observation used for the correction. kappa>0, l2_reg and restart sweeps were cut short by the coordinator's CPU-overload instruction; the l2_reg=0 run that finished matched l2_reg=1e-4 (928.57 vs 928.57). The MLP config was not benchmarked before submission, and lbfgs reported hitting max_iter, a harmless ConvergenceWarning. The notebook ran once with OMP/OPENBLAS/MKL threads=1 and PYTHONPATH set to the worktree root, and all four W&B runs logged. Nothing committed. The wandb run directory was written to notebooks/wandb inside the worktree (git-ignored)."
+    },
+    {
+      "agent_id": 10,
+      "agent_name": "MA_B10_StaticHybrid",
+      "cohort": "B_NoCallback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 944.7,
+      "tracks": {
+        "Baseline0_LinearSVD": {
+          "wandb_run_name": "MA_B10_StaticHybrid_Baseline0_LinearSVD",
+          "wandb_run_id": "xyawcdv9",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:27Z",
+          "challenge_score": 705.3,
+          "score_success": 400,
+          "score_speed": 227.4,
+          "score_precision": 78,
+          "success_rate_pct": 100,
+          "mean_steps": 5.6,
+          "mean_final_rms_mm": 0.023,
+          "mean_current_norm_A": 0.9,
+          "mean_latency_ms": 1.22
+        },
+        "Baseline1_SupervisedMLP": {
+          "wandb_run_name": "MA_B10_StaticHybrid_Baseline1_SupervisedMLP",
+          "wandb_run_id": "w76ftdvy",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:34Z",
+          "challenge_score": 906.6,
+          "score_success": 400,
+          "score_speed": 291.1,
+          "score_precision": 215.6,
+          "success_rate_pct": 100,
+          "mean_steps": 1.57,
+          "mean_final_rms_mm": 0.014,
+          "mean_current_norm_A": 0.93,
+          "mean_latency_ms": 85.55
+        },
+        "Track2_RLAgent": {
+          "wandb_run_name": "MA_B10_StaticHybrid_Track2_RLAgent",
+          "wandb_run_id": "lw4dyxnb",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:42Z",
+          "challenge_score": 944.7,
+          "score_success": 400,
+          "score_speed": 290.5,
+          "score_precision": 254.2,
+          "success_rate_pct": 100,
+          "mean_steps": 1.6,
+          "mean_final_rms_mm": 0.0116,
+          "mean_current_norm_A": 0.94,
+          "mean_latency_ms": 1.0
+        },
+        "Track3_BayesianOpt": {
+          "wandb_run_name": "MA_B10_StaticHybrid_Track3_BayesianOpt",
+          "wandb_run_id": "iy3qpebo",
+          "wandb_state": "finished",
+          "wandb_created": "2026-11-14T13:01:53Z",
+          "challenge_score": 943.5,
+          "score_success": 400,
+          "score_speed": 290.5,
+          "score_precision": 252.9,
+          "success_rate_pct": 100,
+          "mean_steps": 1.6,
+          "mean_final_rms_mm": 0.0116,
+          "mean_current_norm_A": 0.94,
+          "mean_latency_ms": 185.41
+        }
+      },
+      "summary_of_modifications": "Track 2: the pseudo-inverse of R gives the field needed to cancel the drift, and 6 Newton iterations invert the known cubic saturation (I - 0.015 I^3) to get the exact corrector setpoint. The drift estimate (obs - B(I)R) is averaged over all readings in the episode. If the setpoint is within 0.8 A of the current one the policy jumps there in one step. Otherwise it moves along the line but parks with predicted RMS >= 0.08 mm, so it never stops on an imprecise early landing, and lands on step 2. Track 3 uses the same plan with a GP mean as the forward model: kernel C*DotProduct + C*Matern(nu=2.5) + fixed WhiteKernel(1e-4), fitted on 600 calibration shots in [-1.6, 1.6] A, with kappa=0 and the LCB minimised over the absolute setpoint by L-BFGS-B. TODO 1: the MLP is (64,64) tanh with the lbfgs solver, alpha=1e-5, max_iter=1500 and n_samples=3000; test RMSE fell from 0.109 to 0.0115 mm and B1 now succeeds on 100% of seeds instead of 57%.",
+      "notes": "No callbacks used. The first nbconvert attempt failed in the TODO 1 cell with an IndentationError from my notebook-edit script, before any W&B call. I fixed it and ran a second time, which logged all four runs exactly once. The notebook's setup cell now chdirs to the repo root when it is started from notebooks/ (PYTHONPATH=. was also passed). The host was heavily overloaded, so the MLP sweep was stopped early and the final MLP config was not benchmarked on its own before submission. All runs used OMP/OPENBLAS/MKL threads = 1. The remaining gap to 1000 is structural: 18 of 30 seeds need corrector moves over 0.8 A, so they need 2 steps. I deliberately did not exploit the hidden structure of the reset perturbation generator (drift lies in span of R rows 0-1), which could raise precision a little further."
     }
-  },
-  {
-    "agent_id": 9,
-    "agent_name": "Agent_B9_UltraConservative",
-    "cohort": "Cohort_B_NoCallback",
-    "strategy": "No callback: Low gain (0.42) with minimal damping for maximum current norm efficiency",
-    "best_track": "Track 3 (Bayesian Optimization)",
-    "best_score": 1034.3486007210824,
-    "best_success_rate": 100.0,
-    "best_mean_steps": 1.5666666666666667,
-    "best_mean_rms": 0.015251010035475096,
-    "best_mean_norm": 0.9298612852891286,
-    "track2_score": 1010.6760253377079,
-    "track2_steps": 6.433333333333334,
-    "track2_rms": 0.02367321973045667,
-    "all_tracks": {
-      "Baseline 0 (Linear SVD)": {
-        "success_rate": 100.0,
-        "mean_steps": 5.6,
-        "mean_rms": 0.023019112211962543,
-        "mean_norm": 0.9019142071406047,
-        "mean_latency": 0.8872667948404948,
-        "score": 1013.0614687385861
-      },
-      "Baseline 1 (Supervised MLP)": {
-        "success_rate": 20.0,
-        "mean_steps": 16.333333333333332,
-        "mean_rms": 0.042112203501164916,
-        "mean_norm": 0.932212378581365,
-        "mean_latency": 2671.637145678202,
-        "score": 179.71656009085333
-      },
-      "Track 2 (RL/Adaptive Agent)": {
-        "success_rate": 100.0,
-        "mean_steps": 6.433333333333334,
-        "mean_rms": 0.02367321973045667,
-        "mean_norm": 0.9012014339367549,
-        "mean_latency": 0.5016088485717773,
-        "score": 1010.6760253377079
-      },
-      "Track 3 (Bayesian Optimization)": {
-        "success_rate": 100.0,
-        "mean_steps": 1.5666666666666667,
-        "mean_rms": 0.015251010035475096,
-        "mean_norm": 0.9298612852891286,
-        "mean_latency": 130.61474959055582,
-        "score": 1034.3486007210824
-      }
+  ],
+  "ranking": [
+    {
+      "rank": 1,
+      "agent_name": "MA_B6_AggressiveGain",
+      "cohort": "B_NoCallback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 955
+    },
+    {
+      "rank": 2,
+      "agent_name": "MA_B7_CubicCompensator",
+      "cohort": "B_NoCallback",
+      "best_track": "Track3_BayesianOpt",
+      "best_score": 954.8
+    },
+    {
+      "rank": 3,
+      "agent_name": "MA_A2_MomentumBraking",
+      "cohort": "A_Callback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 954.5
+    },
+    {
+      "rank": 4,
+      "agent_name": "MA_A5_OnlineResponseFit",
+      "cohort": "A_Callback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 945.9
+    },
+    {
+      "rank": 5,
+      "agent_name": "MA_A1_AdaptiveDamp",
+      "cohort": "A_Callback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 944.7
+    },
+    {
+      "rank": 6,
+      "agent_name": "MA_B10_StaticHybrid",
+      "cohort": "B_NoCallback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 944.7
+    },
+    {
+      "rank": 7,
+      "agent_name": "MA_A3_MetaEpisodeTuner",
+      "cohort": "A_Callback",
+      "best_track": "Track2_RLAgent",
+      "best_score": 943.1
+    },
+    {
+      "rank": 8,
+      "agent_name": "MA_A4_DualStageDecay",
+      "cohort": "A_Callback",
+      "best_track": "Track3_BayesianOpt",
+      "best_score": 934.2
+    },
+    {
+      "rank": 9,
+      "agent_name": "MA_B9_BayesOptTuner",
+      "cohort": "B_NoCallback",
+      "best_track": "Track3_BayesianOpt",
+      "best_score": 920.9
+    },
+    {
+      "rank": 10,
+      "agent_name": "MA_B8_DeepTwinInversion",
+      "cohort": "B_NoCallback",
+      "best_track": "Baseline1_SupervisedMLP",
+      "best_score": 920.8
     }
-  },
-  {
-    "agent_id": 6,
-    "agent_name": "Agent_B6_AggressiveGain",
-    "cohort": "Cohort_B_NoCallback",
-    "strategy": "No callback: Fixed aggressive feedback gain (alpha=0.68) with strong damping (gamma=0.038)",
-    "best_track": "Track 3 (Bayesian Optimization)",
-    "best_score": 1033.704645531298,
-    "best_success_rate": 100.0,
-    "best_mean_steps": 1.5666666666666667,
-    "best_mean_rms": 0.015505161881446839,
-    "best_mean_norm": 0.9294057856003444,
-    "track2_score": 1020.0175269012091,
-    "track2_steps": 3.4,
-    "track2_rms": 0.020956063425789276,
-    "all_tracks": {
-      "Baseline 0 (Linear SVD)": {
-        "success_rate": 100.0,
-        "mean_steps": 5.6,
-        "mean_rms": 0.023019112211962543,
-        "mean_norm": 0.9019142071406047,
-        "mean_latency": 1.7496347427368164,
-        "score": 1013.0614687385861
-      },
-      "Baseline 1 (Supervised MLP)": {
-        "success_rate": 56.666666666666664,
-        "mean_steps": 11.933333333333334,
-        "mean_rms": 0.03136317891379197,
-        "mean_norm": 0.9319649040699005,
-        "mean_latency": 3160.112237930298,
-        "score": 560.0667840027663
-      },
-      "Track 2 (RL/Adaptive Agent)": {
-        "success_rate": 100.0,
-        "mean_steps": 3.4,
-        "mean_rms": 0.020956063425789276,
-        "mean_norm": 0.9069023261467616,
-        "mean_latency": 0.6551583607991537,
-        "score": 1020.0175269012091
-      },
-      "Track 3 (Bayesian Optimization)": {
-        "success_rate": 100.0,
-        "mean_steps": 1.5666666666666667,
-        "mean_rms": 0.015505161881446839,
-        "mean_norm": 0.9294057856003444,
-        "mean_latency": 1014.7113800048828,
-        "score": 1033.704645531298
-      }
-    }
-  },
-  {
-    "agent_id": 10,
-    "agent_name": "Agent_B10_OptimalStaticHybrid",
-    "cohort": "Cohort_B_NoCallback",
-    "strategy": "No callback: Analytical cubic kick + tuned static gain (0.60) + tuned static damping (0.030)",
-    "best_track": "Track 3 (Bayesian Optimization)",
-    "best_score": 1033.506405755645,
-    "best_success_rate": 100.0,
-    "best_mean_steps": 1.5333333333333334,
-    "best_mean_rms": 0.015612318242589632,
-    "best_mean_norm": 0.9290597905715307,
-    "track2_score": 1016.4734345455795,
-    "track2_steps": 4.033333333333333,
-    "track2_rms": 0.022771070462961993,
-    "all_tracks": {
-      "Baseline 0 (Linear SVD)": {
-        "success_rate": 100.0,
-        "mean_steps": 5.6,
-        "mean_rms": 0.023019112211962543,
-        "mean_norm": 0.9019142071406047,
-        "mean_latency": 2.644141515096029,
-        "score": 1013.0614687385861
-      },
-      "Baseline 1 (Supervised MLP)": {
-        "success_rate": 100.0,
-        "mean_steps": 4.833333333333333,
-        "mean_rms": 0.0272787906229496,
-        "mean_norm": 0.9366480549176533,
-        "mean_latency": 1309.1554880142212,
-        "score": 1010.4551472081474
-      },
-      "Track 2 (RL/Adaptive Agent)": {
-        "success_rate": 100.0,
-        "mean_steps": 4.033333333333333,
-        "mean_rms": 0.022771070462961993,
-        "mean_norm": 0.9045605957508087,
-        "mean_latency": 1.0301589965820312,
-        "score": 1016.4734345455795
-      },
-      "Track 3 (Bayesian Optimization)": {
-        "success_rate": 100.0,
-        "mean_steps": 1.5333333333333334,
-        "mean_rms": 0.015612318242589632,
-        "mean_norm": 0.9290597905715307,
-        "mean_latency": 636.1870765686035,
-        "score": 1033.506405755645
-      }
-    }
-  },
-  {
-    "agent_id": 7,
-    "agent_name": "Agent_B7_CubicCompensator",
-    "cohort": "Cohort_B_NoCallback",
-    "strategy": "No callback: Analytical cubic inverse series desaturation kick (dI + 0.015*dI^3) with moderate gain (0.54)",
-    "best_track": "Track 3 (Bayesian Optimization)",
-    "best_score": 1033.450317833933,
-    "best_success_rate": 100.0,
-    "best_mean_steps": 1.5333333333333334,
-    "best_mean_rms": 0.015636678195248048,
-    "best_mean_norm": 0.9271683007478714,
-    "track2_score": 1016.361048254795,
-    "track2_steps": 4.7,
-    "track2_rms": 0.021763253087798754,
-    "all_tracks": {
-      "Baseline 0 (Linear SVD)": {
-        "success_rate": 100.0,
-        "mean_steps": 5.6,
-        "mean_rms": 0.023019112211962543,
-        "mean_norm": 0.9019142071406047,
-        "mean_latency": 2.038113276163737,
-        "score": 1013.0614687385861
-      },
-      "Baseline 1 (Supervised MLP)": {
-        "success_rate": 70.0,
-        "mean_steps": 13.433333333333334,
-        "mean_rms": 0.03163160576174657,
-        "mean_norm": 0.9324662874142329,
-        "mean_latency": 2907.519745826721,
-        "score": 690.2367707021391
-      },
-      "Track 2 (RL/Adaptive Agent)": {
-        "success_rate": 100.0,
-        "mean_steps": 4.7,
-        "mean_rms": 0.021763253087798754,
-        "mean_norm": 0.9041797856489817,
-        "mean_latency": 2.4768670399983725,
-        "score": 1016.361048254795
-      },
-      "Track 3 (Bayesian Optimization)": {
-        "success_rate": 100.0,
-        "mean_steps": 1.5333333333333334,
-        "mean_rms": 0.015636678195248048,
-        "mean_norm": 0.9271683007478714,
-        "mean_latency": 800.7346312204996,
-        "score": 1033.450317833933
-      }
-    }
-  },
-  {
-    "agent_id": 8,
-    "agent_name": "Agent_B8_DeepTwinInversion",
-    "cohort": "Cohort_B_NoCallback",
-    "strategy": "No callback: Deep MLP digital twin (256-128-64) with dense sampling (3000 pts) and low L2 regularizer",
-    "best_track": "Track 3 (Bayesian Optimization)",
-    "best_score": 1032.949671265207,
-    "best_success_rate": 100.0,
-    "best_mean_steps": 1.5333333333333334,
-    "best_mean_rms": 0.01584513271227479,
-    "best_mean_norm": 0.9250899374485015,
-    "track2_score": 1013.0540589947768,
-    "track2_steps": 5.533333333333333,
-    "track2_rms": 0.0231463140497605,
-    "all_tracks": {
-      "Baseline 0 (Linear SVD)": {
-        "success_rate": 100.0,
-        "mean_steps": 5.6,
-        "mean_rms": 0.023019112211962543,
-        "mean_norm": 0.9019142071406047,
-        "mean_latency": 2.0975510279337564,
-        "score": 1013.0614687385861
-      },
-      "Baseline 1 (Supervised MLP)": {
-        "success_rate": 100.0,
-        "mean_steps": 2.5,
-        "mean_rms": 0.024730031844228506,
-        "mean_norm": 0.9225097328424454,
-        "mean_latency": 623.6961444218954,
-        "score": 1017.4169792158909
-      },
-      "Track 2 (RL/Adaptive Agent)": {
-        "success_rate": 100.0,
-        "mean_steps": 5.533333333333333,
-        "mean_rms": 0.0231463140497605,
-        "mean_norm": 0.9006641109784445,
-        "mean_latency": 1.2647231419881184,
-        "score": 1013.0540589947768
-      },
-      "Track 3 (Bayesian Optimization)": {
-        "success_rate": 100.0,
-        "mean_steps": 1.5333333333333334,
-        "mean_rms": 0.01584513271227479,
-        "mean_norm": 0.9250899374485015,
-        "mean_latency": 412.65564759572345,
-        "score": 1032.949671265207
-      }
-    }
-  },
-  {
-    "agent_id": 5,
-    "agent_name": "Agent_A5_EnergyAwareLimiter",
-    "cohort": "Cohort_A_Callback",
-    "strategy": "Step callback: Energy-aware current limiting callback suppressing opposing kick oscillations",
-    "best_track": "Track 3 (Bayesian Optimization)",
-    "best_score": 1032.2908766662306,
-    "best_success_rate": 100.0,
-    "best_mean_steps": 1.5333333333333334,
-    "best_mean_rms": 0.01612296119953195,
-    "best_mean_norm": 0.9282321145137151,
-    "track2_score": 342.16899064006947,
-    "track2_steps": 16.9,
-    "track2_rms": 0.05452792234718799,
-    "all_tracks": {
-      "Baseline 0 (Linear SVD)": {
-        "success_rate": 100.0,
-        "mean_steps": 5.6,
-        "mean_rms": 0.023019112211962543,
-        "mean_norm": 0.9019142071406047,
-        "mean_latency": 2.3508151372273765,
-        "score": 1013.0614687385861
-      },
-      "Baseline 1 (Supervised MLP)": {
-        "success_rate": 0.0,
-        "mean_steps": 20.0,
-        "mean_rms": 0.07225376243392627,
-        "mean_norm": 0.9509125759204229,
-        "mean_latency": 4977.801863352458,
-        "score": -33.59775931791724
-      },
-      "Track 2 (RL/Adaptive Agent)": {
-        "success_rate": 36.666666666666664,
-        "mean_steps": 16.9,
-        "mean_rms": 0.05452792234718799,
-        "mean_norm": 0.8506064116954803,
-        "mean_latency": 5.181090037027995,
-        "score": 342.16899064006947
-      },
-      "Track 3 (Bayesian Optimization)": {
-        "success_rate": 100.0,
-        "mean_steps": 1.5333333333333334,
-        "mean_rms": 0.01612296119953195,
-        "mean_norm": 0.9282321145137151,
-        "mean_latency": 929.1945298512777,
-        "score": 1032.2908766662306
-      }
-    }
-  },
-  {
-    "agent_id": 1,
-    "agent_name": "Agent_A1_AdaptiveDamp",
-    "cohort": "Cohort_A_Callback",
-    "strategy": "Step callback: Terminal gain decay when RMS < 0.040 mm to stop limit-cycle overshoot",
-    "best_track": "Track 3 (Bayesian Optimization)",
-    "best_score": 1031.1224177051038,
-    "best_success_rate": 100.0,
-    "best_mean_steps": 1.5333333333333334,
-    "best_mean_rms": 0.016647579288110136,
-    "best_mean_norm": 0.9260958184798559,
-    "track2_score": 341.2417776249551,
-    "track2_steps": 16.933333333333334,
-    "track2_rms": 0.05925331593801578,
-    "all_tracks": {
-      "Baseline 0 (Linear SVD)": {
-        "success_rate": 100.0,
-        "mean_steps": 5.6,
-        "mean_rms": 0.023019112211962543,
-        "mean_norm": 0.9019142071406047,
-        "mean_latency": 1.9160032272338867,
-        "score": 1013.0614687385861
-      },
-      "Baseline 1 (Supervised MLP)": {
-        "success_rate": 56.666666666666664,
-        "mean_steps": 14.233333333333333,
-        "mean_rms": 0.032396989253660045,
-        "mean_norm": 0.9320815851291021,
-        "mean_latency": 3062.6550594965615,
-        "score": 554.8560763279913
-      },
-      "Track 2 (RL/Adaptive Agent)": {
-        "success_rate": 36.666666666666664,
-        "mean_steps": 16.933333333333334,
-        "mean_rms": 0.05925331593801578,
-        "mean_norm": 0.8421189745267232,
-        "mean_latency": 6.726034482320149,
-        "score": 341.2417776249551
-      },
-      "Track 3 (Bayesian Optimization)": {
-        "success_rate": 100.0,
-        "mean_steps": 1.5333333333333334,
-        "mean_rms": 0.016647579288110136,
-        "mean_norm": 0.9260958184798559,
-        "mean_latency": 853.353468577067,
-        "score": 1031.1224177051038
-      }
-    }
-  },
-  {
-    "agent_id": 3,
-    "agent_name": "Agent_A3_MetaEpisodeTuner",
-    "cohort": "Cohort_A_Callback",
-    "strategy": "Episode callback: Cross-seed dynamic meta-tuning of gain and damping based on prior seed latency",
-    "best_track": "Track 3 (Bayesian Optimization)",
-    "best_score": 1028.5110431329933,
-    "best_success_rate": 100.0,
-    "best_mean_steps": 1.5666666666666667,
-    "best_mean_rms": 0.017908373506118853,
-    "best_mean_norm": 0.9297518521547318,
-    "track2_score": 1014.3358318461434,
-    "track2_steps": 4.933333333333334,
-    "track2_rms": 0.023072251863777638,
-    "all_tracks": {
-      "Baseline 0 (Linear SVD)": {
-        "success_rate": 100.0,
-        "mean_steps": 5.6,
-        "mean_rms": 0.023019112211962543,
-        "mean_norm": 0.9019142071406047,
-        "mean_latency": 1.0506470998128254,
-        "score": 1013.0614687385861
-      },
-      "Baseline 1 (Supervised MLP)": {
-        "success_rate": 20.0,
-        "mean_steps": 16.333333333333332,
-        "mean_rms": 0.03841126170009375,
-        "mean_norm": 0.93294937312603,
-        "mean_latency": 3799.3375539779663,
-        "score": 181.08785353308366
-      },
-      "Track 2 (RL/Adaptive Agent)": {
-        "success_rate": 100.0,
-        "mean_steps": 4.933333333333334,
-        "mean_rms": 0.023072251863777638,
-        "mean_norm": 0.9013827264308929,
-        "mean_latency": 1.7791271209716797,
-        "score": 1014.3358318461434
-      },
-      "Track 3 (Bayesian Optimization)": {
-        "success_rate": 100.0,
-        "mean_steps": 1.5666666666666667,
-        "mean_rms": 0.017908373506118853,
-        "mean_norm": 0.9297518521547318,
-        "mean_latency": 914.6566152572632,
-        "score": 1028.5110431329933
-      }
-    }
-  },
-  {
-    "agent_id": 2,
-    "agent_name": "Agent_A2_MomentumBraking",
-    "cohort": "Cohort_A_Callback",
-    "strategy": "Step callback: High-speed distant kick (boost gain) + hard braking near boundary",
-    "best_track": "Track 3 (Bayesian Optimization)",
-    "best_score": 1027.1674795164968,
-    "best_success_rate": 100.0,
-    "best_mean_steps": 1.5333333333333334,
-    "best_mean_rms": 0.018694145480791728,
-    "best_mean_norm": 0.9307318379481634,
-    "track2_score": 1010.677251238602,
-    "track2_steps": 6.366666666666666,
-    "track2_rms": 0.02380076510210832,
-    "all_tracks": {
-      "Baseline 0 (Linear SVD)": {
-        "success_rate": 100.0,
-        "mean_steps": 5.6,
-        "mean_rms": 0.023019112211962543,
-        "mean_norm": 0.9019142071406047,
-        "mean_latency": 1.4434576034545898,
-        "score": 1013.0614687385861
-      },
-      "Baseline 1 (Supervised MLP)": {
-        "success_rate": 96.66666666666667,
-        "mean_steps": 6.5,
-        "mean_rms": 0.02701359490553538,
-        "mean_norm": 0.9371029208103816,
-        "mean_latency": 1601.8961429595947,
-        "score": 974.0034994557117
-      },
-      "Track 2 (RL/Adaptive Agent)": {
-        "success_rate": 100.0,
-        "mean_steps": 6.366666666666666,
-        "mean_rms": 0.02380076510210832,
-        "mean_norm": 0.899344527721405,
-        "mean_latency": 1.6016403834025066,
-        "score": 1010.677251238602
-      },
-      "Track 3 (Bayesian Optimization)": {
-        "success_rate": 100.0,
-        "mean_steps": 1.5333333333333334,
-        "mean_rms": 0.018694145480791728,
-        "mean_norm": 0.9307318379481634,
-        "mean_latency": 1020.6989606221517,
-        "score": 1027.1674795164968
-      }
-    }
-  }
-]
+  ]
+}

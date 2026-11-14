@@ -6,7 +6,7 @@ This document provides complete instructions for running a **10-agent autonomous
 
 ## 🎯 Experiment Mission & Division of Labor
 
-Ten autonomous agents compete simultaneously to maximize the official accelerator orbit control score across 30 evaluation seeds (`range(1, 31)`).
+Ten autonomous agents compete simultaneously to maximize the official accelerator orbit control score across 30 evaluation seeds (`range(1, 31)`). Each agent submits its final runs to the live Weights & Biases leaderboard, which also tests the participant submission path end to end.
 
 ### Division of 10 Agents:
 - **Cohort A (Agents 1 – 5): Callback-Driven Adaptive Optimization**
@@ -28,13 +28,15 @@ Ten autonomous agents compete simultaneously to maximize the official accelerato
    ```bash
    /home/cspark/Work/simulation_codes-working/miniforge3/envs/rl4aa26-challenge/bin/python
    ```
-3. **No W&B Account (Local Offline Reporting):**
-   - Sub-agents must set `USE_WANDB = False` in their notebooks or use `use_wandb=False` in benchmark calls.
-   - All telemetry and scores are calculated locally.
-4. **Preserve Ground Truth Boundaries (Strict Benchmark Integrity):**
+3. **Submit Final Runs to the W&B Leaderboard:**
+   - The final notebook run of every sub-agent submits to the live leaderboard project `ai4acc-mini-hackathon-2026` (entity `ai4acc-mini-hackathon-2026`). Keep `USE_WANDB = True`, `WANDB_PROJECT` and `WANDB_ENTITY` as preset in the notebook.
+   - Authenticate with the shared service key, passed as the `WANDB_API_KEY` environment variable on the command that runs the notebook: `WANDB_API_KEY="$(cat /home/cspark/Work/projects/ai4acc-mini-hackathon/dist/wandb.apikey)"`. Do not call `wandb.login()`, and never print the key, write it into a notebook, or commit it.
+   - **Tune offline, submit once.** All exploration and parameter sweeps run with `use_wandb=False`. Only the single final notebook execution logs to W&B, producing exactly four runs per agent (one per controller). Rerun the submission only if the first attempt logged nothing, and report the rerun.
+4. **Limit CPU Threads:** Ten agents share one host. Prefix every Python or Jupyter command with `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1`, and run at most one process at a time per agent. Without these limits NumPy and scikit-learn oversubscribe the cores (a load average near 90 was observed on 8 cores) and every run slows down severalfold.
+5. **Preserve Ground Truth Boundaries (Strict Benchmark Integrity):**
    - **Never** modify `src/environment.py` physics constants (`target_rms = 0.03`, `noise_std = 0.010`, `max_steps = 20`, or cubic saturation `0.015`).
    - Benchmark evaluation must strictly evaluate on `seeds = range(1, 31)`.
-5. **Standardized Scoring Metric:**
+6. **Standardized Scoring Metric:**
    $$\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k,\quad s_k = 400 + 300\,\frac{20-n_k}{19} + 300\,\mathrm{clip}\!\left(\frac{\ln(0.030/\text{RMS}_k)}{\ln 3},0,1\right)\ \text{(0 if seed } k \text{ fails)}$$
    Each seed scores 0 to 1000 points (`score_seed()` in `src/benchmark.py`).
 
@@ -66,10 +68,12 @@ Each sub-agent receives its dedicated workspace path:
 Each sub-agent executes the following steps autonomously within its assigned worktree:
 
 ### Step 1: Choose Identity
-Arbitrarily select a unique name (e.g., `Agent_A1_AdaptiveDamp`, `Agent_A2_OnlineKalman`, `Agent_B6_DeepSurrogate`, `Agent_B7_AggressiveGain`). Set:
+Select a unique name that starts with the prefix **`MA_`** (e.g., `MA_A1_AdaptiveDamp`, `MA_A2_OnlineKalman`, `MA_B6_DeepSurrogate`, `MA_B7_AggressiveGain`). The prefix marks the runs as test submissions, so they can be filtered or deleted on the leaderboard. Set it in the notebook's configuration cell and leave the W&B settings as preset:
 ```python
-TEAM_NAME = "Your_Chosen_Name"
-USE_WANDB = False
+TEAM_NAME = "MA_Your_Chosen_Name"
+WANDB_PROJECT = "ai4acc-mini-hackathon-2026"   # unchanged
+WANDB_ENTITY = "ai4acc-mini-hackathon-2026"    # unchanged
+USE_WANDB = True                               # unchanged
 ```
 
 ### Step 2: Implement Strategy in Participant Notebook
@@ -84,13 +88,15 @@ Target file: `notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`.
       if current_rms < 0.040:
           agent.gain *= 0.95
   ```
-  Pass the callback to the benchmark call:
+  Pass the callback to the notebook's benchmark calls, keeping their W&B arguments:
   ```python
   res_b2 = evaluate_hackathon_benchmark(
       env, b2,
       agent_name="Track2_RLAgent",
       team_name=TEAM_NAME,
-      use_wandb=False,
+      use_wandb=USE_WANDB,
+      project=WANDB_PROJECT,
+      entity=WANDB_ENTITY,
       step_callback=custom_step_callback
   )
   ```
@@ -101,49 +107,82 @@ Target file: `notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`.
   - Tuning `gain` $\in [0.50, 0.72]$ and damping function `damping = 1.0 / (1.0 + gamma * step)`.
   - Non-linear cubic desaturation: $\Delta \mathbf{I} + 0.015 \cdot \Delta \mathbf{I}^3$.
 
-### Step 3: Headless Execution & Benchmark Run
-Sub-agents execute the notebook headlessly to generate outputs:
+### Step 3: Offline Tuning
+Explore and tune with standalone scripts that call the benchmark with W&B off, so no exploratory run reaches the leaderboard:
+```python
+res = evaluate_hackathon_benchmark(env, agent, agent_name="Track2_RLAgent", use_wandb=False)
+```
+Keep the tuning budget well under an hour. Before the final submission, check that every notebook cell still compiles (an edit error discovered during the submission run wastes it).
+
+### Step 4: Final Submission to W&B
+Execute the notebook **once**, from the worktree root, with the thread limits, the repository root on `PYTHONPATH`, and the shared key:
 ```bash
+cd /home/cspark/Work/projects/ai4acc-mini-hackathon/worktrees/agent-N
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=. \
+WANDB_API_KEY="$(cat /home/cspark/Work/projects/ai4acc-mini-hackathon/dist/wandb.apikey)" \
 /home/cspark/Work/simulation_codes-working/miniforge3/envs/rl4aa26-challenge/bin/jupyter nbconvert \
   --to notebook \
   --execute notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb \
-  --output Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
+  --output Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb \
+  --ExecutePreprocessor.timeout=1800
 ```
-*(Alternatively, execute the Python verification script that runs the exact benchmark function).*
+If the notebook's kernel metadata names a kernel that is not installed, add `--ExecutePreprocessor.kernel_name=<installed kernel>`.
 
-### Step 4: Report Results to Main Agent
-Each sub-agent formats its final telemetry into a standardized JSON payload and delivers it to the main agent:
+Then check the executed notebook's output:
+- Each of the four benchmark calls must print `[W&B] Logged '<TEAM_NAME>_<agent_name>' to <run URL> (Score: X pts)`.
+- A `[W&B Warning] Logging skipped: ...` line means that run was not submitted; report its error text.
+- Confirm the API key does not appear in the saved notebook (`grep -c wandb_v1` must print 0).
+
+### Step 5: Report Results to Main Agent
+Each sub-agent writes its final telemetry, including the W&B run of every controller, as a JSON payload and delivers it to the main agent:
 
 ```json
 {
   "agent_id": 1,
-  "agent_name": "Agent_AdaptiveDamping_Alpha",
+  "agent_name": "MA_A1_AdaptiveDamp",
   "cohort": "A_Callback",
-  "track2_results": {
-    "score": 773.8,
-    "success_rate_pct": 100.0,
-    "mean_steps": 2.1,
-    "mean_final_rms_mm": 0.0215,
-    "mean_current_norm_A": 0.74,
-    "mean_latency_ms": 0.32
+  "tracks": {
+    "Track2_RLAgent": {
+      "score": 944.7,
+      "success_rate_pct": 100.0,
+      "mean_steps": 1.6,
+      "mean_final_rms_mm": 0.0116,
+      "mean_current_norm_A": 0.94,
+      "mean_latency_ms": 5.2,
+      "wandb_run_name": "MA_A1_AdaptiveDamp_Track2_RLAgent",
+      "wandb_url": "https://wandb.ai/ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026/runs/<run_id>"
+    }
   },
-  "best_track": "Track 2",
-  "summary_of_modifications": "Introduced step-wise exponential gain decay triggered when RMS < 0.045 mm."
+  "best_track": "Track2_RLAgent",
+  "best_score": 944.7,
+  "summary_of_modifications": "Running-mean distortion estimate with exact saturation inversion; split moves larger than 0.8 A.",
+  "notes": "Any problems, reruns, or use of information beyond the evaluation seeds."
 }
 ```
+`tracks` holds all four controllers (`Baseline0_LinearSVD`, `Baseline1_SupervisedMLP`, `Track2_RLAgent`, `Track3_BayesianOpt`). For a run that failed to log, replace `wandb_url` with `wandb_error`. Disclose in `notes` any technique that learns from earlier evaluation seeds or calibrates on simulator seeds outside `range(1, 31)`.
 
 ---
 
 ## 🏆 Main Agent Responsibilities: Leaderboard & Selection
 
 The Main Agent (orchestrator):
-1. **Monitors Worktrees:** Launches or messages the 10 subagents.
+1. **Monitors Worktrees:** Launches or messages the 10 subagents. Confirms beforehand that the shared key works and notes how many runs the leaderboard project already holds.
 2. **Collects Results:** Receives completion payloads from all 10 agents.
-3. **Persists Log:** Saves the full multi-agent experiment results to:
+3. **Verifies W&B Submissions:** Queries the W&B API directly, not the agents' reports, and checks that:
+   - every agent's `MA_` team has exactly four runs, all in state `finished`, with no duplicates;
+   - each run's `challenge_score`, `success_rate_pct`, `mean_steps` and `mean_final_rms_mm` match the agent's payload.
+   ```python
+   import wandb  # run with WANDB_API_KEY set to the shared key
+   runs = wandb.Api().runs("ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026")
+   ma = [r for r in runs if str(r.config.get("team", "")).startswith("MA_")]
+   ```
+4. **Persists Log:** Saves the full multi-agent experiment results, using the W&B-recorded values and run IDs, to:
    `docs/experiments/multi_agent_benchmark_results.json`
-4. **Calculates Official Rankings:**
-   Sorts all 10 agents by their `challenge_score` in descending order.
-5. **Declares Winner:** Identifies the top-ranking agent (`#1 Leader`), records winning hyperparameters and techniques, and presents a comparison table between Cohort A (Callback) and Cohort B (No-Callback).
+5. **Calculates Official Rankings:**
+   Sorts all 10 agents by their best `challenge_score` in descending order.
+6. **Declares Winner:** Identifies the top-ranking agent (`#1 Leader`), records winning hyperparameters and techniques, and presents a comparison table between Cohort A (Callback) and Cohort B (No-Callback).
+7. **Reports Leaderboard Access:** Explains how to view the results at `https://wandb.ai/ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026` (Runs table, sort by `challenge_score`, group by `team`, filter `team` starting with `MA_`); see [`WANDB_LEADERBOARD_GUIDE.md`](WANDB_LEADERBOARD_GUIDE.md).
+8. **Cleans Up Test Runs:** The `MA_` runs are on the real leaderboard. Delete them before the workshop (or keep selected ones as reference rows), and stop any watcher or monitor processes the subagents left running.
 
 ---
 
