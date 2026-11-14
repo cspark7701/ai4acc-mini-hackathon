@@ -102,16 +102,30 @@ class BenchmarkController:
 AI agents evaluating controllers must run the standardized benchmark across **30 evaluation seeds** (`seeds = range(1, 31)`).
 
 ### Official Scoring Formula:
-$$\text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text{Steps}}) + \left(\frac{0.03}{\max(\overline{\text{RMS}}, 0.005)} \times 20.0\right) - (2.0 \times \overline{\|\mathbf{I}\|})$$
+$$\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k, \qquad
+s_k = \begin{cases}
+400 + 300\,\dfrac{20 - n_k}{19} + 300\,\text{clip}\!\left(\dfrac{\ln(0.030/\text{RMS}_k)}{\ln(0.030/0.010)},\,0,\,1\right) & \text{if seed } k \text{ succeeds} \\
+0 & \text{otherwise}
+\end{cases}$$
+
+- **Per-seed score $s_k$ (0 to 1000 points):** a seed that does not reach $\text{RMS} < 0.030\text{ mm}$ within 20 steps scores 0. A successful seed earns:
+  - **Success (400 pts):** for reaching the target at all.
+  - **Speed (up to 300 pts):** full points when converging in 1 step ($n_k = 1$), falling linearly to 0 at the 20-step budget.
+  - **Precision (up to 300 pts):** 0 at the $0.030\text{ mm}$ target, rising on a log scale to full points at the $0.010\text{ mm}$ sensor noise floor. Each factor of improvement in residual orbit counts equally; $0.017\text{ mm}$ earns about half.
+- **Score:** the mean of $s_k$ over the 30 seeds, from 0 to 1000. Failures cost the most, so robustness comes first; among robust controllers, speed and landing precision separate the ranks.
+- **Current norm** $\overline{\|\mathbf{I}\|}$ is still reported but not scored: it is set mainly by the size of the initial distortion and varies by only a few percent between controllers.
+
+The implementation is `score_seed()` in `src/benchmark.py`.
 
 ### Metrics Tracked in Weights & Biases:
-- `challenge_score`: Official total benchmark score (target: $> 1000$ points).
+- `challenge_score`: Official total benchmark score, 0 to 1000 points (reference controllers score 371 to 873).
+- `score_success`, `score_speed`, `score_precision`: The three components of `challenge_score`, averaged over the 30 seeds.
 - `success_rate_pct`: Percentage of the 30 seeds reaching $\text{RMS} < 0.03\text{ mm}$ within 20 steps.
 - `mean_steps`: Average iterations to reach convergence.
 - `mean_final_rms_mm`: Average residual orbit error across all seeds.
 - `mean_current_norm_A`: Average cumulative corrector current norm $\sqrt{\sum I_k^2}$.
 - `mean_latency_ms`: Mean policy compute execution time per seed in milliseconds.
-- `seed_breakdown_table`: Detailed table recording each seed's initial RMS, final RMS, step count, success flag, and final current norm.
+- `seed_breakdown_table`: Detailed table recording each seed's initial RMS, final RMS, step count, success flag, final current norm, latency, and per-seed score.
 
 ---
 

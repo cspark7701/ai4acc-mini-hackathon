@@ -110,7 +110,8 @@ Every benchmark run records these summary metrics:
 
 | Metric | Meaning |
 | --- | --- |
-| `challenge_score` | Official total benchmark score |
+| `challenge_score` | Official total benchmark score, 0 to 1000 points |
+| `score_success`, `score_speed`, `score_precision` | The three parts of `challenge_score` |
 | `success_rate_pct` | Percentage of the 30 seeds reaching RMS < 0.03 mm |
 | `mean_steps` | Average steps to convergence |
 | `mean_final_rms_mm` | Average residual orbit error |

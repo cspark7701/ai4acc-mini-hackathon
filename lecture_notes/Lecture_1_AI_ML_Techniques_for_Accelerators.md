@@ -519,23 +519,31 @@ Participants solve the beam alignment challenge by competing in one or more para
 To prevent evaluation bias or seed cherry-picking, all controllers are evaluated over **30 standardized evaluation seeds** (`seeds = range(1, 31)`), spanning a wide spectrum of initial misalignments ($0.4\text{ mm} \le \text{RMS}_0 \le 1.1\text{ mm}$).
 
 ### 5.4 The Official Hackathon Scoring Formula
-$$\text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text{Steps}}) + \left(\frac{0.03}{\max(\overline{\text{RMS}}, 0.005)} \times 20.0\right) - (2.0 \times \overline{\|\mathbf{I}\|})$$
+Each of the 30 seeds is scored from 0 to 1000 points, and the official score is the mean:
+
+$$\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k, \qquad
+s_k = \begin{cases}
+400 + 300\,\dfrac{20 - n_k}{19} + 300\,\text{clip}\!\left(\dfrac{\ln(0.030/\text{RMS}_k)}{\ln(0.030/0.010)},\,0,\,1\right) & \text{if seed } k \text{ succeeds} \\
+0 & \text{otherwise}
+\end{cases}$$
 
 #### Scoring Components Breakdown:
-1. **Success Rate ($10.0 \times \%$):** Up to **1,000.0 points** for $100\%$ convergence across all 30 seeds.
-2. **Speed Penalty ($-2.0 \times \overline{\text{Steps}}$):** Penalizes sluggish policies. Converging in 1.5 steps incurs only $-3.0$ points, while taking 10 steps costs $-20.0$ points.
-3. **Sub-Micron Precision Bonus ($\frac{0.03}{\text{RMS}} \times 20.0$):** Rewards sub-$30\ \mu\text{m}$ alignment (reaching $0.015\text{ mm}$ yields $+40.0$ points).
-4. **Current Economy Penalty ($-2.0 \times \overline{\|\mathbf{I}\|}$):** Penalizes excessive corrector current norms, protecting power supplies and preventing magnet saturation.
+- **Per-seed score $s_k$ (0 to 1000 points):** a seed that does not reach $\text{RMS} < 0.030\text{ mm}$ within 20 steps scores 0. A successful seed earns:
+  - **Success (400 pts):** for reaching the target at all.
+  - **Speed (up to 300 pts):** full points when converging in 1 step ($n_k = 1$), falling linearly to 0 at the 20-step budget.
+  - **Precision (up to 300 pts):** 0 at the $0.030\text{ mm}$ target, rising on a log scale to full points at the $0.010\text{ mm}$ sensor noise floor. Each factor of improvement in residual orbit counts equally; $0.017\text{ mm}$ earns about half.
+- **Score:** the mean of $s_k$ over the 30 seeds, from 0 to 1000. Failures cost the most, so robustness comes first; among robust controllers, speed and landing precision separate the ranks.
+- **Current norm** $\overline{\|\mathbf{I}\|}$ is still reported but not scored: it is set mainly by the size of the initial distortion and varies by only a few percent between controllers.
 
 ### 5.5 Reference Benchmark Results
 Across the 30 standardized seeds, our four competitor implementations produce:
 
-| Rank | Controller Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Total Score |
+| Rank | Controller / Agent Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Total Score |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| 🥇 | **Track 3: Bayesian Optimization Controller** | **100.0%** | **1.5 steps** | $\mathbf{0.0149\text{ mm}}$ | $\mathbf{0.93\text{ A}}$ | **1,035.4 pts** |
-| 🥈 | **Baseline 1: Supervised MLP Inversion** | **100.0%** | 2.3 steps | $0.0257\text{ mm}$ | $1.21\text{ A}$ | **1,016.8 pts** |
-| 🥉 | **Baseline 0: Classical Linear SVD** | **100.0%** | 5.6 steps | **$0.0230\text{ mm}$** | **$1.16\text{ A}$** | **1,013.1 pts** |
-| 4 | **Track 2: Closed-Loop RL Agent** | **100.0%** | 6.1 steps | $0.0239\text{ mm}$ | $1.18\text{ A}$ | **1,011.1 pts** |
+| 🥇 | **Track 3: Bayesian Optimization Controller** | 100.0% | 1.5 steps | 0.0160 mm | 0.93 A | **873.2 pts** |
+| 🥈 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | 0.0230 mm | 0.90 A | **705.3 pts** |
+| 🥉 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 0.90 A | **686.9 pts** |
+| 4 | **Baseline 1: Supervised MLP Surrogate Inversion** | 56.7% | 12.1 steps | 0.0317 mm | 0.95 A | **371.0 pts** |
 
 ---
 

@@ -204,7 +204,7 @@ See **[`docs/WANDB_LEADERBOARD_GUIDE.md`](docs/WANDB_LEADERBOARD_GUIDE.md)** for
    TEAM_NAME = "Team_01"                         # Your unique hackathon team name
    ```
 4. **Logged Telemetry:**
-   - Summary scalar metrics: `challenge_score`, `success_rate_pct`, `mean_steps`, `mean_final_rms_mm`, `mean_current_norm_A`, `mean_latency_ms`.
+   - Summary scalar metrics: `challenge_score` (0–1000) and its parts `score_success`, `score_speed`, `score_precision`, plus `success_rate_pct`, `mean_steps`, `mean_final_rms_mm`, `mean_current_norm_A`, `mean_latency_ms`.
    - Artifact table: `seed_breakdown_table` tracking individual seed outcomes across 30 standardized seeds.
    - Live dynamic convergence plots and dual orbit trajectory diagrams.
 
@@ -214,23 +214,31 @@ See **[`docs/WANDB_LEADERBOARD_GUIDE.md`](docs/WANDB_LEADERBOARD_GUIDE.md)** for
 
 ### Official Scoring Formula
 
-Controller performance is evaluated across **30 standardized test seeds** (`seeds=range(1, 31)`) using the official benchmark equation:
+Controller performance is evaluated across **30 standardized test seeds** (`seeds=range(1, 31)`). Each seed is scored separately and the official score is the mean:
 
-$$\text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text{Steps}}) + \left(\frac{0.03}{\max(\overline{\text{RMS}}, 0.005)} \times 20.0\right) - (2.0 \times \overline{\|\mathbf{I}\|})$$
+$$\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k, \qquad
+s_k = \begin{cases}
+400 + 300\,\dfrac{20 - n_k}{19} + 300\,\text{clip}\!\left(\dfrac{\ln(0.030/\text{RMS}_k)}{\ln(0.030/0.010)},\,0,\,1\right) & \text{if seed } k \text{ succeeds} \\
+0 & \text{otherwise}
+\end{cases}$$
 
-- **$\text{Success Rate}$**: Percentage of seeds converging to $\text{RMS} < 0.03\text{ mm}$ (0 to 100%).
-- **$\overline{\text{Steps}}$**: Mean iterations needed to converge (penalizes slow control).
-- **$\overline{\text{RMS}}$**: Final alignment quality (rewards sub-micron accuracy).
-- **$\overline{\|\mathbf{I}\|}$**: Euclidean norm of final corrector currents (penalizes magnet strain and saturation).
+- **Per-seed score $s_k$ (0 to 1000 points):** a seed that does not reach $\text{RMS} < 0.030\text{ mm}$ within 20 steps scores 0. A successful seed earns:
+  - **Success (400 pts):** for reaching the target at all.
+  - **Speed (up to 300 pts):** full points when converging in 1 step ($n_k = 1$), falling linearly to 0 at the 20-step budget.
+  - **Precision (up to 300 pts):** 0 at the $0.030\text{ mm}$ target, rising on a log scale to full points at the $0.010\text{ mm}$ sensor noise floor. Each factor of improvement in residual orbit counts equally; $0.017\text{ mm}$ earns about half.
+- **Score:** the mean of $s_k$ over the 30 seeds, from 0 to 1000. Failures cost the most, so robustness comes first; among robust controllers, speed and landing precision separate the ranks.
+- **Current norm** $\overline{\|\mathbf{I}\|}$ is still reported but not scored: it is set mainly by the size of the initial distortion and varies by only a few percent between controllers.
 
 ### Reference Benchmark Performance
 
+Measured with the current code and the Solution notebook settings:
+
 | Rank | Controller / Agent Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Official Score |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| 🥇 | **Track 3: Bayesian Optimization Controller** | **100.0%** | **1.5 steps** | $\mathbf{0.0149\text{ mm}}$ | $\mathbf{0.93\text{ A}}$ | **1,035.4 pts** |
-| 🥈 | **Baseline 1: Supervised MLP Surrogate Inversion** | 100.0% | 2.3 steps | 0.0257 mm | 1.21 A | **1,016.8 pts** |
-| 🥉 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | **0.0230 mm** | **1.16 A** | **1,013.1 pts** |
-| 4 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 1.18 A | **1,011.1 pts** |
+| 🥇 | **Track 3: Bayesian Optimization Controller** | 100.0% | 1.5 steps | 0.0160 mm | 0.93 A | **873.2 pts** |
+| 🥈 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | 0.0230 mm | 0.90 A | **705.3 pts** |
+| 🥉 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 0.90 A | **686.9 pts** |
+| 4 | **Baseline 1: Supervised MLP Surrogate Inversion** | 56.7% | 12.1 steps | 0.0317 mm | 0.95 A | **371.0 pts** |
 
 ---
 

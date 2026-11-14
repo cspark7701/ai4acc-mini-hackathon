@@ -13,6 +13,45 @@ except ImportError:
     WANDB_AVAILABLE = False
 
 
+# ------------------------------------------------------------------------------
+# Official per-seed scoring (0 to 1000 points per seed; the challenge score is
+# the mean over the 30 evaluation seeds)
+# ------------------------------------------------------------------------------
+SUCCESS_POINTS = 400.0    # Reaching RMS < target within the step budget
+SPEED_POINTS = 300.0      # Full points at 1 step, zero at the step budget
+PRECISION_POINTS = 300.0  # Zero at the target RMS, full points at the sensor noise floor
+NOISE_FLOOR_MM = 0.010    # BPM measurement noise; RMS cannot reliably go below this
+
+
+def score_seed(
+    is_success: bool,
+    steps: int,
+    final_rms: float,
+    target_rms: float = 0.03,
+    max_steps: int = 20,
+    noise_floor: float = NOISE_FLOOR_MM,
+) -> Dict[str, float]:
+    """
+    Score one evaluation episode on a 0-1000 point scale.
+
+    A failed episode scores 0. A successful one earns:
+        success   = 400
+        speed     = 300 * (max_steps - steps) / (max_steps - 1)
+        precision = 300 * clip(log(target_rms / final_rms) / log(target_rms / noise_floor), 0, 1)
+
+    Precision is measured on a log scale, so each factor of improvement in the
+    residual orbit counts equally between the 0.030 mm target and the 0.010 mm
+    sensor noise floor.
+    """
+    if not is_success:
+        return {"success": 0.0, "speed": 0.0, "precision": 0.0, "total": 0.0}
+    speed = SPEED_POINTS * float(np.clip((max_steps - steps) / (max_steps - 1), 0.0, 1.0))
+    ratio = np.log(target_rms / max(final_rms, 1e-12)) / np.log(target_rms / noise_floor)
+    precision = PRECISION_POINTS * float(np.clip(ratio, 0.0, 1.0))
+    total = SUCCESS_POINTS + speed + precision
+    return {"success": SUCCESS_POINTS, "speed": speed, "precision": precision, "total": total}
+
+
 def evaluate_hackathon_benchmark(
     env_or_agent: Any,
     agent: Optional[Any] = None,
@@ -58,6 +97,7 @@ def evaluate_hackathon_benchmark(
     final_rms_list = []
     current_norms = []
     latencies = []
+    seed_scores = []
     table_rows = []
 
     for seed in seeds:
@@ -112,7 +152,10 @@ def evaluate_hackathon_benchmark(
                 "info": info,
             }, agent)
 
-        table_rows.append([seed, initial_rms, info["rms"], step, is_succ, norm_I, elapsed_ms])
+        pts = score_seed(is_succ, step, info["rms"], target_rms=env.target_rms, max_steps=env.max_steps)
+        seed_scores.append(pts)
+
+        table_rows.append([seed, initial_rms, info["rms"], step, is_succ, norm_I, elapsed_ms, pts["total"]])
 
     success_rate = (successes / n_seeds) * 100.0
     mean_steps = total_steps / n_seeds
@@ -120,8 +163,11 @@ def evaluate_hackathon_benchmark(
     mean_norm = float(np.mean(current_norms))
     mean_latency = float(np.mean(latencies))
 
-    # Official Orbit Alignment Hackathon Scoring Formula
-    score = success_rate * 10.0 - 2.0 * mean_steps + (0.03 / max(mean_rms, 0.005)) * 20.0 - 2.0 * mean_norm
+    # Official Orbit Alignment Hackathon Score: mean per-seed points (0 to 1000)
+    score_success = float(np.mean([p["success"] for p in seed_scores]))
+    score_speed = float(np.mean([p["speed"] for p in seed_scores]))
+    score_precision = float(np.mean([p["precision"] for p in seed_scores]))
+    score = float(np.mean([p["total"] for p in seed_scores]))
 
     if use_wandb and WANDB_AVAILABLE:
         try:
@@ -147,8 +193,11 @@ def evaluate_hackathon_benchmark(
             run.summary["mean_final_rms_mm"] = float(round(mean_rms, 4))
             run.summary["mean_current_norm_A"] = float(round(mean_norm, 2))
             run.summary["mean_latency_ms"] = float(round(mean_latency, 2))
+            run.summary["score_success"] = float(round(score_success, 1))
+            run.summary["score_speed"] = float(round(score_speed, 1))
+            run.summary["score_precision"] = float(round(score_precision, 1))
 
-            wandb_cols = ["Seed", "Initial_RMS_mm", "Final_RMS_mm", "Steps", "Success", "Current_Norm_A", "Latency_ms"]
+            wandb_cols = ["Seed", "Initial_RMS_mm", "Final_RMS_mm", "Steps", "Success", "Current_Norm_A", "Latency_ms", "Seed_Score"]
             wandb_table = wandb.Table(columns=wandb_cols, data=table_rows)
             wandb.log({"seed_breakdown_table": wandb_table})
 
@@ -163,6 +212,9 @@ def evaluate_hackathon_benchmark(
         "mean_rms": mean_rms,
         "mean_norm": mean_norm,
         "mean_latency": mean_latency,
+        "score_success": score_success,
+        "score_speed": score_speed,
+        "score_precision": score_precision,
         "score": score
     }
 

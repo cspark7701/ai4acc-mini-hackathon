@@ -547,18 +547,23 @@ Participants solve the beam alignment challenge by competing in one or more para
 
 \subsection{Standardized 30-Seed Evaluation \& Multi-Objective Scoring Formula}
 To eliminate evaluation bias, all competitor policies are evaluated across \textbf{30 standardized evaluation seeds} (\texttt{range(1, 31)}).
-The official challenge score is evaluated via:
+Each seed is scored from $0$ to $1000$ points and the official challenge score is the mean:
 \begin{equation}
-    \text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text{Steps}}) + \left(\frac{0.03}{\max(\overline{\text{RMS}}, 0.005)} \times 20.0\right) - (2.0 \times \overline{\|\mathbf{I}\|})
+    \text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k, \qquad
+    s_k = \begin{cases}
+    400 + 300\,\dfrac{20 - n_k}{19} + 300\,\mathrm{clip}\!\left(\dfrac{\ln(0.030/\text{RMS}_k)}{\ln(0.030/0.010)},\,0,\,1\right) & \text{seed } k \text{ succeeds} \\
+    0 & \text{otherwise}
+    \end{cases}
 \end{equation}
 
 \noindent\textbf{Scoring Components Breakdown:}
 \begin{itemize}
-    \item \textbf{Success Rate ($10.0 \times \%$):} Up to $1,000.0\text{ points}$ for achieving $100\%$ convergence across all 30 test seeds.
-    \item \textbf{Speed Penalty ($-2.0 \times \overline{\text{Steps}}$):} Penalizes slow policies (converging in $1.5$ steps costs $-3.0\text{ pts}$, while $10$ steps costs $-20.0\text{ pts}$).
-    \item \textbf{Sub-Micron Precision Bonus ($\frac{0.03}{\text{RMS}} \times 20.0$):} Rewards sub-$30\ \mu\text{m}$ alignment (reaching $0.015\text{ mm}$ yields $+40.0\text{ pts}$).
-    \item \textbf{Current Economy Penalty ($-2.0 \times \overline{\|\mathbf{I}\|}$):} Penalizes excessive corrector current norms to protect power supplies and minimize magnetic saturation.
+    \item \textbf{Success ($400\text{ pts}$):} Awarded per seed that reaches $\text{RMS} < 0.030\text{ mm}$ within 20 steps; a failed seed scores $0$.
+    \item \textbf{Speed (up to $300\text{ pts}$):} Full points for converging in 1 step, falling linearly to $0$ at the 20-step budget.
+    \item \textbf{Precision (up to $300\text{ pts}$):} $0$ at the $0.030\text{ mm}$ target, rising on a log scale to full points at the $0.010\text{ mm}$ sensor noise floor ($0.017\text{ mm}$ earns about half).
+    \item \textbf{Current norm:} Still reported but not scored, since it is set mainly by the initial distortion and varies by only a few percent between controllers.
 \end{itemize}
+The official score is the mean over the 30 seeds, from $0$ to $1000$ points.
 
 \subsection{Reference Benchmark Results}
 Official baseline and challenge policy performance across the 30 standardized evaluation seeds is summarized in Table~\ref{tab:leaderboard}.
@@ -570,10 +575,10 @@ Official baseline and challenge policy performance across the 30 standardized ev
 \toprule
 \textbf{Rank} & \textbf{Controller Paradigm} & \textbf{Success Rate} & \textbf{Mean Steps} & \textbf{Final RMS} & \textbf{Current Norm} & \textbf{Official Score} \\
 \midrule
-\textbf{\#1} & Track 3: Bayesian Optimization Controller & \textbf{100.0\%} & \textbf{1.5 steps} & $\mathbf{0.0149\text{ mm}}$ & $\mathbf{0.93\text{ A}}$ & $\mathbf{1,035.4\text{ pts}}$ \\
-\textbf{\#2} & Baseline 1: Supervised MLP Inversion & 100.0\% & 2.3 steps & $0.0257\text{ mm}$ & $1.21\text{ A}$ & 1,016.8 pts \\
-\textbf{\#3} & Baseline 0: Classical Linear SVD & 100.0\% & 5.6 steps & 0.0230 mm & 1.16 A & 1,013.1 pts \\
-\textbf{\#4} & Track 2: Closed-Loop RL Policy & 100.0\% & 6.1 steps & $0.0239\text{ mm}$ & $1.18\text{ A}$ & 1,011.1 pts \\
+\textbf{\#1} & Track 3: Bayesian Optimization Controller & \textbf{100.0\%} & \textbf{1.5 steps} & $\mathbf{0.0160\text{ mm}}$ & $0.93\text{ A}$ & $\mathbf{873.2\text{ pts}}$ \\
+\textbf{\#2} & Baseline 0: Classical Linear SVD & 100.0\% & 5.6 steps & $0.0230\text{ mm}$ & $0.90\text{ A}$ & 705.3 pts \\
+\textbf{\#3} & Track 2: Closed-Loop RL Policy & 100.0\% & 6.1 steps & $0.0239\text{ mm}$ & $0.90\text{ A}$ & 686.9 pts \\
+\textbf{\#4} & Baseline 1: Supervised MLP Inversion & 56.7\% & 12.1 steps & $0.0317\text{ mm}$ & $0.95\text{ A}$ & 371.0 pts \\
 \bottomrule
 \end{tabular}%
 }

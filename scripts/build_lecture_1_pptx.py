@@ -722,7 +722,7 @@ def create_presentation():
 
     p3 = tf18.add_paragraph()
     add_text_run(p3, "• Tested Benchmark Performance: ", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "100.0% success rate, 5.6 mean steps, 1,013.1 total score (Rank #3).", bold=True, size=Pt(14), color=PRIMARY)
+    add_text_run(p3, "100.0% success rate, 5.6 mean steps, 705.3 total score (Rank #2).", bold=True, size=Pt(14), color=PRIMARY)
 
     add_footer(s18, 18)
 
@@ -751,11 +751,11 @@ def create_presentation():
     add_text_run(p2, "• Why Supervised Inversion Outperforms Classical SVD:\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p2, "  -- Because f_θ captures the cubic saturation falloff, the optimizer automatically calculates higher current demands for saturated correctors.\n"
                      "  -- Solver: SciPy L-BFGS-B converges in 8-15 iterations per control step (~15 - 25 ms latency).\n"
-                     "  -- Result: Slashes convergence time from 5.6 steps (SVD) down to only 2.3 steps average!\n\n", size=Pt(13.5), color=DARK_GRAY)
+                     "  -- Result: Only as good as the surrogate: with the reference MLP (test RMSE 0.11 mm) it succeeds on 56.7% of seeds. Improving the surrogate is TODO 1.\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p3 = tf19.add_paragraph()
     add_text_run(p3, "• Tested Benchmark Performance: ", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "100.0% success rate, 2.3 mean steps, 1,016.8 total score (Rank #2).", bold=True, size=Pt(14), color=PRIMARY)
+    add_text_run(p3, "56.7% success rate, 12.1 mean steps, 371.0 total score (Rank #4).", bold=True, size=Pt(14), color=PRIMARY)
 
     add_footer(s19, 19)
 
@@ -931,7 +931,7 @@ def create_presentation():
     # ==========================================
     s25 = prs.slides.add_slide(blank_layout)
     add_header(s25, "Evaluation Protocol", "Standardized 30-Seed Scoring Formula",
-               "Multi-objective evaluation metric balancing convergence reliability, speed, precision, and power")
+               "Per-seed 0-1000 point score balancing convergence reliability, speed, and precision")
 
     add_card(s25, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "The Official Hackathon Scoring Formula")
     tb25 = s25.shapes.add_textbox(Inches(1.1), Inches(2.1), Inches(11.1), Inches(4.4))
@@ -943,16 +943,45 @@ def create_presentation():
 
     p_eq = tf25.add_paragraph()
     p_eq.alignment = PP_ALIGN.CENTER
-    add_text_run(p_eq, "Score = ( Success Rate × 10.0 )  -  ( 2.0 × Mean_Steps )\n"
-                       "        +  [ 0.03 / max(Mean_RMS, 0.005) ] × 20.0  -  ( 2.0 × Mean_||I|| )\n", bold=True, size=Pt(16), color=PRIMARY)
+    add_text_run(p_eq, "Score = mean over 30 seeds of s_k,  s_k = 0 if seed k fails, otherwise\n"
+                       "s_k = 400  +  300 × (20 - n_k) / 19  +  300 × clip( ln(0.030 / RMS_k) / ln 3, 0, 1 )\n", bold=True, size=Pt(16), color=PRIMARY)
 
     p2 = tf25.add_paragraph()
     p2.space_before = Pt(8)
-    add_text_run(p2, "Breakdown of the Four Scoring Components:\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p2, "1. Success Rate (+10.0 × %): Rewards 100% convergence across all 30 seeds (+1,000.0 pts).\n"
-                     "2. Speed Penalty (-2.0 × Steps): Converging in 1.5 steps costs -3.0 pts, while 10 steps costs -20.0 pts.\n"
-                     "3. Sub-Micron Precision Bonus (+[0.03 / RMS] × 20.0): Achieving 0.015 mm yields +40.0 pts bonus.\n"
-                     "4. Current Economy Penalty (-2.0 × ||I||): Penalizes excessive steerer current norms to protect hardware.", size=Pt(13.5), color=DARK_GRAY)
+    add_text_run(p2, "Each seed scores 0-1000 points; the official score is the mean over 30 seeds:", bold=True, size=Pt(15), color=NAVY)
+
+    # Scoring components table
+    score_rows = [
+        ("Success", "400", "The seed reaches RMS < 0.030 mm within 20 steps. A failed seed scores 0 overall."),
+        ("Speed", "up to 300", "300 for converging in 1 step, falling linearly to 0 at 20 steps."),
+        ("Precision", "up to 300", "0 at the 0.030 mm target, 300 at the 0.010 mm sensor noise floor, on a log scale (0.017 mm earns about 150)."),
+    ]
+    st_shape = s25.shapes.add_table(4, 3, Inches(1.1), Inches(3.35), Inches(11.1), Inches(1.9))
+    st = st_shape.table
+    for idx, w in enumerate([Inches(1.6), Inches(1.5), Inches(8.0)]):
+        st.columns[idx].width = w
+    for c_idx, h_text in enumerate(["Part", "Points", "How it is earned"]):
+        cell = st.cell(0, c_idx)
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = PRIMARY
+        p_cell = cell.text_frame.paragraphs[0]
+        p_cell.alignment = PP_ALIGN.LEFT if c_idx == 2 else PP_ALIGN.CENTER
+        add_text_run(p_cell, h_text, bold=True, size=Pt(12.5), color=WHITE)
+    for r_idx, row_vals in enumerate(score_rows, start=1):
+        for c_idx, text_val in enumerate(row_vals):
+            cell = st.cell(r_idx, c_idx)
+            cell.fill.solid()
+            cell.fill.fore_color.rgb = LIGHT_BG if r_idx % 2 == 1 else WHITE
+            cell.text_frame.word_wrap = True
+            p_cell = cell.text_frame.paragraphs[0]
+            p_cell.alignment = PP_ALIGN.LEFT if c_idx == 2 else PP_ALIGN.CENTER
+            add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(12.5), color=NAVY if c_idx == 0 else DARK_GRAY)
+
+    tb25n = s25.shapes.add_textbox(Inches(1.1), Inches(5.35), Inches(11.1), Inches(0.5))
+    tb25n.text_frame.word_wrap = True
+    p_n = tb25n.text_frame.paragraphs[0]
+    add_text_run(p_n, "Current norm: ", bold=True, size=Pt(12.5), color=DARK_GRAY)
+    add_text_run(p_n, "Reported on the leaderboard but not scored; it varies by only a few percent between controllers.", size=Pt(12.5), color=DARK_GRAY)
 
     add_footer(s25, 25)
 
@@ -993,10 +1022,10 @@ def create_presentation():
         add_text_run(p_cell, h_text, bold=True, size=Pt(11.5), color=WHITE)
 
     data_rows = [
-        ("Rank 1", "Track 3: Bayesian Optimization (BO)", "100.0%", "1.5 steps", "0.0149 mm", "0.93 A", "1,035.4 pts", GOLD),
-        ("Rank 2", "Baseline 1: Supervised Neural Inversion (MLP)", "100.0%", "2.3 steps", "0.0257 mm", "1.21 A", "1,016.8 pts", PRIMARY),
-        ("Rank 3", "Baseline 0: Classical Linear SVD", "100.0%", "5.6 steps", "0.0230 mm", "1.16 A", "1,013.1 pts", DARK_GRAY),
-        ("Rank 4", "Track 2: Closed-Loop RL Policy Agent", "100.0%", "6.1 steps", "0.0239 mm", "1.18 A", "1,011.1 pts", DARK_GRAY),
+        ("Rank 1", "Track 3: Bayesian Optimization (BO)", "100.0%", "1.5 steps", "0.0160 mm", "0.93 A", "873.2 pts", GOLD),
+        ("Rank 2", "Baseline 0: Classical Linear SVD", "100.0%", "5.6 steps", "0.0230 mm", "0.90 A", "705.3 pts", PRIMARY),
+        ("Rank 3", "Track 2: Closed-Loop RL Policy Agent", "100.0%", "6.1 steps", "0.0239 mm", "0.90 A", "686.9 pts", DARK_GRAY),
+        ("Rank 4", "Baseline 1: Supervised Neural Inversion (MLP)", "56.7%", "12.1 steps", "0.0317 mm", "0.95 A", "371.0 pts", DARK_GRAY),
     ]
 
     for r_idx, row_data in enumerate(data_rows, start=1):

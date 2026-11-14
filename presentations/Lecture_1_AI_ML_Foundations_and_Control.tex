@@ -540,7 +540,7 @@
     -- Static feedback gain: Typically $\alpha \approx 0.45$, with kicks hard clipped to $[-0.8, +0.8]\text{ A}$.\\
     -- Execution latency: $< 0.1\text{ ms}$ (instantaneous analytical matrix-vector product).\\
     -- \textbf{Vulnerability in Non-Linear Regimes:} Completely oblivious to cubic iron core saturation. When magnets operate at high currents, the true response is much weaker than linear $\mathbf{R}$ predicts, leading to over-correction, slow convergence (5.6 mean steps), and high final current demands.\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 5.6 mean steps, 1,013.1 total score (Rank \#3).}
+    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 5.6 mean steps, 705.3 total score (Rank \#2).}
   }
 
   \slidefooter{18}
@@ -562,8 +562,8 @@
     {\bfseries\color{navy}$\bullet$ Why Supervised Inversion Outperforms Classical SVD:}\\[0.3em]
     -- Because $f_{\boldsymbol{\theta}}$ captures the cubic saturation falloff, the optimizer automatically calculates higher current demands for saturated correctors.\\
     -- Solver: SciPy \texttt{L-BFGS-B} converges in 8--15 iterations per control step ($\sim 15 - 25\text{ ms}$ latency).\\
-    -- \textbf{Result:} Slashes convergence time from 5.6 steps (SVD) down to only 2.3 steps average!\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 2.3 mean steps, 1,016.8 total score (Rank \#2).}
+    -- \textbf{Result:} Only as good as the surrogate: with the reference MLP (test RMSE 0.11 mm) it succeeds on 56.7\% of seeds. Improving the surrogate is TODO 1.\\[0.8em]
+    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}56.7\% success rate, 12.1 mean steps, 371.0 total score (Rank \#4).}
   }
 
   \slidefooter{19}
@@ -695,18 +695,34 @@
 % SLIDE 25: Standardized 30-Seed Scoring Formula
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slideheader{Evaluation Protocol}{Standardized 30-Seed Scoring Formula}{Multi-objective evaluation metric balancing convergence reliability, speed, precision, and power}
+  \slideheader{Evaluation Protocol}{Standardized 30-Seed Scoring Formula}{Per-seed 0--1000 point score balancing convergence reliability, speed, and precision}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{The Official Hackathon Scoring Formula}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
     \textbf{Standardized Evaluation Suite:} \texttt{seeds = range(1, 31)} (30 evaluation seeds)\\[0.5em]
-    \centering{\fs{15}{19}\bfseries\color{primaryblue}$\text{Score} = ( \text{Success Rate} \times 10.0 )  -  ( 2.0 \times \overline{\text{Steps}} )  +  \left( \frac{0.03}{\max(\overline{\text{RMS}}, 0.005)} \times 20.0 \right)  -  ( 2.0 \times \overline{\|\mathbf{I}\|} )$}\\[0.8em]
+    \centering{\fs{14}{19}\bfseries\color{primaryblue}$\text{Score} = \frac{1}{30}\sum_{k} s_k, \quad s_k = 400 + 300\,\frac{20-n_k}{19} + 300\,\mathrm{clip}\!\left(\frac{\ln(0.030/\text{RMS}_k)}{\ln 3},0,1\right)$ \;(0 if seed $k$ fails)}\\[0.8em]
     \raggedright
-    {\bfseries\color{navy}Breakdown of the Four Scoring Components:}\\[0.4em]
-    \textbf{1. Success Rate ($+10.0 \times \%$):} Rewards 100\% convergence across all 30 seeds ($+1,000.0\text{ pts}$).\\
-    \textbf{2. Speed Penalty ($-2.0 \times \overline{\text{Steps}}$):} Converging in 1.5 steps costs $-3.0\text{ pts}$, while 10 steps costs $-20.0\text{ pts}$.\\
-    \textbf{3. Sub-Micron Precision Bonus ($+[\frac{0.03}{\text{RMS}}] \times 20.0$):} Achieving $0.015\text{ mm}$ yields $+40.0\text{ pts}$ bonus.\\
-    \textbf{4. Current Economy Penalty ($-2.0 \times \overline{\|\mathbf{I}\|}$):} Penalizes excessive steerer current norms to protect hardware.
+    {\bfseries\color{navy}Each seed scores 0--1000 points; the official score is the mean over 30 seeds:}
+  }
+
+  % Scoring components table
+  \node[anchor=north,inner sep=0pt]
+    at ([yshift=-3.35in]current page.north) {%
+      \fs{12.5}{16}\color{darkgray}%
+      \renewcommand{\arraystretch}{1.45}
+      \begin{tabular}{@{}l c >{\raggedright\arraybackslash}p{7.6in}@{}}
+        \toprule
+        \textbf{\color{primaryblue}Part} & \textbf{\color{primaryblue}Points} & \textbf{\color{primaryblue}How it is earned} \\
+        \midrule
+        \textbf{Success} & 400 & The seed reaches $\text{RMS} < 0.030\text{ mm}$ within 20 steps. A failed seed scores 0 overall. \\
+        \textbf{Speed} & up to 300 & 300 for converging in 1 step, falling linearly to 0 at 20 steps. \\
+        \textbf{Precision} & up to 300 & 0 at the 0.030 mm target, 300 at the 0.010 mm sensor noise floor, on a log scale (0.017 mm earns about 150). \\
+        \bottomrule
+      \end{tabular}
+    };
+
+  \at{1.1}{5.35}{11.1}{\fs{12.5}{16}\color{darkgray}%
+    \textbf{Current norm:} Reported on the leaderboard but not scored; it varies by only a few percent between controllers.
   }
 
   \slidefooter{25}
@@ -732,10 +748,10 @@
         \toprule
         \textbf{\color{primaryblue}Rank} & \textbf{\color{primaryblue}Controller Paradigm} & \textbf{\color{primaryblue}Success} & \textbf{\color{primaryblue}Mean Steps} & \textbf{\color{primaryblue}Final RMS} & \textbf{\color{primaryblue}Current} & \textbf{\color{primaryblue}Score} \\
         \midrule
-        \textbf{\color{gold}Rank 1} & Track 3: Bayesian Optimization (BO) & \textbf{100.0\%} & \textbf{1.5 steps} & \textbf{0.0149 mm} & \textbf{0.93 A} & \textbf{\color{gold}1,035.4 pts} \\
-        \textbf{\color{primaryblue}Rank 2} & Baseline 1: Supervised Neural Inversion (MLP) & 100.0\% & 2.3 steps & 0.0257 mm & 1.21 A & \textbf{\color{primaryblue}1,016.8 pts} \\
-        \textbf{Rank 3} & Baseline 0: Classical Linear SVD & 100.0\% & 5.6 steps & 0.0230 mm & 1.16 A & 1,013.1 pts \\
-        \textbf{Rank 4} & Track 2: Closed-Loop RL Policy Agent & 100.0\% & 6.1 steps & 0.0239 mm & 1.18 A & 1,011.1 pts \\
+        \textbf{\color{gold}Rank 1} & Track 3: Bayesian Optimization (BO) & \textbf{100.0\%} & \textbf{1.5 steps} & \textbf{0.0160 mm} & 0.93 A & \textbf{\color{gold}873.2 pts} \\
+        \textbf{\color{primaryblue}Rank 2} & Baseline 0: Classical Linear SVD & 100.0\% & 5.6 steps & 0.0230 mm & 0.90 A & \textbf{\color{primaryblue}705.3 pts} \\
+        \textbf{Rank 3} & Track 2: Closed-Loop RL Policy Agent & 100.0\% & 6.1 steps & 0.0239 mm & 0.90 A & 686.9 pts \\
+        \textbf{Rank 4} & Baseline 1: Supervised Neural Inversion (MLP) & 56.7\% & 12.1 steps & 0.0317 mm & 0.95 A & 371.0 pts \\
         \bottomrule
       \end{tabular}
     };

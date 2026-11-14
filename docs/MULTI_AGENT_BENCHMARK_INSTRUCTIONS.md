@@ -35,7 +35,8 @@ Ten autonomous agents compete simultaneously to maximize the official accelerato
    - **Never** modify `src/environment.py` physics constants (`target_rms = 0.03`, `noise_std = 0.010`, `max_steps = 20`, or cubic saturation `0.015`).
    - Benchmark evaluation must strictly evaluate on `seeds = range(1, 31)`.
 5. **Standardized Scoring Metric:**
-   $$\text{Score} = (\text{Success Rate} \times 10.0) - (2.0 \times \overline{\text{Steps}}) + \left(\frac{0.03}{\max(\overline{\text{RMS}}, 0.005)} \times 20.0\right) - (2.0 \times \overline{\|\mathbf{I}\|})$$
+   $$\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k,\quad s_k = 400 + 300\,\frac{20-n_k}{19} + 300\,\mathrm{clip}\!\left(\frac{\ln(0.030/\text{RMS}_k)}{\ln 3},0,1\right)\ \text{(0 if seed } k \text{ fails)}$$
+   Each seed scores 0 to 1000 points (`score_seed()` in `src/benchmark.py`).
 
 ---
 
@@ -119,7 +120,7 @@ Each sub-agent formats its final telemetry into a standardized JSON payload and 
   "agent_name": "Agent_AdaptiveDamping_Alpha",
   "cohort": "A_Callback",
   "track2_results": {
-    "score": 1018.4,
+    "score": 773.8,
     "success_rate_pct": 100.0,
     "mean_steps": 2.1,
     "mean_final_rms_mm": 0.0215,

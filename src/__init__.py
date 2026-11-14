@@ -9,7 +9,7 @@ from src.controllers import (
     RLOrbitChallengeAgent,
     BayesianOptimizationController
 )
-from src.benchmark import evaluate_hackathon_benchmark, print_benchmark_leaderboard
+from src.benchmark import evaluate_hackathon_benchmark, print_benchmark_leaderboard, score_seed
 from src.visualization import draw_beamline, plot_benchmark_trajectories
 
 __all__ = [
@@ -22,6 +22,7 @@ __all__ = [
     "BayesianOptimizationController",
     "evaluate_hackathon_benchmark",
     "print_benchmark_leaderboard",
+    "score_seed",
     "draw_beamline",
     "plot_benchmark_trajectories"
 ]

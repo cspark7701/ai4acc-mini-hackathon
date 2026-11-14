@@ -7,7 +7,7 @@ Validates standardized evaluation protocol, score calculation, and telemetry.
 import numpy as np
 import pytest
 from src.environment import AcceleratorOrbitGymEnv
-from src.benchmark import evaluate_hackathon_benchmark, print_benchmark_leaderboard
+from src.benchmark import evaluate_hackathon_benchmark, print_benchmark_leaderboard, score_seed
 from src.controllers import ClassicalSVDController
 
 
@@ -33,7 +33,9 @@ class TestBenchmarkHarness:
         assert "mean_latency" in res
 
         assert res["success_rate"] == 100.0
-        assert res["score"] > 950.0
+        assert 0.0 <= res["score"] <= 1000.0
+        assert res["score"] > 600.0
+        assert res["score"] == pytest.approx(res["score_success"] + res["score_speed"] + res["score_precision"])
         assert res["mean_steps"] < 20.0
         assert res["mean_rms"] < 0.030
 
@@ -80,7 +82,7 @@ class TestBenchmarkHarness:
             "success_rate": 100.0,
             "mean_steps": 3.5,
             "mean_rms": 0.0210,
-            "score": 1020.0
+            "score": 705.3
         }
         leaderboard = [("TestController", sample_metrics)]
         print_benchmark_leaderboard(leaderboard)
@@ -88,4 +90,29 @@ class TestBenchmarkHarness:
         captured = capsys.readouterr()
         assert "OFFICIAL HACKATHON BENCHMARK LEADERBOARD" in captured.out
         assert "TestController" in captured.out
-        assert "1020.0" in captured.out
+        assert "705.3" in captured.out
+
+
+class TestSeedScore:
+    def test_failed_episode_scores_zero(self):
+        pts = score_seed(False, 20, 0.05)
+        assert pts["total"] == 0.0
+
+    def test_perfect_episode_scores_1000(self):
+        pts = score_seed(True, 1, 0.010)
+        assert pts["total"] == pytest.approx(1000.0)
+
+    def test_slowest_success_at_target_scores_400(self):
+        pts = score_seed(True, 20, 0.0299)
+        assert pts["speed"] == pytest.approx(0.0)
+        assert pts["precision"] == pytest.approx(0.0, abs=1.0)
+        assert pts["total"] == pytest.approx(400.0, abs=1.0)
+
+    def test_precision_is_log_scaled_and_capped(self):
+        mid = score_seed(True, 20, 0.03 / 3 ** 0.5)
+        assert mid["precision"] == pytest.approx(150.0)
+        below_floor = score_seed(True, 20, 0.005)
+        assert below_floor["precision"] == pytest.approx(300.0)
+
+    def test_fewer_steps_score_higher(self):
+        assert score_seed(True, 2, 0.02)["total"] > score_seed(True, 8, 0.02)["total"]
