@@ -1,6 +1,5 @@
 # ==============================================================================
 # Dockerfile — AI Applications in Accelerators Tutorial & Mini-Hackathon
-# KOMAC / KAERI
 # ==============================================================================
 
 FROM python:3.12-slim

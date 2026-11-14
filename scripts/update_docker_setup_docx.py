@@ -14,7 +14,7 @@ def update_docker_guide_docx():
     # Update subtitle P1
     p1 = doc.paragraphs[1]
     if "Container:" in p1.text:
-        p1.text = "AI Applications in Accelerators Tutorial & Mini-Hackathon (KOMAC / KAERI) • Container: cspark7701/ai4acc-hackathon-2026:latest"
+        p1.text = "AI Applications in Accelerators Tutorial & Mini-Hackathon • Container: cspark7701/ai4acc-hackathon-2026:latest"
         for r in p1.runs:
             r.font.name = "Calibri"
     

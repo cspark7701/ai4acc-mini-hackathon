@@ -64,7 +64,7 @@ def build_docx():
 
     p_meta = doc.add_paragraph()
     p_meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r_meta = p_meta.add_run("2026년 11월 19일 (목) 09:00 – 17:00 | KOMAC / KAERI (한국원자력연구원 양성자과학연구단)\n")
+    r_meta = p_meta.add_run("2026년 11월 19일 (목) 09:00 – 17:00\n")
     r_meta.font.size = Pt(9.5)
     r_meta.font.color.rgb = MUTED
     r_reg = p_meta.add_run("참가 등록 (Indico): https://indico.korea.ac.kr/event/114/")
@@ -184,7 +184,7 @@ def build_docx():
     p_intro_en = doc.add_paragraph()
     p_intro_en.add_run(
         "We cordially invite researchers, engineers, postdoctoral scholars, and graduate students to the "
-        "AI Tutorial Session for Accelerators & Mini-Hackathon at KOMAC / KAERI. This intensive, full-day educational "
+        "AI Tutorial Session for Accelerators & Mini-Hackathon. This intensive, full-day educational "
         "session and competition bridges cutting-edge Artificial Intelligence (AI) and Machine Learning (ML) techniques "
         "with physical beam dynamics, closed-loop accelerator orbit correction, and agentic autonomous operational workflows.\n"
         "• Target Audience: Undergraduate and graduate students, postdocs in accelerator physics and technologies"

@@ -1,6 +1,5 @@
 # ==============================================================================
 # docker-compose.yml — AI Applications in Accelerators Tutorial & Mini-Hackathon
-# KOMAC / KAERI
 # ==============================================================================
 
 services:

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # scripts/create_bundle.sh — Package Offline Distribution Bundle for Participants
-# AI Applications in Accelerators Tutorial & Mini-Hackathon (KOMAC / KAERI)
+# AI Applications in Accelerators Tutorial & Mini-Hackathon
 # ==============================================================================
 # Usage:
 #   ./scripts/create_bundle.sh [IMAGE_TAG]
@@ -29,7 +29,7 @@ OUTPUT_DIR="${REPO_ROOT}/dist/ai4acc-hackathon"
 ZIP_FILE="${REPO_ROOT}/dist/ai4acc-hackathon.zip"
 
 echo "===================================================================="
-echo "   KOMAC / KAERI AI Accelerator Mini-Hackathon 2026"
+echo "          AI Accelerator Mini-Hackathon 2026"
 echo "   Offline Participant Bundle Creator"
 echo "===================================================================="
 echo "Target Image : ${FULL_IMAGE}"
@@ -83,7 +83,7 @@ title AI4ACC Mini-Hackathon 2026 - Launcher
 color 0A
 
 echo ======================================================================
-echo      KOMAC / KAERI AI Accelerator Mini-Hackathon 2026
+echo           AI Accelerator Mini-Hackathon 2026
 echo                Docker Environment Launcher
 echo ======================================================================
 echo.
@@ -180,7 +180,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}======================================================================${NC}"
-echo -e "${BLUE}     KOMAC / KAERI AI Accelerator Mini-Hackathon 2026${NC}"
+echo -e "${BLUE}          AI Accelerator Mini-Hackathon 2026${NC}"
 echo -e "${BLUE}               Docker Environment Launcher${NC}"
 echo -e "${BLUE}======================================================================${NC}"
 echo ""
@@ -255,7 +255,7 @@ chmod +x "${OUTPUT_DIR}/run_mac_linux.sh"
 # 8. Generate README.txt
 cat << 'EOF' > "${OUTPUT_DIR}/README.txt"
 ================================================================================
-AI Applications in Accelerators Tutorial & Mini-Hackathon (KOMAC / KAERI)
+AI Applications in Accelerators Tutorial & Mini-Hackathon
 Offline Participant Package
 ================================================================================
 

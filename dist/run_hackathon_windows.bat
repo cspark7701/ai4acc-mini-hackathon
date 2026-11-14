@@ -3,7 +3,7 @@ title AI4ACC Mini-Hackathon 2026 - Launcher
 color 0A
 
 echo ======================================================================
-echo      KOMAC / KAERI AI Accelerator Mini-Hackathon 2026
+echo           AI Accelerator Mini-Hackathon 2026
 echo                Docker Environment Launcher
 echo ======================================================================
 echo.

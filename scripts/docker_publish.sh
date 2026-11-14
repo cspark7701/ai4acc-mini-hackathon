@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # scripts/docker_publish.sh — Build, Verify & Publish Hackathon Docker Image
-# AI Applications in Accelerators Tutorial & Mini-Hackathon (KOMAC / KAERI)
+# AI Applications in Accelerators Tutorial & Mini-Hackathon
 # ==============================================================================
 # Usage:
 #   ./scripts/docker_publish.sh [DOCKERHUB_USERNAME] [TAG] [--single-arch|--multi-arch]
@@ -48,7 +48,7 @@ IMAGE_NAME="ai4acc-hackathon-2026"
 DEFAULT_TAG="latest"
 
 echo "===================================================================="
-echo "   AI Applications in Accelerators Mini-Hackathon (KOMAC / KAERI)"
+echo "   AI Applications in Accelerators Mini-Hackathon"
 echo "   Docker Image Build & Hub Publication Tool"
 echo "===================================================================="
 echo "Repository Root: ${REPO_ROOT}"

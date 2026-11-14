@@ -1,6 +1,6 @@
 # AI Applications in Accelerators: Tutorial & Mini-Hackathon
 
-Welcome to the **AI Applications in Accelerators Tutorial & Mini-Hackathon** repository. This project hosts the computational challenge, simulation environment, benchmark notebooks, and documentation for the hands-on mini-hackathon held at the **Korea Multi-purpose Accelerator Complex (KOMAC) / Korea Atomic Energy Research Institute (KAERI)**.
+Welcome to the **AI Applications in Accelerators Tutorial & Mini-Hackathon** repository. This project hosts the computational challenge, simulation environment, benchmark notebooks, and documentation for the hands-on mini-hackathon.
 
 ---
 
@@ -197,7 +197,7 @@ All evaluations automatically push telemetry and scoring to the live workshop le
 3. **Configure in Notebook:**
    ```python
    WANDB_PROJECT = "accelerator-orbit-hackathon"
-   WANDB_ENTITY = "komac-ai-tutorial"  # Assigned workshop team entity (or leave None for personal)
+   WANDB_ENTITY = None                 # Assigned workshop team entity (or leave None for personal)
    TEAM_NAME = "Team_01"               # Assigned team name
    ```
 4. **Logged Telemetry:**

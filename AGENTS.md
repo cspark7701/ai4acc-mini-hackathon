@@ -6,7 +6,7 @@ This document defines the architecture, simulation mechanics, interfaces, and op
 
 ## 🧭 Repository Mission
 
-This repository contains the simulation environment and benchmark harness for the **AI Applications in Accelerators Tutorial & Mini-Hackathon** at KOMAC / KAERI.
+This repository contains the simulation environment and benchmark harness for the **AI Applications in Accelerators Tutorial & Mini-Hackathon**.
 
 The objective for AI agents operating in this workspace is:
 1. Assist participants in understanding the beam physics, Gymnasium environment, and baseline controllers.

@@ -168,7 +168,7 @@ def create_presentation():
     add_text_run(tf_tag.paragraphs[0], "AI APPLICATIONS IN ACCELERATORS TUTORIAL & MINI-HACKATHON", bold=True, size=Pt(13.5), color=PRIMARY)
     p_tag2 = tf_tag.add_paragraph()
     p_tag2.space_before = Pt(3)
-    add_text_run(p_tag2, "Host: KOMAC / KAERI (Korea Multi-purpose Accelerator Complex)", size=Pt(11.5), color=MUTED)
+    add_text_run(p_tag2, "AI Applications in Accelerators", size=Pt(11.5), color=MUTED)
 
     # Horizontal dividing line
     line_div = s1.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1.0), Inches(2.0), Inches(11.333), Inches(0.02))
@@ -222,7 +222,7 @@ def create_presentation():
     add_text_run(p, "  -- Modern synchrotron light sources, colliders, and FELs require transverse orbit stabilization to within < 10% of beam size (sub-micron RMS tolerances).\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p2 = tf2.add_paragraph()
-    add_text_run(p2, "• High-Power Hadron Linacs (KOMAC, SNS, ESS):\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p2, "• High-Power Hadron Linacs (SNS, ESS, etc.):\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p2, "  -- Uncorrected trajectory offsets through RF cavities and quadrupoles induce non-linear space-charge forces and beam halo.\n"
                      "  -- Fractional beam loss exceeding 1 W/m (~10⁻⁵ of total beam power) causes severe structural radioactivation, prohibiting hands-on maintenance.\n\n", size=Pt(13.5), color=DARK_GRAY)
 

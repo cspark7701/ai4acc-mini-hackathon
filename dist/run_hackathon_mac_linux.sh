@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}======================================================================${NC}"
-echo -e "${BLUE}     KOMAC / KAERI AI Accelerator Mini-Hackathon 2026${NC}"
+echo -e "${BLUE}          AI Accelerator Mini-Hackathon 2026${NC}"
 echo -e "${BLUE}               Docker Environment Launcher${NC}"
 echo -e "${BLUE}======================================================================${NC}"
 echo ""

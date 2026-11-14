@@ -1,6 +1,6 @@
 # 🐳 Docker Environment Guide — AI Applications in Accelerators Mini-Hackathon
 
-This guide explains system requirements, terminal options across operating systems, and how to use, run, and publish the containerized environment for the **AI Applications in Accelerators Tutorial & Mini-Hackathon** (KOMAC / KAERI).
+This guide explains system requirements, terminal options across operating systems, and how to use, run, and publish the containerized environment for the **AI Applications in Accelerators Tutorial & Mini-Hackathon**.
 
 ---
 

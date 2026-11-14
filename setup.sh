@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # setup.sh — Dynamic Python Virtual Environment Setup & Activation Script
-# AI Applications in Accelerators Tutorial & Mini-Hackathon (KOMAC / KAERI)
+# AI Applications in Accelerators Tutorial & Mini-Hackathon
 # ==============================================================================
 
 # 1. Dynamically resolve the absolute repository root directory without hardcoding
