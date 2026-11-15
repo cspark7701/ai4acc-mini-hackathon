@@ -36,7 +36,7 @@ def draw_beamline(save_path: Optional[str] = "img/beamline.png", show: bool = Tr
     for idx, sc in enumerate(s_corr):
         is_h = (idx % 2 == 0)
         corr_color = '#F0AD4E' if is_h else '#E67E22'
-        corr_label = f"HCM{idx//2 + 1}" if is_h else f"VCM{idx//2 + 1}"
+        corr_label = f"HCM{idx // 2 + 1}" if is_h else f"VCM{idx // 2 + 1}"
         rect = patches.Rectangle((sc - 0.18, -0.35), 0.36, 0.7, facecolor=corr_color, edgecolor='black', lw=1.2, zorder=4)
         ax.add_patch(rect)
         ax.text(sc, -0.65 if idx % 2 == 1 else 0.65, corr_label, ha='center', va='center', fontsize=8, fontweight='bold', color='#B95C00')
@@ -45,7 +45,7 @@ def draw_beamline(save_path: Optional[str] = "img/beamline.png", show: bool = Tr
     for idx, sb in enumerate(s_bpm):
         diamond = patches.RegularPolygon((sb, 0), numVertices=4, radius=0.22, facecolor='#2ECC71', edgecolor='black', lw=1.2, zorder=5)
         ax.add_patch(diamond)
-        ax.text(sb, 0.38 if idx % 2 == 0 else -0.38, f"BPM{idx+1}", ha='center', va='center', fontsize=7.5, fontweight='bold', color='#196F3D')
+        ax.text(sb, 0.38 if idx % 2 == 0 else -0.38, f"BPM{idx + 1}", ha='center', va='center', fontsize=7.5, fontweight='bold', color='#196F3D')
 
     legend_elements = [
         patches.Patch(facecolor='#D9534F', edgecolor='black', label='Focusing Quadrupole (QF)'),

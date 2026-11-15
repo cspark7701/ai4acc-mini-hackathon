@@ -230,12 +230,12 @@ For detailed guidelines, refer to the included guides:
 - [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (Markdown)](lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
 - [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 17-page PDF monograph.
 - [Lecture 1 LaTeX Source](lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.tex) — LaTeX document source code.
-- [Hackathon Project Guide (Word Document)](docs/Hackathon%20Project%20Guide.docx) — Complete rules, physics derivations, and scoring breakdown.
-- [Technical Preparation Guide (Word Document)](docs/Technical%20Preparation.docx) — Detailed lecture syllabus, setup recommendations, and schedule.
-- [Mini-Hackathon Participant Instructions (Word Document)](docs/Mini-Hackathon%20Participant%20Instructions.docx) — Quick participant checklist.
+- [Hackathon Project Guide (Word Document)](<docs/Hackathon Project Guide.docx>) — Complete rules, physics derivations, and scoring breakdown.
+- [Technical Preparation Guide (Word Document)](<docs/Technical Preparation.docx>) — Detailed lecture syllabus, setup recommendations, and schedule.
+- [Mini-Hackathon Participant Instructions (Word Document)](<docs/Mini-Hackathon Participant Instructions.docx>) — Quick participant checklist.
 - [W&B Leaderboard Guide](docs/WANDB_LEADERBOARD_GUIDE.md) — Leaderboard setup for the organizer and submission steps for participants.
 - [Participant Modification Guide](docs/PARTICIPANT_MODIFICATION_GUIDE.md) — What participants may change for each controller, and the callback rules.
 - [Docker Installation Guide](docs/DOCKER_INSTALL_GUIDE.md) and [Docker Setup Guide](docs/DOCKER_SETUP_GUIDE.md) — Pre-workshop Docker installation, image download and test.
 - [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md) and [W&B Submission Test Report](docs/MULTI_AGENT_WANDB_REPORT.md) — 10-agent benchmark protocol and the verified results of its W&B run (scores from the earlier, easier distortion model).
-- [Docker Desktop Setup Guide (Word Document)](docs/Docker%20Desktop%20Setup%20Guide.docx) — Containerized deployment instructions.
+- [Docker Desktop Setup Guide (Word Document)](<docs/Docker Desktop Setup Guide.docx>) — Containerized deployment instructions.
 - [AGENTS.md](AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.
