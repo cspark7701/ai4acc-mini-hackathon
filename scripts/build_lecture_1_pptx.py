@@ -769,7 +769,7 @@ def create_presentation():
     add_text_run(p2, "• Why Supervised Inversion Outperforms Classical SVD:\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p2, "  -- Because f_θ captures the cubic saturation falloff, the optimizer automatically calculates higher current demands for saturated correctors.\n"
                      "  -- Solver: SciPy L-BFGS-B converges in 8-15 iterations per control step (~15 - 25 ms latency).\n"
-                     "  -- Result: Only as good as the surrogate: with the reference MLP (test RMSE 0.11 mm) it succeeds on 73.3% of seeds. Improving the surrogate is TODO 1.\n\n", size=Pt(13.5), color=DARK_GRAY)
+                     "  -- Result: Only as good as the surrogate: with the reference MLP (test RMSE 0.11 mm) it succeeds on 73.3% of seeds. The reference also models each kick as if the correctors started from zero; inverting around info[\"currents\"] fixes that.\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p3 = tf19.add_paragraph()
     add_text_run(p3, "• Tested Benchmark Performance: ", bold=True, size=Pt(15), color=NAVY)
@@ -804,7 +804,7 @@ def create_presentation():
                      "     - Anchors the policy in first-principles beam optics.\n"
                      "     - Guarantees immediate coarse stabilization from step 1 without needing millions of trial steps.\n\n"
                      "  2. Learned Residual Offset ( W_learned Y + b ):\n"
-                     "     - Neural network learns to predict non-linear saturation compensation.\n"
+                     "     - Trainable correction; it starts at zero in the reference agent (a damped pseudo-inverse). Learning or tuning it to compensate saturation is the Track 2 task.\n"
                      "     - Balances asymmetric horizontal (HCM) and vertical (VCM) steerer authorities dynamically.\n\n"
                      "  3. Execution Latency: < 0.4 ms (pure feedforward matrix multiply, 50× faster than iterative L-BFGS-B).", size=Pt(13.5), color=DARK_GRAY)
 

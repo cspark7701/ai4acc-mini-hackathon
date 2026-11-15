@@ -596,7 +596,7 @@
     {\bfseries\color{navy}$\bullet$ Why Supervised Inversion Outperforms Classical SVD:}\\[0.3em]
     -- Because $f_{\boldsymbol{\theta}}$ captures the cubic saturation falloff, the optimizer automatically calculates higher current demands for saturated correctors.\\
     -- Solver: SciPy \texttt{L-BFGS-B} converges in 8--15 iterations per control step ($\sim 15 - 25\text{ ms}$ latency).\\
-    -- \textbf{Result:} Only as good as the surrogate: with the reference MLP (test RMSE 0.11 mm) it succeeds on 73.3\% of seeds. Improving the surrogate is TODO 1.\\[0.8em]
+    -- \textbf{Result:} Only as good as the surrogate: with the reference MLP (test RMSE 0.11 mm) it succeeds on 73.3\% of seeds. The reference also models each kick as if the correctors started from zero; inverting around \texttt{info[\textquotedbl{}currents\textquotedbl{}]} fixes that.\\[0.8em]
     {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}73.3\% success rate, 22.2 mean steps, 441.644 total score (Rank \#4).}
   }
 
@@ -622,7 +622,7 @@
     -- Anchors the policy in first-principles beam optics.\\
     -- Guarantees immediate coarse stabilization from step 1 without needing millions of trial steps.\\[0.4em]
     \textbf{2. Learned Residual Offset ($\mathbf{W}_{\text{learned}} \mathbf{Y} + \mathbf{b}$):}\\
-    -- Neural network learns to predict non-linear saturation compensation.\\
+    -- Trainable correction; it starts at zero in the reference agent (a damped pseudo-inverse). Learning or tuning it to compensate saturation is the Track 2 task.\\
     -- Balances asymmetric horizontal (HCM) and vertical (VCM) steerer authorities dynamically.\\[0.4em]
     \textbf{3. Execution Latency:} $< 0.4\text{ ms}$ (pure feedforward matrix multiply, 50$\times$ faster than iterative \texttt{L-BFGS-B}).
   }

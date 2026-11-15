@@ -442,6 +442,7 @@ class SupervisedMLPController:
 **Why Baseline 1 Depends on the Surrogate:**
 - When $f_{\boldsymbol{\theta}}$ accurately predicts cubic soft saturation, the optimizer chooses kicks that anticipate saturation falloff; on test seed 42 it converges ($\text{RMS} < 0.03\text{ mm}$) in 2 steps, compared to 6 for classical SVD.
 - With the reference MLP settings (test RMSE about 0.11 mm) it succeeds on only 73.3% of the 30 seeds. A more accurate surrogate (e.g. a small `tanh` network trained with `lbfgs`, test RMSE about 0.011 mm) raises it to 100% success and over 900 points.
+- **Reference-controller simplification:** the reference `SupervisedMLPController` (and Track 3's `BayesianOptimizationController`) evaluates the surrogate at $f_\theta(\Delta \mathbf{I})$, i.e. as if the correctors started from zero at every step. That is exact only on the first step; inverting around the total current from `info["currents"]` removes this error.
 
 ### 4.3 Track 2: Closed-Loop RL & Physics-Informed Policy Agents
 While numerical optimization per step is powerful, iterative gradient solvers add execution latency ($\sim 15 - 30\text{ ms}$). In contrast, a direct continuous policy network executes in $< 0.5\text{ ms}$ ([Kain et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.124801)).
@@ -450,6 +451,8 @@ While numerical optimization per step is powerful, iterative gradient solvers ad
 Rather than learning control from scratch with random initialization, high-performing accelerator RL agents combine a **physics prior** with a **learned residual**:
 
 $$\Delta \mathbf{I}(t) = \gamma(t) \cdot \Big[ \underbrace{- \alpha (\mathbf{R}^T)^\dagger \mathbf{Y}}_{\text{Analytical Physics Prior}} + \underbrace{\mathbf{W}_{\text{learned}} \mathbf{Y} + \mathbf{b}}_{\text{Learned Residual Offset}} \Big]$$
+
+In the reference agent `RLOrbitChallengeAgent`, $\mathbf{W}_{\text{learned}}$ and $\mathbf{b}$ start at zero and are not trained, so it behaves as a damped pseudo-inverse controller (686.926 points). Training or tuning the residual, or replacing the prior with a saturation-aware model inversion, is the Track 2 task.
 
 #### Dynamic Step Damping
 Near the convergence boundary ($0.030\text{ mm}$), noise fluctuations $\epsilon \sim 10\ \mu\text{m}$ can cause the linear pseudo-inverse to react aggressively to noise, triggering limit cycles. We introduce dynamic harmonic damping:

@@ -468,7 +468,7 @@ class SupervisedMLPController:
         res = opt.minimize(objective, np.zeros(6), bounds=[(-5.0, 5.0)]*6, method='L-BFGS-B')
         return np.clip(res.x, -0.8, 0.8)
 \end{lstlisting}
-When the surrogate accurately anticipates non-linear saturation falloff, Baseline 1 converges in about 2 iterations (2 steps on test seed 42). With the reference MLP settings (test RMSE about $0.11\text{ mm}$) it succeeds on only 73.3\% of the 30 seeds; a more accurate surrogate (e.g.\ a small \texttt{tanh} network trained with \texttt{lbfgs}, test RMSE about $0.011\text{ mm}$) raises it to 100\% success and over 900 points.
+When the surrogate accurately anticipates non-linear saturation falloff, Baseline 1 converges in about 2 iterations (2 steps on test seed 42). With the reference MLP settings (test RMSE about $0.11\text{ mm}$) it succeeds on only 73.3\% of the 30 seeds; a more accurate surrogate (e.g.\ a small \texttt{tanh} network trained with \texttt{lbfgs}, test RMSE about $0.011\text{ mm}$) raises it to 100\% success and over 900 points. Note also that the reference controller (like Track~3's) evaluates the surrogate at $f_{\boldsymbol{\theta}}(\Delta\mathbf{I})$, as if the correctors started from zero at every step; this is exact only on the first step, and inverting around the total current from \texttt{info["currents"]} removes the error.
 
 \subsection{Track 2: Closed-Loop RL Policy with Physics Prior and Adaptive Damping}
 Model-based iterative optimization requires $15$--$30\text{ ms}$ per step. In contrast, a closed-loop policy network executes in $< 0.5\text{ ms}$~\cite{kain2020sample}.
@@ -479,7 +479,7 @@ High-performing accelerator policy agents integrate an analytical \textbf{physic
 \begin{equation}
     \gamma(t) = \frac{1.0}{1.0 + 0.03 \cdot t}
 \end{equation}
-The dynamic damping factor $\gamma(t)$ decays control authority as the beam approaches the $0.030\text{ mm}$ boundary, preventing sensor noise amplification from destabilizing the closed orbit.
+The dynamic damping factor $\gamma(t)$ decays control authority as the beam approaches the $0.030\text{ mm}$ boundary, preventing sensor noise amplification from destabilizing the closed orbit. In the reference agent, $\mathbf{W}_{\text{learned}}$ and $\mathbf{b}$ start at zero and are not trained, so it behaves as a damped pseudo-inverse controller (686.926 points); training or tuning the residual, or replacing the prior with a saturation-aware model inversion, is the Track~2 task.
 
 \subsection{Track 3: Closed-Loop Bayesian Optimization with Gaussian Processes}
 Bayesian Optimization (BO) provides sample-efficient optimization in high-dimensional non-linear systems by combining a probabilistic surrogate model with an acquisition function~\cite{roussel2023turnkey, edelen2020machine}. In our closed-loop architecture, a Gaussian Process (GP) regressor models the mapping from corrector kicks $\Delta \mathbf{I}$ to transverse orbit deviations:

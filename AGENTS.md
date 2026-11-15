@@ -84,16 +84,19 @@ class BenchmarkController:
    - Trains an `MLPRegressor` (e.g. layers `(128, 64, 32)`, ReLU activation) as a forward digital twin: $\hat{\mathbf{Y}} = f_{\theta}(\mathbf{I})$.
    - Solves a bounded optimization problem per step via SciPy `L-BFGS-B`:
      $$\min_{\Delta \mathbf{I}} \|\mathbf{Y} + f_{\theta}(\Delta \mathbf{I})\|^2 + \lambda \|\Delta \mathbf{I}\|^2$$
+   - Simplification in the reference code: $f_\theta$ is evaluated at the kick $\Delta \mathbf{I}$ as if the correctors started from zero at every step, which is exact only on the first step. Inverting around the total current from `info["currents"]` (as the Solution notebook does) removes the error.
 
 3. **Track 2 — Closed-Loop RL / Adaptive Policy Agent:**
    - Combines a physics-informed prior with learned parameter residual and adaptive damping:
      $$\Delta \mathbf{I} = \text{damping}(t) \cdot \left[ - \alpha \cdot (\mathbf{R}^T)^{\dagger} \mathbf{Y} + \mathbf{W}_{\text{learned}} \mathbf{Y} + \mathbf{b} \right]$$
    - Uses dynamic decay (e.g., $1.0 / (1.0 + 0.03 \cdot t)$) to prevent terminal limit-cycle oscillations around the sub-$0.03\text{ mm}$ target boundary.
+   - In the reference `RLOrbitChallengeAgent`, $\mathbf{W}_{\text{learned}}$ and $\mathbf{b}$ start at zero and are never trained, so it is a damped pseudo-inverse controller; nothing is learned unless the participant trains or tunes the residual.
 
 4. **Track 3 — Closed-Loop Bayesian Optimization Controller:**
    - Uses a `GaussianProcessRegressor` (Matérn-5/2 kernel with sensor noise floor) to model orbit error with epistemic uncertainty estimation:
      $$\alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y} + \boldsymbol{\mu}_{\text{GP}}(\Delta \mathbf{I}) \right) - \kappa \cdot \overline{\boldsymbol{\sigma}}_{\text{GP}}(\Delta \mathbf{I}) + \lambda \|\Delta \mathbf{I}\|^2$$
    - Balances exploration ($\kappa > 0$) against exploitation ($\kappa = 0$) under non-linear saturation, converging in an average of $1.5$ steps.
+   - The reference GP is fitted once on 300 calibration shots and stays fixed, and like Baseline 1 it evaluates the model at $\Delta \mathbf{I}$ as if the correctors started from zero. Refitting the GP online (e.g. from a `step_callback`) turns it into true online Bayesian optimization.
 
 ---
 
