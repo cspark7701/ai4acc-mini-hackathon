@@ -105,9 +105,14 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 │   └── Mini-Hackathon Participant Instructions.docx   # Quick-reference participant milestone checklist
 │
 ├── lecture_notes/                                    # Master lecture notes for Session 1 (Dr. Chong Shik Park)
-│   ├── Lecture_1_AI_ML_Techniques_for_Accelerators.md    # Session 1 master notes (Markdown)
-│   ├── Lecture_1_AI_ML_Techniques_for_Accelerators.tex   # Session 1 LaTeX source
-│   └── Lecture_1_AI_ML_Techniques_for_Accelerators.pdf   # Compiled lecture monograph (PDF, 17 pages)
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Notes.md   # Session 1 master notes (Markdown)
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Notes.tex  # Session 1 LaTeX source
+│   └── Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf  # Compiled lecture monograph (PDF, 17 pages)
+│
+├── presentations/                                    # Presentation slides for Session 1
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.tex  # Beamer LaTeX slide source
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.pptx # PowerPoint slide deck (29 slides)
+│   └── Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf  # Compiled slide deck (PDF, 29 slides)
 │
 ├── notebooks/                                        # Interactive Jupyter challenge notebooks
 │   ├── Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb  # Primary challenge notebook for participants (with TODOs)
@@ -227,9 +232,10 @@ Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](n
 ## 📚 Documentation Index
 
 For detailed guidelines, refer to the included guides:
-- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (Markdown)](lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
-- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 17-page PDF monograph.
-- [Lecture 1 LaTeX Source](lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.tex) — LaTeX document source code.
+- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (Markdown)](lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.md) — Master curriculum notes for Morning Session 1.
+- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf) — Formatted, compiled 17-page PDF monograph.
+- [Lecture 1 Slides: AI/ML Foundations & Closed-Loop Control (PDF Deck)](presentations/Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf) — Formatted 29-slide presentation deck.
+- [Lecture 1 LaTeX Source](lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.tex) — LaTeX document source code.
 - [Hackathon Project Guide (Word Document)](<docs/Hackathon Project Guide.docx>) — Complete rules, physics derivations, and scoring breakdown.
 - [Technical Preparation Guide (Word Document)](<docs/Technical Preparation.docx>) — Detailed lecture syllabus, setup recommendations, and schedule.
 - [Mini-Hackathon Participant Instructions (Word Document)](<docs/Mini-Hackathon Participant Instructions.docx>) — Quick participant checklist.

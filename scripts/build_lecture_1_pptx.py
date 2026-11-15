@@ -25,7 +25,7 @@ from pptx.enum.shapes import MSO_SHAPE
 ROOT = Path(__file__).resolve().parent.parent
 IMG_DIR = ROOT / "img"
 KU_LOGO = IMG_DIR / "ku_logo.png"
-OUTPUT_PATH = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "presentations" / "Lecture_1_AI_ML_Foundations_and_Control.pptx"
+OUTPUT_PATH = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "presentations" / "Lecture_1_AI_ML_Foundations_and_Control_Slides.pptx"
 
 # Color Palette
 NAVY = RGBColor(0, 32, 96)            # Deep Navy (#002060)

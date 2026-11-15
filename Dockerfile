@@ -36,13 +36,13 @@ COPY . .
 
 # Clean workspace so participants ONLY see:
 # 1. Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
-# 2. Lecture_1_AI_ML_Techniques_for_Accelerators.pdf
-# 3. Lecture_1_AI_ML_Foundations_and_Control.pdf
+# 2. Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf
+# 3. Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf
 # 4. PARTICIPANT_MODIFICATION_GUIDE.pdf
 # Plus internal img/ needed by the notebook's draw_beamline / save_path.
 RUN mv /workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb /workspace/ && \
-    mv /workspace/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf /workspace/ && \
-    mv /workspace/presentations/Lecture_1_AI_ML_Foundations_and_Control.pdf /workspace/ && \
+    mv /workspace/lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf /workspace/ && \
+    mv /workspace/presentations/Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf /workspace/ && \
     mv /workspace/docs/pdf/PARTICIPANT_MODIFICATION_GUIDE.pdf /workspace/ && \
     rm -rf /workspace/notebooks \
            /workspace/lecture_notes \
@@ -60,8 +60,8 @@ RUN mv /workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipy
            /workspace/setup.sh \
            /workspace/pyproject.toml \
            /workspace/.dockerignore \
-           /workspace/.git* \
-           /workspace/img/ku_logo.png
+           /workspace/.git* && \
+    find /workspace/img -type f ! -name "beamline.png" -delete
 
 # Expose default Jupyter port
 EXPOSE 8888

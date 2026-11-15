@@ -23,9 +23,10 @@ IMAGE_CHECK_FILES=(
     "src/benchmark.py:SRCDIR/benchmark.py"
     "src/environment.py:SRCDIR/environment.py"
     "src/controllers.py:SRCDIR/controllers.py"
-    "presentations/Lecture_1_AI_ML_Foundations_and_Control.pdf:/workspace/Lecture_1_AI_ML_Foundations_and_Control.pdf"
-    "lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf:/workspace/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf"
+    "presentations/Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf:/workspace/Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf"
+    "lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf:/workspace/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf"
     "docs/pdf/PARTICIPANT_MODIFICATION_GUIDE.pdf:/workspace/PARTICIPANT_MODIFICATION_GUIDE.pdf"
+    "img/beamline.png:/workspace/img/beamline.png"
 )
 
 # Set by image_preflight
