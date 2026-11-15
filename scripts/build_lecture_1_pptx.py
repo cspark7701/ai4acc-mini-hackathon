@@ -46,7 +46,7 @@ TOTAL_SLIDES = 29
 
 # Line spacing (multiple of single spacing) for the body text of each slide, matching the
 # per-slide \slidespread values of the LaTeX deck so that text fills each content card.
-LINE_SPACING = {1: 1.22, 2: 1.31, 3: 1.35, 4: 1.80, 5: 1.27, 6: 1.14, 7: 1.14, 8: 1.13, 9: 1.22, 10: 1.50, 11: 1.19, 12: 1.38, 13: 1.58, 14: 1.42, 15: 1.22, 16: 1.35, 17: 1.22, 18: 1.30, 19: 1.20, 20: 1.12, 21: 1.38, 22: 0.87, 23: 1.22, 24: 1.61, 25: 1.00, 26: 1.22, 27: 1.22, 28: 1.38, 29: 1.40}
+LINE_SPACING = {1: 1.22, 2: 1.31, 3: 1.35, 4: 1.80, 5: 1.27, 6: 1.14, 7: 1.14, 8: 1.11, 9: 1.22, 10: 1.50, 11: 1.19, 12: 1.38, 13: 1.58, 14: 1.42, 15: 1.22, 16: 1.35, 17: 1.22, 18: 1.30, 19: 1.20, 20: 1.08, 21: 1.38, 22: 0.87, 23: 1.22, 24: 1.39, 25: 1.00, 26: 1.22, 27: 1.22, 28: 1.38, 29: 1.40}
 
 
 def add_text_run(paragraph, text, bold=False, size=None, color=None):
