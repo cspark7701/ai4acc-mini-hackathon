@@ -163,9 +163,10 @@ The closed-form betatron solution is given by:
 where $\beta(s)$ is the Courant-Snyder beta function, $\psi(s) = \int_0^s \frac{d\bar{s}}{\beta(\bar{s})}$ is the betatron phase advance, and $\nu = \frac{1}{2\pi} \oint \frac{ds}{\beta(s)}$ is the betatron tune.
 
 \subsection{Derivation of the Orbit Response Matrix (ORM)}
-When an angular kick $\theta_j = \Delta x'_j = \frac{e B L}{p}$ is applied by a dipole corrector at longitudinal position $s_j$, the transverse displacement registered at a downstream Beam Position Monitor (BPM) at position $s_i$ is linearly proportional to the kick angle:
+When an angular kick $\theta_j = \Delta x'_j = \frac{e B L}{p}$ is applied by a dipole corrector at longitudinal position $s_j$, the transverse displacement registered at a Beam Position Monitor (BPM) at position $s_i$ is linearly proportional to the kick angle. In a single-pass transport line or linac, which is the hackathon case, only downstream BPMs see the kick, which propagates as a betatron oscillation:
 \begin{equation}
-    R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_i) - \psi(s_j)| - \pi \nu \right)
+    R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \sqrt{\beta(s_i)\beta(s_j)}\, \sin\left( \psi(s_i) - \psi(s_j) \right) \quad (s_i > s_j), \qquad R_{ij} = 0 \quad (s_i \le s_j)
+In a circular ring the kick instead produces a periodic closed-orbit distortion, $R_{ij} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_i) - \psi(s_j)| - \pi \nu \right)$. The hackathon simulator uses the transport-line form with simplified optics: a constant phase advance of $2\pi \cdot 0.18$ rad/m and a slowly decaying amplitude, $R_{ij} = 1.2\,\sin(2\pi \cdot 0.18\,\Delta s)/(1 + 0.05\,\Delta s)$ with $\Delta s = s_i - s_j > 0$.
 \end{equation}
 For $M$ BPMs and $N$ dipole steerers, the linear response is encapsulated by the matrix $\mathbf{R} \in \mathbb{R}^{N \times M}$~\cite{minty2003measurement}:
 \begin{equation}
@@ -189,11 +190,7 @@ The mini-hackathon benchmark lattice (Figure~\ref{fig:beamline}) models a 15-met
     \begin{equation}
         \mathbf{Y}_{\text{sat}} = - 0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R})
     \end{equation}
-    \item \textbf{Initial Misalignment Distortion ($\mathbf{Y}_0$):} Quadrupole displacement errors drawn per episode:
-    \begin{equation}
-        Y_{0, k} = A_1 \sin\left(\frac{2\pi s_k}{\lambda_1} + \phi_1\right) + A_2 \cos\left(\frac{2\pi s_k}{\lambda_2} + \phi_2\right)
-    \end{equation}
-    producing initial orbit errors between $0.4\text{ mm}$ and $1.1\text{ mm}$ RMS.
+    \item \textbf{Initial Orbit Distortion ($\mathbf{Y}_0$):} Steering and alignment errors upstream of the line produce an initial orbit distortion that the controller does not know in advance. It is drawn at random for each episode seed, giving initial RMS errors of $0.23$--$0.88\text{ mm}$ on the 30 evaluation seeds.
     \item \textbf{Gaussian Measurement Noise:} Sensor electronics introduce random noise $\boldsymbol{\epsilon} \sim \mathcal{N}(0, \sigma^2)$, with $\sigma = 0.010\text{ mm}$ ($10\ \mu\text{m}$).
 \end{itemize}
 
@@ -537,7 +534,7 @@ The benchmark simulation models the 15-meter transport line wrapped inside a sta
     \item \textbf{Termination Criteria:} Triggered when $\text{RMS} < 0.030\text{ mm}$ (success); truncated if step count reaches $50$ (failure).
     \item \textbf{Step Reward:}
     \begin{equation}
-        r_t = - \text{RMS}_{t+1} - 0.01 \cdot \|\Delta \mathbf{I}_t\|_2 + (50.0 \text{ if } \text{RMS}_{t+1} < 0.030\text{ mm} \text{ else } 0.0)
+        r_t = - 10 \cdot \text{RMS}_{t+1} - 0.01 \cdot \|\Delta \mathbf{I}_t\|_2^2 - c_{\text{step}} + (50.0 \text{ if } \text{RMS}_{t+1} < 0.030\text{ mm} \text{ else } 0.0)
     \end{equation}
 \end{itemize}
 

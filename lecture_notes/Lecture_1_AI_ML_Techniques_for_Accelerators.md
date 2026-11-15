@@ -99,9 +99,14 @@ $$x(s) = \sqrt{\epsilon \beta(s)} \cos\left( \psi(s) + \phi_0 \right)$$
 - $\nu = \frac{1}{2\pi} \oint \frac{ds}{\beta(s)}$: The betatron tune (total phase advance in units of $2\pi$).
 
 ### 2.3 Derivation of the Orbit Response Matrix (ORM)
-When a localized angular deflection (kick) $\theta_j = \Delta x'_j = \frac{e B L}{p}$ is applied by a dipole steering corrector at position $s_j$, it introduces a closed-orbit distortion observed by a Beam Position Monitor (BPM) at position $s_i$:
+When a localized angular deflection (kick) $\theta_j = \Delta x'_j = \frac{e B L}{p}$ is applied by a dipole steering corrector at position $s_j$, the orbit shift observed by a Beam Position Monitor (BPM) at position $s_i$ depends on the machine type:
 
-$$R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_i) - \psi(s_j)| - \pi \nu \right)$$
+- **Single-pass transport line or linac** (the hackathon case): only BPMs downstream of the corrector see the kick, which propagates as a betatron oscillation:
+  $$R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \sqrt{\beta(s_i)\beta(s_j)}\, \sin\left( \psi(s_i) - \psi(s_j) \right) \quad (s_i > s_j), \qquad R_{ij} = 0 \quad (s_i \le s_j)$$
+- **Circular ring:** the kick produces a periodic closed-orbit distortion seen at every BPM:
+  $$R_{ij} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_i) - \psi(s_j)| - \pi \nu \right)$$
+
+The hackathon simulator uses the transport-line form with simplified optics: a constant phase advance of $2\pi \cdot 0.18$ rad/m and a slowly decaying amplitude, $R_{ij} = 1.2\,\sin\big(2\pi \cdot 0.18\,\Delta s\big) / (1 + 0.05\,\Delta s)$ with $\Delta s = s_i - s_j > 0$.
 
 For $M$ BPMs and $N$ dipole steerers, the linear response is encapsulated by the matrix $\mathbf{R} \in \mathbb{R}^{N \times M}$ ([Minty & Zimmermann, 2003](https://doi.org/10.1007/978-3-662-08581-3)):
 $$\mathbf{Y}_{\text{linear}} = \mathbf{R} \cdot \boldsymbol{\theta} = \mathbf{I} \cdot \mathbf{R}$$
@@ -123,9 +128,7 @@ The hackathon environment models a 15-meter transport line:
 Ideal linear ORM assumes pure dipoles and noiseless diagnostics. In reality, accelerators exhibit:
 1. **Magnetic Core Saturation:** High coil currents drive iron yokes into saturation, reducing effective kick efficiency. In our simulator:
    $$\mathbf{Y}_{\text{sat}} = - 0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R})$$
-2. **Quadrupole Alignment Errors ($\mathbf{Y}_0$):** Physical offsets of quadrupoles produce initial closed orbit distortions:
-   $$Y_{0, k} = A_1 \sin\left(\frac{2\pi s_k}{\lambda_1} + \phi_1\right) + A_2 \cos\left(\frac{2\pi s_k}{\lambda_2} + \phi_2\right)$$
-   yielding initial RMS errors of $0.4\text{ mm}$ to $1.2\text{ mm}$.
+2. **Upstream Orbit Errors ($\mathbf{Y}_0$):** Steering and alignment errors upstream of the line produce an initial orbit distortion that the controller does not know in advance. The simulator draws it at random for each episode seed, giving initial RMS errors of $0.23\text{ mm}$ to $0.88\text{ mm}$ on the 30 evaluation seeds.
 3. **BPM Sensor Noise:** Thermal and RF digitizer noise $\boldsymbol{\epsilon} \sim \mathcal{N}(0, \sigma^2)$, with $\sigma = 0.010\text{ mm}$ ($10\ \mu\text{m}$).
 
 **Complete Physical Response Function:**
@@ -510,7 +513,8 @@ obs, reward, terminated, truncated, info = env.step(action)
 - **Action Vector:** $\Delta \mathbf{I} \in \mathbb{R}^6$, per-step delta clipped to $[-0.8, +0.8]\text{ A}$.
 - **State Update:** $\mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \Delta \mathbf{I}, -5.0, 5.0)$.
 - **Reward Function:**
-  $$r_t = - \text{RMS}_{t+1} - 0.01 \cdot \|\Delta \mathbf{I}\|_2 + \begin{cases} 50.0 & \text{if } \text{RMS}_{t+1} < 0.030\text{ mm} \\ 0.0 & \text{otherwise} \end{cases}$$
+  $$r_t = - 10 \cdot \text{RMS}_{t+1} - 0.01 \cdot \|\Delta \mathbf{I}\|_2^2 - c_{\text{step}} + \begin{cases} 50.0 & \text{if } \text{RMS}_{t+1} < 0.030\text{ mm} \\ 0.0 & \text{otherwise} \end{cases}$$
+  with default weights; `rms_weight`, `action_weight`, `step_penalty` ($c_{\text{step}}$, default 0) and `success_bonus` can be changed, or a custom `reward_fn` passed. The reward only guides RL training; it does not affect the official score.
 - **Termination:** `terminated = True` if $\text{RMS} < 0.030\text{ mm}$ (`is_success = True`).
 - **Truncation:** `truncated = True` if `step >= 50` (`is_success = False`).
 

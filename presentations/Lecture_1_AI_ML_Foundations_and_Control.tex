@@ -301,9 +301,11 @@
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{The Analytical ORM Transfer Function}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
-    {\bfseries\color{navy}Closed-Orbit Perturbation from a Localized Steerer Kick:}\\[0.3em]
-    When a steering dipole at position $s_j$ applies an angular kick $\theta_j = \frac{e B L}{p}$, the orbit shift at BPM position $s_i$ is:\\[0.5em]
-    \centering{\fs{16}{20}\bfseries\color{primaryblue}$R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \frac{\sqrt{\beta_i \beta_j}}{2 \sin(\pi \nu)} \cos\left( |\psi_i - \psi_j| - \pi \nu \right)$}\\[0.7em]
+    {\bfseries\color{navy}Orbit Response of a Single-Pass Transport Line to a Steerer Kick:}\\[0.3em]
+    When a steering dipole at $s_j$ applies an angular kick $\theta_j = \frac{e B L}{p}$, only BPMs downstream ($s_i > s_j$) see it:\\[0.5em]
+    \centering{\fs{16}{20}\bfseries\color{primaryblue}$R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \sqrt{\beta_i \beta_j}\, \sin\left( \psi_i - \psi_j \right) \quad (s_i > s_j), \qquad R_{ij} = 0 \ \ \text{upstream}$}\\[0.4em]
+    \raggedright
+    {\fs{12}{15}\color{mutedgray}(A ring has the closed-orbit form $\frac{\sqrt{\beta_i \beta_j}}{2\sin\pi\nu}\cos(|\psi_i - \psi_j| - \pi\nu)$; the hackathon line uses constant phase advance $2\pi \cdot 0.18$ rad/m.)}\\[0.7em]
     \raggedright
     {\bfseries\color{navy}$\bullet$ Global Matrix Superposition Formulation:}\\[0.3em]
     For $N$ corrector magnets and $M$ Beam Position Monitors, the linear response is encapsulated as:\\[0.4em]
@@ -384,7 +386,7 @@
     {\bfseries\color{navy}$\bullet$ Physical Breakdown of Response Terms:}\\[0.3em]
     -- $\mathbf{I} \cdot \mathbf{R}$: Ideal linear betatron wave response predicted by transfer matrix.\\
     -- $-0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R})$: Non-linear iron core soft saturation. At high excitation currents, the iron yoke reaches magnetic saturation, decreasing steerer kick efficiency by 6\% (at 2 A) up to 24\% (at 4 A).\\
-    -- $\mathbf{Y}_0$: Initial orbit distortion caused by random quadrupole transverse misalignments (producing $0.40\text{ mm}$ to $1.10\text{ mm}$ RMS error across seeds).\\
+    -- $\mathbf{Y}_0$: Initial orbit distortion from an unknown upstream steering error, drawn per episode ($0.23$--$0.88\text{ mm}$ RMS on the evaluation seeds).\\
     -- $\boldsymbol{\epsilon}$: Diagnostic Gaussian measurement jitter ($\sigma = 10\ \mu\text{m}$).\\[0.8em]
     {\bfseries\color{navy}$\bullet$ Convergence Target:} \textbf{\color{successgreen}Drive orbit error below $\text{RMS} < 0.030\text{ mm}$ ($30\ \mu\text{m}$) within 50 control steps.}
   }
@@ -721,7 +723,9 @@
     $\bullet$ \textbf{Observation Space:} \texttt{Box(-10.0, +10.0, shape=(12,), dtype=float32)} (12 transverse BPM readings in mm).\\[0.4em]
     $\bullet$ \textbf{Action Space:} \texttt{Box(-0.8, +0.8, shape=(6,), dtype=float32)} (6 per-step delta kicks $\Delta\mathbf{I}$ in Amperes).\\[0.7em]
     $\bullet$ \textbf{Step Reward Function:}\\[0.3em]
-    \centering{\fs{14}{17}\bfseries\color{primaryblue}$r_t = - \text{RMS}_{t+1} - 0.01 \cdot \|\Delta\mathbf{I}\|_2 + ( 50.0 \text{ if } \text{RMS}_{t+1} < 0.030\text{ mm else } 0.0 )$}\\[0.7em]
+    \centering{\fs{14}{17}\bfseries\color{primaryblue}$r_t = - 10\,\text{RMS}_{t+1} - 0.01\,\|\Delta\mathbf{I}\|_2^2 - c_{\text{step}} + ( 50 \text{ if } \text{RMS}_{t+1} < 0.030\text{ mm else } 0 )$}\\[0.2em]
+    \raggedright
+    {\fs{12}{15}\color{mutedgray}Default weights, all adjustable (\texttt{rms\_weight}, \texttt{action\_weight}, \texttt{step\_penalty}, \texttt{success\_bonus}, \texttt{reward\_fn}); the reward guides RL training only and does not affect the official score.}\\[0.7em]
     \raggedright
     $\bullet$ \textbf{Termination Criteria:} \texttt{terminated = True} when $\text{RMS} < 0.030\text{ mm}$ (success); \texttt{truncated = True} when $\text{step} \ge 50$ (budget exhausted).
   }

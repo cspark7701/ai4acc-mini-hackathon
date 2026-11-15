@@ -403,12 +403,13 @@ def create_presentation():
     tf8.word_wrap = True
 
     p = tf8.paragraphs[0]
-    add_text_run(p, "Closed-Orbit Perturbation from a Localized Steerer Kick:\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p, "Orbit Response of a Single-Pass Transport Line to a Steerer Kick:\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p, "When a steering dipole at position s_j applies an angular kick θ_j = e B L / p, the orbit shift at BPM position s_i is:\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p_eq = tf8.add_paragraph()
     p_eq.alignment = PP_ALIGN.CENTER
-    add_text_run(p_eq, "R_ij = Δx(s_i) / θ_j = [ √(β_i β_j) / (2 sin(π ν)) ] · cos( |ψ_i - ψ_j| - π ν )\n", bold=True, size=Pt(16), color=PRIMARY)
+    add_text_run(p_eq, "R_ij = Δx(s_i) / θ_j = √(β_i β_j) · sin( ψ_i - ψ_j )   for s_i > s_j  (0 upstream)\n", bold=True, size=Pt(16), color=PRIMARY)
+    add_text_run(p_eq, "(A ring has the closed-orbit form √(β_i β_j)/(2 sin πν) · cos(|ψ_i - ψ_j| - πν); the hackathon line uses phase advance 2π·0.18 rad/m.)\n", size=Pt(12), color=MUTED)
 
     p2 = tf8.add_paragraph()
     p2.space_before = Pt(8)
@@ -516,7 +517,7 @@ def create_presentation():
     add_text_run(p2, "• Physical Breakdown of Response Terms:\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p2, "  -- I · R: Ideal linear betatron wave response predicted by transfer matrix.\n"
                      "  -- -0.015 · (I³ · R): Non-linear iron core soft saturation. At high excitation currents, the iron yoke reaches magnetic saturation, decreasing steerer kick efficiency by 6% (at 2 A) up to 24% (at 4 A).\n"
-                     "  -- Y₀: Initial orbit distortion caused by random quadrupole transverse misalignments (producing 0.40 mm to 1.10 mm RMS error across seeds).\n"
+                     "  -- Y₀: Initial orbit distortion from an unknown upstream steering error, drawn per episode (0.23-0.88 mm RMS on the evaluation seeds).\n"
                      "  -- ε: Diagnostic Gaussian measurement jitter (σ = 10 μm).\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p3 = tf11.add_paragraph()
@@ -942,7 +943,8 @@ def create_presentation():
 
     p4 = tf24.add_paragraph()
     add_text_run(p4, "• Step Reward Function:\n", bold=True, size=Pt(14), color=NAVY)
-    add_text_run(p4, "  r_t = - RMS_{t+1} - 0.01 · ||action||₂ + ( 50.0 if RMS_{t+1} < 0.030 mm else 0.0 )\n", bold=True, size=Pt(13.5), color=PRIMARY)
+    add_text_run(p4, "  r_t = - 10·RMS_{t+1} - 0.01·||ΔI||² - c_step + ( 50 if RMS_{t+1} < 0.030 mm else 0 )\n", bold=True, size=Pt(13.5), color=PRIMARY)
+    add_text_run(p4, "  Default weights, all adjustable (rms_weight, action_weight, step_penalty, success_bonus, reward_fn); the reward guides RL training only and does not affect the official score.\n", size=Pt(12), color=MUTED)
 
     p5 = tf24.add_paragraph()
     add_text_run(p5, "• Termination Criteria: ", bold=True, size=Pt(14), color=NAVY)

@@ -20,7 +20,7 @@ The objective for AI agents operating in this workspace is:
 ### 1. Lattice Geometry & Diagnostics
 - **Transport Section Length:** 15.0 meters.
 - **Beam Position Monitors (BPMs):** 12 diagnostic stations measuring transverse displacement in millimeters ($mm$).
-  - Observation Vector: $\mathbf{Y} \in \mathbb{R}^{12}$, bounded in $[-10.0, +10.0]\text{ mm}$.
+  - Observation Vector: $\mathbf{Y} \in \mathbb{R}^{12}$; the declared observation space is $[-10.0, +10.0]\text{ mm}$, but values are not clipped (in practice they stay below $1\text{ mm}$).
 - **Dipole Steering Correctors:** 6 magnet actuators (3 Horizontal `HCM1-3`, 3 Vertical `VCM1-3`).
   - Total Current State: $\mathbf{I} \in \mathbb{R}^6$, hardware bounds $[-5.0\text{ A}, +5.0\text{ A}]$.
   - Control Action: $\Delta \mathbf{I} \in \mathbb{R}^6$, per-step delta bound $[-0.8\text{ A}, +0.8\text{ A}]$.
@@ -30,13 +30,12 @@ The objective for AI agents operating in this workspace is:
 The environment calculates BPM readings from corrector currents $\mathbf{I}$ via:
 $$\mathbf{Y} = \mathbf{I} \cdot \mathbf{R} - 0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R}) + \mathbf{Y}_0 + \boldsymbol{\epsilon}$$
 
-- **Linear Transfer Matrix ($\mathbf{R}$):** $6 \times 12$ matrix modeling betatron oscillation:
-  $$R_{ij} = \frac{\sqrt{\beta_i \beta_j}}{2 \sin(\pi \nu)} \cos(|\psi_i - \psi_j| - \pi \nu)$$
+- **Linear Response Matrix ($\mathbf{R}$):** $6 \times 12$, single-pass transport-line form: a corrector only moves the orbit at BPMs downstream of it. With correctors at $s_i \in$ `linspace(0.2, 8.0, 6)` m and BPMs at $s_j \in$ `linspace(1.0, 15.0, 12)` m:
+  $$R_{ij} = \begin{cases} \dfrac{1.2\,\sin\!\big(2\pi \cdot 0.18\,(s_j - s_i)\big)}{1 + 0.05\,(s_j - s_i)} & s_j > s_i \\ 0 & \text{otherwise} \end{cases}$$
+  This is the transport-line response $\sqrt{\beta_i \beta_j}\,\sin(\psi_j - \psi_i)$ with simplified optics: a constant phase advance of $2\pi \cdot 0.18$ rad/m and a slowly decaying amplitude. (The ring closed-orbit formula with $2\sin(\pi\nu)$ does not apply to a single-pass line.)
 - **Non-Linear Core Saturation:** Modeled as cubic soft-saturation: $-0.015 \cdot \mathbf{I}^3 \cdot \mathbf{R}$.
 - **Gaussian Measurement Noise:** $\boldsymbol{\epsilon} \sim \mathcal{N}(0, 0.010^2)$ representing sensor jitter.
-- **Initial Distortion ($\mathbf{Y}_0$):** Random quadrupole alignment errors drawn at episode reset based on the random seed:
-  $$Y_{0, k} = A_1 \sin(2\pi s_k / \lambda_1 + \phi_1) + A_2 \cos(2\pi s_k / \lambda_2 + \phi_2)$$
-  producing an initial orbit distortion typically between $0.4\text{ mm}$ and $1.0\text{ mm}$ RMS.
+- **Initial Distortion ($\mathbf{Y}_0$):** An upstream steering error drawn at episode reset from the seed: $\mathbf{Y}_0 = a_1 \mathbf{R}_{1,:} + a_2 \mathbf{R}_{2,:}$ with $a_k \sim \mathcal{U}(-1.2, 1.2)$ A, i.e. the orbit of random kicks at the first two corrector locations. On the evaluation seeds 1–30 the initial RMS is $0.23$–$0.88\text{ mm}$ (mean $0.59\text{ mm}$). Participant-facing material describes it only as an unknown upstream steering error, so that controllers are not built around its exact structure.
 
 ### 3. Gymnasium Environment Contract (`AcceleratorOrbitGymEnv`)
 - **`reset(seed=None)`** $\rightarrow$ `(obs, info)`:
@@ -50,8 +49,9 @@ $$\mathbf{Y} = \mathbf{I} \cdot \mathbf{R} - 0.015 \cdot (\mathbf{I}^3 \cdot \ma
     $$\text{RMS} = \sqrt{\frac{1}{12}\sum_{i=1}^{12} Y_i^2}$$
   - **Termination (`terminated`):** Triggered if $\text{RMS} < 0.030\text{ mm}$ (`is_success = True`).
   - **Truncation (`truncated`):** Triggered if step count reaches `max_steps = 50` (`is_success = False`).
-  - **Reward:**
-    $$r_t = - \text{RMS}_{t+1} - 0.01 \cdot \|\text{action}\|_2 + (50.0 \text{ if terminated else } 0.0)$$
+  - **Reward** (used only for RL training; it does not affect the official score):
+    $$r_t = - w_{\text{rms}}\,\text{RMS}_{t+1} - w_{\text{act}} \sum_k a_k^2 - c_{\text{step}} + (b \text{ if terminated else } 0)$$
+    with constructor defaults $w_{\text{rms}} = 10$, $w_{\text{act}} = 0.01$, $c_{\text{step}} = 0$, $b = 50$ (the participant notebook sets $c_{\text{step}} = 0.5$), or any custom `reward_fn(rms, action, terminated, truncated, step)`.
 
 ---
 

@@ -52,8 +52,9 @@ Participants design, optimize, and benchmark closed-loop accelerator controllers
 - **Diagnostics ($Y$):** 12 Beam Position Monitors (BPMs) positioned along a 15-meter transport line measuring beam offset in millimeters (mm).
 - **Optics & Non-linearities:**
   - Alternating quadrupole focusing/defocusing magnets (`QF`, `QD`).
-  - Core linear Orbit Response Matrix (ORM) derived from standard accelerator transfer matrices:
-    $$R_{ij} = \frac{\sqrt{\beta_i \beta_j}}{2 \sin(\pi \nu)} \cos(|\psi_i - \psi_j| - \pi \nu)$$
+  - Linear Orbit Response Matrix (ORM) of a single-pass transport line: a corrector at $s_i$ only moves the orbit at BPMs downstream ($s_j > s_i$):
+    $$R_{ij} = \frac{1.2\,\sin\!\big(2\pi \cdot 0.18\,(s_j - s_i)\big)}{1 + 0.05\,(s_j - s_i)} \quad (s_j > s_i), \qquad R_{ij} = 0 \text{ otherwise}$$
+  - Initial distortion: an upstream steering error drawn from the episode seed (initial RMS $0.23$–$0.88\text{ mm}$ on seeds 1–30).
   - Non-linear magnetic core saturation: $-0.015 \cdot X^3 \cdot R$
   - Realistic Gaussian diagnostic noise: $\epsilon \sim \mathcal{N}(0, 0.010\text{ mm})$
 - **Goal Condition:** Bring Root-Mean-Square (RMS) beam orbit error below threshold:
