@@ -1,6 +1,6 @@
 """
 scripts/build_announcement_docx.py
-Generates docs/Announcement.docx in complete synchronization with docs/Announcement.md.
+Generates the bilingual docs/Announcement.docx, matching docs/Announcement_KR.md (Korean) and docs/Announcement_EN.md (English).
 """
 import docx
 from docx.shared import Inches, Pt, RGBColor

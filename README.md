@@ -74,7 +74,7 @@ Participants design, optimize, and benchmark closed-loop accelerator controllers
 | **13:30 – 16:30** | **Mini-Hackathon** | **Beam Orbit Alignment Benchmark Challenge**<br>• Track 1: Supervised Neural Surrogate (MLP) Inverse Optimization<br>• Track 2: Physics-Informed Closed-Loop Reinforcement Learning (RL)<br>• Track 3: Gaussian Process Bayesian Optimization (BO) Controller |
 | **16:30 – 17:00** | Leaderboard Awards | W&B Live Leaderboard review, awards presentation & closing remarks |
 
-The same schedule appears in the workshop announcement ([`docs/Announcement.md`](docs/Announcement.md)).
+The same schedule appears in the workshop announcement, available in Korean ([`docs/Announcement_KR.md`](docs/Announcement_KR.md)) and English ([`docs/Announcement_EN.md`](docs/Announcement_EN.md)).
 
 ---
 
