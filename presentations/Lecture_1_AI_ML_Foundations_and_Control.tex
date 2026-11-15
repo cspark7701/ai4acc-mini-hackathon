@@ -386,7 +386,7 @@
     {\bfseries\color{navy}$\bullet$ Physical Breakdown of Response Terms:}\\[0.3em]
     -- $\mathbf{I} \cdot \mathbf{R}$: Ideal linear betatron wave response predicted by transfer matrix.\\
     -- $-0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R})$: Non-linear iron core soft saturation. At high excitation currents, the iron yoke reaches magnetic saturation, decreasing steerer kick efficiency by 6\% (at 2 A) up to 24\% (at 4 A).\\
-    -- $\mathbf{Y}_0$: Initial orbit distortion from an unknown upstream steering error, drawn per episode ($0.23$--$0.88\text{ mm}$ RMS on the evaluation seeds).\\
+    -- $\mathbf{Y}_0 = a_1\mathbf{R}_{1,:} + a_2\mathbf{R}_{2,:}$: Initial distortion from unknown kicks $a_k \sim \mathcal{U}(-1.2, 1.2)$ A at the first two correctors, drawn per episode ($0.23$--$0.88\text{ mm}$ RMS on the evaluation seeds).\\
     -- $\boldsymbol{\epsilon}$: Diagnostic Gaussian measurement jitter ($\sigma = 10\ \mu\text{m}$).\\[0.8em]
     {\bfseries\color{navy}$\bullet$ Convergence Target:} \textbf{\color{successgreen}Drive orbit error below $\text{RMS} < 0.030\text{ mm}$ ($30\ \mu\text{m}$) within 50 control steps.}
   }

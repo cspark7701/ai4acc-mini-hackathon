@@ -517,7 +517,7 @@ def create_presentation():
     add_text_run(p2, "• Physical Breakdown of Response Terms:\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p2, "  -- I · R: Ideal linear betatron wave response predicted by transfer matrix.\n"
                      "  -- -0.015 · (I³ · R): Non-linear iron core soft saturation. At high excitation currents, the iron yoke reaches magnetic saturation, decreasing steerer kick efficiency by 6% (at 2 A) up to 24% (at 4 A).\n"
-                     "  -- Y₀: Initial orbit distortion from an unknown upstream steering error, drawn per episode (0.23-0.88 mm RMS on the evaluation seeds).\n"
+                     "  -- Y₀ = a₁R₁ + a₂R₂: Initial distortion from unknown kicks aₖ ~ U(-1.2, 1.2) A at the first two correctors, drawn per episode (0.23-0.88 mm RMS on the evaluation seeds).\n"
                      "  -- ε: Diagnostic Gaussian measurement jitter (σ = 10 μm).\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p3 = tf11.add_paragraph()

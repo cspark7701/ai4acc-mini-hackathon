@@ -54,7 +54,7 @@ Participants design, optimize, and benchmark closed-loop accelerator controllers
   - Alternating quadrupole focusing/defocusing magnets (`QF`, `QD`).
   - Linear Orbit Response Matrix (ORM) of a single-pass transport line: a corrector at $s_i$ only moves the orbit at BPMs downstream ($s_j > s_i$):
     $$R_{ij} = \frac{1.2\,\sin\!\big(2\pi \cdot 0.18\,(s_j - s_i)\big)}{1 + 0.05\,(s_j - s_i)} \quad (s_j > s_i), \qquad R_{ij} = 0 \text{ otherwise}$$
-  - Initial distortion: an upstream steering error drawn from the episode seed (initial RMS $0.23$–$0.88\text{ mm}$ on seeds 1–30).
+  - Initial distortion: an upstream steering error drawn from the episode seed, $\mathbf{Y}_0 = a_1 \mathbf{R}_{1,:} + a_2 \mathbf{R}_{2,:}$ with unknown kicks $a_k \sim \mathcal{U}(-1.2, 1.2)$ A at the first two corrector locations (initial RMS $0.23$–$0.88\text{ mm}$ on seeds 1–30).
   - Non-linear magnetic core saturation: $-0.015 \cdot X^3 \cdot R$
   - Realistic Gaussian diagnostic noise: $\epsilon \sim \mathcal{N}(0, 0.010\text{ mm})$
 - **Goal Condition:** Bring Root-Mean-Square (RMS) beam orbit error below threshold:

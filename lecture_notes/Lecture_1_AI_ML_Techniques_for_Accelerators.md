@@ -128,7 +128,7 @@ The hackathon environment models a 15-meter transport line:
 Ideal linear ORM assumes pure dipoles and noiseless diagnostics. In reality, accelerators exhibit:
 1. **Magnetic Core Saturation:** High coil currents drive iron yokes into saturation, reducing effective kick efficiency. In our simulator:
    $$\mathbf{Y}_{\text{sat}} = - 0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R})$$
-2. **Upstream Orbit Errors ($\mathbf{Y}_0$):** Steering and alignment errors upstream of the line produce an initial orbit distortion that the controller does not know in advance. The simulator draws it at random for each episode seed, giving initial RMS errors of $0.23\text{ mm}$ to $0.88\text{ mm}$ on the 30 evaluation seeds.
+2. **Upstream Orbit Errors ($\mathbf{Y}_0$):** Steering and alignment errors upstream of the line produce an initial orbit distortion that the controller does not know in advance. The simulator models it as random steering kicks at the first two corrector locations, $\mathbf{Y}_0 = a_1 \mathbf{R}_{1,:} + a_2 \mathbf{R}_{2,:}$ with $a_k \sim \mathcal{U}(-1.2, 1.2)\text{ A}$ drawn for each episode seed, giving initial RMS errors of $0.23\text{ mm}$ to $0.88\text{ mm}$ on the 30 evaluation seeds. Because the distortion lies in the span of the corrector responses, a perfect controller can cancel it down to the sensor noise.
 3. **BPM Sensor Noise:** Thermal and RF digitizer noise $\boldsymbol{\epsilon} \sim \mathcal{N}(0, \sigma^2)$, with $\sigma = 0.010\text{ mm}$ ($10\ \mu\text{m}$).
 
 **Complete Physical Response Function:**

@@ -189,7 +189,7 @@ The mini-hackathon benchmark lattice (Figure~\ref{fig:beamline}) models a 15-met
     \begin{equation}
         \mathbf{Y}_{\text{sat}} = - 0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R})
     \end{equation}
-    \item \textbf{Initial Orbit Distortion ($\mathbf{Y}_0$):} Steering and alignment errors upstream of the line produce an initial orbit distortion that the controller does not know in advance. It is drawn at random for each episode seed, giving initial RMS errors of $0.23$--$0.88\text{ mm}$ on the 30 evaluation seeds.
+    \item \textbf{Initial Orbit Distortion ($\mathbf{Y}_0$):} Steering and alignment errors upstream of the line produce an initial orbit distortion that the controller does not know in advance. The simulator models it as random steering kicks at the first two corrector locations, $\mathbf{Y}_0 = a_1 \mathbf{R}_{1,:} + a_2 \mathbf{R}_{2,:}$ with $a_k \sim \mathcal{U}(-1.2, 1.2)\text{ A}$ drawn for each episode seed, giving initial RMS errors of $0.23$--$0.88\text{ mm}$ on the 30 evaluation seeds. Because the distortion lies in the span of the corrector responses, a perfect controller can cancel it down to the sensor noise.
     \item \textbf{Gaussian Measurement Noise:} Sensor electronics introduce random noise $\boldsymbol{\epsilon} \sim \mathcal{N}(0, \sigma^2)$, with $\sigma = 0.010\text{ mm}$ ($10\ \mu\text{m}$).
 \end{itemize}
 

@@ -35,7 +35,7 @@ $$\mathbf{Y} = \mathbf{I} \cdot \mathbf{R} - 0.015 \cdot (\mathbf{I}^3 \cdot \ma
   This is the transport-line response $\sqrt{\beta_i \beta_j}\,\sin(\psi_j - \psi_i)$ with simplified optics: a constant phase advance of $2\pi \cdot 0.18$ rad/m and a slowly decaying amplitude. (The ring closed-orbit formula with $2\sin(\pi\nu)$ does not apply to a single-pass line.)
 - **Non-Linear Core Saturation:** Modeled as cubic soft-saturation: $-0.015 \cdot \mathbf{I}^3 \cdot \mathbf{R}$.
 - **Gaussian Measurement Noise:** $\boldsymbol{\epsilon} \sim \mathcal{N}(0, 0.010^2)$ representing sensor jitter.
-- **Initial Distortion ($\mathbf{Y}_0$):** An upstream steering error drawn at episode reset from the seed: $\mathbf{Y}_0 = a_1 \mathbf{R}_{1,:} + a_2 \mathbf{R}_{2,:}$ with $a_k \sim \mathcal{U}(-1.2, 1.2)$ A, i.e. the orbit of random kicks at the first two corrector locations. On the evaluation seeds 1–30 the initial RMS is $0.23$–$0.88\text{ mm}$ (mean $0.59\text{ mm}$). Participant-facing material describes it only as an unknown upstream steering error, so that controllers are not built around its exact structure.
+- **Initial Distortion ($\mathbf{Y}_0$):** An upstream steering error drawn at episode reset from the seed: $\mathbf{Y}_0 = a_1 \mathbf{R}_{1,:} + a_2 \mathbf{R}_{2,:}$ with $a_k \sim \mathcal{U}(-1.2, 1.2)$ A, i.e. the orbit of random kicks at the first two corrector locations. On the evaluation seeds 1–30 the initial RMS is $0.23$–$0.88\text{ mm}$ (mean $0.59\text{ mm}$). The lecture notes, slides and notebooks state this model in full; the kick amplitudes $a_1, a_2$ are unknown to the controller.
 
 ### 3. Gymnasium Environment Contract (`AcceleratorOrbitGymEnv`)
 - **`reset(seed=None)`** $\rightarrow$ `(obs, info)`:
