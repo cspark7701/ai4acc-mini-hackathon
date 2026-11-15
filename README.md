@@ -91,7 +91,6 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 │
 ├── docs/                                             # Supporting workshop documentation & setup guides
 │   ├── DOCKER_INSTALL_GUIDE.md                       # Docker installation steps for Linux, macOS & Windows
-│   ├── DOCKER_SETUP_GUIDE.md                         # Participant pre-workshop image download, test & workshop-day guide
 │   ├── DOCKER_GUIDE.md                               # Complete Docker, Docker Compose & Docker Hub user guide
 │   ├── PARTICIPANT_MODIFICATION_GUIDE.md             # What participants may change for each controller, and callback rules
 │   ├── WANDB_LEADERBOARD_GUIDE.md                    # W&B leaderboard guide for the organizer and participants
@@ -129,7 +128,7 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 
 ### For Participants: Docker Container
 
-Participants run the challenge in the official Docker container; no Git clone or local Python installation is needed. Install Docker beforehand with [`docs/DOCKER_INSTALL_GUIDE.md`](docs/DOCKER_INSTALL_GUIDE.md), then download and test the image with [`docs/DOCKER_SETUP_GUIDE.md`](docs/DOCKER_SETUP_GUIDE.md).
+Participants run the challenge in the official Docker container; no Git clone or local Python installation is needed. Install Docker beforehand with [`docs/DOCKER_INSTALL_GUIDE.md`](docs/DOCKER_INSTALL_GUIDE.md), then download and test the image with [`docs/DOCKER_GUIDE.md`](docs/DOCKER_GUIDE.md).
 
 **On the day**, start the environment with the launcher from the organizer's bundle, keeping `wandb.apikey` in the same folder so scores reach the live leaderboard:
 
@@ -235,7 +234,7 @@ For detailed guidelines, refer to the included guides:
 - [Mini-Hackathon Participant Instructions (Word Document)](<docs/Mini-Hackathon Participant Instructions.docx>) — Quick participant checklist.
 - [W&B Leaderboard Guide](docs/WANDB_LEADERBOARD_GUIDE.md) — Leaderboard setup for the organizer and submission steps for participants.
 - [Participant Modification Guide](docs/PARTICIPANT_MODIFICATION_GUIDE.md) — What participants may change for each controller, and the callback rules.
-- [Docker Installation Guide](docs/DOCKER_INSTALL_GUIDE.md) and [Docker Setup Guide](docs/DOCKER_SETUP_GUIDE.md) — Pre-workshop Docker installation, image download and test.
+- [Docker Installation Guide](docs/DOCKER_INSTALL_GUIDE.md) and [Docker Environment Guide](docs/DOCKER_GUIDE.md) — Pre-workshop Docker installation, image download and test.
 - [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md) and [W&B Submission Test Report](docs/MULTI_AGENT_TOURNAMENT_REPORT2.md) — 10-agent benchmark protocol and the verified results of its W&B run (scores from the earlier, easier distortion model).
 - [Docker Desktop Setup Guide (Word Document)](<docs/Docker Desktop Setup Guide.docx>) — Containerized deployment instructions.
 - [AGENTS.md](AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.

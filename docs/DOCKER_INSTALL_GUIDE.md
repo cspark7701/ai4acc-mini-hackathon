@@ -5,7 +5,7 @@ Tutorial & Mini-Hackathon**. The challenge runs inside Docker, so this is the on
 software you need to install.
 
 Follow the section for your operating system, then continue with
-[`DOCKER_SETUP_GUIDE.md`](DOCKER_SETUP_GUIDE.md) to download the challenge image and test it.
+[`DOCKER_GUIDE.md`](DOCKER_GUIDE.md) to download the challenge image and test it.
 
 | You need | Details |
 | --- | --- |
