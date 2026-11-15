@@ -232,11 +232,14 @@ def print_benchmark_leaderboard(leaderboard: Sequence[Any]) -> None:
         leaderboard: List of (name, metrics_dict) tuples.
     """
     sorted_board = sorted(leaderboard, key=lambda x: x[1].get("score", 0.0), reverse=True)
-    print("=" * 87)
-    print("                        OFFICIAL HACKATHON BENCHMARK LEADERBOARD")
-    print("=" * 87)
-    print(f"{'Rank':<5} | {'Agent / Controller Name':<28} | {'Success':<8} | {'Steps':<6} | {'Final RMS':<10} | {'Score':<9}")
-    print("-" * 87)
+    name_w = max([len("Agent / Controller Name")] + [len(str(name)) for name, _ in sorted_board])
+    header = f"{'Rank':<5} | {'Agent / Controller Name':<{name_w}} | {'Success':<8} | {'Steps':<6} | {'Final RMS':<10} | {'Score':>9}"
+    rule = len(header)
+    print("=" * rule)
+    print("OFFICIAL HACKATHON BENCHMARK LEADERBOARD".center(rule).rstrip())
+    print("=" * rule)
+    print(header)
+    print("-" * rule)
     for rank, (name, metrics) in enumerate(sorted_board, 1):
-        print(f"#{rank:<4} | {name:<28} | {metrics['success_rate']:>6.1f}% | {metrics['mean_steps']:>5.1f} | {metrics['mean_rms']:>8.4f}mm | {metrics['score']:>9.3f}")
-    print("=" * 87)
+        print(f"#{rank:<4} | {name:<{name_w}} | {metrics['success_rate']:>7.1f}% | {metrics['mean_steps']:>6.1f} | {metrics['mean_rms']:>8.4f}mm | {metrics['score']:>9.3f}")
+    print("=" * rule)

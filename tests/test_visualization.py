@@ -8,8 +8,6 @@ Unit tests for visualization plotting functions in src/visualization.py:
 import os
 import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
-import pytest
 
 # Use non-interactive backend for headless test execution
 matplotlib.use("Agg")
@@ -17,7 +15,6 @@ matplotlib.use("Agg")
 from src.environment import AcceleratorOrbitGymEnv
 from src.controllers import ClassicalSVDController
 from src.visualization import draw_beamline, plot_benchmark_trajectories
-
 
 class TestVisualization:
     def test_draw_beamline(self, tmp_path):

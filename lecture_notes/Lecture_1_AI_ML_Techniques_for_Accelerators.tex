@@ -133,7 +133,6 @@ The landscape of AI applications in particle accelerators is broadly categorized
     Moving beyond single-purpose neural networks, modern research explores autonomous agent architectures (such as \textit{Osprey} and LLM-driven scientific agents). These systems integrate large language models with standardized Python control APIs, simulation engines, and diagnostic databases, enabling high-level natural language operational commands (e.g., ``align the transport line orbit and optimize injection efficiency'') to be autonomously planned, validated, and executed under strict domain guardrails.
 \end{enumerate}
 
----
 
 \section{Motivation \& Accelerator Physics Foundations}
 
@@ -199,7 +198,6 @@ The complete physical forward response equation is:
     \mathbf{Y} = \mathbf{I} \cdot \mathbf{R} - 0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R}) + \mathbf{Y}_0 + \boldsymbol{\epsilon}
 \end{equation}
 
----
 
 \section{Machine Learning Fundamentals \& Neural Surrogate Modeling}
 
@@ -432,7 +430,6 @@ MLP Neural Surrogate & 11,596 & $\mathbf{0.0118\text{ mm}}$ & $\approx 0.15\text
 The holdout error of the MLP ($0.0118\text{ mm}$) closely approaches the theoretical noise floor set by Gaussian BPM sensor jitter ($\sigma = 0.0100\text{ mm}$). This indicates that the neural surrogate has learned the non-linear physics without overfitting sensor noise.
 \end{infobox}
 
----
 
 \section{Closed-Loop Control Paradigms}
 
@@ -521,7 +518,6 @@ class BayesianOptimizationController:
         return np.clip(res.x, -0.8, 0.8)
 \end{lstlisting}
 
----
 
 \section{Mini-Hackathon Problem Formulation \& Gymnasium Contract}
 
@@ -613,7 +609,6 @@ Table~\ref{tab:comparison} summarizes how the two baselines and the two challeng
 \label{tab:comparison}
 \end{table}
 
----
 
 \section{Summary \& Q\&A}
 

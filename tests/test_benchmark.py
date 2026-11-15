@@ -4,7 +4,7 @@ Unit tests for evaluate_hackathon_benchmark and callback hooks.
 Validates standardized evaluation protocol, score calculation, and telemetry.
 """
 
-import numpy as np
+
 import pytest
 from src.environment import AcceleratorOrbitGymEnv
 from src.benchmark import evaluate_hackathon_benchmark, print_benchmark_leaderboard, score_seed
@@ -63,7 +63,7 @@ class TestBenchmarkHarness:
             assert "final_rms" in data
             assert "is_success" in data
 
-        res = evaluate_hackathon_benchmark(
+        evaluate_hackathon_benchmark(
             env,
             agent,
             seeds=range(1, 3),
