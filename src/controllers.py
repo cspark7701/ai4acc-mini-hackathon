@@ -17,15 +17,30 @@ class ClassicalSVDController:
         return np.clip(- self.gain * (self.R_pinv @ obs), -0.8, 0.8)
 
 
+def _current_state(info: Optional[Dict[str, Any]]) -> np.ndarray:
+    """Total corrector currents applied so far (zeros when unknown)."""
+    if info and "currents" in info:
+        return np.asarray(info["currents"], dtype=np.float64)
+    return np.zeros(6)
+
+
 class SupervisedMLPController:
-    """Baseline 1: Model-based batch optimizer using the MLP digital twin."""
+    """Baseline 1: Model-based batch optimizer using the MLP digital twin.
+
+    The surrogate f(I) maps total corrector currents to the orbit response. The next orbit
+    after a kick dI is predicted as  obs - f(I) + f(I + dI),  where I is the present total
+    current from info["currents"]; this is exact at every step, not only the first.
+    """
     def __init__(self, surrogate: Any):
         self.surrogate = surrogate
 
     def act(self, obs: np.ndarray, info: Optional[Dict[str, Any]] = None) -> np.ndarray:
+        I_now = _current_state(info)
+        f_now = self.surrogate.predict(I_now.reshape(1, -1))[0]
+
         def objective(delta_I: np.ndarray) -> float:
-            pred = self.surrogate.predict(delta_I.reshape(1, -1))[0]
-            res = obs + pred
+            pred = self.surrogate.predict((I_now + delta_I).reshape(1, -1))[0]
+            res = obs - f_now + pred
             return float(np.sum(res**2) + 0.0001 * np.sum(delta_I**2))
 
         res = opt.minimize(objective, np.zeros(6), bounds=[(-5.0, 5.0)] * 6, method='L-BFGS-B')
@@ -56,7 +71,8 @@ class BayesianOptimizationController:
     Leverages a Gaussian Process surrogate to model non-linear orbit response with epistemic
     uncertainty estimation. Solves a bounded acquisition function (Lower Confidence Bound, LCB)
     per step to balance exploitation of predicted orbit corrections against exploration:
-        alpha_LCB(delta_I) = RMS(obs + mu(delta_I)) - kappa * sigma(delta_I) + lambda * ||delta_I||^2
+        alpha_LCB(dI) = RMS(obs - mu(I) + mu(I + dI)) - kappa * sigma(I + dI) + lambda * ||dI||^2
+    where I is the present total corrector current from info["currents"].
     """
     def __init__(
         self,
@@ -71,9 +87,12 @@ class BayesianOptimizationController:
         self.delta_bound = float(delta_bound)
 
     def act(self, obs: np.ndarray, info: Optional[Dict[str, Any]] = None) -> np.ndarray:
+        I_now = _current_state(info)
+        mu_now = self.gp.predict(I_now.reshape(1, -1))[0]
+
         def acquisition_lcb(delta_I: np.ndarray) -> float:
-            pred_mean, pred_std = self.gp.predict(delta_I.reshape(1, -1), return_std=True)
-            res = obs + pred_mean[0]
+            pred_mean, pred_std = self.gp.predict((I_now + delta_I).reshape(1, -1), return_std=True)
+            res = obs - mu_now + pred_mean[0]
             rms_pred = np.sqrt(np.mean(res**2))
             unc = np.mean(pred_std)
             return float(rms_pred - self.kappa * unc + self.l2_reg * np.sum(delta_I**2))
