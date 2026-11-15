@@ -4,7 +4,15 @@
 # AI Applications in Accelerators Tutorial & Mini-Hackathon
 # ==============================================================================
 # Usage:
-#   ./scripts/create_bundle.sh [IMAGE_TAG]
+#   ./scripts/create_bundle.sh [--tag TAG] [--no-push] [--allow-dirty]
+#
+# Always builds a fresh image from the current repository, verifies it, writes the
+# offline bundle, and then publishes the same commit to Docker Hub with
+# docker_publish.sh, so the bundle and Docker Hub always carry the same image.
+#
+#   --tag TAG       Image tag (default: latest)
+#   --no-push       Build the bundle only; do not publish to Docker Hub
+#   --allow-dirty   Allow uncommitted changes (the bundle and image are then marked -dirty)
 #
 # Generates:
 #   dist/ai4acc-hackathon/
@@ -20,14 +28,24 @@
 
 set -euo pipefail
 
-# 1. Resolve directory paths
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/.." >/dev/null 2>&1 && pwd)"
+# 1. Resolve paths and options
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)/image_common.sh"
 cd "${REPO_ROOT}"
 
-IMAGE_NAME="cspark7701/ai4acc-hackathon-2026"
-TAG="${1:-latest}"
-FULL_IMAGE="${IMAGE_NAME}:${TAG}"
+TAG="latest"
+PUSH=true
+ALLOW_DIRTY=false
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --tag) TAG="$2"; shift 2 ;;
+        --no-push) PUSH=false; shift ;;
+        --allow-dirty) ALLOW_DIRTY=true; shift ;;
+        -h|--help) sed -n '/^# Usage:/,/^# Generates:/p' "$0" | sed '$d' | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -*) echo "❌ Unknown option: $1"; exit 1 ;;
+        *) TAG="$1"; shift ;;   # positional tag, kept for backward compatibility
+    esac
+done
+FULL_IMAGE="${DEFAULT_IMAGE_REPO}:${TAG}"
 OUTPUT_DIR="${REPO_ROOT}/dist/ai4acc-hackathon"
 ZIP_FILE="${REPO_ROOT}/dist/ai4acc-hackathon.zip"
 
@@ -35,51 +53,24 @@ echo "===================================================================="
 echo "          AI Accelerator Mini-Hackathon 2026"
 echo "   Offline Participant Bundle Creator"
 echo "===================================================================="
+
+# 2. Pre-flight: Docker, solution exclusion, git state
+image_preflight
 echo "Target Image : ${FULL_IMAGE}"
+echo "Commit       : ${GIT_COMMIT}"
 echo "Output Folder: ${OUTPUT_DIR}"
+echo "Docker Hub   : $( [ "${PUSH}" = true ] && echo "publish this commit after bundling" || echo "not published (--no-push)" )"
 echo ""
-
-# 2. Check Docker availability
-if ! command -v docker >/dev/null 2>&1; then
-    echo "❌ Error: Docker is not installed or not available in PATH."
+if [ "${GIT_DIRTY}" = true ] && [ "${ALLOW_DIRTY}" = false ]; then
+    echo "❌ Error: the repository has uncommitted changes. Commit them first, or pass --allow-dirty."
     exit 1
 fi
 
-if ! docker info >/dev/null 2>&1; then
-    echo "❌ Error: Docker daemon is not running."
-    exit 1
-fi
-
-# 3. Always build the image from the current repository, so the bundle never ships
-#    an older local image. Unchanged layers come from the Docker cache.
-GIT_COMMIT="$(git -C "${REPO_ROOT}" rev-parse --short HEAD 2>/dev/null || echo unknown)"
-if [ -n "$(git -C "${REPO_ROOT}" status --porcelain --untracked-files=no 2>/dev/null)" ]; then
-    echo "[!] Warning: the repository has uncommitted changes; they will be included in the image."
-    GIT_COMMIT="${GIT_COMMIT}-dirty"
-fi
-echo "[*] Building image '${FULL_IMAGE}' from the current repository (commit ${GIT_COMMIT}) ..."
-docker build --label "org.opencontainers.image.revision=${GIT_COMMIT}" -t "${FULL_IMAGE}" .
-
-# 3b. Verify that the image contains the current participant notebook, benchmark code and slides
-echo "[*] Verifying image contents against the repository ..."
-verify() {  # verify <repo file> <path inside image>
-    local want got
-    want="$(sha256sum "${REPO_ROOT}/$1" | cut -d' ' -f1)"
-    got="$(docker run --rm --entrypoint sha256sum "${FULL_IMAGE}" "$2" 2>/dev/null | cut -d' ' -f1)"
-    if [ "${want}" != "${got}" ]; then
-        echo "❌ Error: $2 in the image does not match $1 in the repository."
-        exit 1
-    fi
-    echo "    [OK] $1"
-}
-SRC_DIR="$(docker run --rm --entrypoint python "${FULL_IMAGE}" -c 'import os, src.benchmark as b; print(os.path.dirname(b.__file__))')"
-verify notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb /workspace/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
-verify src/benchmark.py "${SRC_DIR}/benchmark.py"
-verify src/environment.py "${SRC_DIR}/environment.py"
-verify presentations/Lecture_1_AI_ML_Foundations_and_Control.pdf /workspace/Lecture_1_AI_ML_Foundations_and_Control.pdf
-verify lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf /workspace/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf
+# 3. Always build a fresh image from the current repository and verify it
+image_build "${FULL_IMAGE}"
+image_verify "${FULL_IMAGE}"
 IMAGE_ID="$(docker image inspect --format '{{.Id}}' "${FULL_IMAGE}")"
-echo "[OK] Image ${IMAGE_ID:7:12} matches the repository."
+echo ""
 
 # 4. Prepare distribution directory
 echo "[*] Setting up bundle directory: ${OUTPUT_DIR} ..."
@@ -182,3 +173,14 @@ echo ""
 echo "Files included:"
 ls -lh "${OUTPUT_DIR}"
 echo "===================================================================="
+
+# 10. Publish the same commit to Docker Hub so the bundle and Docker Hub match
+if [ "${PUSH}" = true ]; then
+    echo ""
+    echo "[*] Publishing commit ${GIT_COMMIT} to Docker Hub ..."
+    PUBLISH_ARGS=(--tag "${TAG}")
+    [ "${ALLOW_DIRTY}" = true ] && PUBLISH_ARGS+=(--allow-dirty)
+    "${REPO_ROOT}/scripts/docker_publish.sh" "${PUBLISH_ARGS[@]}"
+else
+    echo "[!] Docker Hub was not updated (--no-push). Run ./scripts/docker_publish.sh to publish this commit."
+fi

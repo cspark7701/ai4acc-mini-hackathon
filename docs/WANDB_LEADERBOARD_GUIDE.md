@@ -74,7 +74,8 @@ though the project is Team-only and participants are not members.
 
 1. Save the key as a single line in `dist/wandb.apikey`. The file is listed in
    `.gitignore` and `.dockerignore`, so it cannot be committed or baked into the image.
-2. Run `./scripts/create_bundle.sh`. It copies `wandb.apikey` into the bundle next to
+2. Run `./scripts/create_bundle.sh` (it rebuilds the image, writes the bundle and publishes the same
+   commit to Docker Hub; add `--no-push` to skip publishing). It copies `wandb.apikey` into the bundle next to
    `run_hackathon_windows.bat` and `run_hackathon_mac_linux.sh`.
 3. Hand out the bundle on the day (USB drive or a private download link). Do not post the
    bundle or the key publicly.

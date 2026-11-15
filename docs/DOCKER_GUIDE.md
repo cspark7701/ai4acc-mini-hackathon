@@ -120,15 +120,20 @@ docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 If workshop organizers wish to distribute a pre-compiled image so attendees can skip the local build step:
 
 > [!TIP]
-> **One-Command Automated Publishing Script:**
-> An automated publishing script is provided at [`scripts/docker_publish.sh`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/scripts/docker_publish.sh). It handles pre-flight Docker checks, solution privacy verification, multi-arch builds (`linux/amd64` + `linux/arm64` by default), authentication, and publishing:
+> **Recommended: the two release scripts.** Both always build a fresh image from the current repository (never an older local image), check that the participant notebook, benchmark code and lecture PDFs inside it match the repository and that no solution notebook is included, and refuse to run with uncommitted changes unless you pass `--allow-dirty`.
 > ```bash
-> # Interactive mode (prompts for username, uses 'latest' tag and multi-arch by default):
+> # Build, verify and push cspark7701/ai4acc-hackathon-2026:latest (linux/amd64 + linux/arm64),
+> # then confirm that Docker Hub carries the current commit for every architecture:
 > ./scripts/docker_publish.sh
-> 
-> # Or specify parameters:
-> ./scripts/docker_publish.sh <your-username> latest [--single-arch]
+> ./scripts/docker_publish.sh --dry-run           # build and verify only, no push
+> ./scripts/docker_publish.sh --tag 2026.1 --single-arch
+>
+> # Build and verify the image, write the offline bundle (dist/ai4acc-hackathon.zip),
+> # then publish the same commit to Docker Hub so the bundle and Docker Hub match:
+> ./scripts/create_bundle.sh
+> ./scripts/create_bundle.sh --no-push            # bundle only
 > ```
+> Each bundle records the image ID and commit in `image-id.txt` and `BUILD_INFO.txt`; the launchers load the bundled image whenever it differs from the one installed.
 
 ### Step 1: Build the Image Locally
 From the repository root directory, build the challenge image (the reference solution notebook is automatically excluded via `.dockerignore`):
