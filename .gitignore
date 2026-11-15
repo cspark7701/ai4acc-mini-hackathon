@@ -59,7 +59,7 @@ tmp/
 *.tmp
 temp/
 
-# Generated runtime images (img/beamline.png is tracked because README.md displays it)
-img/benchmark_trajectories.png
+# Generated runtime images. img/beamline.png and img/benchmark_trajectories.png are tracked
+# because README.md, the slides and the lecture notes use them.
 
 img/benchmark_trajectories_solution.png
