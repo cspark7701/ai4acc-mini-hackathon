@@ -503,6 +503,8 @@ We evaluate candidate corrective kicks using the Lower Confidence Bound (LCB) ac
 \end{equation}
 where $\kappa \ge 0$ balances exploitation (minimizing predicted orbit RMS) with exploration (reducing uncertainty in non-linear saturation regimes). When $\kappa = 0$, the controller performs pure exploitation of the well-calibrated posterior mean, converging in an average of only \textbf{1.5 steps} across the benchmark suite.
 
+\paragraph{Closed-loop control, offline model.} The controller is closed-loop: at every step it re-solves the acquisition problem from the latest BPM reading $\mathbf{Y}_{\text{obs}}$. Its model, however, is not updated online. The reference GP is fitted once on about 300 calibration shots and stays fixed for the whole benchmark, which makes it structurally close to Track~1 (an offline surrogate inverted at every step) with uncertainty available through $\kappa$. Classic Bayesian optimization adds each new (kick, observed orbit) pair to the GP and refits it; participants can do this from a \texttt{step\_callback} registered in the notebook's \texttt{CALLBACKS}, turning Track~3 into true online Bayesian optimization.
+
 \begin{lstlisting}[language=Python]
 class BayesianOptimizationController:
     def __init__(self, gp_surrogate, kappa=0.0, l2_reg=0.0001):
@@ -594,7 +596,7 @@ Official baseline and challenge policy performance across the 30 standardized ev
 \end{table}
 
 \subsection{Method Comparison Summary}
-Table~\ref{tab:comparison} summarises how the two baselines and the two challenge tracks differ. The reference score is that of the unmodified notebook controller; the best-agent score is the highest score per method in the 10-agent W\&B test (2026-11-14), which used saturation compensation on the total current and better surrogates. Baseline 0 is a fixed reference and is not tuned by participants.
+Table~\ref{tab:comparison} summarizes how the two baselines and the two challenge tracks differ. The reference score is that of the unmodified notebook controller; the best-agent score is the highest score per method in the 10-agent W\&B test (2026-11-14), which used saturation compensation on the total current and better surrogates. Baseline 0 is a fixed reference and is not tuned by participants.
 
 \begin{table}[h!]
 \centering
@@ -605,9 +607,9 @@ Table~\ref{tab:comparison} summarises how the two baselines and the two challeng
 \textbf{Method} & \textbf{Control law} & \textbf{Model \& data} & \textbf{Strengths} & \textbf{Limitations} & \textbf{Score: ref.\ / best} \\
 \midrule
 \textbf{Baseline 0}\newline Classical SVD & $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed $\alpha = 0.45$ & Analytic ORM; no training data & Instant, robust, interpretable & Ignores saturation; slow at low gain & 705.337 / --- \\
-\textbf{Baseline 1 (Track 1)}\newline Supervised inversion & Minimise $\|\mathbf{Y} + f_\theta(\Delta\mathbf{I})\|^2$ with L-BFGS-B & MLP twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest & 441.644 / 941.8 \\
+\textbf{Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} + f_\theta(\Delta\mathbf{I})\|^2$ with L-BFGS-B & MLP twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest & 441.644 / 941.8 \\
 \textbf{Track 2}\newline RL / adaptive policy & Physics prior $+$ learned residual $+$ damping & Policy parameters; closed-loop tuning & Fastest per step; adapts online & Gain and damping tuning; overshoot & 686.926 / 955.0 \\
-\textbf{Track 3}\newline Bayesian optimisation & Minimise LCB of GP-predicted RMS & Gaussian process; $\sim$300 shots & Sample-efficient; models uncertainty & GP cost grows; per-step optimisation & 873.163 / 954.8 \\
+\textbf{Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS & Gaussian process; $\sim$300 shots & Sample-efficient; models uncertainty & GP cost grows; per-step optimization & 873.163 / 954.8 \\
 \bottomrule
 \end{tabular}
 \caption{Comparison of the baseline and challenge-track controllers.}

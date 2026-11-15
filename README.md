@@ -106,7 +106,7 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 ├── lecture_notes/                                    # Master lecture notes for Session 1 (Dr. Chong Shik Park)
 │   ├── Lecture_1_AI_ML_Techniques_for_Accelerators.md    # Session 1 master notes (Markdown)
 │   ├── Lecture_1_AI_ML_Techniques_for_Accelerators.tex   # Session 1 LaTeX source
-│   └── Lecture_1_AI_ML_Techniques_for_Accelerators.pdf   # Compiled lecture monograph (PDF, 16 pages)
+│   └── Lecture_1_AI_ML_Techniques_for_Accelerators.pdf   # Compiled lecture monograph (PDF, 17 pages)
 │
 ├── notebooks/                                        # Interactive Jupyter challenge notebooks
 │   ├── Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb  # Primary challenge notebook for participants (with TODOs)
@@ -227,7 +227,7 @@ Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](f
 
 For detailed guidelines, refer to the included guides:
 - [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (Markdown)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
-- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 16-page PDF monograph.
+- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 17-page PDF monograph.
 - [Lecture 1 LaTeX Source](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.tex) — LaTeX document source code.
 - [Hackathon Project Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Hackathon%20Project%20Guide.docx) — Complete rules, physics derivations, and scoring breakdown.
 - [Technical Preparation Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Technical%20Preparation.docx) — Detailed lecture syllabus, setup recommendations, and schedule.

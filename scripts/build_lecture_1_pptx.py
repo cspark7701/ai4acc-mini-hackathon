@@ -46,7 +46,7 @@ TOTAL_SLIDES = 29
 
 # Line spacing (multiple of single spacing) for the body text of each slide, matching the
 # per-slide \slidespread values of the LaTeX deck so that text fills each content card.
-LINE_SPACING = {1: 1.22, 2: 1.31, 3: 1.35, 4: 1.80, 5: 1.27, 6: 1.14, 7: 1.14, 8: 1.13, 9: 1.22, 10: 1.50, 11: 1.19, 12: 1.38, 13: 1.58, 14: 1.42, 15: 1.22, 16: 1.35, 17: 1.22, 18: 1.30, 19: 1.20, 20: 1.12, 21: 1.38, 22: 1.07, 23: 1.22, 24: 1.61, 25: 1.0, 26: 1.22, 27: 1.22, 28: 1.38, 29: 1.40}
+LINE_SPACING = {1: 1.22, 2: 1.31, 3: 1.35, 4: 1.80, 5: 1.27, 6: 1.14, 7: 1.14, 8: 1.13, 9: 1.22, 10: 1.50, 11: 1.19, 12: 1.38, 13: 1.58, 14: 1.42, 15: 1.22, 16: 1.35, 17: 1.22, 18: 1.30, 19: 1.20, 20: 1.12, 21: 1.38, 22: 0.87, 23: 1.22, 24: 1.61, 25: 1.00, 26: 1.22, 27: 1.22, 28: 1.38, 29: 1.40}
 
 
 def add_text_run(paragraph, text, bold=False, size=None, color=None):
@@ -579,7 +579,7 @@ def create_presentation():
         ("2. Leaky ReLU:", "f(z) = max(α·z, z), α ≈ 0.01", "• Small slope for z < 0 avoids 'dying' neurons that stop learning."),
         ("3. GELU:", "f(z) = z · Φ(z)", "• Smooth gating by the normal CDF; standard in modern LLMs & Transformers."),
         ("4. Sigmoid:", "σ(z) = 1 / (1 + e⁻ᶻ)", "• Output in (0, 1) for probabilities; gradient vanishes when saturated."),
-        ("5. Tanh:", "tanh(z) = (eᶻ - e⁻ᶻ)/(eᶻ + e⁻ᶻ)", "• Zero-centred in (-1, 1); stronger gradients than Sigmoid, still saturates."),
+        ("5. Tanh:", "tanh(z) = (eᶻ - e⁻ᶻ)/(eᶻ + e⁻ᶻ)", "• Zero-centered in (-1, 1); stronger gradients than Sigmoid, still saturates."),
         ("6. Linear / Identity:", "f(z) = z", "• No non-linearity; used in the output layer of regression surrogates (BPM readings Y).")
     ]
 
@@ -632,7 +632,7 @@ def create_presentation():
     add_header(s15, "Surrogate Modeling", "Neural Surrogate Digital Twin",
                "Deep Multi-Layer Perceptron (128-64-32) capturing non-linear cubic saturation")
 
-    # Image scaled: Height = 4.25 in, aspect ratio preserved and centred (Top: 1.38 to 5.63in)
+    # Image scaled: Height = 4.25 in, aspect ratio preserved and centered (Top: 1.38 to 5.63in)
     mlp_img = IMG_DIR / "mlp_schematic.png"
     if mlp_img.exists():
         pic = s15.shapes.add_picture(str(mlp_img), Inches(0), Inches(1.38), height=Inches(4.25))
@@ -690,7 +690,7 @@ def create_presentation():
     add_header(s17, "Closed-Loop Control", "Closed-Loop Control Architecture",
                "Transitioning from predictive surrogate modeling to active closed-loop trajectory correction")
 
-    # Image scaled: Height = 4.25 in, aspect ratio preserved and centred (Top: 1.38 to 5.63in)
+    # Image scaled: Height = 4.25 in, aspect ratio preserved and centered (Top: 1.38 to 5.63in)
     ctrl_img = IMG_DIR / "forward_sl_and_rl_schematic.png"
     if ctrl_img.exists():
         pic = s17.shapes.add_picture(str(ctrl_img), Inches(0), Inches(1.38), height=Inches(4.25))
@@ -870,6 +870,13 @@ def create_presentation():
     p3 = tf22.add_paragraph()
     add_text_run(p3, "• Epistemic Uncertainty Estimation:\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p3, "  -- For any candidate kick ΔI, the GP provides both posterior mean μ_GP(ΔI) and standard deviation σ_GP(ΔI).", size=Pt(13.5), color=DARK_GRAY)
+
+    p4 = tf22.add_paragraph()
+    p4.space_before = Pt(8)
+    add_text_run(p4, "• Closed-Loop Control, Offline Model:\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p4, "  -- Each step re-solves the acquisition from the latest BPM reading, but the reference GP is fitted once on ~300 "
+                     "calibration shots and stays fixed. Refitting it with every new step (e.g. from a step_callback) turns Track 3 "
+                     "into true online Bayesian optimization.", size=Pt(13.5), color=DARK_GRAY)
 
     add_footer(s22, 22)
 
@@ -1074,12 +1081,12 @@ def create_presentation():
     cmp_rows = [
         ("Baseline 0\nClassical SVD", "ΔI = −α (Rᵀ)⁺ Y, fixed gain α = 0.45", "Analytic ORM; no training data",
          "Instant, robust, interpretable", "Ignores saturation; slow at low gain; fixed reference", "705.337 / —"),
-        ("Baseline 1 (Track 1)\nSupervised inversion", "Minimise ‖Y + f_θ(ΔI)‖² with L-BFGS-B each step", "MLP digital twin; 1,500 offline shots",
+        ("Baseline 1 (Track 1)\nSupervised inversion", "Minimize ‖Y + f_θ(ΔI)‖² with L-BFGS-B each step", "MLP digital twin; 1,500 offline shots",
          "Learns the non-linear response", "Only as good as the surrogate; slowest per step", "441.644 / 941.8"),
         ("Track 2\nRL / adaptive policy", "Physics prior + learned residual + damping", "Policy parameters; tuned in closed loop",
          "Fastest per step; adapts online", "Gain and damping tuning; overshoot risk", "686.926 / 955.0"),
-        ("Track 3\nBayesian optimisation", "Minimise LCB of GP-predicted RMS each step", "Gaussian process; ~300 calibration shots",
-         "Sample-efficient; models uncertainty", "GP cost grows with data; per-step optimisation", "873.163 / 954.8"),
+        ("Track 3\nBayesian optimization", "Minimize LCB of GP-predicted RMS each step", "Gaussian process; ~300 calibration shots",
+         "Sample-efficient; models uncertainty", "GP cost grows with data; per-step optimization", "873.163 / 954.8"),
     ]
     cmp_headers = ["Method", "Control law", "Model & data", "Strengths", "Limitations", "Score: ref. / best agent"]
     cmp_shape = s_cmp.shapes.add_table(5, 6, Inches(0.8), Inches(1.55), Inches(11.733), Inches(4.5))

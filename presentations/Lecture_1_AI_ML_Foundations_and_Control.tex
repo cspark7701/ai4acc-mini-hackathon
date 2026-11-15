@@ -440,7 +440,7 @@
     {\bfseries\color{navy}4. Sigmoid:} \textbf{\color{primaryblue}$\sigma(z) = 1/(1 + e^{-z})$}\\
     $\bullet$ Output in $(0, 1)$ for probabilities; gradient vanishes when saturated.\\[0.3em]
     {\bfseries\color{navy}5. Tanh:} \textbf{\color{primaryblue}$\tanh(z) = (e^z - e^{-z})/(e^z + e^{-z})$}\\
-    $\bullet$ Zero-centred in $(-1, 1)$; stronger gradients than Sigmoid, still saturates.\\[0.3em]
+    $\bullet$ Zero-centered in $(-1, 1)$; stronger gradients than Sigmoid, still saturates.\\[0.3em]
     {\bfseries\color{navy}6. Linear / Identity:} \textbf{\color{primaryblue}$f(z) = z$}\\
     $\bullet$ No non-linearity; used in the output layer of regression surrogates (BPM readings $\mathbf{Y}$).
   }
@@ -656,7 +656,7 @@
 % SLIDE 22: Track 3: Closed-Loop Bayesian Optimization
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.49}
+  \slidespread{1.10}
   \slideheader{Track 3 Challenge}{Track 3: Closed-Loop Bayesian Optimization}{Sample-efficient probabilistic modeling with epistemic uncertainty estimation}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Probabilistic Gaussian Process Modeling}
@@ -671,7 +671,9 @@
     -- \textbf{Mat\'ern-5/2 Kernel:} Captures smooth, non-linear magnetic saturation falloff without imposing the unrealistic infinite differentiability of RBF kernels.\\
     -- \textbf{White Noise Kernel:} Explicitly accounts for the $10\ \mu\text{m}$ BPM diagnostic jitter floor, avoiding kernel overfitting to noise.\\[0.8em]
     {\bfseries\color{navy}$\bullet$ Epistemic Uncertainty Estimation:}\\[0.3em]
-    For any candidate kick $\Delta\mathbf{I}$, the GP provides both posterior mean $\boldsymbol{\mu}_{\text{GP}}(\Delta\mathbf{I})$ and standard deviation $\boldsymbol{\sigma}_{\text{GP}}(\Delta\mathbf{I})$.
+    For any candidate kick $\Delta\mathbf{I}$, the GP provides both posterior mean $\boldsymbol{\mu}_{\text{GP}}(\Delta\mathbf{I})$ and standard deviation $\boldsymbol{\sigma}_{\text{GP}}(\Delta\mathbf{I})$.\\[0.8em]
+    {\bfseries\color{navy}$\bullet$ Closed-Loop Control, Offline Model:}\\[0.3em]
+    Each step re-solves the acquisition from the latest BPM reading, but the reference GP is fitted once on $\sim$300 calibration shots and stays fixed. Refitting it with every new step (e.g.\ from a \texttt{step\_callback}) turns Track 3 into true online Bayesian optimization.
   }
 
   \slidefooter{22}
@@ -814,9 +816,9 @@
         \textbf{\color{primaryblue}Method} & \textbf{\color{primaryblue}Control law} & \textbf{\color{primaryblue}Model \& data} & \textbf{\color{primaryblue}Strengths} & \textbf{\color{primaryblue}Limitations} & \textbf{\color{primaryblue}Score: ref.\ / best agent} \\
         \midrule
         \textbf{\color{navy}Baseline 0}\newline Classical SVD & $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed gain $\alpha = 0.45$ & Analytic ORM; no training data & Instant, robust, interpretable & Ignores saturation; slow at low gain; fixed reference & 705.337 / --- \\
-        \textbf{\color{navy}Baseline 1 (Track 1)}\newline Supervised inversion & Minimise $\|\mathbf{Y} + f_\theta(\Delta\mathbf{I})\|^2$ with L-BFGS-B each step & MLP digital twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest per step & 441.644 / 941.8 \\
+        \textbf{\color{navy}Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} + f_\theta(\Delta\mathbf{I})\|^2$ with L-BFGS-B each step & MLP digital twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest per step & 441.644 / 941.8 \\
         \textbf{\color{navy}Track 2}\newline RL / adaptive policy & Physics prior $+$ learned residual $+$ damping & Policy parameters; tuned in closed loop & Fastest per step; adapts online & Gain and damping tuning; overshoot risk & 686.926 / 955.0 \\
-        \textbf{\color{navy}Track 3}\newline Bayesian optimisation & Minimise LCB of GP-predicted RMS each step & Gaussian process; $\sim$300 calibration shots & Sample-efficient; models uncertainty & GP cost grows with data; per-step optimisation & 873.163 / 954.8 \\
+        \textbf{\color{navy}Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS each step & Gaussian process; $\sim$300 calibration shots & Sample-efficient; models uncertainty & GP cost grows with data; per-step optimization & 873.163 / 954.8 \\
         \bottomrule
       \end{tabular}
     };

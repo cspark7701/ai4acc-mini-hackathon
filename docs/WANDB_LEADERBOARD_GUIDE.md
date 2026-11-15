@@ -15,7 +15,7 @@ This guide explains how the live Weights & Biases (W&B) leaderboard for the
 
 ## How the pieces fit together
 
-Three settings in the notebook configuration cell decide where a run goes and how it is labelled:
+Three settings in the notebook configuration cell decide where a run goes and how it is labeled:
 
 ```python
 WANDB_PROJECT = "ai4acc-mini-hackathon-2026"  # [DO NOT CHANGE] the leaderboard
@@ -31,7 +31,7 @@ TEAM_NAME = "Team_01"                         # CHANGE THIS: your unique hackath
 
 W&B uses the word "team" for the shared account in `WANDB_ENTITY`. That is not a
 hackathon team. There is **one** W&B team for the whole workshop, and every hackathon
-team appears inside it as rows labelled with its `TEAM_NAME`.
+team appears inside it as rows labeled with its `TEAM_NAME`.
 
 Submissions are authenticated with one shared **service account key**, not with personal
 keys. The key is never stored in the notebooks, the git repository or the Docker image.

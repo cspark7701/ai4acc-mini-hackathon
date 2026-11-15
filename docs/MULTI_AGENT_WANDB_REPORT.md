@@ -124,13 +124,13 @@ Recommendation: state in the participant rules whether cross-seed learning in ca
 
 ## 6. Observations about the scoring
 
-The new score separated the reference controllers well (371–873), and every agent beat the reference. Among the optimised controllers the spread is much narrower: all ten agents' best scores lie within 35 points (920.8–955.0), and the top seven within 12, because they all reach the physical ceiling. Speed points are nearly identical (290.5–291.6), so ranks depend almost entirely on landing precision (229–264 of 300 points). If a wider spread among strong teams is wanted, precision would need more weight or a finer scale near the noise floor.
+The new score separated the reference controllers well (371–873), and every agent beat the reference. Among the optimized controllers the spread is much narrower: all ten agents' best scores lie within 35 points (920.8–955.0), and the top seven within 12, because they all reach the physical ceiling. Speed points are nearly identical (290.5–291.6), so ranks depend almost entirely on landing precision (229–264 of 300 points). If a wider spread among strong teams is wanted, precision would need more weight or a finer scale near the noise floor.
 
 ---
 
 ## 7. Execution notes
 
-- **CPU overload.** Ten agents ran multi-threaded NumPy/scikit-learn at once on an 8-core host; load average reached about 88 and tuning slowed heavily. After the agents were told to set `OMP_NUM_THREADS=OPENBLAS_NUM_THREADS=MKL_NUM_THREADS=1` and run one process at a time, load fell to about 10. Add these limits to the protocol for future runs. Most agents cut tuning short as a result, so scores are not fully optimised.
+- **CPU overload.** Ten agents ran multi-threaded NumPy/scikit-learn at once on an 8-core host; load average reached about 88 and tuning slowed heavily. After the agents were told to set `OMP_NUM_THREADS=OPENBLAS_NUM_THREADS=MKL_NUM_THREADS=1` and run one process at a time, load fell to about 10. Add these limits to the protocol for future runs. Most agents cut tuning short as a result, so scores are not fully optimized.
 - **Notebook runs.** Agents B7, A2 and B10 each started nbconvert twice; in every case the first attempt stopped before any W&B call, so no duplicate runs were created. Agent B6's final run started before the thread-limit message and ran multi-threaded.
 - **Kernel and path.** The notebook's kernel metadata names `ai4acc`, and the notebook needs the repository root on `PYTHONPATH`. Agents passed `PYTHONPATH=.` or a kernel override.
 - **Latency** values are inflated by the load and are not comparable to an idle machine.

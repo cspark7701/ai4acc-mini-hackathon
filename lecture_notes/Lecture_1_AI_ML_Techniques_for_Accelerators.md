@@ -470,6 +470,8 @@ $$\alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y}_{\text{ob
 
 where $\kappa \ge 0$ balances exploitation (minimizing predicted orbit RMS) with exploration (reducing uncertainty in non-linear saturation regimes). When $\kappa = 0$, the controller performs pure exploitation of the well-calibrated posterior mean, converging in an average of only **1.5 steps** across the benchmark suite.
 
+**Closed-loop control, offline model.** The controller is closed-loop: at every step it re-solves the acquisition problem from the latest BPM reading $\mathbf{Y}_{\text{obs}}$. Its model, however, is not updated online. The reference GP is fitted once on about 300 calibration shots and stays fixed for the whole benchmark, which makes it structurally close to Track 1 (an offline surrogate inverted at every step) with uncertainty available through $\kappa$. Classic Bayesian optimization adds each new (kick, observed orbit) pair to the GP and refits it; participants can do this from a `step_callback` registered in the notebook's `CALLBACKS`, turning Track 3 into true online Bayesian optimization.
+
 ```python
 class BayesianOptimizationController:
     def __init__(self, gp_surrogate, kappa=0.0, l2_reg=0.0001):
@@ -554,9 +556,9 @@ Across the 30 standardized seeds, our four competitor implementations produce:
 | Method | Control law | Model & data | Strengths | Limitations | Score: reference / best agent |
 | :--- | :--- | :--- | :--- | :--- | :---: |
 | **Baseline 0**<br>Classical SVD | $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed gain $\alpha = 0.45$ | Analytic ORM; no training data | Instant, robust, interpretable | Ignores saturation; slow at low gain; fixed reference | 705.337 / — |
-| **Baseline 1 (Track 1)**<br>Supervised inversion | Minimise $\lVert\mathbf{Y} + f_\theta(\Delta\mathbf{I})\rVert^2$ with L-BFGS-B each step | MLP digital twin; 1,500 offline shots | Learns the non-linear response | Only as good as the surrogate; slowest per step | 441.644 / 941.8 |
+| **Baseline 1 (Track 1)**<br>Supervised inversion | Minimize $\lVert\mathbf{Y} + f_\theta(\Delta\mathbf{I})\rVert^2$ with L-BFGS-B each step | MLP digital twin; 1,500 offline shots | Learns the non-linear response | Only as good as the surrogate; slowest per step | 441.644 / 941.8 |
 | **Track 2**<br>RL / adaptive policy | Physics prior + learned residual + damping | Policy parameters; tuned in closed loop | Fastest per step; adapts online | Gain and damping tuning; overshoot risk | 686.926 / 955.0 |
-| **Track 3**<br>Bayesian optimisation | Minimise LCB of GP-predicted RMS each step | Gaussian process; ~300 calibration shots | Sample-efficient; models uncertainty | GP cost grows with data; per-step optimisation | 873.163 / 954.8 |
+| **Track 3**<br>Bayesian optimization | Minimize LCB of GP-predicted RMS each step | Gaussian process; ~300 calibration shots | Sample-efficient; models uncertainty | GP cost grows with data; per-step optimization | 873.163 / 954.8 |
 
 *Reference:* unmodified notebook controllers. *Best agent:* highest score per method in the 10-agent W&B test (2026-11-14), using saturation compensation on the total current and better surrogates. Baseline 0 is a fixed reference and is not tuned by participants.
 

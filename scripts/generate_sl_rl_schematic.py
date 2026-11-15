@@ -43,7 +43,7 @@ def card(x, y, w, h, fill, edge, lw=1.4, radius=0.12):
 
 
 def badge(x, y, w, h, text, fill, color, fs=BADGE_FS):
-    """Badge with its left edge at x and vertical centre at y."""
+    """Badge with its left edge at x and vertical center at y."""
     ax.add_patch(patches.FancyBboxPatch(
         (x, y - h / 2), w, h, boxstyle="round,pad=0,rounding_size=0.07",
         facecolor=fill, edgecolor="none", zorder=3))
@@ -92,7 +92,7 @@ ax.text(LX + 0.25, 2.12, "PHASE 2  Online inversion (Track 1)", fontsize=BADGE_F
 y2, h2 = 0.30, 1.52
 box(LX + 0.20, y2, 1.45, h2, "Measure", "orbit\n$Y_{obs}$",
     "#F1F5F9", "#CBD5E1", "#334155")
-box(LX + 1.93, y2, 2.45, h2, "Optimise (L-BFGS-B)",
+box(LX + 1.93, y2, 2.45, h2, "Optimize (L-BFGS-B)",
     "$\\min_{\\Delta I}\\ \\|Y_{obs} + f_\\theta(\\Delta I)\\|^2$\n$|\\Delta I| \\leq 0.8$ A",
     "#F5F3FF", "#C4B5FD", "#6D28D9")
 box(LX + 4.66, y2, 1.20, h2, "Apply", "$\\Delta I^{*}$ to\n6 correctors",
@@ -108,7 +108,7 @@ card(RX, 0.10, RW, 4.40, "#F8FAFC", "#94A3B8", lw=1.5, radius=0.18)
 badge(RX + 0.20, 4.18, 1.35, 0.36, "PARADIGM 2", "#16A34A", "#FFFFFF")
 ax.text(RX + 1.70, 4.18, "Reinforcement Learning", fontsize=TITLE_FS,
         fontweight="bold", ha="left", va="center", color="#15803D")
-ax.text(RX + 0.25, 3.72, "Closed loop: sense, act, learn (Track 2)", fontsize=BADGE_FS,
+ax.text(RX + 0.25, 3.72, "Learns by interacting with the beamline (Track 2)", fontsize=BADGE_FS,
         fontweight="bold", ha="left", va="center", color="#15803D")
 
 ax_x, ax_w = RX + 1.55, 3.0
