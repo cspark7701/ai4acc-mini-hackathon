@@ -30,7 +30,7 @@
 \setlength{\parindent}{0pt}
 
 % Total number of slides
-\newcommand{\totalslides}{13}
+\newcommand{\totalslides}{10}
 
 % Helper: Place text block at (x, y) inches from top-left with width w inches
 \newcommand{\at}[4]{%
@@ -152,13 +152,13 @@
       \toprule
       \textbf{Time Window} & \textbf{Session Milestone} & \textbf{Operational Focus \& Hands-on Activities} \\
       \midrule
-      {\bfseries\color{primaryblue}13:30 -- 13:45 (15 min)} & {\bfseries Environment \& Setup} & Unpack offline bundle, launch Docker container via launcher scripts, open participant notebook, set \texttt{TEAM\_NAME}, and verify Baseline 0 reference. \\
+      \leavevmode\textcolor{primaryblue}{\textbf{13:30 -- 13:45 (15 min)}} & \leavevmode\textbf{Environment \& Setup} & Unpack offline bundle, launch Docker container via launcher scripts, open participant notebook, set \texttt{TEAM\_NAME}, and verify Baseline 0 reference. \\
       \addlinespace[0.9em]
-      {\bfseries\color{primaryblue}13:45 -- 16:15 (2.5 hrs)} & {\bfseries Multi-Track Optimization (Open Hackathon)} & \textbf{Open development window:} participants develop, tune, and benchmark all tracks concurrently without sequential restrictions (surrogate, RL, BO, and callbacks). \\
+      \leavevmode\textcolor{primaryblue}{\textbf{13:45 -- 16:15 (2.5 hrs)}} & \leavevmode\textbf{Multi-Track Optimization (Open Hackathon)} & \textbf{Open development window:} participants develop, tune, and benchmark all tracks concurrently without sequential restrictions (surrogate, RL, BO, and callbacks). \\
       \addlinespace[0.9em]
-      {\bfseries\color{primaryblue}16:15 -- 16:30 (15 min)} & {\bfseries Final Submission \& Score Freeze} & Execute final 30-seed benchmark in Step 5, confirm telemetry on live W\&B leaderboard, and inspect trajectory alignment plots. \\
+      \leavevmode\textcolor{primaryblue}{\textbf{16:15 -- 16:30 (15 min)}} & \leavevmode\textbf{Final Submission \& Score Freeze} & Execute final 30-seed benchmark in Step 5, confirm telemetry on live W\&B leaderboard, and inspect trajectory alignment plots. \\
       \addlinespace[0.9em]
-      {\bfseries\color{gold}16:30 -- 17:00 (30 min)} & {\bfseries Showcase \& Awards Ceremony} & 3-minute lightning presentations per team, live leaderboard review, and presentation of hackathon champion awards. \\
+      \leavevmode\textcolor{gold}{\textbf{16:30 -- 17:00 (30 min)}} & \leavevmode\textbf{Showcase \& Awards Ceremony} & 3-minute lightning presentations per team, live leaderboard review, and presentation of hackathon champion awards. \\
       \bottomrule
     \end{tabular}
   }
@@ -219,117 +219,7 @@
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 4: Physical System & Beamline Layout
-% ==============================================================================
-\begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.24}
-  \slideheader{Beamline Physics}{Lattice Architecture \& Diagnostic Instrumentation}{A 15-meter transport line balancing focusing optics, dipole steering, and sub-micron diagnostics}
-
-  \drawcard{0.8}{1.4}{5.7}{5.3}{Magnetic Lattice \& Diagnostic Geometry}
-  \at{1.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
-    {\bfseries\color{navy}$\bullet$ Section Length \& Optics:}\\[0.2em]
-    $15.0\text{ m}$ single-pass transport section with alternating focusing (\texttt{QF}) and defocusing (\texttt{QD}) quadrupoles shaping betatron phase advance $\psi(s)$.\\[0.6em]
-    {\bfseries\color{navy}$\bullet$ 6 Dipole Steering Correctors:}\\[0.2em]
-    3 Horizontal (\texttt{HCM1-3}) and 3 Vertical (\texttt{VCM1-3}) magnets located at $s \in [0.2, 8.0]\text{ m}$. Total current bounds $[-5.0, +5.0]\text{ A}$.\\[0.6em]
-    {\bfseries\color{navy}$\bullet$ 12 Beam Position Monitors (BPMs):}\\[0.2em]
-    Diagnostic stations at $s \in [1.0, 15.0]\text{ m}$ measuring transverse beam centroid displacement $\mathbf{Y} \in \mathbb{R}^{12}$ in millimeters ($mm$).\\[0.6em]
-    {\bfseries\color{navy}$\bullet$ Actuator Hardware Constraint:}\\[0.2em]
-    Per-step adjustment is strictly bounded: $\Delta \mathbf{I} \in [-0.8, +0.8]\text{ A}$.
-  }
-
-  \drawcard{6.8}{1.4}{5.7}{5.3}{Core Beamline Schematic Diagram}
-  \at{7.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
-    \centering
-    \includegraphics[width=5.1in,height=2.3in,keepaspectratio]{beamline.png}\\[0.5em]
-    \raggedright
-    {\bfseries\color{navy}$\bullet$ Single-Pass Causality:}\enspace Steerers only deflect the orbit at downstream BPMs ($s_j > s_i$). Upstream stations remain unaffected ($R_{ij} = 0$).\\[0.4em]
-    {\bfseries\color{navy}$\bullet$ Transport-Line Response Matrix:}\\[0.2em]
-    $R_{ij} = \frac{1.2 \sin(2\pi \cdot 0.18 (s_j - s_i))}{1 + 0.05 (s_j - s_i)}$ for $s_j > s_i$, modeling betatron oscillation with slowly decaying amplitude envelope.
-  }
-
-  \slidefooter{4}
-\end{tikzpicture}\clearpage
-
-% ==============================================================================
-% SLIDE 5: Physical Response & Non-Linear Saturation
-% ==============================================================================
-\begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.26}
-  \slideheader{Physics Response Model}{Cubic Core Saturation \& Initial 6-Kick Distortion}{Mathematical formulation of the forward simulation environment and sensor noise floor}
-
-  \drawcard{0.8}{1.4}{5.7}{5.3}{Forward Physical Orbit Model}
-  \at{1.05}{2.1}{5.2}{\fs{13}{18}\color{darkgray}%
-    {\bfseries\color{navy}$\bullet$ Response Equation with Saturation:}\\[0.3em]
-    $\mathbf{Y} = \mathbf{I}\mathbf{R} - 0.015\,(\mathbf{I}^3 \mathbf{R}) + \mathbf{Y}_0 + \boldsymbol{\epsilon}$\\[0.5em]
-    where $\mathbf{I} \in \mathbb{R}^6$ is total corrector current, $\mathbf{R} \in \mathbb{R}^{6 \times 12}$ is the linear response, and $\boldsymbol{\epsilon} \sim \mathcal{N}(0, 0.010^2)$ is Gaussian sensor noise.\\[0.6em]
-    {\bfseries\color{navy}$\bullet$ Non-Linear Core Saturation:}\\[0.2em]
-    The odd-symmetric cubic term $-0.015 \mathbf{I}^3 \mathbf{R}$ models iron-core permeability degradation while preserving field polarity $B(-I) = -B(I)$.\\[0.6em]
-    {\bfseries\color{crimson}$\bullet$ Loss of Actuator Authority:}\\[0.2em]
-    At $|I| = 2.5\text{ A}$, saturation reduces steering response by $\approx 23\%$. Linear controllers overshoot or chatter.
-  }
-
-  \drawcard{6.8}{1.4}{5.7}{5.3}{Initial Distortion \& Actuator Budget}
-  \at{7.05}{2.1}{5.2}{\fs{13}{18}\color{darkgray}%
-    {\bfseries\color{navy}$\bullet$ Unknown 6-Kick Error $\mathbf{Y}_0$:}\\[0.3em]
-    $\mathbf{Y}_0 = \mathbf{a}\mathbf{R}, \quad a_k \sim \mathcal{U}(-2.5, 2.5)\text{ A}$\\[0.3em]
-    Unknown kicks applied at all 6 corrector locations upon reset. Initial orbit error spans $0.93$ to $3.59\text{ mm}$ RMS (mean $1.97\text{ mm}$).\\[0.6em]
-    {\bfseries\color{navy}$\bullet$ Exact Cancelling Current:}\\[0.2em]
-    Full cancellation requires total currents up to $2.84\text{ A}$, pushing magnets deep into non-linear saturation.\\[0.6em]
-    {\bfseries\color{navy}$\bullet$ Minimum Theoretical Step Count:}\\[0.2em]
-    With the $|\Delta I| \le 0.8\text{ A}$ hardware slew rate limit, most seeds strictly require at least \textbf{3 to 4 sequential control steps}.
-  }
-
-  \slidefooter{5}
-\end{tikzpicture}\clearpage
-
-% ==============================================================================
-% SLIDE 6: Gymnasium Environment & Agent Contract (FIXED LAYOUT)
-% ==============================================================================
-\begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.26}
-  \slideheader{Gymnasium Interface}{Environment Contract \& Competitor Agent Interface}{Standardized API governing observation space, actions, terminations, and step execution}
-
-  \drawcard{0.8}{1.4}{5.7}{5.3}{Gymnasium Environment Contract}
-  \at{1.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
-    {\bfseries\color{navy}$\bullet$ Observation Space:}\enspace $\mathbf{Y} \in \mathbb{R}^{12}$ (12 BPM centroid readings in $mm$, unclipped).\\[0.5em]
-    {\bfseries\color{navy}$\bullet$ Action Space:}\enspace $\Delta\mathbf{I} \in [-0.8, +0.8]^6\text{ A}$ (incremental corrector adjustments).\\[0.5em]
-    {\bfseries\color{navy}$\bullet$ State Accumulator:}\enspace $\mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \Delta\mathbf{I}, -5.0, 5.0)\text{ A}$.\\[0.5em]
-    {\bfseries\color{navy}$\bullet$ Termination Criterion (\texttt{terminated}):}\\[0.2em]
-    Triggered when $\text{RMS} < 0.030\text{ mm}$ ($30\ \mu\text{m}$). Episode succeeds (\texttt{is\_success = True}).\\[0.5em]
-    {\bfseries\color{navy}$\bullet$ Truncation Criterion (\texttt{truncated}):}\\[0.2em]
-    Triggered if step count reaches $\text{max\_steps} = 50$ without reaching target tolerance. Episode fails.
-  }
-
-  \drawcard{6.8}{1.4}{5.7}{5.3}{Standard Competitor Controller Interface}
-  % Top introductory text
-  \at{7.05}{2.1}{5.2}{\fs{12}{16}\color{darkgray}%
-    {\bfseries\color{navy}Universal Agent Execution Contract:}\\[0.2em]
-    All competitor controllers implement the standardized \texttt{act} method:
-  }
-  % Code Box
-  \drawcodecard{7.05}{2.7}{5.2}{2.3}
-  \at{7.2}{2.85}{4.9}{\fs{9.5}{12.5}\ttfamily\color{darkgray}%
-    class BenchmarkController:\\
-    \quad def act(self, obs: np.ndarray,\\
-    \qquad\qquad\quad info: Optional[dict] = None) -> np.ndarray:\\
-    \qquad """\\
-    \qquad obs:\quad (12,) BPM readings in mm\\
-    \qquad info:\quad \{'rms', 'step', 'currents', ...\}\\
-    \qquad Returns:\quad (6,) delta\_I in [-0.8, 0.8] A\\
-    \qquad """\\
-    \qquad return action
-  }
-  % Bottom text placed strictly below code card
-  \at{7.05}{5.25}{5.2}{\fs{12}{16.5}\color{darkgray}%
-    {\bfseries\color{navy}$\bullet$ Total Current Access:}\enspace \texttt{info["currents"]} provides present magnet currents $\mathbf{I}_t$ to compute cubic saturation offsets.\\[0.3em]
-    {\bfseries\color{navy}$\bullet$ Output Bounds:}\enspace Actions exceeding $[-0.8, 0.8]\text{ A}$ are hard-clipped by the environment.
-  }
-
-  \slidefooter{6}
-\end{tikzpicture}\clearpage
-
-% ==============================================================================
-% SLIDE 7: The Four Benchmark Controllers
+% SLIDE 4: The Four Benchmark Controllers
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.24}
@@ -352,11 +242,11 @@
     \end{tabular}
   }
 
-  \slidefooter{7}
+  \slidefooter{4}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 8: Official Scoring Formula
+% SLIDE 5: Official Scoring Formula
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
@@ -385,11 +275,11 @@
     {\bfseries\color{mutedgray}Current Norm:}\enspace Reported but not scored.
   }
 
-  \slidefooter{8}
+  \slidefooter{5}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 9: Participant Modification Rules
+% SLIDE 6: Participant Modification Rules
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.24}
@@ -418,11 +308,11 @@
     Actions must respect $[-0.8, +0.8]\text{ A}$ per step and total magnet current limits $[-5.0, +5.0]\text{ A}$.
   }
 
-  \slidefooter{9}
+  \slidefooter{6}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 10: Advanced Strategy: Callbacks (FIXED BALANCED LAYOUT)
+% SLIDE 7: Advanced Strategy: Callbacks (FIXED BALANCED LAYOUT)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
@@ -465,11 +355,11 @@
     {\bfseries\color{crimson}$\bullet$ Disclosure Rule:}\enspace Any cross-seed state retention must be disclosed during your team's 3-minute lightning presentation!
   }
 
-  \slidefooter{10}
+  \slidefooter{7}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 11: Zero-Friction W&B Workflow (FIXED LAYOUT)
+% SLIDE 8: Zero-Friction W&B Workflow (FIXED LAYOUT)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
@@ -505,11 +395,11 @@
     Sort by \texttt{challenge\_score} to view live workshop ranks!
   }
 
-  \slidefooter{11}
+  \slidefooter{8}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 12: Team Lightning Showcase & Awards
+% SLIDE 9: Team Lightning Showcase & Awards
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.24}
@@ -537,11 +427,11 @@
     Most creative algorithm design, physics prior integration, or novel callback architecture.
   }
 
-  \slidefooter{12}
+  \slidefooter{9}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 13: Hands-on Execution Checklist (Concurrent Multi-Track Execution)
+% SLIDE 10: Hands-on Execution Checklist (Concurrent Multi-Track Execution)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
@@ -564,7 +454,7 @@
     Verify submission on live W\&B dashboard; connect to room projector for 3-minute lightning talk!
   }
 
-  \slidefooter{13}
+  \slidefooter{10}
 \end{tikzpicture}
 
 \end{document}
