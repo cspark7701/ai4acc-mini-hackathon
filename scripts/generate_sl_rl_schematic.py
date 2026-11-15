@@ -1,184 +1,136 @@
 """
 scripts/generate_sl_rl_schematic.py
-Generate publication-quality schematic comparing Forward Supervised Learning
-(Surrogate Digital Twin & Inversion) vs. Reinforcement Learning (Closed-Loop Orbit Control).
+Generate the schematic comparing Forward Supervised Learning (surrogate digital
+twin and online inversion, Track 1) with Reinforcement Learning (closed-loop
+policy control, Track 2).
+
+The figure is drawn at roughly the size it appears on the Lecture 1 slide
+(about 12 x 4.6 in), so the font sizes below are close to the sizes the audience
+sees. Keep the text short when editing: there is no room for long sentences.
+
+Usage (from the repository root):
+    python scripts/generate_sl_rl_schematic.py
 """
-import matplotlib.pyplot as plt
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.patches as patches
-import numpy as np
+import matplotlib.pyplot as plt
 
-# Styling configuration
-plt.rcParams['font.sans-serif'] = 'DejaVu Sans'
-plt.rcParams['font.family'] = 'sans-serif'
+plt.rcParams["font.sans-serif"] = "DejaVu Sans"
+plt.rcParams["font.family"] = "sans-serif"
+plt.rcParams["mathtext.fontset"] = "dejavusans"
 
-fig = plt.figure(figsize=(15.5, 8.5), dpi=300)
+W, H = 12.4, 4.6
+fig = plt.figure(figsize=(W, H), dpi=300)
 ax = fig.add_axes([0, 0, 1, 1])
-ax.set_xlim(0, 15.5)
-ax.set_ylim(0, 8.5)
-ax.axis('off')
+ax.set_xlim(0, W)
+ax.set_ylim(0, H)
+ax.axis("off")
+fig.patch.set_facecolor("#FFFFFF")
 
-# Background canvas
-fig.patch.set_facecolor('#FFFFFF')
-ax.set_facecolor('#FFFFFF')
+TITLE_FS = 14.5   # panel titles
+BADGE_FS = 10.5   # paradigm and phase badges
+BOX_T_FS = 12     # box titles
+BOX_FS = 11       # box body text
+NOTE_FS = 10.5    # arrow labels and footnotes
 
-# ------------------------------------------------------------------------------
-# 1. Main Header Title & Subtitle
-# ------------------------------------------------------------------------------
-ax.text(7.75, 8.12, 'MACHINE LEARNING PARADIGMS IN PARTICLE ACCELERATOR CONTROL',
-        fontsize=15, fontweight='bold', ha='center', va='center', color='#0F172A')
-ax.text(7.75, 7.80, 'Forward Supervised Learning (Digital Twin Inversion) vs. Reinforcement Learning (Closed-Loop Adaptive Policy)',
-        fontsize=10.5, ha='center', va='center', color='#475569')
-ax.plot([1.5, 14.0], [7.55, 7.55], color='#CBD5E1', lw=1.2)
 
-# Helper function to draw rounded boxes with soft fill and borders
-def draw_card(ax, x, y, w, h, bg_color, border_color, radius=0.18, lw=1.5, linestyle='-'):
-    card = patches.FancyBboxPatch(
-        (x, y), w, h,
-        boxstyle=f"round,pad=0,rounding_size={radius}",
-        facecolor=bg_color,
-        edgecolor=border_color,
-        linewidth=lw,
-        linestyle=linestyle,
-        zorder=1
-    )
-    ax.add_patch(card)
-    return card
+def card(x, y, w, h, fill, edge, lw=1.4, radius=0.12):
+    ax.add_patch(patches.FancyBboxPatch(
+        (x, y), w, h, boxstyle=f"round,pad=0,rounding_size={radius}",
+        facecolor=fill, edgecolor=edge, linewidth=lw, zorder=1))
 
-# Helper function to draw pills / badges
-def draw_badge(ax, cx, cy, text, bg_color, text_color, fontsize=8.5, pad_w=0.65, pad_h=0.26):
-    badge = patches.FancyBboxPatch(
-        (cx - pad_w/2, cy - pad_h/2), pad_w, pad_h,
-        boxstyle="round,pad=0,rounding_size=0.10",
-        facecolor=bg_color,
-        edgecolor="none",
-        zorder=3
-    )
-    ax.add_patch(badge)
-    ax.text(cx, cy, text, fontsize=fontsize, fontweight='bold',
-            ha='center', va='center', color=text_color, zorder=4)
 
-# ------------------------------------------------------------------------------
-# 2. Left Panel: Forward Supervised Learning (Surrogate Modeling & Inversion)
-# ------------------------------------------------------------------------------
-# Left container card
-draw_card(ax, 0.6, 0.45, 6.9, 6.85, '#F8FAFC', '#94A3B8', radius=0.25, lw=1.5)
+def badge(x, y, w, h, text, fill, color, fs=BADGE_FS):
+    """Badge with its left edge at x and vertical centre at y."""
+    ax.add_patch(patches.FancyBboxPatch(
+        (x, y - h / 2), w, h, boxstyle="round,pad=0,rounding_size=0.07",
+        facecolor=fill, edgecolor="none", zorder=3))
+    ax.text(x + w / 2, y, text, fontsize=fs, fontweight="bold",
+            ha="center", va="center", color=color, zorder=4)
 
-# Panel Header
-draw_badge(ax, 2.3, 7.05, 'PARADIGM 1', '#0284C7', '#FFFFFF', fontsize=9, pad_w=1.4, pad_h=0.32)
-ax.text(4.3, 7.05, 'Forward Supervised Learning (Digital Twin)',
-        fontsize=12, fontweight='bold', ha='left', va='center', color='#0369A1')
-ax.text(4.05, 6.68, 'Offline dataset collection -> Neural Surrogate training -> Online model inversion',
-        fontsize=8.5, ha='center', va='center', color='#64748B', style='italic')
 
-# Sub-card 1: Offline Training
-draw_card(ax, 0.9, 4.35, 6.3, 2.1, '#FFFFFF', '#BAE6FD', radius=0.15, lw=1.2)
-draw_badge(ax, 2.2, 6.25, 'PHASE 1: OFFLINE TRAINING', '#E0F2FE', '#0369A1', fontsize=8, pad_w=2.3, pad_h=0.25)
+def box(x, y, w, h, title, body, fill, edge, title_color, body_color="#334155"):
+    card(x, y, w, h, fill, edge, lw=1.6, radius=0.09)
+    ax.text(x + w / 2, y + h - 0.27, title, fontsize=BOX_T_FS, fontweight="bold",
+            ha="center", va="center", color=title_color, zorder=4)
+    ax.text(x + w / 2, y + (h - 0.45) / 2, body, fontsize=BOX_FS,
+            ha="center", va="center", color=body_color, zorder=4, linespacing=1.35)
 
-# Elements in Phase 1
-draw_card(ax, 1.1, 4.55, 1.4, 1.45, '#F0F9FF', '#7DD3FC', radius=0.12)
-ax.text(1.8, 5.75, 'Simulation /\nExperiment', fontsize=8.5, fontweight='bold', ha='center', va='center', color='#0369A1')
-ax.text(1.8, 5.0, 'Inputs: I in R^6\nTargets: Y in R^12\n(1,500 shots)', fontsize=7.5, ha='center', va='center', color='#475569')
 
-# Arrow from Data to Model
-ax.annotate('', xy=(2.9, 5.25), xytext=(2.5, 5.25),
-            arrowprops=dict(arrowstyle="->", color="#0284C7", lw=1.8, shrinkA=0, shrinkB=0))
-
-draw_card(ax, 2.9, 4.55, 2.1, 1.45, '#EEF2FF', '#A5B4FC', radius=0.12)
-ax.text(3.95, 5.75, 'Neural Surrogate (MLP)', fontsize=8.5, fontweight='bold', ha='center', va='center', color='#4338CA')
-ax.text(3.95, 5.15, 'f_theta(I): 128->64->32\nNon-linear ReLU\nCaptures B ~ I - 0.015*I^3', fontsize=7.2, ha='center', va='center', color='#334155')
-
-# Arrow from Model to Loss
-ax.annotate('', xy=(5.35, 5.25), xytext=(5.0, 5.25),
-            arrowprops=dict(arrowstyle="->", color="#4338CA", lw=1.8, shrinkA=0, shrinkB=0))
-
-draw_card(ax, 5.35, 4.55, 1.65, 1.45, '#FEF2F2', '#FECACA', radius=0.12)
-ax.text(6.17, 5.75, 'Supervised Loss', fontsize=8.5, fontweight='bold', ha='center', va='center', color='#B91C1C')
-ax.text(6.17, 5.05, 'L_MSE = ||Y - Y_hat||^2\nBackprop (Adam)\nTarget RMSE < 0.015mm', fontsize=7.2, ha='center', va='center', color='#475569')
-
-# Sub-card 2: Online Inversion for Control
-draw_card(ax, 0.9, 0.65, 6.3, 3.45, '#FFFFFF', '#C7D2FE', radius=0.15, lw=1.2)
-draw_badge(ax, 2.45, 3.88, 'PHASE 2: ONLINE SURROGATE INVERSION (TRACK 1)', '#EEF2FF', '#4338CA', fontsize=8, pad_w=2.8, pad_h=0.25)
-
-# Step-by-step inversion workflow
-draw_card(ax, 1.1, 2.35, 1.6, 1.25, '#F1F5F9', '#CBD5E1', radius=0.10)
-ax.text(1.9, 3.25, 'Current State', fontsize=8.2, fontweight='bold', ha='center', va='center', color='#334155')
-ax.text(1.9, 2.75, 'BPM Offset Y_obs\n(Residual Orbit)', fontsize=7.5, ha='center', va='center', color='#64748B')
-
-# Arrow from State to Optimizer
-ax.annotate('', xy=(3.1, 2.95), xytext=(2.7, 2.95),
-            arrowprops=dict(arrowstyle="->", color="#475569", lw=1.8, shrinkA=0, shrinkB=0))
-
-draw_card(ax, 3.1, 2.15, 2.3, 1.5, '#F5F3FF', '#C4B5FD', radius=0.10)
-ax.text(4.25, 3.35, 'SciPy Optimizer (L-BFGS-B)', fontsize=8.2, fontweight='bold', ha='center', va='center', color='#6D28D9')
-ax.text(4.25, 2.75, 'min_dI ||Y_obs + f_theta(dI)||^2\n+ lambda * ||dI||^2\nBounds: [-0.8, 0.8] A', fontsize=7.2, ha='center', va='center', color='#475569')
-
-# Arrow from Optimizer to Actuators
-ax.annotate('', xy=(5.8, 2.95), xytext=(5.4, 2.95),
-            arrowprops=dict(arrowstyle="->", color="#6D28D9", lw=1.8, shrinkA=0, shrinkB=0))
-
-draw_card(ax, 5.8, 2.35, 1.2, 1.25, '#ECFDF5', '#6EE7B7', radius=0.10)
-ax.text(6.4, 3.25, 'Actuator Kick', fontsize=8.2, fontweight='bold', ha='center', va='center', color='#047857')
-ax.text(6.4, 2.75, 'Optimal dI*\nApplied to 6\nCorrectors', fontsize=7.2, ha='center', va='center', color='#065F46')
-
-# Bottom Key Characteristics Box for SL
-draw_card(ax, 1.1, 0.85, 5.9, 1.05, '#F8FAFC', '#E2E8F0', radius=0.08)
-ax.text(4.05, 1.62, 'KEY CHARACTERISTICS & STRENGTHS:', fontsize=7.8, fontweight='bold', ha='center', va='center', color='#0F172A')
-ax.text(4.05, 1.20, '* Fast convergence (often reaches RMS < 0.03mm in 2-3 control steps).\n* Stable & robust because surrogate is strictly bounded and pre-trained.\n* Latency: ~15-30 ms per step (numerical optimization loop).',
-        fontsize=7.2, ha='center', va='center', color='#334155')
+def arrow(x0, y0, x1, y1, color):
+    ax.annotate("", xy=(x1, y1), xytext=(x0, y0),
+                arrowprops=dict(arrowstyle="-|>", color=color, lw=2.0, mutation_scale=16), zorder=5)
 
 
 # ------------------------------------------------------------------------------
-# 3. Right Panel: Reinforcement Learning (Closed-Loop Policy Control)
+# Left panel: Paradigm 1 - Forward Supervised Learning (Track 1)
 # ------------------------------------------------------------------------------
-# Right container card
-draw_card(ax, 8.0, 0.45, 6.9, 6.85, '#F8FAFC', '#94A3B8', radius=0.25, lw=1.5)
+LX, LW = 0.10, 6.05
+card(LX, 0.10, LW, 4.40, "#F8FAFC", "#94A3B8", lw=1.5, radius=0.18)
+badge(LX + 0.20, 4.18, 1.35, 0.36, "PARADIGM 1", "#0284C7", "#FFFFFF")
+ax.text(LX + 1.70, 4.18, "Forward Supervised Learning", fontsize=TITLE_FS,
+        fontweight="bold", ha="left", va="center", color="#0369A1")
 
-# Panel Header
-draw_badge(ax, 9.7, 7.05, 'PARADIGM 2', '#16A34A', '#FFFFFF', fontsize=9, pad_w=1.4, pad_h=0.32)
-ax.text(11.7, 7.05, 'Reinforcement Learning (Closed-Loop Agent)',
-        fontsize=12, fontweight='bold', ha='left', va='center', color='#15803D')
-ax.text(11.45, 6.68, 'Interactive trial-and-error policy -> Direct sensing & action -> Reward maximization',
-        fontsize=8.5, ha='center', va='center', color='#64748B', style='italic')
+# Phase 1: offline training
+ax.text(LX + 0.25, 3.72, "PHASE 1  Offline training", fontsize=BADGE_FS,
+        fontweight="bold", ha="left", va="center", color="#0369A1")
+y1, h1 = 2.42, 1.08
+box(LX + 0.20, y1, 1.70, h1, "Data", "1,500 shots\n$I \\rightarrow Y$",
+    "#F0F9FF", "#7DD3FC", "#0369A1")
+box(LX + 2.18, y1, 1.70, h1, "Surrogate", "MLP $f_\\theta(I)$",
+    "#EEF2FF", "#A5B4FC", "#4338CA")
+box(LX + 4.16, y1, 1.70, h1, "Training", "min MSE\n$\\|Y - \\hat{Y}\\|^2$",
+    "#FEF2F2", "#FCA5A5", "#B91C1C")
+arrow(LX + 1.92, y1 + h1 / 2, LX + 2.16, y1 + h1 / 2, "#0284C7")
+arrow(LX + 3.90, y1 + h1 / 2, LX + 4.14, y1 + h1 / 2, "#4338CA")
 
-# Sub-card: Closed-Loop Agent-Environment Interaction
-draw_card(ax, 8.3, 2.2, 6.3, 4.25, '#FFFFFF', '#BBF7D0', radius=0.15, lw=1.2)
-draw_badge(ax, 9.9, 6.25, 'CLOSED-LOOP INTERACTIVE MDP (TRACK 2)', '#DCFCE7', '#15803D', fontsize=8, pad_w=3.0, pad_h=0.25)
-
-# Agent Box (Top)
-draw_card(ax, 9.4, 4.35, 4.1, 1.65, '#F0FDF4', '#86EFAC', radius=0.14, lw=1.4)
-ax.text(11.45, 5.72, 'RL Policy Agent pi_phi(a | s)', fontsize=9.5, fontweight='bold', ha='center', va='center', color='#166534')
-ax.text(11.45, 5.12, 'Action dI_t = gamma(t) * [ -alpha * (R^T)+ Y_t + W_tune Y_t + b ]',
-        fontsize=7.5, fontweight='bold', ha='center', va='center', color='#0F172A')
-ax.text(11.45, 4.62, 'Physics-informed prior (SVD) + Learned residual + Dynamic damping',
-        fontsize=7.2, ha='center', va='center', color='#15803D')
-
-# Environment Box (Bottom)
-draw_card(ax, 9.4, 2.5, 4.1, 1.35, '#F1F5F9', '#CBD5E1', radius=0.14, lw=1.4)
-ax.text(11.45, 3.52, 'Gymnasium Environment (Accelerator Beamline)', fontsize=9, fontweight='bold', ha='center', va='center', color='#1E293B')
-ax.text(11.45, 2.95, 'Lattice Transport: Y = I*R - 0.015*(I^3*R) + Y_0 + epsilon\nState: Y in [-10, 10]^12 mm | Bounds: [-0.8, 0.8] A',
-        fontsize=7.2, ha='center', va='center', color='#475569')
-
-# Feedback Loops (Action Arrow Down, State/Reward Arrow Up)
-# Action arrow: Agent -> Environment
-ax.annotate('', xy=(12.8, 3.9), xytext=(12.8, 4.3),
-            arrowprops=dict(arrowstyle="->", color="#DC2626", lw=2.2, shrinkA=0, shrinkB=0))
-ax.text(13.6, 4.1, 'Action a_t = dI_t\n(Corrector Kicks)', fontsize=7.5, fontweight='bold', ha='center', va='center', color='#B91C1C')
-
-# State & Reward arrow: Environment -> Agent
-ax.annotate('', xy=(10.0, 4.3), xytext=(10.0, 3.9),
-            arrowprops=dict(arrowstyle="->", color="#0284C7", lw=2.2, shrinkA=0, shrinkB=0))
-ax.text(9.0, 4.1, 'State s_t = Y_t (BPMs)\nReward r_t (Scalar)', fontsize=7.5, fontweight='bold', ha='center', va='center', color='#0369A1')
-
-# Bottom Key Characteristics Box for RL
-draw_card(ax, 8.3, 0.65, 6.3, 1.35, '#FFFFFF', '#E2E8F0', radius=0.10)
-ax.text(11.45, 1.75, 'REWARD SIGNAL & BENCHMARK DYNAMICS:', fontsize=7.8, fontweight='bold', ha='center', va='center', color='#0F172A')
-ax.text(11.45, 1.15, '* r_t = - w_rms*RMS - w_act*||dI||^2 - c_step + (Bonus if RMS < 0.03mm)\n* Ultra-low latency: ~0.2 ms per step (direct matrix-vector policy evaluation).\n* Dynamic damping gamma(t) prevents noise amplification near 0.030 mm target boundary.',
-        fontsize=7.2, ha='center', va='center', color='#334155')
+# Phase 2: online inversion
+ax.text(LX + 0.25, 2.12, "PHASE 2  Online inversion (Track 1)", fontsize=BADGE_FS,
+        fontweight="bold", ha="left", va="center", color="#4338CA")
+y2, h2 = 0.30, 1.52
+box(LX + 0.20, y2, 1.45, h2, "Measure", "orbit\n$Y_{obs}$",
+    "#F1F5F9", "#CBD5E1", "#334155")
+box(LX + 1.93, y2, 2.45, h2, "Optimise (L-BFGS-B)",
+    "$\\min_{\\Delta I}\\ \\|Y_{obs} + f_\\theta(\\Delta I)\\|^2$\n$|\\Delta I| \\leq 0.8$ A",
+    "#F5F3FF", "#C4B5FD", "#6D28D9")
+box(LX + 4.66, y2, 1.20, h2, "Apply", "$\\Delta I^{*}$ to\n6 correctors",
+    "#ECFDF5", "#6EE7B7", "#047857")
+arrow(LX + 1.67, y2 + h2 / 2, LX + 1.91, y2 + h2 / 2, "#475569")
+arrow(LX + 4.40, y2 + h2 / 2, LX + 4.64, y2 + h2 / 2, "#6D28D9")
 
 # ------------------------------------------------------------------------------
-# 4. Save Image
+# Right panel: Paradigm 2 - Reinforcement Learning (Track 2)
 # ------------------------------------------------------------------------------
+RX, RW = 6.25, 6.05
+card(RX, 0.10, RW, 4.40, "#F8FAFC", "#94A3B8", lw=1.5, radius=0.18)
+badge(RX + 0.20, 4.18, 1.35, 0.36, "PARADIGM 2", "#16A34A", "#FFFFFF")
+ax.text(RX + 1.70, 4.18, "Reinforcement Learning", fontsize=TITLE_FS,
+        fontweight="bold", ha="left", va="center", color="#15803D")
+ax.text(RX + 0.25, 3.72, "Closed loop: sense, act, learn (Track 2)", fontsize=BADGE_FS,
+        fontweight="bold", ha="left", va="center", color="#15803D")
+
+ax_x, ax_w = RX + 1.55, 3.0
+box(ax_x, 2.42, ax_w, 1.08, "Policy agent $\\pi_\\phi$",
+    "$\\Delta I = \\gamma(t)\\,[-\\alpha (R^T)^{+} Y + W Y + b]$",
+    "#F0FDF4", "#86EFAC", "#166534")
+box(ax_x, 0.62, ax_w, 1.08, "Beamline environment",
+    "$Y = I R - 0.015\\, I^3 R + Y_0 + \\epsilon$",
+    "#F1F5F9", "#CBD5E1", "#1E293B")
+
+# action (down, right side) and state / reward (up, left side)
+arrow(ax_x + ax_w - 0.45, 2.40, ax_x + ax_w - 0.45, 1.72, "#DC2626")
+ax.text(ax_x + ax_w - 0.30, 2.06, "action\n$a_t = \\Delta I$", fontsize=NOTE_FS, fontweight="bold",
+        ha="left", va="center", color="#B91C1C")
+arrow(ax_x + 0.45, 1.72, ax_x + 0.45, 2.40, "#0284C7")
+ax.text(ax_x + 0.30, 2.06, "state $s_t = Y$\nreward $r_t$", fontsize=NOTE_FS, fontweight="bold",
+        ha="right", va="center", color="#0369A1")
+
+ax.text(RX + RW / 2, 0.33, "$r_t = -\\mathrm{RMS} - 0.01\\,\\|\\Delta I\\| + 50$ on success",
+        fontsize=NOTE_FS, ha="center", va="center", color="#475569")
+
 save_path = "img/forward_sl_and_rl_schematic.png"
-fig.savefig(save_path, dpi=300, bbox_inches='tight', facecolor='#FFFFFF')
+fig.savefig(save_path, dpi=300, facecolor="#FFFFFF")
 plt.close(fig)
 print(f"SUCCESS: Generated {save_path}")
