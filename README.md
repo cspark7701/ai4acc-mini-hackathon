@@ -97,6 +97,7 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 │   ├── MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md         # Protocol for the 10-agent benchmark with live W&B submission
 │   ├── MULTI_AGENT_TOURNAMENT_REPORT1.md             # Superseded earlier tournament report (scores not confirmed on W&B)
 │   ├── MULTI_AGENT_TOURNAMENT_REPORT2.md             # Report of the 10-agent W&B submission test (2026-11-14)
+│   ├── MULTI_AGENT_TOURNAMENT_REPORT3.md             # Tournament 3 report on the hardened 6-kick benchmark (2026-11-15)
 │   ├── experiments/                                  # Multi-agent results log and each agent's executed notebook
 │   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide
 │   ├── Hackathon Project Guide.docx                  # Full challenge rules, physics spec, and scoring breakdown
@@ -234,5 +235,5 @@ For detailed guidelines, refer to the included guides:
 - [W&B Leaderboard Guide](docs/WANDB_LEADERBOARD_GUIDE.md) — Leaderboard setup for the organizer and submission steps for participants.
 - [Participant Modification Guide](docs/PARTICIPANT_MODIFICATION_GUIDE.md) — What participants may change for each controller, and the callback rules.
 - [Docker Installation Guide](docs/DOCKER_INSTALL_GUIDE.md) and [Docker Environment Guide](docs/DOCKER_GUIDE.md) — Pre-workshop Docker installation, image download and test.
-- [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md) and [W&B Submission Test Report](docs/MULTI_AGENT_TOURNAMENT_REPORT2.md) — 10-agent benchmark protocol and the verified results of its W&B run (scores from the earlier, easier distortion model).
+- [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md), [Tournament 2 Report](docs/MULTI_AGENT_TOURNAMENT_REPORT2.md), and [Tournament 3 Report](docs/MULTI_AGENT_TOURNAMENT_REPORT3.md) — Multi-agent benchmark protocols and verified W&B tournament results on the 6-kick benchmark.
 - [AGENTS.md](AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.
