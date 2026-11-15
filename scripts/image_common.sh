@@ -25,6 +25,7 @@ IMAGE_CHECK_FILES=(
     "src/controllers.py:SRCDIR/controllers.py"
     "presentations/Lecture_1_AI_ML_Foundations_and_Control.pdf:/workspace/Lecture_1_AI_ML_Foundations_and_Control.pdf"
     "lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf:/workspace/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf"
+    "docs/pdf/PARTICIPANT_MODIFICATION_GUIDE.pdf:/workspace/PARTICIPANT_MODIFICATION_GUIDE.pdf"
 )
 
 # Set by image_preflight

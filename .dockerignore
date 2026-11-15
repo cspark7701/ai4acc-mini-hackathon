@@ -85,5 +85,8 @@ wandb.apikey
 
 # Not needed in the participant image (and dist/ holds the large bundle archives)
 dist/
-docs/
+docs/*
+!docs/pdf/
+docs/pdf/*
+!docs/pdf/PARTICIPANT_MODIFICATION_GUIDE.pdf
 tests/
