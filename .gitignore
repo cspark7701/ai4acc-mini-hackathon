@@ -62,3 +62,4 @@ temp/
 # Generated runtime images (img/beamline.png is tracked because README.md displays it)
 img/benchmark_trajectories.png
 
+img/benchmark_trajectories_solution.png

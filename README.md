@@ -196,7 +196,7 @@ s_k = \begin{cases}
 
 ### Reference Benchmark Performance
 
-Measured with the current code and the Solution notebook settings:
+Measured with the current code and the unmodified participant notebook (reference controllers). The Solution notebook (`notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb`, organizers only) contains a worked solution that scores 705.337 / 941.787 / 944.710 / 944.031 for Baseline 0 and Tracks 1–3.
 
 | Rank | Controller / Agent Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Official Score |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
