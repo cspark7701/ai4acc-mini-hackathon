@@ -1,6 +1,6 @@
 # 🤖 Multi-Agent Benchmark Experiment Protocol & Agent Instructions
 
-This document provides complete instructions for running a **10-agent autonomous benchmarking experiment** using the participant notebook ([notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb)) on independent Git worktrees.
+This document provides complete instructions for running a **10-agent autonomous benchmarking experiment** using the participant notebook ([notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](../notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb)) on independent Git worktrees.
 
 ---
 

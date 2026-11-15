@@ -13,13 +13,13 @@
 
 ## 🏆 Executive Summary & Official Tournament Leaderboard
 
-A comprehensive tournament was executed with **10 autonomous competitor agents** adhering strictly to [docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md):
+A comprehensive tournament was executed with **10 autonomous competitor agents** adhering strictly to [docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md](MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md):
 - **Cohort A (Agents 1–5):** Online Adaptive Callback-Driven Agents (leveraging `step_callback` and `episode_callback`).
 - **Cohort B (Agents 6–10):** Architectural, Parameter & Analytical Optimization Agents (offline tuning, static policies, no callbacks).
 
 ### Overall Official Leaderboard (Ranked by Best Score)
 
-All agents evaluated the full 4-controller suite in [notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb):
+All agents evaluated the full 4-controller suite in [notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](../notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb):
 
 | Rank | Agent Name | Cohort | Best Method / Track | Best Score | Success Rate | Mean Steps | Mean Final RMS | Current Norm $\|\mathbf{I}\|$ |
 | :---: | :--- | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -97,7 +97,7 @@ The tournament validated the live Weights & Biases submission pipeline across al
 - **Project URL:** [`https://wandb.ai/ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026`](https://wandb.ai/ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026)
 - **Total Test Runs Submitted:** 80 runs (4 controllers $\times$ 10 agents, all in state `finished`).
 - **Telemetry Integrity:** Verified directly via `wandb.Api()` against local simulation logs. Zero duplicate submissions, zero lost packets, and zero API key leaks in notebook metadata.
-- **Raw Telemetry Archive:** Fully captured in [docs/experiments/multi_agent_benchmark_results.json](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/experiments/multi_agent_benchmark_results.json).
+- **Raw Telemetry Archive:** Fully captured in [docs/experiments/multi_agent_benchmark_results.json](experiments/multi_agent_benchmark_results.json).
 
 ---
 

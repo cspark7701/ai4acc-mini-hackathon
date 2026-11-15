@@ -146,14 +146,14 @@ The container includes Python, all required packages (`gymnasium`, `scikit-learn
 
 ### For Instructors & Organizers: Local Development
 
-With access to this repository, set up a local environment with the provided [`setup.sh`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/setup.sh) script. It creates a virtual environment (`ai4acc`), installs the package with its development tools (`pip install -e ".[dev]"`), and activates it:
+With access to this repository, set up a local environment with the provided [`setup.sh`](setup.sh) script. It creates a virtual environment (`ai4acc`), installs the package with its development tools (`pip install -e ".[dev]"`), and activates it:
 
 ```bash
 source setup.sh
 jupyter lab notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
 ```
 
-To build the container from the repository, run `docker compose up`. Building, publishing to Docker Hub, and creating the offline participant bundle are covered in [`docs/DOCKER_GUIDE.md`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/DOCKER_GUIDE.md) and `scripts/create_bundle.sh`.
+To build the container from the repository, run `docker compose up`. Building, publishing to Docker Hub, and creating the offline participant bundle are covered in [`docs/DOCKER_GUIDE.md`](docs/DOCKER_GUIDE.md) and `scripts/create_bundle.sh`.
 
 ---
 
@@ -210,7 +210,7 @@ Measured with the current code and the unmodified participant notebook (referenc
 
 ## 🛠️ Participant Workflow & Instructions
 
-Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb). What you may change in each step is listed in [`docs/PARTICIPANT_MODIFICATION_GUIDE.md`](docs/PARTICIPANT_MODIFICATION_GUIDE.md).
+Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb). What you may change in each step is listed in [`docs/PARTICIPANT_MODIFICATION_GUIDE.md`](docs/PARTICIPANT_MODIFICATION_GUIDE.md).
 
 1. **Step 0 & 1:** Run environment setup and visualize the accelerator lattice schematic.
 2. **Step 2:** Instantiate the `AcceleratorOrbitGymEnv` simulation environment.
@@ -227,15 +227,15 @@ Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](f
 ## 📚 Documentation Index
 
 For detailed guidelines, refer to the included guides:
-- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (Markdown)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
-- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 17-page PDF monograph.
-- [Lecture 1 LaTeX Source](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.tex) — LaTeX document source code.
-- [Hackathon Project Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Hackathon%20Project%20Guide.docx) — Complete rules, physics derivations, and scoring breakdown.
-- [Technical Preparation Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Technical%20Preparation.docx) — Detailed lecture syllabus, setup recommendations, and schedule.
-- [Mini-Hackathon Participant Instructions (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Mini-Hackathon%20Participant%20Instructions.docx) — Quick participant checklist.
-- [W&B Leaderboard Guide](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/WANDB_LEADERBOARD_GUIDE.md) — Leaderboard setup for the organizer and submission steps for participants.
-- [Participant Modification Guide](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/PARTICIPANT_MODIFICATION_GUIDE.md) — What participants may change for each controller, and the callback rules.
-- [Docker Installation Guide](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/DOCKER_INSTALL_GUIDE.md) and [Docker Setup Guide](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/DOCKER_SETUP_GUIDE.md) — Pre-workshop Docker installation, image download and test.
-- [Multi-Agent Benchmark Protocol](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md) and [W&B Submission Test Report](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/MULTI_AGENT_WANDB_REPORT.md) — 10-agent benchmark protocol and the verified results of its W&B run.
-- [Docker Desktop Setup Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Docker%20Desktop%20Setup%20Guide.docx) — Containerized deployment instructions.
-- [AGENTS.md](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.
+- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (Markdown)](lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
+- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 17-page PDF monograph.
+- [Lecture 1 LaTeX Source](lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.tex) — LaTeX document source code.
+- [Hackathon Project Guide (Word Document)](docs/Hackathon%20Project%20Guide.docx) — Complete rules, physics derivations, and scoring breakdown.
+- [Technical Preparation Guide (Word Document)](docs/Technical%20Preparation.docx) — Detailed lecture syllabus, setup recommendations, and schedule.
+- [Mini-Hackathon Participant Instructions (Word Document)](docs/Mini-Hackathon%20Participant%20Instructions.docx) — Quick participant checklist.
+- [W&B Leaderboard Guide](docs/WANDB_LEADERBOARD_GUIDE.md) — Leaderboard setup for the organizer and submission steps for participants.
+- [Participant Modification Guide](docs/PARTICIPANT_MODIFICATION_GUIDE.md) — What participants may change for each controller, and the callback rules.
+- [Docker Installation Guide](docs/DOCKER_INSTALL_GUIDE.md) and [Docker Setup Guide](docs/DOCKER_SETUP_GUIDE.md) — Pre-workshop Docker installation, image download and test.
+- [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md) and [W&B Submission Test Report](docs/MULTI_AGENT_WANDB_REPORT.md) — 10-agent benchmark protocol and the verified results of its W&B run.
+- [Docker Desktop Setup Guide (Word Document)](docs/Docker%20Desktop%20Setup%20Guide.docx) — Containerized deployment instructions.
+- [AGENTS.md](AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.

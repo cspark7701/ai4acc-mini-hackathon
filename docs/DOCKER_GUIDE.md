@@ -49,7 +49,7 @@ docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:late
 
 ## 🧭 Overview: Local Image vs. Docker Hub
 
-When you build the container using the provided [`Dockerfile`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/Dockerfile):
+When you build the container using the provided [`Dockerfile`](../Dockerfile):
 
 | Environment | Image Name | Storage Location | Accessibility |
 | :--- | :--- | :--- | :--- |
@@ -63,12 +63,12 @@ When you build the container using the provided [`Dockerfile`](file:///home/cspa
 
 ## 🚀 1. Quickstart with Docker Compose (Recommended)
 
-Docker Compose is the simplest and least error-prone method because [`docker-compose.yml`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docker-compose.yml) automatically anchors all paths to the repository directory.
+Docker Compose is the simplest and least error-prone method because [`docker-compose.yml`](../docker-compose.yml) automatically anchors all paths to the repository directory.
 
 From the project root directory:
 
 ```bash
-cd /home/cspark/Work/projects/ai4acc-mini-hackathon
+cd ai4acc-mini-hackathon   # the repository root
 
 # Build image and start Jupyter Lab
 docker compose up
@@ -91,7 +91,7 @@ Once started, open your web browser to **`http://localhost:8888`**.
 
 ### Step 1: Build the Image Locally
 ```bash
-cd /home/cspark/Work/projects/ai4acc-mini-hackathon
+cd ai4acc-mini-hackathon   # the repository root
 docker build -t ai4acc-hackathon-2026 .
 ```
 
@@ -114,7 +114,7 @@ docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:late
 1. Open your browser and navigate to:
    - **`http://localhost:8888`** (or `http://localhost:8889` if using port 8889)
 2. Token authentication is disabled by default in the container configuration (`--ServerApp.token=''`) for a friction-free hackathon setup.
-3. Open [`notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb) to begin the challenge.
+3. Open [`notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`](../notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb) to begin the challenge.
 
 ---
 

@@ -143,8 +143,8 @@ To preserve scientific rigor, academic honesty, and benchmark validity, all AI a
    - Benchmark evaluation must strictly run on `seeds = range(1, 31)`.
    - Do not cherry-pick or alter test seed indices.
 3. **Respect Participant vs. Solution Notebook Separation:**
-   - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb): Must preserve the clear `TODO 1`, `TODO 2`, and `TODO 3` instructional structure for attendees.
-   - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb): Contains the worked solution (accurate TODO 1 surrogate and model-inversion controllers for Tracks 1–3, scoring 941.787 / 944.710 / 944.031) with saved benchmark outputs. It is excluded from the participant Docker image; keep it out of anything distributed to participants.
+   - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb): Must preserve the clear `TODO 1`, `TODO 2`, and `TODO 3` instructional structure for attendees.
+   - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb](notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb): Contains the worked solution (accurate TODO 1 surrogate and model-inversion controllers for Tracks 1–3, scoring 941.787 / 944.710 / 944.031) with saved benchmark outputs. It is excluded from the participant Docker image; keep it out of anything distributed to participants.
 4. **Action Space Adherence:**
    - The returned action must strictly be a 1D NumPy array or sequence of 6 numerical values.
    - Values exceeding $[-0.8, +0.8]$ A will be hard-clipped by the environment, but well-behaved agents should handle bounds internally.
