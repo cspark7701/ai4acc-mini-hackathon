@@ -127,7 +127,7 @@ This intensive, full-day educational session and competition bridges cutting-edg
 - **Date & Time:** Thursday, November 19, 2026 | 09:00 – 17:00 KST
 - **Location:** KOMAC / KAERI (Korea Multi-purpose Accelerator Complex / Korea Atomic Energy Research Institute)
 - **Registration (Indico):** [https://indico.korea.ac.kr/event/114/](https://indico.korea.ac.kr/event/114/)
-- **Target Audience:** Undergraduate and graduate students, postdocs in accelerator physics and techonologies
+- **Target Audience:** Undergraduate and graduate students, postdocs in accelerator physics and technologies
 - **Distinguished Instructors:**
   - **Chong Shik Park, Ph.D.** — Korea University, Sejong
   - **Thorsten Hellert, Ph.D.** — Lawrence Berkeley National Laboratory (LBNL) / Osprey Project Team

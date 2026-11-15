@@ -2,6 +2,8 @@
 
 Welcome to the **AI Applications in Accelerators Tutorial & Mini-Hackathon** repository. This project hosts the computational challenge, simulation environment, benchmark notebooks, and documentation for the hands-on mini-hackathon.
 
+> **Access:** this repository is available to instructors and organizers only. Participants do not clone it; they receive the challenge as a Docker container (see [Getting Started](#getting-started--environment-setup)).
+
 ---
 
 ## 📋 Table of Contents
@@ -11,9 +13,8 @@ Welcome to the **AI Applications in Accelerators Tutorial & Mini-Hackathon** rep
 - [Master Schedule & Program](#master-schedule--program)
 - [Repository Structure](#repository-structure)
 - [Getting Started & Environment Setup](#getting-started--environment-setup)
-  - [Option A: Local Python / Conda](#option-a-local-python--conda)
-  - [Option B: Google Colab](#option-b-google-colab)
-  - [Option C: Docker Container (Offline Contingency)](#option-c-docker-container-offline-contingency)
+  - [For Participants: Docker Container](#for-participants-docker-container)
+  - [For Instructors & Organizers: Local Development](#for-instructors--organizers-local-development)
 - [Weights & Biases (W&B) Leaderboard](#weights--biases-wb-leaderboard)
 - [Benchmark Results & Scoring](#benchmark-results--scoring)
 - [Participant Workflow & Instructions](#participant-workflow--instructions)
@@ -28,7 +29,7 @@ Modern particle accelerators rely increasingly on machine learning and autonomou
 - **Workshop Registration:** [https://indico.korea.ac.kr/event/114/](https://indico.korea.ac.kr/event/114/)
 - **Morning Lectures:**
   - **Lecture 1:** *AI/ML Foundations and Closed-Loop Control for Particle Accelerators* — **Chong Shik Park, Ph.D.**
-  - **Lecture 2:** *Agentic AI, LLM Tools & Osprey Applications in Accelerator Research* — **Thorsten Hellert**
+  - **Lecture 2:** *Agentic AI for Accelerator Research: Osprey Applications* — **Thorsten Hellert, Ph.D.**
 - **Afternoon Mini-Hackathon:**
   - Hands-on closed-loop control challenge in a standardized [Gymnasium](https://gymnasium.farama.org/) environment.
   - Multi-track benchmarking: Classical Linear ORM (Baseline 0), Supervised Neural Surrogate Inversion (Track 1), Closed-Loop Reinforcement Learning (Track 2), and Closed-Loop Bayesian Optimization with Gaussian Processes (Track 3).
@@ -40,13 +41,9 @@ Modern particle accelerators rely increasingly on machine learning and autonomou
 
 Participants design, optimize, and benchmark closed-loop accelerator controllers to steer an off-axis particle beam back to nominal alignment within an optical transport lattice.
 
-```
-       +-----------------------------------------------------------------+
-       |               ACCELERATOR BEAM TRANSPORT SECTION                |
-Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Target
-       +-----------------------------------------------------------------+
-          Diagnostics: 12 BPMs            Actuators: 6 Correctors (3H/3V)
-```
+![Beamline layout: 6 corrector magnets (HCM/VCM), alternating focusing and defocusing quadrupoles (QF/QD), and 12 beam position monitors (BPMs) along the 15 m transport line](img/beamline.png)
+
+*Beamline layout: 3 horizontal and 3 vertical correctors (HCM/VCM), alternating focusing and defocusing quadrupoles (QF/QD), and 12 beam position monitors (BPM) along the transport line.*
 
 ### Physical Lattice & Hardware Specification
 - **Actuators ($X$):** 6 dipole steering magnets (3 Horizontal `HCM1-3`, 3 Vertical `VCM1-3`).
@@ -67,19 +64,17 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 
 ## ⏱️ Master Schedule & Program
 
-| Time | Session Phase | Speaker / Facilitator | Core Focus |
-| :--- | :--- | :--- | :--- |
-| **09:00 – 09:10** | Opening Remarks | Workshop Organizers | Welcome & learning goals |
-| **09:10 – 10:30** | **Lecture 1** (Extended) | **Chong Shik Park, Ph.D.** | AI/ML foundations, neural surrogates, RL & Bayesian optimization |
-| **10:30 – 10:40** | Coffee & Networking | Attendees | Mid-morning recess |
-| **10:40 – 12:00** | **Lecture 2** (Extended) | **Thorsten Hellert** | Agentic AI, LLM tools & Osprey in accelerator control |
-| **12:00 – 13:30** | Lunch Break | Attendees | Lunch & informal discussion |
-| **13:30 – 13:45** | Hackathon Kickoff | Technical Mentors | Environment verification & W&B login |
-| **13:45 – 14:30** | Track 1: Supervised Inversion | Participants | Train Ridge & MLP surrogate models; optimizer inversion |
-| **14:30 – 15:15** | Track 2: RL & Adaptive Policy | Participants | Continuous feedback policy, gain & damping tuning |
-| **15:15 – 16:00** | Track 3: Bayesian Optimization | Participants | GP controller with Lower Confidence Bound (LCB) acquisition |
-| **16:00 – 16:30** | Live W&B Benchmarking | Participants | 30-seed benchmark evaluation, sync to live screen |
-| **16:30 – 17:00** | Team Presentations & Showcase | All Teams | 3-minute lightning presentations & awards |
+| Time (KST) | Session Type | Details & Lecturers |
+| :---: | :---: | :--- |
+| **09:00 – 09:10** | Welcome & Orientation | Opening remarks, workshop objectives, setup verification & W&B intro |
+| **09:10 – 10:30** | **Lecture 1** | **AI/ML Foundations and Closed-Loop Control for Particle Accelerators**<br>Lecturer: Chong Shik Park, Ph.D. (Korea University, Sejong) |
+| **10:30 – 10:40** | Break & Discussion | Intermission and Q&A |
+| **10:40 – 12:00** | **Lecture 2** | **Agentic AI for Accelerator Research: Osprey Applications**<br>Lecturer: Thorsten Hellert, Ph.D. |
+| **12:00 – 13:30** | Lunch & Networking | Complimentary lunch and attendee collaboration |
+| **13:30 – 16:30** | **Mini-Hackathon** | **Beam Orbit Alignment Benchmark Challenge**<br>• Track 1: Supervised Neural Surrogate (MLP) Inverse Optimization<br>• Track 2: Physics-Informed Closed-Loop Reinforcement Learning (RL)<br>• Track 3: Gaussian Process Bayesian Optimization (BO) Controller |
+| **16:30 – 17:00** | Leaderboard Awards | W&B Live Leaderboard review, awards presentation & closing remarks |
+
+The same schedule appears in the workshop announcement ([`docs/Announcement.md`](docs/Announcement.md)).
 
 ---
 
@@ -131,84 +126,49 @@ Beam ->| [BPM1]--[HCM1]--[QF1]--[BPM2]--...--[VCM3]--[QD3]--[BPM12]       |-> Ta
 
 ## 🚀 Getting Started & Environment Setup
 
-You can run the challenge notebooks using any of the following environments:
+### For Participants: Docker Container
 
-### Option A: Automated Setup Script (Recommended)
+Participants run the challenge in the official Docker container; no Git clone or local Python installation is needed. Install Docker beforehand with [`docs/DOCKER_INSTALL_GUIDE.md`](docs/DOCKER_INSTALL_GUIDE.md), then download and test the image with [`docs/DOCKER_SETUP_GUIDE.md`](docs/DOCKER_SETUP_GUIDE.md).
 
-The provided [`setup.sh`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/setup.sh) script automatically and dynamically detects the project directory (without hardcoded paths), creates a Python virtual environment (`ai4acc`), installs all dependencies and development tools in editable mode (`pip install -e ".[dev]"`), and activates the shell:
+**On the day**, start the environment with the launcher from the organizer's bundle, keeping `wandb.apikey` in the same folder so scores reach the live leaderboard:
 
-```bash
-source setup.sh
-```
+- **Windows:** double-click `run_hackathon_windows.bat`.
+- **macOS / Linux:** run `./run_hackathon_mac_linux.sh`.
 
-Once activated, launch Jupyter Lab:
-```bash
-jupyter lab notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
-```
-
-### Option B: Manual Local Python / Conda
-
-1. Create and activate a clean Python virtual environment (Python 3.10+ recommended):
-   ```bash
-   conda create -n ai4acc python=3.10 -y
-   conda activate ai4acc
-   ```
-
-2. Install the package in editable mode with development dependencies:
-   ```bash
-   pip install -e ".[dev]"
-   ```
-
-3. Launch Jupyter Lab:
-   ```bash
-   jupyter lab notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
-   ```
-
-### Option C: Google Colab
-
-1. Upload `notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb` to [Google Colab](https://colab.research.google.com/).
-2. Run the first cell to install dependencies:
-   ```python
-   !pip install -q wandb gymnasium scikit-learn
-   ```
-3. Authenticate with your Weights & Biases account:
-   ```python
-   import wandb
-   wandb.login()
-   ```
-
-### Option D: Docker Container (Zero-Installation, One-Command Setup)
-
-Run the official pre-configured hackathon container directly in any terminal (no Git clone or local Python installation required):
+The launcher checks Docker, loads the image, passes the leaderboard key to the container, and opens JupyterLab at **`http://localhost:8888/lab`**. Without the launcher, the same container starts with:
 
 ```bash
 docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
-Once launched, open **`http://localhost:8888`** in your browser. All packages (`gymnasium`, `scikit-learn`, `wandb`, `jupyterlab`, `notebook`) and the challenge notebook are pre-installed and ready to use!
+The container includes Python, all required packages (`gymnasium`, `scikit-learn`, `wandb`, `jupyterlab`), the participant notebook and the lecture PDFs. Download your notebook with **File → Download** before stopping the container; its files are deleted when it stops.
 
-*(If you have cloned the repository and prefer Docker Compose, you can also run `docker compose up`).*
+### For Instructors & Organizers: Local Development
 
-Once launched, open **`http://localhost:8888`** in your browser. All packages (`gymnasium`, `scikit-learn`, `wandb`, `jupyterlab`, `notebook`) are pre-installed and ready to use!
+With access to this repository, set up a local environment with the provided [`setup.sh`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/setup.sh) script. It creates a virtual environment (`ai4acc`), installs the package with its development tools (`pip install -e ".[dev]"`), and activates it:
 
-For detailed usage, Docker Hub publishing instructions, and troubleshooting (port conflicts, empty directory mounts, W&B keys), see the full **[`docs/DOCKER_GUIDE.md`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/DOCKER_GUIDE.md)**.
+```bash
+source setup.sh
+jupyter lab notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
+```
+
+To build the container from the repository, run `docker compose up`. Building, publishing to Docker Hub, and creating the offline participant bundle are covered in [`docs/DOCKER_GUIDE.md`](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/DOCKER_GUIDE.md) and `scripts/create_bundle.sh`.
 
 ---
 
 ## 📊 Weights & Biases (W&B) Leaderboard
 
 All evaluations automatically push telemetry and scoring to the live workshop leaderboard.
-See **[`docs/WANDB_LEADERBOARD_GUIDE.md`](docs/WANDB_LEADERBOARD_GUIDE.md)** for how the organizer creates the `ai4acc-mini-hackathon-2026` leaderboard and how participants join and submit.
+See **[`docs/WANDB_LEADERBOARD_GUIDE.md`](docs/WANDB_LEADERBOARD_GUIDE.md)** for how the organizer creates the `ai4acc-mini-hackathon-2026` leaderboard and how participants submit to it.
 
-1. **Workshop participants:** Start the environment with the launcher from the organizer's bundle. It passes the shared leaderboard key in `wandb.apikey` to the container, so no account or login is needed to submit.
-2. **Outside the workshop:** Create an account at [wandb.ai](https://wandb.ai), obtain your API key from [wandb.ai/authorize](https://wandb.ai/authorize), and set `WANDB_ENTITY` to your own account.
-3. **Configure in Notebook:**
+1. **Submission:** Participants start the container with the launcher from the organizer's bundle. It passes the shared leaderboard key in `wandb.apikey` to the container, so no W&B account or login is needed.
+2. **Configure in Notebook:**
    ```python
    WANDB_PROJECT = "ai4acc-mini-hackathon-2026"
    WANDB_ENTITY = "ai4acc-mini-hackathon-2026"   # [DO NOT CHANGE] Preset workshop entity
    TEAM_NAME = "Team_01"                         # Your unique hackathon team name
    ```
-4. **Logged Telemetry:**
+3. **Logged Telemetry:**
    - Summary scalar metrics: `challenge_score` (0–1000) and its parts `score_success`, `score_speed`, `score_precision`, plus `success_rate_pct`, `mean_steps`, `mean_final_rms_mm`, `mean_current_norm_A`, `mean_latency_ms`.
    - Artifact table: `seed_breakdown_table` tracking individual seed outcomes across 30 standardized seeds.
    - Live dynamic convergence plots and dual orbit trajectory diagrams.

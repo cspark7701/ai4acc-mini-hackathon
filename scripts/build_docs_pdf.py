@@ -44,6 +44,14 @@ def first_heading(md: Path) -> str:
     return md.stem
 
 
+def display(path: Path) -> str:
+    """Path relative to the repository root when possible, otherwise absolute."""
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def md_to_html(md: Path, html: Path) -> None:
     subprocess.run(
         [
@@ -105,7 +113,7 @@ def main(argv: list) -> int:
                 html_to_pdf(chrome, html, pdf, tmp / "chrome-profile")
                 if not pdf.is_file() or pdf.stat().st_size == 0:
                     raise RuntimeError("Chrome produced no PDF")
-                print(f"OK    {md.relative_to(REPO_ROOT)} -> {pdf.relative_to(REPO_ROOT)}")
+                print(f"OK    {display(md)} -> {display(pdf)}")
             except Exception as exc:
                 failed.append(md.name)
                 print(f"FAIL  {md.name}: {exc}", file=sys.stderr)
