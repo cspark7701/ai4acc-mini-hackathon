@@ -106,7 +106,7 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 ├── lecture_notes/                                    # Master lecture notes for Session 1 (Dr. Chong Shik Park)
 │   ├── Lecture_1_AI_ML_Techniques_for_Accelerators.md    # Session 1 master notes (Markdown)
 │   ├── Lecture_1_AI_ML_Techniques_for_Accelerators.tex   # Session 1 LaTeX source
-│   └── Lecture_1_AI_ML_Techniques_for_Accelerators.pdf   # Compiled lecture monograph (PDF, 15 pages)
+│   └── Lecture_1_AI_ML_Techniques_for_Accelerators.pdf   # Compiled lecture monograph (PDF, 16 pages)
 │
 ├── notebooks/                                        # Interactive Jupyter challenge notebooks
 │   ├── Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb  # Primary challenge notebook for participants (with TODOs)
@@ -200,10 +200,10 @@ Measured with the current code and the Solution notebook settings:
 
 | Rank | Controller / Agent Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Official Score |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| 🥇 | **Track 3: Bayesian Optimization Controller** | 100.0% | 1.5 steps | 0.0160 mm | 0.93 A | **873.2 pts** |
-| 🥈 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | 0.0230 mm | 0.90 A | **705.3 pts** |
-| 🥉 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 0.90 A | **686.9 pts** |
-| 4 | **Baseline 1: Supervised MLP Surrogate Inversion** | 73.3% | 22.2 steps | 0.0301 mm | 0.95 A | **441.6 pts** |
+| 🥇 | **Track 3: Bayesian Optimization Controller** | 100.0% | 1.5 steps | 0.0160 mm | 0.93 A | **873.163 pts** |
+| 🥈 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | 0.0230 mm | 0.90 A | **705.337 pts** |
+| 🥉 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 0.90 A | **686.926 pts** |
+| 4 | **Baseline 1 (Track 1): Supervised MLP Surrogate Inversion** | 73.3% | 22.2 steps | 0.0301 mm | 0.95 A | **441.644 pts** |
 
 ---
 
@@ -227,7 +227,7 @@ Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](f
 
 For detailed guidelines, refer to the included guides:
 - [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (Markdown)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.md) — Master curriculum notes for Morning Session 1.
-- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 15-page PDF monograph.
+- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf) — Formatted, compiled 16-page PDF monograph.
 - [Lecture 1 LaTeX Source](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.tex) — LaTeX document source code.
 - [Hackathon Project Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Hackathon%20Project%20Guide.docx) — Complete rules, physics derivations, and scoring breakdown.
 - [Technical Preparation Guide (Word Document)](file:///home/cspark/Work/projects/ai4acc-mini-hackathon/docs/Technical%20Preparation.docx) — Detailed lecture syllabus, setup recommendations, and schedule.

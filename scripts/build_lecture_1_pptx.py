@@ -1,4 +1,4 @@
-"""Build the updated, comprehensive 28-slide PPTX presentation for Lecture 1.
+"""Build the updated, comprehensive 29-slide PPTX presentation for Lecture 1.
 
 AI Applications in Accelerators Tutorial & Mini-Hackathon
 Lecture 1: AI/ML Foundations & Closed-Loop Control
@@ -42,7 +42,11 @@ GOLD = RGBColor(180, 140, 20)
 
 SLIDE_WIDTH = Inches(13.333)
 SLIDE_HEIGHT = Inches(7.5)
-TOTAL_SLIDES = 28
+TOTAL_SLIDES = 29
+
+# Line spacing (multiple of single spacing) for the body text of each slide, matching the
+# per-slide \slidespread values of the LaTeX deck so that text fills each content card.
+LINE_SPACING = {1: 1.22, 2: 1.31, 3: 1.35, 4: 1.80, 5: 1.27, 6: 1.14, 7: 1.14, 8: 1.13, 9: 1.22, 10: 1.50, 11: 1.19, 12: 1.38, 13: 1.58, 14: 1.42, 15: 1.22, 16: 1.35, 17: 1.22, 18: 1.30, 19: 1.20, 20: 1.12, 21: 1.38, 22: 1.07, 23: 1.22, 24: 1.61, 25: 1.0, 26: 1.22, 27: 1.22, 28: 1.38, 29: 1.40}
 
 
 def add_text_run(paragraph, text, bold=False, size=None, color=None):
@@ -186,20 +190,23 @@ def create_presentation():
 
     # Author & Affiliation Card
     add_card(s1, Inches(1.0), Inches(4.7), Inches(11.333), Inches(1.9), bg_color=LIGHT_BG)
-    tb_auth = s1.shapes.add_textbox(Inches(1.3), Inches(4.85), Inches(10.7), Inches(1.6))
+    tb_auth = s1.shapes.add_textbox(Inches(1.3), Inches(4.75), Inches(10.7), Inches(1.8))
     tf_auth = tb_auth.text_frame
     tf_auth.word_wrap = True
+    tf_auth.vertical_anchor = MSO_ANCHOR.MIDDLE
 
     add_text_run(tf_auth.paragraphs[0], "Chong Shik Park, Ph.D.", bold=True, size=Pt(19), color=NAVY)
 
     p_a2 = tf_auth.add_paragraph()
-    p_a2.space_before = Pt(5)
-    add_text_run(p_a2, "• Department of Accelerator Science, Korea University, Sejong 30019, Republic of Korea\n"
-                       "• Center for Accelerator Research, Korea University, Sejong 30019, Republic of Korea", size=Pt(13), color=DARK_GRAY)
+    p_a2.space_before = Pt(9)
+    add_text_run(p_a2, "• Department of Accelerator Science, Korea University, Sejong 30019, Republic of Korea", size=Pt(13), color=DARK_GRAY)
+    p_a2b = tf_auth.add_paragraph()
+    p_a2b.space_before = Pt(3)
+    add_text_run(p_a2b, "• Center for Accelerator Research, Korea University, Sejong 30019, Republic of Korea", size=Pt(13), color=DARK_GRAY)
 
     p_a3 = tf_auth.add_paragraph()
-    p_a3.space_before = Pt(6)
-    add_text_run(p_a3, "Date: November 19, 2026   |   Audience: Accelerator Physicists, Postdocs, Engineers & Graduate Students", size=Pt(11), color=MUTED)
+    p_a3.space_before = Pt(9)
+    add_text_run(p_a3, "Date: November 19, 2026", size=Pt(11.5), color=MUTED)
 
     add_footer(s1, 1)
 
@@ -220,7 +227,7 @@ def create_presentation():
     add_text_run(p, "  -- Modern synchrotron light sources, colliders, and FELs require transverse orbit stabilization to within < 10% of beam size (sub-micron RMS tolerances).\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p2 = tf2.add_paragraph()
-    add_text_run(p2, "• High-Power Hadron Linacs (e.g., SNS, ESS):\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p2, "• High-Intensity Hadron Linacs (e.g., SNS, ESS):\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p2, "  -- Uncorrected trajectory offsets through RF cavities and quadrupoles induce non-linear space-charge forces and beam halo.\n"
                      "  -- Fractional beam loss exceeding 1 W/m (~10⁻⁵ of total beam power) causes severe structural radioactivation, prohibiting hands-on maintenance.\n\n", size=Pt(13.5), color=DARK_GRAY)
 
@@ -314,7 +321,7 @@ def create_presentation():
     add_text_run(p3, "• Modern agent frameworks (e.g. Osprey) couple Large Language Model reasoning engines with standardized Python control APIs and simulation codes.\n"
                     "• Translates high-level natural language goals into validated, safe operational sequences under strict domain guardrails.", size=Pt(13), color=DARK_GRAY)
 
-    add_footer(s4, 5)
+    add_footer(s5, 5)
 
     # ==========================================
     # SLIDE 6: Hill's Equation & Transverse Motion
@@ -558,26 +565,31 @@ def create_presentation():
                "Comprehensive comparison of non-linear activations, gradients, and selection criteria")
 
     add_card(s13, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Core Activation Functions: Formula, Gradient & Use Cases")
-    tb13 = s13.shapes.add_textbox(Inches(1.1), Inches(2.05), Inches(11.1), Inches(4.5))
+    act_img = IMG_DIR / "activation_functions.png"
+    if act_img.exists():
+        # Small plots of each activation f(z) (solid) and its gradient f'(z) (dashed), numbered as in the list
+        pic = s13.shapes.add_picture(str(act_img), Inches(8.3), Inches(1.95), height=Inches(4.62))
+        pic.left = Inches(12.30) - pic.width
+    tb13 = s13.shapes.add_textbox(Inches(1.1), Inches(2.0), Inches(7.15), Inches(4.55))
     tf13 = tb13.text_frame
     tf13.word_wrap = True
 
     acts = [
-        ("1. ReLU (Rectified Linear Unit):", "f(z) = max(0, z)", "• Constant gradient = 1 for z > 0. Prevents vanishing gradients, ultra-fast. Standard choice for surrogate hidden layers."),
-        ("2. Leaky ReLU:", "f(z) = max(α·z, z), α ≈ 0.01", "• Maintains a small non-zero slope for z < 0. Solves the 'dying ReLU' issue where inactive neurons permanently shut down."),
-        ("3. GELU (Gaussian Error Linear Unit):", "f(z) = z · Φ(z)", "• Smooth probabilistic gating based on the standard normal CDF. State-of-the-art activation in modern LLMs & Transformers."),
-        ("4. Sigmoid:", "σ(z) = 1 / (1 + e⁻ᶻ)", "• Squeezes output to (0, 1). Ideal for binary probability outputs; severe vanishing gradient when saturated at extremes."),
-        ("5. Tanh (Hyperbolic Tangent):", "tanh(z) = (eᶻ - e⁻ᶻ)/(eᶻ + e⁻ᶻ)", "• Zero-centered in (-1, 1), offering stronger gradient dynamics than Sigmoid, but still susceptible to saturation at large |z|."),
-        ("6. Linear / Identity:", "f(z) = z", "• No non-linearity. Essential for the output layer of continuous regression surrogates (e.g., predicting BPM readings Y).")
+        ("1. ReLU:", "f(z) = max(0, z)", "• Gradient = 1 for z > 0; fast, no vanishing gradient. Default for surrogate hidden layers."),
+        ("2. Leaky ReLU:", "f(z) = max(α·z, z), α ≈ 0.01", "• Small slope for z < 0 avoids 'dying' neurons that stop learning."),
+        ("3. GELU:", "f(z) = z · Φ(z)", "• Smooth gating by the normal CDF; standard in modern LLMs & Transformers."),
+        ("4. Sigmoid:", "σ(z) = 1 / (1 + e⁻ᶻ)", "• Output in (0, 1) for probabilities; gradient vanishes when saturated."),
+        ("5. Tanh:", "tanh(z) = (eᶻ - e⁻ᶻ)/(eᶻ + e⁻ᶻ)", "• Zero-centred in (-1, 1); stronger gradients than Sigmoid, still saturates."),
+        ("6. Linear / Identity:", "f(z) = z", "• No non-linearity; used in the output layer of regression surrogates (BPM readings Y).")
     ]
 
     for i, (name, formula, desc) in enumerate(acts):
         p_act = tf13.paragraphs[0] if i == 0 else tf13.add_paragraph()
         if i > 0:
-            p_act.space_before = Pt(4)
+            p_act.space_before = Pt(5)
         add_text_run(p_act, f"{name} ", bold=True, size=Pt(12.5), color=NAVY)
-        add_text_run(p_act, f"{formula}  --  ", bold=True, size=Pt(12), color=PRIMARY)
-        add_text_run(p_act, desc, size=Pt(11.5), color=DARK_GRAY)
+        add_text_run(p_act, f"{formula}\n", bold=True, size=Pt(12.5), color=PRIMARY)
+        add_text_run(p_act, desc, size=Pt(12), color=DARK_GRAY)
 
     add_footer(s13, 13)
 
@@ -620,16 +632,18 @@ def create_presentation():
     add_header(s15, "Surrogate Modeling", "Neural Surrogate Digital Twin",
                "Deep Multi-Layer Perceptron (128-64-32) capturing non-linear cubic saturation")
 
-    # Image scaled: Width = 6.2 in, Height = 3.6 in (Top: 1.45 to 5.05in)
+    # Image scaled: Height = 4.25 in, aspect ratio preserved and centred (Top: 1.38 to 5.63in)
     mlp_img = IMG_DIR / "mlp_schematic.png"
     if mlp_img.exists():
-        s15.shapes.add_picture(str(mlp_img), Inches(3.56), Inches(1.45), width=Inches(6.2), height=Inches(3.6))
+        pic = s15.shapes.add_picture(str(mlp_img), Inches(0), Inches(1.38), height=Inches(4.25))
+        pic.left = int((SLIDE_WIDTH - pic.width) / 2)
 
-    # Card below at Top = 5.25in (0.2in gap, Zero Overlap!)
-    add_card(s15, Inches(0.8), Inches(5.25), Inches(11.733), Inches(1.5), bg_color=LIGHT_BG)
-    tb15 = s15.shapes.add_textbox(Inches(1.0), Inches(5.35), Inches(11.3), Inches(1.3))
+    # Card below the image
+    add_card(s15, Inches(0.8), Inches(5.72), Inches(11.733), Inches(1.18), bg_color=LIGHT_BG)
+    tb15 = s15.shapes.add_textbox(Inches(1.0), Inches(5.76), Inches(11.3), Inches(1.1))
     tf15 = tb15.text_frame
     tf15.word_wrap = True
+    tf15.vertical_anchor = MSO_ANCHOR.MIDDLE
     add_text_run(tf15.paragraphs[0], 
                  "• Input Layer: 6 Corrector Magnet Currents [HCM1-3, VCM1-3] in Amperes.\n"
                  "• Hidden Layers: Dense layers (128 → 64 → 32) with ReLU non-linear activations capturing cubic iron-core saturation.\n"
@@ -676,19 +690,21 @@ def create_presentation():
     add_header(s17, "Closed-Loop Control", "Closed-Loop Control Architecture",
                "Transitioning from predictive surrogate modeling to active closed-loop trajectory correction")
 
-    # Image scaled: Width = 6.7 in, Height = 3.6 in (Top: 1.45 to 5.05in)
+    # Image scaled: Height = 4.25 in, aspect ratio preserved and centred (Top: 1.38 to 5.63in)
     ctrl_img = IMG_DIR / "forward_sl_and_rl_schematic.png"
     if ctrl_img.exists():
-        s17.shapes.add_picture(str(ctrl_img), Inches(3.31), Inches(1.45), width=Inches(6.7), height=Inches(3.6))
+        pic = s17.shapes.add_picture(str(ctrl_img), Inches(0), Inches(1.38), height=Inches(4.25))
+        pic.left = int((SLIDE_WIDTH - pic.width) / 2)
 
-    # Card below at Top = 5.25in (0.2in gap, Zero Overlap!)
-    add_card(s17, Inches(0.8), Inches(5.25), Inches(11.733), Inches(1.5), bg_color=LIGHT_BG)
-    tb17 = s17.shapes.add_textbox(Inches(1.0), Inches(5.35), Inches(11.3), Inches(1.3))
+    # Card below the image
+    add_card(s17, Inches(0.8), Inches(5.72), Inches(11.733), Inches(1.18), bg_color=LIGHT_BG)
+    tb17 = s17.shapes.add_textbox(Inches(1.0), Inches(5.76), Inches(11.3), Inches(1.1))
     tf17 = tb17.text_frame
     tf17.word_wrap = True
+    tf17.vertical_anchor = MSO_ANCHOR.MIDDLE
     add_text_run(tf17.paragraphs[0], 
-                 "• Forward Supervised Model (Top): Maps candidate corrector kick commands ΔI to predicted BPM displacement vectors Ŷ.\n"
-                 "• Closed-Loop Control Loop (Bottom): Senses true BPM displacement Y, passes error through controller policy, updates magnet power supplies, and repeats until convergence.", 
+                 "• Forward Supervised Model (Left): Maps candidate corrector kick commands ΔI to predicted BPM displacement vectors Ŷ.\n"
+                 "• Closed-Loop Control Loop (Right): Senses true BPM displacement Y, passes error through the controller policy, updates magnet power supplies, and repeats until convergence.", 
                  size=Pt(12.5), color=DARK_GRAY)
 
     add_footer(s17, 17)
@@ -722,15 +738,15 @@ def create_presentation():
 
     p3 = tf18.add_paragraph()
     add_text_run(p3, "• Tested Benchmark Performance: ", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "100.0% success rate, 5.6 mean steps, 705.3 total score (Rank #2).", bold=True, size=Pt(14), color=PRIMARY)
+    add_text_run(p3, "100.0% success rate, 5.6 mean steps, 705.337 total score (Rank #2).", bold=True, size=Pt(14), color=PRIMARY)
 
     add_footer(s18, 18)
 
     # ==========================================
-    # SLIDE 19: Baseline 1: Supervised Neural Inversion
+    # SLIDE 19: Baseline 1 (Track 1): Supervised Neural Inversion
     # ==========================================
     s19 = prs.slides.add_slide(blank_layout)
-    add_header(s19, "Benchmark Baselines", "Baseline 1: Supervised Neural Inversion",
+    add_header(s19, "Benchmark Baselines", "Baseline 1 (Track 1): Supervised Neural Inversion",
                "Model-based bounded optimization via SciPy L-BFGS-B on the trained neural digital twin")
 
     add_card(s19, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Optimization Formulation on Forward Surrogate")
@@ -755,7 +771,7 @@ def create_presentation():
 
     p3 = tf19.add_paragraph()
     add_text_run(p3, "• Tested Benchmark Performance: ", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "73.3% success rate, 22.2 mean steps, 441.6 total score (Rank #4).", bold=True, size=Pt(14), color=PRIMARY)
+    add_text_run(p3, "73.3% success rate, 22.2 mean steps, 441.644 total score (Rank #4).", bold=True, size=Pt(14), color=PRIMARY)
 
     add_footer(s19, 19)
 
@@ -939,10 +955,11 @@ def create_presentation():
     tf25.word_wrap = True
 
     p = tf25.paragraphs[0]
-    add_text_run(p, "Standardized Evaluation Suite: seeds = range(1, 31) (30 evaluation seeds)\n\n", size=Pt(13.5), color=DARK_GRAY)
+    add_text_run(p, "Standardized Evaluation Suite: seeds = range(1, 31) (30 evaluation seeds)", size=Pt(13.5), color=DARK_GRAY)
 
     p_eq = tf25.add_paragraph()
     p_eq.alignment = PP_ALIGN.CENTER
+    p_eq.space_before = Pt(8)
     add_text_run(p_eq, "Score = mean over 30 seeds of s_k,  s_k = 0 if seed k fails, otherwise\n"
                        "s_k = 400  +  300 × max(0, (20 - n_k) / 19)  +  300 × clip( ln(0.030 / RMS_k) / ln 3, 0, 1 )\n", bold=True, size=Pt(16), color=PRIMARY)
 
@@ -956,7 +973,7 @@ def create_presentation():
         ("Speed", "up to 300", "300 for converging in 1 step, falling linearly to 0 at 20 steps or more (episodes run up to 50 steps)."),
         ("Precision", "up to 300", "0 at the 0.030 mm target, 300 at the 0.010 mm sensor noise floor, on a log scale (0.017 mm earns about 150)."),
     ]
-    st_shape = s25.shapes.add_table(4, 3, Inches(1.1), Inches(3.35), Inches(11.1), Inches(1.9))
+    st_shape = s25.shapes.add_table(4, 3, Inches(1.1), Inches(3.75), Inches(11.1), Inches(1.9))
     st = st_shape.table
     for idx, w in enumerate([Inches(1.6), Inches(1.5), Inches(8.0)]):
         st.columns[idx].width = w
@@ -977,7 +994,7 @@ def create_presentation():
             p_cell.alignment = PP_ALIGN.LEFT if c_idx == 2 else PP_ALIGN.CENTER
             add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(12.5), color=NAVY if c_idx == 0 else DARK_GRAY)
 
-    tb25n = s25.shapes.add_textbox(Inches(1.1), Inches(5.35), Inches(11.1), Inches(0.5))
+    tb25n = s25.shapes.add_textbox(Inches(1.1), Inches(5.95), Inches(11.1), Inches(0.5))
     tb25n.text_frame.word_wrap = True
     p_n = tb25n.text_frame.paragraphs[0]
     add_text_run(p_n, "Current norm: ", bold=True, size=Pt(12.5), color=DARK_GRAY)
@@ -1022,10 +1039,10 @@ def create_presentation():
         add_text_run(p_cell, h_text, bold=True, size=Pt(11.5), color=WHITE)
 
     data_rows = [
-        ("Rank 1", "Track 3: Bayesian Optimization (BO)", "100.0%", "1.5 steps", "0.0160 mm", "0.93 A", "873.2 pts", GOLD),
-        ("Rank 2", "Baseline 0: Classical Linear SVD", "100.0%", "5.6 steps", "0.0230 mm", "0.90 A", "705.3 pts", PRIMARY),
-        ("Rank 3", "Track 2: Closed-Loop RL Policy Agent", "100.0%", "6.1 steps", "0.0239 mm", "0.90 A", "686.9 pts", DARK_GRAY),
-        ("Rank 4", "Baseline 1: Supervised Neural Inversion (MLP)", "73.3%", "22.2 steps", "0.0301 mm", "0.95 A", "441.6 pts", DARK_GRAY),
+        ("Rank 1", "Track 3: Bayesian Optimization (BO)", "100.0%", "1.5 steps", "0.0160 mm", "0.93 A", "873.163 pts", GOLD),
+        ("Rank 2", "Baseline 0: Classical Linear SVD", "100.0%", "5.6 steps", "0.0230 mm", "0.90 A", "705.337 pts", PRIMARY),
+        ("Rank 3", "Track 2: Closed-Loop RL Policy Agent", "100.0%", "6.1 steps", "0.0239 mm", "0.90 A", "686.926 pts", DARK_GRAY),
+        ("Rank 4", "Baseline 1 (Track 1): Supervised Neural Inversion (MLP)", "73.3%", "22.2 steps", "0.0301 mm", "0.95 A", "441.644 pts", DARK_GRAY),
     ]
 
     for r_idx, row_data in enumerate(data_rows, start=1):
@@ -1048,7 +1065,60 @@ def create_presentation():
     add_footer(s26, 26)
 
     # ==========================================
-    # SLIDE 27: Strategic Advice for Competitors
+    # SLIDE 27: Method Comparison Summary (Baselines & Tracks)
+    # ==========================================
+    s_cmp = prs.slides.add_slide(blank_layout)
+    add_header(s_cmp, "Evaluation Results", "Method Comparison Summary",
+               "How the two baselines and the two challenge tracks differ, and how they score on the 30 seeds")
+
+    cmp_rows = [
+        ("Baseline 0\nClassical SVD", "ΔI = −α (Rᵀ)⁺ Y, fixed gain α = 0.45", "Analytic ORM; no training data",
+         "Instant, robust, interpretable", "Ignores saturation; slow at low gain; fixed reference", "705.337 / —"),
+        ("Baseline 1 (Track 1)\nSupervised inversion", "Minimise ‖Y + f_θ(ΔI)‖² with L-BFGS-B each step", "MLP digital twin; 1,500 offline shots",
+         "Learns the non-linear response", "Only as good as the surrogate; slowest per step", "441.644 / 941.8"),
+        ("Track 2\nRL / adaptive policy", "Physics prior + learned residual + damping", "Policy parameters; tuned in closed loop",
+         "Fastest per step; adapts online", "Gain and damping tuning; overshoot risk", "686.926 / 955.0"),
+        ("Track 3\nBayesian optimisation", "Minimise LCB of GP-predicted RMS each step", "Gaussian process; ~300 calibration shots",
+         "Sample-efficient; models uncertainty", "GP cost grows with data; per-step optimisation", "873.163 / 954.8"),
+    ]
+    cmp_headers = ["Method", "Control law", "Model & data", "Strengths", "Limitations", "Score: ref. / best agent"]
+    cmp_shape = s_cmp.shapes.add_table(5, 6, Inches(0.8), Inches(1.55), Inches(11.733), Inches(4.5))
+    cmp_tbl = cmp_shape.table
+    for idx, w in enumerate([Inches(2.05), Inches(2.35), Inches(1.85), Inches(1.95), Inches(2.1), Inches(1.433)]):
+        cmp_tbl.columns[idx].width = w
+    for c_idx, h_text in enumerate(cmp_headers):
+        cell = cmp_tbl.cell(0, c_idx)
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = PRIMARY
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+        add_text_run(cell.text_frame.paragraphs[0], h_text, bold=True, size=Pt(12.5), color=WHITE)
+    for r_idx, row_vals in enumerate(cmp_rows, start=1):
+        for c_idx, text_val in enumerate(row_vals):
+            cell = cmp_tbl.cell(r_idx, c_idx)
+            cell.fill.solid()
+            cell.fill.fore_color.rgb = LIGHT_BG if r_idx % 2 == 1 else WHITE
+            cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+            cell.text_frame.word_wrap = True
+            p_cell = cell.text_frame.paragraphs[0]
+            p_cell.alignment = PP_ALIGN.CENTER if c_idx == 5 else PP_ALIGN.LEFT
+            if c_idx == 0:
+                name, sub_name = text_val.split("\n")
+                add_text_run(p_cell, name + "\n", bold=True, size=Pt(12.5), color=NAVY)
+                add_text_run(p_cell, sub_name, size=Pt(12), color=DARK_GRAY)
+            else:
+                add_text_run(p_cell, text_val, size=Pt(12), color=DARK_GRAY)
+
+    tb_cmp = s_cmp.shapes.add_textbox(Inches(0.8), Inches(6.25), Inches(11.733), Inches(0.6))
+    tb_cmp.text_frame.word_wrap = True
+    add_text_run(tb_cmp.text_frame.paragraphs[0],
+                 "Reference: unmodified notebook controllers (per-seed 0–1000 scoring, mean over 30 seeds). Best agent: highest score per method "
+                 "in the 10-agent W&B test (2026-11-14), using saturation compensation on the total current and better surrogates. "
+                 "Baseline 0 is a fixed reference and is not tuned by participants.", size=Pt(11), color=MUTED)
+
+    add_footer(s_cmp, 27)
+
+    # ==========================================
+    # SLIDE 28: Strategic Advice for Competitors
     # ==========================================
     s27 = prs.slides.add_slide(blank_layout)
     add_header(s27, "Competitor Strategy", "Strategic Advice for Competitors",
@@ -1074,10 +1144,10 @@ def create_presentation():
     add_text_run(p3, "3. Real-Time Telemetry Logging:\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p3, "   • Connect your notebook runs to Weights & Biases (wandb.ai) to visualize step-by-step RMS decay against reference baselines on the live leaderboard.", size=Pt(13.5), color=DARK_GRAY)
 
-    add_footer(s27, 27)
+    add_footer(s27, 28)
 
     # ==========================================
-    # SLIDE 28: Summary & Transition to Lecture 2
+    # SLIDE 29: Summary & Transition to Lecture 2
     # ==========================================
     s28 = prs.slides.add_slide(blank_layout)
     add_header(s28, "Conclusion & Roadmap", "Summary & Transition to Lecture 2",
@@ -1104,12 +1174,24 @@ def create_presentation():
     p3 = tf28.add_paragraph()
     add_text_run(p3, "Q & A Discussion", bold=True, size=Pt(16), color=ACCENT)
 
-    add_footer(s28, 28)
+    add_footer(s28, 29)
+
+    # Body-text line spacing per slide: every text box between the header and the footer,
+    # excluding tables, so that the text fills its content card (see LINE_SPACING).
+    for slide_num, slide in enumerate(prs.slides, start=1):
+        spacing = LINE_SPACING.get(slide_num)
+        if not spacing:
+            continue
+        for shape in slide.shapes:
+            if not shape.has_text_frame or shape.top < Inches(1.3) or shape.top >= Inches(6.95):
+                continue
+            for para in shape.text_frame.paragraphs:
+                para.line_spacing = spacing
 
     # Save presentation
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     prs.save(str(OUTPUT_PATH))
-    print(f"Successfully generated 28-slide presentation: {OUTPUT_PATH}")
+    print(f"Successfully generated {len(prs.slides)}-slide presentation: {OUTPUT_PATH}")
 
 
 if __name__ == "__main__":

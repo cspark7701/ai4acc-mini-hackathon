@@ -241,6 +241,10 @@ Inputs       Weights
      - **Extreme computational efficiency:** Evaluated via a single conditional instruction on CPU/GPU without expensive transcendental exponents ($e^z$).
      - **Sparse representation:** Zero activation for negative inputs induces natural biological sparsity.
 
+![Six common activation functions f(z) (solid) and their gradients f'(z) (dashed): ReLU, Leaky ReLU, GELU, Sigmoid, Tanh and Linear](../img/activation_functions.png)
+
+*Six common activation functions $f(z)$ (solid) and their gradients $f'(z)$ (dashed). Note the vanishing gradients of Sigmoid and Tanh for large $|z|$, and the constant gradient of ReLU for $z > 0$.*
+
 ---
 
 ### 3.5 Multi-Layer Perceptron (MLP) Anatomy: Layers & Information Flow
@@ -402,9 +406,9 @@ where $\alpha \in (0, 1]$ is the feedback loop gain (typically $\alpha \approx 0
 
 **Strengths & Limitations:**
 - ✅ **Pros:** Instantaneous computation ($< 0.1\text{ ms}$); mathematically guaranteed convergence in purely linear regimes.
-- ❌ **Cons:** Ignores non-linear saturation; high gains ($\alpha > 0.6$) cause overshooting and limit-cycle oscillations when magnets enter saturated regions.
+- ❌ **Cons:** Ignores non-linear saturation. Gains up to about $1.0$ converge fastest (about 1.6 steps at $\alpha = 1.0$ versus 5.6 at $0.45$); above that the controller overshoots.
 
-### 4.2 Baseline 1: Supervised Surrogate + SciPy Bounded Inversion
+### 4.2 Baseline 1 (Track 1): Supervised Surrogate + SciPy Bounded Inversion
 Instead of inverting an analytical matrix, Baseline 1 leverages the trained neural digital twin $\hat{\mathbf{Y}} = f_{\boldsymbol{\theta}}(\Delta \mathbf{I})$ directly within an optimization loop:
 
 $$\min_{\Delta \mathbf{I}} \mathcal{L}(\Delta \mathbf{I}) = \left\| \mathbf{Y}_{\text{obs}} + f_{\boldsymbol{\theta}}(\Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2$$
@@ -430,9 +434,9 @@ class SupervisedMLPController:
         return np.clip(res.x, -0.8, 0.8)
 ```
 
-**Why Baseline 1 is Highly Effective:**
-- Because $f_{\boldsymbol{\theta}}$ accurately predicts cubic soft saturation, the optimizer chooses kicks that anticipate saturation falloff.
-- As demonstrated on test seed 42, Baseline 1 reaches convergence ($\text{RMS} < 0.03\text{ mm}$) in **just 2 to 3 steps**, compared to 6 steps for classical SVD.
+**Why Baseline 1 Depends on the Surrogate:**
+- When $f_{\boldsymbol{\theta}}$ accurately predicts cubic soft saturation, the optimizer chooses kicks that anticipate saturation falloff; on test seed 42 it converges ($\text{RMS} < 0.03\text{ mm}$) in 2 steps, compared to 6 for classical SVD.
+- With the reference MLP settings (test RMSE about 0.11 mm) it succeeds on only 73.3% of the 30 seeds. A more accurate surrogate (e.g. a small `tanh` network trained with `lbfgs`, test RMSE about 0.011 mm) raises it to 100% success and over 900 points.
 
 ### 4.3 Track 2: Closed-Loop RL & Physics-Informed Policy Agents
 While numerical optimization per step is powerful, iterative gradient solvers add execution latency ($\sim 15 - 30\text{ ms}$). In contrast, a direct continuous policy network executes in $< 0.5\text{ ms}$ ([Kain et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.124801)).
@@ -540,10 +544,21 @@ Across the 30 standardized seeds, our four competitor implementations produce:
 
 | Rank | Controller / Agent Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Total Score |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| 🥇 | **Track 3: Bayesian Optimization Controller** | 100.0% | 1.5 steps | 0.0160 mm | 0.93 A | **873.2 pts** |
-| 🥈 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | 0.0230 mm | 0.90 A | **705.3 pts** |
-| 🥉 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 0.90 A | **686.9 pts** |
-| 4 | **Baseline 1: Supervised MLP Surrogate Inversion** | 73.3% | 22.2 steps | 0.0301 mm | 0.95 A | **441.6 pts** |
+| 🥇 | **Track 3: Bayesian Optimization Controller** | 100.0% | 1.5 steps | 0.0160 mm | 0.93 A | **873.163 pts** |
+| 🥈 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | 0.0230 mm | 0.90 A | **705.337 pts** |
+| 🥉 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 0.90 A | **686.926 pts** |
+| 4 | **Baseline 1 (Track 1): Supervised MLP Surrogate Inversion** | 73.3% | 22.2 steps | 0.0301 mm | 0.95 A | **441.644 pts** |
+
+### 5.6 Method Comparison Summary
+
+| Method | Control law | Model & data | Strengths | Limitations | Score: reference / best agent |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **Baseline 0**<br>Classical SVD | $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed gain $\alpha = 0.45$ | Analytic ORM; no training data | Instant, robust, interpretable | Ignores saturation; slow at low gain; fixed reference | 705.337 / — |
+| **Baseline 1 (Track 1)**<br>Supervised inversion | Minimise $\lVert\mathbf{Y} + f_\theta(\Delta\mathbf{I})\rVert^2$ with L-BFGS-B each step | MLP digital twin; 1,500 offline shots | Learns the non-linear response | Only as good as the surrogate; slowest per step | 441.644 / 941.8 |
+| **Track 2**<br>RL / adaptive policy | Physics prior + learned residual + damping | Policy parameters; tuned in closed loop | Fastest per step; adapts online | Gain and damping tuning; overshoot risk | 686.926 / 955.0 |
+| **Track 3**<br>Bayesian optimisation | Minimise LCB of GP-predicted RMS each step | Gaussian process; ~300 calibration shots | Sample-efficient; models uncertainty | GP cost grows with data; per-step optimisation | 873.163 / 954.8 |
+
+*Reference:* unmodified notebook controllers. *Best agent:* highest score per method in the 10-agent W&B test (2026-11-14), using saturation compensation on the total current and better surrogates. Baseline 0 is a fixed reference and is not tuned by participants.
 
 ---
 
