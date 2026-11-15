@@ -8,7 +8,9 @@
 #
 # Generates:
 #   dist/ai4acc-hackathon/
-#     ├── ai4acc-image.tar.gz      (Compressed Docker image)
+#     ├── ai4acc-image.tar.gz      (Compressed Docker image, rebuilt from the current repository)
+#     ├── image-id.txt             (ID of that image; the launchers load it when it differs)
+#     ├── BUILD_INFO.txt           (Image ID, git commit and build date)
 #     ├── run_hackathon_windows.bat          (Double-click launcher for Windows)
 #     ├── run_hackathon_mac_linux.sh         (Launcher for macOS & Linux)
 #     ├── wandb.apikey            (Shared W&B leaderboard key, if dist/wandb.apikey exists)
@@ -48,13 +50,36 @@ if ! docker info >/dev/null 2>&1; then
     exit 1
 fi
 
-# 3. Check if local image exists; if not, build it
-if ! docker image inspect "${FULL_IMAGE}" >/dev/null 2>&1; then
-    echo "[*] Image '${FULL_IMAGE}' not found locally. Building image..."
-    docker build -t "${FULL_IMAGE}" .
-else
-    echo "[OK] Found local image '${FULL_IMAGE}'."
+# 3. Always build the image from the current repository, so the bundle never ships
+#    an older local image. Unchanged layers come from the Docker cache.
+GIT_COMMIT="$(git -C "${REPO_ROOT}" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+if [ -n "$(git -C "${REPO_ROOT}" status --porcelain --untracked-files=no 2>/dev/null)" ]; then
+    echo "[!] Warning: the repository has uncommitted changes; they will be included in the image."
+    GIT_COMMIT="${GIT_COMMIT}-dirty"
 fi
+echo "[*] Building image '${FULL_IMAGE}' from the current repository (commit ${GIT_COMMIT}) ..."
+docker build --label "org.opencontainers.image.revision=${GIT_COMMIT}" -t "${FULL_IMAGE}" .
+
+# 3b. Verify that the image contains the current participant notebook, benchmark code and slides
+echo "[*] Verifying image contents against the repository ..."
+verify() {  # verify <repo file> <path inside image>
+    local want got
+    want="$(sha256sum "${REPO_ROOT}/$1" | cut -d' ' -f1)"
+    got="$(docker run --rm --entrypoint sha256sum "${FULL_IMAGE}" "$2" 2>/dev/null | cut -d' ' -f1)"
+    if [ "${want}" != "${got}" ]; then
+        echo "❌ Error: $2 in the image does not match $1 in the repository."
+        exit 1
+    fi
+    echo "    [OK] $1"
+}
+SRC_DIR="$(docker run --rm --entrypoint python "${FULL_IMAGE}" -c 'import os, src.benchmark as b; print(os.path.dirname(b.__file__))')"
+verify notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb /workspace/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
+verify src/benchmark.py "${SRC_DIR}/benchmark.py"
+verify src/environment.py "${SRC_DIR}/environment.py"
+verify presentations/Lecture_1_AI_ML_Foundations_and_Control.pdf /workspace/Lecture_1_AI_ML_Foundations_and_Control.pdf
+verify lecture_notes/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf /workspace/Lecture_1_AI_ML_Techniques_for_Accelerators.pdf
+IMAGE_ID="$(docker image inspect --format '{{.Id}}' "${FULL_IMAGE}")"
+echo "[OK] Image ${IMAGE_ID:7:12} matches the repository."
 
 # 4. Prepare distribution directory
 echo "[*] Setting up bundle directory: ${OUTPUT_DIR} ..."
@@ -75,6 +100,16 @@ fi
 
 FILE_SIZE=$(du -h "${IMAGE_TAR_GZ}" | cut -f1)
 echo "[OK] Docker image exported successfully! Compressed size: ${FILE_SIZE}"
+
+# Record the image ID so the launchers can tell whether the installed image is this one,
+# plus build information for the organizer.
+echo "${IMAGE_ID}" > "${OUTPUT_DIR}/image-id.txt"
+cat > "${OUTPUT_DIR}/BUILD_INFO.txt" << EOF
+Image:   ${FULL_IMAGE}
+ImageID: ${IMAGE_ID}
+Commit:  ${GIT_COMMIT}
+Built:   $(date '+%Y-%m-%d %H:%M %Z')
+EOF
 echo ""
 
 # 6-7. Copy the tracked launchers (single source of truth: dist/run_hackathon_*)
@@ -112,7 +147,8 @@ HOW TO RUN:
 1. Windows:
    - Make sure Docker Desktop is running (whale icon in system tray).
    - Double-click 'run_hackathon_windows.bat'.
-   - The first run will automatically load the image and open JupyterLab in your browser.
+   - The launcher loads the bundled image when it is newer than the one installed,
+     then opens JupyterLab in your browser.
 
 2. macOS / Linux:
    - Make sure Docker Desktop or Docker Engine is running.

@@ -82,3 +82,8 @@ Thumbs.db
 # Shared W&B leaderboard key (secret; must never be baked into the image)
 wandb.apikey
 **/wandb.apikey
+
+# Not needed in the participant image (and dist/ holds the large bundle archives)
+dist/
+docs/
+tests/

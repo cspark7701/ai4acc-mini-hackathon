@@ -41,11 +41,18 @@ if %ERRORLEVEL% neq 0 (
 echo [OK] Docker daemon is running.
 echo.
 
-:: 3. Check if image is loaded; if not, load from offline archive
-docker image inspect cspark7701/ai4acc-hackathon-2026:latest >nul 2>nul
-if %ERRORLEVEL% neq 0 (
+:: 3. Load the bundled image when it is missing or differs from the installed one
+::    (image-id.txt records the ID of the image in ai4acc-image.tar.gz)
+set "INSTALLED_ID="
+set "BUNDLED_ID="
+for /f "delims=" %%i in ('docker image inspect --format "{{.Id}}" cspark7701/ai4acc-hackathon-2026:latest 2^>nul') do set "INSTALLED_ID=%%i"
+if exist "%~dp0image-id.txt" set /p BUNDLED_ID=<"%~dp0image-id.txt"
+set "NEED_LOAD=0"
+if not defined INSTALLED_ID set "NEED_LOAD=1"
+if defined BUNDLED_ID if not "%INSTALLED_ID%"=="%BUNDLED_ID%" set "NEED_LOAD=1"
+if "%NEED_LOAD%"=="1" (
     if exist "%~dp0ai4acc-image.tar.gz" (
-        echo [*] First-time setup: Loading offline Docker image...
+        echo [*] Loading the workshop Docker image from this folder...
         echo     (This takes about 30-45 seconds, please wait)
         docker load -i "%~dp0ai4acc-image.tar.gz"
         if errorlevel 1 (

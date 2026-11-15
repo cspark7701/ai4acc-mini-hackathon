@@ -47,17 +47,18 @@ fi
 echo -e "${GREEN}[OK] Docker daemon is running.${NC}"
 echo ""
 
-# 3. Check if image is loaded; if not, load from offline archive
-if ! docker image inspect cspark7701/ai4acc-hackathon-2026:latest &> /dev/null; then
-    if [ -f "${SCRIPT_DIR}/ai4acc-image.tar.gz" ]; then
-        echo -e "[*] First-time setup: Loading offline Docker image..."
-        echo "    (This takes about 30-45 seconds, please wait)"
-        docker load -i "${SCRIPT_DIR}/ai4acc-image.tar.gz"
-        echo -e "${GREEN}[OK] Image successfully installed into Docker!${NC}"
-        echo ""
-    else
-        echo -e "[*] Pulling image from Docker Hub..."
-    fi
+# 3. Load the bundled image when it is missing or differs from the installed one
+#    (image-id.txt records the ID of the image in ai4acc-image.tar.gz)
+INSTALLED_ID="$(docker image inspect --format '{{.Id}}' cspark7701/ai4acc-hackathon-2026:latest 2>/dev/null || true)"
+BUNDLED_ID="$(cat "${SCRIPT_DIR}/image-id.txt" 2>/dev/null || true)"
+if [ -f "${SCRIPT_DIR}/ai4acc-image.tar.gz" ] && { [ -z "${INSTALLED_ID}" ] || [ "${INSTALLED_ID}" != "${BUNDLED_ID}" ]; }; then
+    echo -e "[*] Loading the workshop Docker image from this folder..."
+    echo "    (This takes about 30-45 seconds, please wait)"
+    docker load -i "${SCRIPT_DIR}/ai4acc-image.tar.gz"
+    echo -e "${GREEN}[OK] Image successfully installed into Docker!${NC}"
+    echo ""
+elif [ -z "${INSTALLED_ID}" ]; then
+    echo -e "[*] Pulling image from Docker Hub..."
 fi
 
 echo -e "[*] Launching container: ${YELLOW}cspark7701/ai4acc-hackathon-2026:latest${NC} ..."
