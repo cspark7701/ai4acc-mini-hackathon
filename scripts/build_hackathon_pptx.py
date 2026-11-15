@@ -132,7 +132,7 @@ def create_presentation():
         tf.margin_left = tf.margin_top = tf.margin_right = tf.margin_bottom = 0
         for i, line in enumerate(code_lines):
             p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-            add_text_run(p, line, size=Pt(10), color=DARK_GRAY, font_name="Courier New")
+            add_text_run(p, line, size=Pt(9.5), color=DARK_GRAY, font_name="Courier New")
         return shape
 
     # ==========================================
@@ -183,8 +183,8 @@ def create_presentation():
     add_text_run(p1, "Stabilize an unknown distorted beam orbit in a non-linear 15-meter transport line to sub-30 µm RMS precision within a 50-step budget, using constrained magnetic actuators under cubic core saturation.", size=Pt(13.5), color=DARK_GRAY)
     p2 = tf_c.add_paragraph()
     p2.space_before = Pt(8)
-    add_text_run(p2, "Three Competitive Tracks: ", bold=True, size=Pt(13.5), color=NAVY)
-    add_text_run(p2, "Supervised Neural Surrogate Inversion (Track 1), Physics-Informed Closed-Loop RL (Track 2), and Gaussian Process Bayesian Optimization (Track 3) evaluated across 30 standardized seeds with live W&B telemetry.", size=Pt(13.5), color=DARK_GRAY)
+    add_text_run(p2, "Unified Benchmark: ", bold=True, size=Pt(13.5), color=NAVY)
+    add_text_run(p2, "Participants develop and evaluate four competitor controllers simultaneously (Baseline 0, Baseline 1, Track 2, and Track 3) across 30 standardized seeds with live Weights & Biases leaderboard telemetry.", size=Pt(13.5), color=DARK_GRAY)
 
     tb_meta = s1.shapes.add_textbox(Inches(1.0), Inches(5.75), Inches(11.333), Inches(0.8))
     tf_m = tb_meta.text_frame
@@ -197,23 +197,22 @@ def create_presentation():
     add_text_run(p_dt, "November 19, 2026  |  Hands-on Computational Session (13:30 – 17:00 KST)", size=Pt(12.5), color=DARK_GRAY)
 
     # ==========================================
-    # SLIDE 2: Afternoon Schedule & Milestones
+    # SLIDE 2: Afternoon Schedule & Milestones (Concurrent Tracks)
     # ==========================================
     s2 = prs.slides.add_slide(blank_layout)
-    add_header(s2, "Schedule & Roadmap", "Afternoon Mini-Hackathon Timeline (13:30 – 17:00)", "Structured phases transitioning from environment setup to policy tuning and final showcase")
+    add_header(s2, "Schedule & Roadmap", "Afternoon Mini-Hackathon Timeline (13:30 – 17:00)", "Open hands-on optimization: participants can run and iterate on all tracks simultaneously")
     add_footer(s2, 2)
     add_card(s2, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Mini-Hackathon Operational Milestones")
 
-    # Table layout on Slide 2
-    rows, cols = 7, 3
+    rows, cols = 5, 3
     left, top, width, height = Inches(1.1), Inches(2.1), Inches(11.1), Inches(4.3)
     tbl_shape = s2.shapes.add_table(rows, cols, left, top, width, height)
     tbl = tbl_shape.table
-    tbl.columns[0].width = Inches(2.3)
-    tbl.columns[1].width = Inches(2.4)
-    tbl.columns[2].width = Inches(6.4)
+    tbl.columns[0].width = Inches(2.2)
+    tbl.columns[1].width = Inches(2.7)
+    tbl.columns[2].width = Inches(6.2)
 
-    headers = ["Time Window", "Milestone Phase", "Key Action Items & Deliverables"]
+    headers = ["Time Window", "Session Milestone", "Operational Focus & Hands-on Activities"]
     for j, h in enumerate(headers):
         cell = tbl.cell(0, j)
         cell.fill.solid()
@@ -223,12 +222,10 @@ def create_presentation():
         add_text_run(p, h, bold=True, size=Pt(12), color=WHITE)
 
     schedule_data = [
-        ("13:30 – 13:45 (15 min)", "Environment & Setup", "Launch container via launcher scripts; open participant notebook; set TEAM_NAME; verify Baseline 0 reference."),
-        ("13:45 – 14:30 (45 min)", "Phase 1: TODO 1 & B1", "Generate training data; train Ridge & MLP neural surrogates; tune hidden layers & activation; verify B1 score."),
-        ("14:30 – 15:30 (60 min)", "Phase 2: TODO 2 / Track 2", "Design closed-loop RL policy; tune feedback gain, chatter damping, saturation compensation, and reward shaping."),
-        ("15:30 – 16:15 (45 min)", "Phase 3: TODO 3 / Track 3", "Fit Gaussian Process surrogate; tune Matérn kernel, LCB acquisition κ, regularizer λ; test Step 4 callbacks."),
-        ("16:15 – 16:30 (15 min)", "Final Submissions", "Execute 30-seed benchmark in Step 5; stream runs to live Weights & Biases leaderboard; inspect trajectory curves."),
-        ("16:30 – 17:00 (30 min)", "Showcase & Awards", "3-minute lightning presentations per team; live leaderboard review; presentation of hackathon awards."),
+        ("13:30 – 13:45 (15 min)", "Environment & Setup", "Launch Docker container via launcher scripts; open participant notebook; set TEAM_NAME; verify Baseline 0 reference."),
+        ("13:45 – 16:15 (2.5 hrs)", "Concurrent Multi-Track Optimization (Open Hackathon)", "Participants can develop, tune, and run all tracks at the same time:\n• Track 1: Train MLP surrogate digital twin & invert via L-BFGS-B.\n• Track 2: Design closed-loop RL policy, gain schedule & chatter damping.\n• Track 3: Tune Gaussian Process surrogate & Bayesian Opt LCB acquisition.\n• Step 4 Callbacks: Add near-target damping & saturation watchdogs.\n• Step 5: Benchmark evaluates all 4 controllers simultaneously!"),
+        ("16:15 – 16:30 (15 min)", "Final Submission & Score Freeze", "Execute final 30-seed benchmark; confirm runs on live W&B leaderboard; verify generated trajectory alignment figure."),
+        ("16:30 – 17:00 (30 min)", "Showcase & Awards Ceremony", "3-minute lightning presentations per team; live leaderboard review; presentation of hackathon champion awards."),
     ]
     for i, (col0, col1, col2) in enumerate(schedule_data):
         row_idx = i + 1
@@ -240,7 +237,7 @@ def create_presentation():
             cell.text_frame.margin_left = cell.text_frame.margin_top = Inches(0.06)
             p = cell.text_frame.paragraphs[0]
             bold = True if j < 2 else False
-            color = PRIMARY if j == 0 and i < 5 else (GOLD if j == 0 else DARK_GRAY)
+            color = PRIMARY if j == 0 and i < 3 else (GOLD if j == 0 else DARK_GRAY)
             add_text_run(p, val, bold=bold, size=Pt(11), color=color)
 
     # ==========================================
@@ -325,7 +322,7 @@ def create_presentation():
         add_text_run(p_b, body, size=Pt(12), color=DARK_GRAY)
 
     # ==========================================
-    # SLIDE 5: Gymnasium Environment & Agent Contract
+    # SLIDE 5: Gymnasium Environment & Agent Contract (FIXED)
     # ==========================================
     s5 = prs.slides.add_slide(blank_layout)
     add_header(s5, "Gymnasium Interface", "Environment Contract & Competitor Agent Interface", "Standardized API governing observation space, actions, terminations, and step execution")
@@ -350,6 +347,13 @@ def create_presentation():
         add_text_run(p_b, body, size=Pt(11.5), color=DARK_GRAY)
 
     add_card(s5, Inches(6.8), Inches(1.4), Inches(5.7), Inches(5.3), "Standard Competitor Controller Interface")
+    tb_s5rt = s5.shapes.add_textbox(Inches(7.05), Inches(2.1), Inches(5.2), Inches(0.6))
+    tf_s5rt = tb_s5rt.text_frame
+    tf_s5rt.word_wrap = True
+    p_rt = tf_s5rt.paragraphs[0]
+    add_text_run(p_rt, "Universal Agent Execution Contract:\n", bold=True, size=Pt(12), color=NAVY)
+    add_text_run(p_rt, "All competitor controllers implement the standardized act method:", size=Pt(11.5), color=DARK_GRAY)
+
     code_s5 = [
         "class BenchmarkController:",
         "    def act(self, obs: np.ndarray,",
@@ -361,13 +365,18 @@ def create_presentation():
         "        \"\"\"",
         "        return action",
     ]
-    add_code_card(s5, Inches(7.05), Inches(2.1), Inches(5.2), Inches(2.5), code_s5)
-    tb_s5r = s5.shapes.add_textbox(Inches(7.05), Inches(4.8), Inches(5.2), Inches(1.6))
-    tf_s5r = tb_s5r.text_frame
-    tf_s5r.word_wrap = True
-    p_info = tf_s5r.paragraphs[0]
-    add_text_run(p_info, "• Total Current Access: ", bold=True, size=Pt(12), color=NAVY)
-    add_text_run(p_info, "info[\"currents\"] provides present magnet currents I_t to compensate cubic saturation offsets.", size=Pt(11.5), color=DARK_GRAY)
+    add_code_card(s5, Inches(7.05), Inches(2.7), Inches(5.2), Inches(2.3), code_s5)
+
+    tb_s5rb = s5.shapes.add_textbox(Inches(7.05), Inches(5.25), Inches(5.2), Inches(1.2))
+    tf_s5rb = tb_s5rb.text_frame
+    tf_s5rb.word_wrap = True
+    p_rba = tf_s5rb.paragraphs[0]
+    add_text_run(p_rba, "• Total Current Access: ", bold=True, size=Pt(12), color=NAVY)
+    add_text_run(p_rba, "info[\"currents\"] provides present magnet currents I_t to compute cubic saturation offsets.", size=Pt(11.5), color=DARK_GRAY)
+    p_rbb = tf_s5rb.add_paragraph()
+    p_rbb.space_before = Pt(4)
+    add_text_run(p_rbb, "• Output Bounds: ", bold=True, size=Pt(12), color=NAVY)
+    add_text_run(p_rbb, "Actions exceeding [-0.8, 0.8] A are hard-clipped by the environment.", size=Pt(11.5), color=DARK_GRAY)
 
     # ==========================================
     # SLIDE 6: The Four Benchmark Controllers
@@ -493,81 +502,104 @@ def create_presentation():
         add_text_run(p_b, body, size=Pt(11.5), color=DARK_GRAY)
 
     # ==========================================
-    # SLIDE 9: Advanced Strategy: Callbacks
+    # SLIDE 9: Advanced Strategy: Callbacks (FIXED)
     # ==========================================
     s9 = prs.slides.add_slide(blank_layout)
     add_header(s9, "Strategic Tuning", "Online Callbacks & Adaptive Damping Strategies", "Unlocking 900+ scores via dynamic gain schedules, saturation watchdogs, and meta-tuning")
     add_footer(s9, 9)
 
+    # Left Card: Step Callback
     add_card(s9, Inches(0.8), Inches(1.4), Inches(5.7), Inches(5.3), "Step Callback: Precision Damping & Watchdogs")
+    tb_s9lt = s9.shapes.add_textbox(Inches(1.05), Inches(2.1), Inches(5.2), Inches(0.6))
+    tf_s9lt = tb_s9lt.text_frame
+    tf_s9lt.word_wrap = True
+    p_s9lta = tf_s9lt.paragraphs[0]
+    add_text_run(p_s9lta, "Adaptive Near-Target Damping (step_callback):\n", bold=True, size=Pt(12), color=NAVY)
+    add_text_run(p_s9lta, "Throttle gain when approaching target to glide into noise floor without overshoot:", size=Pt(11.5), color=DARK_GRAY)
+
     code_s9l = [
         "def my_step_callback(step_data, agent):",
         "    rms = step_data[\"info\"][\"rms\"]",
         "    if rms < 0.040 and hasattr(agent, \"gain\"): ",
         "        agent.gain *= 0.94  # Glide into noise floor!",
     ]
-    add_code_card(s9, Inches(1.05), Inches(2.2), Inches(5.2), Inches(1.4), code_s9l)
-    tb_s9l = s9.shapes.add_textbox(Inches(1.05), Inches(3.8), Inches(5.2), Inches(2.6))
-    tf_s9l = tb_s9l.text_frame
-    tf_s9l.word_wrap = True
-    p_s9la = tf_s9l.paragraphs[0]
-    add_text_run(p_s9la, "• Adaptive Near-Target Damping:\n", bold=True, size=Pt(12), color=NAVY)
-    add_text_run(p_s9la, "High gains converge in 3–4 steps but overshoot near the 0.030 mm boundary. Dynamically brake when entering precision zone to earn up to 300 precision points.\n\n", size=Pt(11.5), color=DARK_GRAY)
-    p_s9lb = tf_s9l.add_paragraph()
-    add_text_run(p_s9lb, "• Saturation Watchdog:\n", bold=True, size=Pt(12), color=NAVY)
-    add_text_run(p_s9lb, "If ||I_t||_∞ > 2.5 A, scale back action size to prevent cubic non-linear overshoots (see docs/CALLBACK_EXAMPLES.md).", size=Pt(11.5), color=DARK_GRAY)
+    add_code_card(s9, Inches(1.05), Inches(2.7), Inches(5.2), Inches(1.3), code_s9l)
 
+    tb_s9lb = s9.shapes.add_textbox(Inches(1.05), Inches(4.25), Inches(5.2), Inches(2.2))
+    tf_s9lb = tb_s9lb.text_frame
+    tf_s9lb.word_wrap = True
+    p_s9lba = tf_s9lb.paragraphs[0]
+    add_text_run(p_s9lba, "• Saturation Watchdog:\n", bold=True, size=Pt(12), color=NAVY)
+    add_text_run(p_s9lba, "If ||I_t||_∞ > 2.5 A, scale back action size to prevent cubic non-linear overshoots.\n\n", size=Pt(11.5), color=DARK_GRAY)
+    p_s9lbb = tf_s9lb.add_paragraph()
+    add_text_run(p_s9lbb, "• Full Reference Guide:\n", bold=True, size=Pt(12), color=NAVY)
+    add_text_run(p_s9lbb, "See docs/CALLBACK_EXAMPLES.md for full schemas and recipes.", size=Pt(11.5), color=DARK_GRAY)
+
+    # Right Card: Episode Callback
     add_card(s9, Inches(6.8), Inches(1.4), Inches(5.7), Inches(5.3), "Episode Callback: Reset & Meta-Tuning")
+    tb_s9rt = s9.shapes.add_textbox(Inches(7.05), Inches(2.1), Inches(5.2), Inches(0.6))
+    tf_s9rt = tb_s9rt.text_frame
+    tf_s9rt.word_wrap = True
+    p_s9rta = tf_s9rt.paragraphs[0]
+    add_text_run(p_s9rta, "Per-Seed State Reset (episode_callback):\n", bold=True, size=Pt(12), color=NAVY)
+    add_text_run(p_s9rta, "Reset dynamic gain and integrator memory back to initial defaults between seeds:", size=Pt(11.5), color=DARK_GRAY)
+
     code_s9r = [
         "def my_episode_callback(ep_data, agent):",
         "    if hasattr(agent, \"gain\"): ",
         "        agent.gain = 1.05  # Restore baseline gain",
     ]
-    add_code_card(s9, Inches(7.05), Inches(2.2), Inches(5.2), Inches(1.4), code_s9r)
-    tb_s9r = s9.shapes.add_textbox(Inches(7.05), Inches(3.8), Inches(5.2), Inches(2.6))
-    tf_s9r = tb_s9r.text_frame
-    tf_s9r.word_wrap = True
-    p_s9ra = tf_s9r.paragraphs[0]
-    add_text_run(p_s9ra, "• Per-Seed State Reset:\n", bold=True, size=Pt(12), color=NAVY)
-    add_text_run(p_s9ra, "Reset dynamic gain and integrator memory back to initial defaults so earlier seeds do not cause drift across the benchmark.\n\n", size=Pt(11.5), color=DARK_GRAY)
-    p_s9rb = tf_s9r.add_paragraph()
-    add_text_run(p_s9rb, "• Cross-Seed Meta-Tuning (Tournament 3 Winner):\n", bold=True, size=Pt(12), color=NAVY)
-    add_text_run(p_s9rb, "Adapt baseline gain across seeds based on aggregate outcomes. Disclose cross-seed learning in team presentation.", size=Pt(11.5), color=DARK_GRAY)
+    add_code_card(s9, Inches(7.05), Inches(2.7), Inches(5.2), Inches(1.3), code_s9r)
+
+    tb_s9rb = s9.shapes.add_textbox(Inches(7.05), Inches(4.25), Inches(5.2), Inches(2.2))
+    tf_s9rb = tb_s9rb.text_frame
+    tf_s9rb.word_wrap = True
+    p_s9rba = tf_s9rb.paragraphs[0]
+    add_text_run(p_s9rba, "• Cross-Seed Meta-Tuning (Tournament 3 Winner):\n", bold=True, size=Pt(12), color=NAVY)
+    add_text_run(p_s9rba, "Adapt baseline gain across seeds based on prior outcomes: boost speed if ≤ 3 steps; damp if struggling.\n\n", size=Pt(11.5), color=DARK_GRAY)
+    p_s9rbb = tf_s9rb.add_paragraph()
+    add_text_run(p_s9rbb, "• Disclosure Rule:\n", bold=True, size=Pt(12), color=CRIMSON)
+    add_text_run(p_s9rbb, "Disclose cross-seed learning in team presentation.", size=Pt(11.5), color=DARK_GRAY)
 
     # ==========================================
-    # SLIDE 10: Zero-Friction W&B Workflow
+    # SLIDE 10: Zero-Friction W&B Workflow (FIXED)
     # ==========================================
     s10 = prs.slides.add_slide(blank_layout)
     add_header(s10, "Live Leaderboard", "Zero-Friction Weights & Biases Workflow", "Automated telemetry streaming, 30-seed breakdown tables, and real-time competition standings")
     add_footer(s10, 10)
 
+    # Left Card: Authentication Setup
     add_card(s10, Inches(0.8), Inches(1.4), Inches(5.7), Inches(5.3), "Zero-Friction Authentication Setup")
-    tb_s10l = s10.shapes.add_textbox(Inches(1.05), Inches(2.1), Inches(5.2), Inches(1.5))
-    tf_s10l = tb_s10l.text_frame
-    tf_s10l.word_wrap = True
-    p_s10la = tf_s10l.paragraphs[0]
-    add_text_run(p_s10la, "• No W&B Account Required:\n", bold=True, size=Pt(12.5), color=NAVY)
-    add_text_run(p_s10la, "The offline distribution bundle contains the shared leaderboard key in wandb.apikey. Launchers pass it automatically.", size=Pt(12), color=DARK_GRAY)
+    tb_s10lt = s10.shapes.add_textbox(Inches(1.05), Inches(2.1), Inches(5.2), Inches(1.5))
+    tf_s10lt = tb_s10lt.text_frame
+    tf_s10lt.word_wrap = True
+    p_s10lta = tf_s10lt.paragraphs[0]
+    add_text_run(p_s10lta, "• No W&B Account Required:\n", bold=True, size=Pt(12.5), color=NAVY)
+    add_text_run(p_s10lta, "The offline distribution bundle contains the shared leaderboard key in wandb.apikey. Launchers pass it automatically.\n\n", size=Pt(12), color=DARK_GRAY)
+    p_s10ltb = tf_s10lt.add_paragraph()
+    add_text_run(p_s10ltb, "• Step 0: Set Team Identifier:\n", bold=True, size=Pt(12.5), color=NAVY)
+    add_text_run(p_s10ltb, "In Step 0 of the notebook, configure your unique team name:", size=Pt(12), color=DARK_GRAY)
 
     code_s10 = [
         "TEAM_NAME = \"Team_Alpha\"",
         "WANDB_PROJECT = \"ai4acc-mini-hackathon-2026\"",
     ]
-    add_code_card(s10, Inches(1.05), Inches(3.7), Inches(5.2), Inches(1.1), code_s10)
+    add_code_card(s10, Inches(1.05), Inches(3.7), Inches(5.2), Inches(1.0), code_s10)
 
-    tb_s10lb = s10.shapes.add_textbox(Inches(1.05), Inches(5.0), Inches(5.2), Inches(1.4))
+    tb_s10lb = s10.shapes.add_textbox(Inches(1.05), Inches(4.95), Inches(5.2), Inches(1.5))
     tf_s10lb = tb_s10lb.text_frame
     tf_s10lb.word_wrap = True
-    p_s10lb = tf_s10lb.paragraphs[0]
-    add_text_run(p_s10lb, "• Seamless Local Fallback:\n", bold=True, size=Pt(12.5), color=NAVY)
-    add_text_run(p_s10lb, "If offline or in isolated network environments, the benchmark executes locally and prints complete scorecard tables.", size=Pt(12), color=DARK_GRAY)
+    p_s10lba = tf_s10lb.paragraphs[0]
+    add_text_run(p_s10lba, "• Seamless Local Fallback:\n", bold=True, size=Pt(12.5), color=NAVY)
+    add_text_run(p_s10lba, "If offline or in isolated network environments, the benchmark executes locally and prints complete scorecard tables.", size=Pt(12), color=DARK_GRAY)
 
+    # Right Card: Leaderboard & Telemetry
     add_card(s10, Inches(6.8), Inches(1.4), Inches(5.7), Inches(5.3), "Automated Telemetry & Live Leaderboard")
     tb_s10r = s10.shapes.add_textbox(Inches(7.05), Inches(2.1), Inches(5.2), Inches(4.3))
     tf_s10r = tb_s10r.text_frame
     tf_s10r.word_wrap = True
     items_s10r = [
-        ("• Step 5 Benchmark Execution:\n", "Running Step 5 evaluates all 4 controllers across seeds 1–30 and automatically streams telemetry to W&B."),
+        ("• Step 5 Benchmark Execution:\n", "Running Step 5 evaluates all 4 controllers across seeds 1–30 simultaneously and streams telemetry to W&B."),
         ("• Tracked Metrics in W&B:\n", "challenge_score, score_success, score_speed, score_precision, mean_steps, mean_final_rms_mm, seed_breakdown_table."),
         ("• Central Live Leaderboard URL:\n", "https://wandb.ai/ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026\nSort by challenge_score to view live workshop ranks!"),
     ]
@@ -622,30 +654,30 @@ def create_presentation():
         add_text_run(p_b, body, size=Pt(12), color=DARK_GRAY)
 
     # ==========================================
-    # SLIDE 12: Hands-on Execution Checklist
+    # SLIDE 12: Hands-on Execution Checklist (Concurrent Tracks)
     # ==========================================
     s12 = prs.slides.add_slide(blank_layout)
     add_header(s12, "Execution Checklist", "Ready, Set, Align! Hands-on Participant Action Plan", "Five key computational milestones to guide your development during the mini-hackathon")
     add_footer(s12, 12)
-    add_card(s12, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Your 5-Step Hackathon Roadmap")
+    add_card(s12, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Your 5-Step Hackathon Roadmap (Run All Tracks Concurrently)")
 
     tb_s12 = s12.shapes.add_textbox(Inches(1.1), Inches(2.1), Inches(11.1), Inches(4.3))
     tf_s12 = tb_s12.text_frame
     tf_s12.word_wrap = True
     roadmap = [
-        ("Step 1: Environment Launch & Baseline Verification (13:30 – 13:45)\n", "Double-click launcher → open http://localhost:8888 → run Steps 0–2 → verify Baseline 0 reference (~635 pts)."),
-        ("Step 2: Train High-Fidelity Surrogate in TODO 1 (13:45 – 14:30)\n", "Expand sample volume (n=2500), tune MLP layers (e.g. (128, 64, 32)), lower holdout RMSE → verify B1 scores >850 pts."),
-        ("Step 3: Engineer RL Policy & Adaptive Damping in TODO 2 (14:30 – 15:30)\n", "Increase initial gain (α ≈ 1.0), compensate cubic saturation on I_t, apply step damping → verify Track 2 scores >900 pts."),
-        ("Step 4: Tune Bayesian Optimization & Callbacks (15:30 – 16:15)\n", "Tune GP Matérn kernel; implement near-target braking callback (RMS < 0.040 mm) to maximize precision score."),
-        ("Step 5: Official Submission & Showcase Presentation (16:15 – 17:00)\n", "Execute Step 5 benchmark across 30 seeds; verify W&B submission URL; prepare 3-minute lightning slides!"),
+        ("Phase 1: Environment Launch & Baseline Check (Step 0–2)\n", "Double-click launcher → open http://localhost:8888 → run Steps 0–2 → verify Baseline 0 reference (~635 pts)."),
+        ("Phase 2: Simultaneous Controller Tuning (Step 3 & 4: Work on any or all tracks concurrently)\n", "• Track 1: Train MLP surrogate in TODO 1 (n=2500, layers (128, 64, 32)), lower holdout RMSE → verify B1 scores >850 pts.\n• Track 2: In TODO 2, increase initial gain (α ≈ 1.0), compensate cubic saturation on I_t, apply step damping → verify >900 pts.\n• Track 3: In TODO 3, tune GP Matérn kernel, acquisition exploration κ, and regularizer λ → verify BO controller.\n• Step 4 Callbacks: Register near-target braking (RMS < 0.040 mm) to glide into noise floor and maximize precision score."),
+        ("Phase 3: Unified Benchmark & Iteration (Step 5)\n", "Run locked Step 5 benchmark to evaluate all 4 controllers in parallel across 30 seeds; compare leaderboard ranks and iterate."),
+        ("Phase 4: Trajectory Alignment Visualization (Step 6 & 7)\n", "Generate img/benchmark_trajectories.png showing all controllers side-by-side; inspect convergence curves for your team showcase."),
+        ("Phase 5: Official Submission & Showcase Presentation (16:15 – 17:00)\n", "Verify submission on live W&B dashboard; connect to room projector for 3-minute lightning talk!"),
     ]
     for i, (hd, body) in enumerate(roadmap):
         p = tf_s12.paragraphs[0] if i == 0 else tf_s12.add_paragraph()
-        p.space_before = Pt(8) if i > 0 else Pt(0)
+        p.space_before = Pt(6) if i > 0 else Pt(0)
         color = GOLD if i == 4 else PRIMARY
-        add_text_run(p, hd, bold=True, size=Pt(13), color=color)
+        add_text_run(p, hd, bold=True, size=Pt(12.5), color=color)
         p_b = tf_s12.add_paragraph()
-        add_text_run(p_b, body, size=Pt(12), color=DARK_GRAY)
+        add_text_run(p_b, body, size=Pt(11.5), color=DARK_GRAY)
 
     prs.save(OUTPUT_PATH)
     print(f"Presentation saved successfully to {OUTPUT_PATH}")

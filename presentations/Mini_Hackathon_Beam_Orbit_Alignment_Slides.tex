@@ -73,7 +73,7 @@
     {\fs{10}{12}\bfseries\color{primaryblue}#1 / \totalslides};
 }
 
-% Standard Full-Width Content Card Macro
+% Standard Content Card Macro
 \newcommand{\drawcard}[5]{%
   \draw[rounded corners=8pt,fill=lightbg,draw=bordergray,line width=1.2pt]
     ([xshift=#1in,yshift=-#2in]current page.north west)
@@ -126,7 +126,7 @@
   \drawcard{1.0}{3.3}{11.333}{2.2}{}
   \at{1.3}{3.55}{10.7}{\fs{13.5}{19}\color{darkgray}%
     {\bfseries\color{navy}Challenge Objective:}\enspace Stabilize an unknown distorted beam orbit in a non-linear 15-meter transport line to sub-30 $\mu\text{m}$ RMS precision within a 50-step budget, using constrained magnetic actuators under cubic core saturation.\\[0.5em]
-    {\bfseries\color{navy}Three Competitive Tracks:}\enspace Supervised Neural Surrogate Inversion (Track 1), Physics-Informed Closed-Loop RL (Track 2), and Gaussian Process Bayesian Optimization (Track 3) evaluated across 30 standardized seeds with live W\&B telemetry.
+    {\bfseries\color{navy}Unified Benchmark:}\enspace Participants develop and evaluate four competitor controllers simultaneously (\textbf{Baseline 0}, \textbf{Baseline 1}, \textbf{Track 2}, and \textbf{Track 3}) across 30 standardized seeds with live Weights \& Biases leaderboard telemetry.
   }
 
   \at{1.0}{5.75}{11.333}{\fs{12.5}{16}\color{darkgray}%
@@ -139,29 +139,30 @@
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 2: Afternoon Schedule & Milestones
+% SLIDE 2: Afternoon Schedule & Milestones (Concurrent Multi-Track Execution)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
-  \slideheader{Schedule \& Roadmap}{Afternoon Mini-Hackathon Timeline (13:30 -- 17:00)}{Structured phases transitioning from environment setup to policy tuning and final showcase}
+  \slideheader{Schedule \& Roadmap}{Afternoon Mini-Hackathon Timeline (13:30 -- 17:00)}{Open hands-on optimization: participants can run and iterate on all tracks simultaneously}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Mini-Hackathon Operational Milestones}
   \at{1.1}{2.1}{11.1}{\fs{13}{18}\color{darkgray}%
-    \begin{tabular}{p{2.3in}p{2.4in}p{5.8in}}
+    \begin{tabular}{p{2.2in}p{2.7in}p{5.6in}}
       \toprule
-      \textbf{Time Window} & \textbf{Milestone Phase} & \textbf{Key Action Items \& Deliverables} \\
+      \textbf{Time Window} & \textbf{Session Milestone} & \textbf{Operational Focus \& Hands-on Activities} \\
       \midrule
-      {\bfseries\color{primaryblue}13:30 -- 13:45 (15 min)} & {\bfseries Environment \& Setup} & Launch container via launcher scripts; open participant notebook; set \texttt{TEAM\_NAME}; verify Baseline 0 reference. \\
-      \addlinespace[0.4em]
-      {\bfseries\color{primaryblue}13:45 -- 14:30 (45 min)} & {\bfseries Phase 1: TODO 1 \& B1} & Generate training data; train Ridge \& MLP neural surrogates; tune hidden layers \& activation; verify B1 score. \\
-      \addlinespace[0.4em]
-      {\bfseries\color{primaryblue}14:30 -- 15:30 (60 min)} & {\bfseries Phase 2: TODO 2 / Track 2} & Design closed-loop RL policy; tune feedback gain, chatter damping, saturation compensation, and reward shaping. \\
-      \addlinespace[0.4em]
-      {\bfseries\color{primaryblue}15:30 -- 16:15 (45 min)} & {\bfseries Phase 3: TODO 3 / Track 3} & Fit Gaussian Process surrogate; tune Mat\'{e}rn kernel, LCB acquisition $\kappa$, regularizer $\lambda$; test Step 4 callbacks. \\
-      \addlinespace[0.4em]
-      {\bfseries\color{primaryblue}16:15 -- 16:30 (15 min)} & {\bfseries Final Submissions} & Execute 30-seed benchmark in Step 5; stream runs to live Weights \& Biases leaderboard; inspect trajectory curves. \\
-      \addlinespace[0.4em]
-      {\bfseries\color{gold}16:30 -- 17:00 (30 min)} & {\bfseries Showcase \& Awards} & 3-minute lightning presentations per team; live leaderboard review; presentation of hackathon awards. \\
+      {\bfseries\color{primaryblue}13:30 -- 13:45 (15 min)} & {\bfseries Environment \& Setup} & Launch Docker container via launcher scripts; open participant notebook; set \texttt{TEAM\_NAME}; verify Baseline 0 reference. \\
+      \addlinespace[0.6em]
+      {\bfseries\color{primaryblue}13:45 -- 16:15 (2.5 hrs)} & {\bfseries Concurrent Multi-Track Optimization (Open Hackathon)} & \textbf{Participants can develop, tune, and run all tracks at the same time:}\newline
+      $\bullet$ \textbf{Track 1:} Train MLP surrogate digital twin \& invert via \texttt{L-BFGS-B}.\newline
+      $\bullet$ \textbf{Track 2:} Design closed-loop RL policy, gain schedule \& chatter damping.\newline
+      $\bullet$ \textbf{Track 3:} Tune Gaussian Process surrogate \& Bayesian Opt LCB acquisition.\newline
+      $\bullet$ \textbf{Step 4 Callbacks:} Add near-target damping \& saturation watchdogs.\newline
+      $\bullet$ \textbf{Step 5:} Benchmark evaluates all 4 controllers simultaneously! \\
+      \addlinespace[0.6em]
+      {\bfseries\color{primaryblue}16:15 -- 16:30 (15 min)} & {\bfseries Final Submission \& Score Freeze} & Execute final 30-seed benchmark; confirm runs on live W\&B leaderboard; verify generated trajectory alignment figure. \\
+      \addlinespace[0.6em]
+      {\bfseries\color{gold}16:30 -- 17:00 (30 min)} & {\bfseries Showcase \& Awards Ceremony} & 3-minute lightning presentations per team; live leaderboard review; presentation of hackathon champion awards. \\
       \bottomrule
     \end{tabular}
   }
@@ -234,7 +235,7 @@
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 5: Gymnasium Environment & Agent Contract
+% SLIDE 5: Gymnasium Environment & Agent Contract (FIXED LAYOUT)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
@@ -252,14 +253,14 @@
   }
 
   \drawcard{6.8}{1.4}{5.7}{5.3}{Standard Competitor Controller Interface}
-  \drawcodecard{7.05}{2.5}{5.2}{2.4}
-  \at{7.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+  % Top introductory text
+  \at{7.05}{2.1}{5.2}{\fs{12}{16}\color{darkgray}%
     {\bfseries\color{navy}Universal Agent Execution Contract:}\\[0.2em]
-    All competitor controllers must implement the standardized \texttt{act} method:\\[2.4em]
-    \raggedright
-    {\bfseries\color{navy}$\bullet$ Total Current Access:}\enspace \texttt{info["currents"]} provides present magnet currents $\mathbf{I}_t$ to compute saturation offsets.
+    All competitor controllers implement the standardized \texttt{act} method:
   }
-  \at{7.2}{2.65}{4.9}{\fs{10}{13}\ttfamily\color{darkgray}%
+  % Code Box
+  \drawcodecard{7.05}{2.7}{5.2}{2.3}
+  \at{7.2}{2.85}{4.9}{\fs{9.5}{12.5}\ttfamily\color{darkgray}%
     class BenchmarkController:\\
     \quad def act(self, obs: np.ndarray,\\
     \qquad\qquad\quad info: Optional[dict] = None) -> np.ndarray:\\
@@ -269,6 +270,11 @@
     \qquad Returns:\quad (6,) delta\_I in [-0.8, 0.8] A\\
     \qquad """\\
     \qquad return action
+  }
+  % Bottom text placed strictly below code card
+  \at{7.05}{5.25}{5.2}{\fs{12}{16.5}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Total Current Access:}\enspace \texttt{info["currents"]} provides present magnet currents $\mathbf{I}_t$ to compute cubic saturation offsets.\\[0.3em]
+    {\bfseries\color{navy}$\bullet$ Output Bounds:}\enspace Actions exceeding $[-0.8, 0.8]\text{ A}$ are hard-clipped by the environment.
   }
 
   \slidefooter{5}
@@ -368,76 +374,86 @@
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 9: Advanced Strategy: Callbacks
+% SLIDE 9: Advanced Strategy: Callbacks (FIXED LAYOUT)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.24}
   \slideheader{Strategic Tuning}{Online Callbacks \& Adaptive Damping Strategies}{Unlocking 900+ scores via dynamic gain schedules, saturation watchdogs, and meta-tuning}
 
+  % Left Card: Step Callback
   \drawcard{0.8}{1.4}{5.7}{5.3}{Step Callback: Precision Damping \& Watchdogs}
-  \drawcodecard{1.05}{3.0}{5.2}{1.3}
-  \at{1.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+  \at{1.05}{2.1}{5.2}{\fs{12}{16}\color{darkgray}%
     {\bfseries\color{navy}Adaptive Near-Target Damping (\texttt{step\_callback}):}\\[0.2em]
-    High gains converge in 3--4 steps but overshoot near the $0.030\text{ mm}$ boundary. Dynamically brake when entering precision zone:\\[3.8em]
-    {\bfseries\color{navy}Saturation Watchdog:}\\[0.2em]
-    If $\|\mathbf{I}_t\|_\infty > 2.5\text{ A}$, scale back action size to prevent cubic non-linear overshoots.\\[0.4em]
-    {\bfseries\color{navy}Full Guide:}\enspace See \texttt{docs/CALLBACK\_EXAMPLES.md}.
+    Throttle gain when approaching target to glide into noise floor without overshoot:
   }
-  \at{1.2}{3.15}{4.9}{\fs{9.5}{12.5}\ttfamily\color{darkgray}%
+  \drawcodecard{1.05}{2.7}{5.2}{1.3}
+  \at{1.2}{2.85}{4.9}{\fs{9.5}{12.5}\ttfamily\color{darkgray}%
     def my\_step\_callback(step\_data, agent):\\
     \quad rms = step\_data["info"]["rms"]\\
     \quad if rms < 0.040 and hasattr(agent, "gain"):\\
     \qquad agent.gain *= 0.94  \# Glide into noise floor!
   }
-
-  \drawcard{6.8}{1.4}{5.7}{5.3}{Episode Callback: Reset \& Meta-Tuning}
-  \drawcodecard{7.05}{3.0}{5.2}{1.3}
-  \at{7.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
-    {\bfseries\color{navy}Per-Seed State Reset (\texttt{episode\_callback}):}\\[0.2em]
-    Reset dynamic gain and integrator memory back to initial defaults so earlier seeds do not cause drift:\\[3.8em]
-    {\bfseries\color{navy}Cross-Seed Meta-Tuning (Tournament 3 Winner):}\\[0.2em]
-    Adapt baseline gain across seeds based on aggregate outcomes: dial back gain if a seed struggled; boost speed if previous seeds converged cleanly in $\le 3$ steps.\\[0.4em]
-    {\bfseries\color{crimson}Rule:}\enspace Disclose cross-seed learning in team presentation.
+  \at{1.05}{4.25}{5.2}{\fs{12}{16.5}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Saturation Watchdog:}\\[0.2em]
+    If $\|\mathbf{I}_t\|_\infty > 2.5\text{ A}$, scale back action size to prevent cubic non-linear overshoots.\\[0.4em]
+    {\bfseries\color{navy}$\bullet$ Full Reference:}\enspace See \texttt{docs/CALLBACK\_EXAMPLES.md}.
   }
-  \at{7.2}{3.15}{4.9}{\fs{9.5}{12.5}\ttfamily\color{darkgray}%
+
+  % Right Card: Episode Callback
+  \drawcard{6.8}{1.4}{5.7}{5.3}{Episode Callback: Reset \& Meta-Tuning}
+  \at{7.05}{2.1}{5.2}{\fs{12}{16}\color{darkgray}%
+    {\bfseries\color{navy}Per-Seed State Reset (\texttt{episode\_callback}):}\\[0.2em]
+    Reset dynamic gain and integrator memory back to initial defaults between seeds:
+  }
+  \drawcodecard{7.05}{2.7}{5.2}{1.3}
+  \at{7.2}{2.85}{4.9}{\fs{9.5}{12.5}\ttfamily\color{darkgray}%
     def my\_episode\_callback(ep\_data, agent):\\
     \quad if hasattr(agent, "gain"):\\
     \qquad agent.gain = 1.05  \# Restore baseline gain
+  }
+  \at{7.05}{4.25}{5.2}{\fs{12}{16.5}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Cross-Seed Meta-Tuning (Tournament 3 Winner):}\\[0.2em]
+    Adapt baseline gain across seeds based on prior outcomes: boost speed if $\le 3$ steps; damp if struggling.\\[0.4em]
+    {\bfseries\color{crimson}$\bullet$ Disclosure Rule:}\enspace Disclose cross-seed learning in team presentation.
   }
 
   \slidefooter{9}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 10: Zero-Friction W&B Workflow
+% SLIDE 10: Zero-Friction W&B Workflow (FIXED LAYOUT)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
   \slideheader{Live Leaderboard}{Zero-Friction Weights \& Biases Workflow}{Automated telemetry streaming, 30-seed breakdown tables, and real-time competition standings}
 
+  % Left Card: Authentication Setup
   \drawcard{0.8}{1.4}{5.7}{5.3}{Zero-Friction Authentication Setup}
-  \drawcodecard{1.05}{3.4}{5.2}{1.1}
-  \at{1.05}{2.1}{5.2}{\fs{13}{18}\color{darkgray}%
+  \at{1.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
     {\bfseries\color{navy}$\bullet$ No W\&B Account Required:}\\[0.2em]
-    The offline distribution bundle contains the shared leaderboard key in \texttt{wandb.apikey}. Launchers pass it automatically.\\[0.6em]
+    The offline distribution bundle contains the shared leaderboard key in \texttt{wandb.apikey}. Launchers pass it automatically.\\[0.5em]
     {\bfseries\color{navy}$\bullet$ Step 0: Set Team Identifier:}\\[0.2em]
-    In Step 0 of the notebook, configure your team name:\\[3.2em]
-    {\bfseries\color{navy}$\bullet$ Seamless Local Fallback:}\\[0.2em]
-    If offline or in isolated network environments, the benchmark executes locally and prints complete scorecard tables.
+    In Step 0 of the notebook, configure your unique team name:
   }
-  \at{1.2}{3.55}{4.9}{\fs{10}{13}\ttfamily\color{darkgray}%
+  \drawcodecard{1.05}{3.7}{5.2}{1.0}
+  \at{1.2}{3.85}{4.9}{\fs{9.5}{12.5}\ttfamily\color{darkgray}%
     TEAM\_NAME = "Team\_Alpha"\\
     WANDB\_PROJECT = "ai4acc-mini-hackathon-2026"
   }
+  \at{1.05}{4.95}{5.2}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Seamless Local Fallback:}\\[0.2em]
+    If offline or in isolated network environments, the benchmark executes locally and prints complete scorecard tables.
+  }
 
+  % Right Card: Leaderboard & Telemetry
   \drawcard{6.8}{1.4}{5.7}{5.3}{Automated Telemetry \& Live Leaderboard}
-  \at{7.05}{2.1}{5.2}{\fs{13}{18}\color{darkgray}%
+  \at{7.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
     {\bfseries\color{navy}$\bullet$ Step 5 Benchmark Execution:}\\[0.2em]
-    Running Step 5 evaluates all 4 controllers across seeds 1--30 and automatically streams telemetry to W\&B.\\[0.6em]
+    Running Step 5 evaluates all 4 controllers across seeds 1--30 simultaneously and streams telemetry to W\&B.\\[0.5em]
     {\bfseries\color{navy}$\bullet$ Tracked Metrics in W\&B:}\\[0.2em]
-    \texttt{challenge\_score}, \texttt{score\_success}, \texttt{score\_speed}, \texttt{score\_precision}, \texttt{mean\_steps}, \texttt{mean\_final\_rms\_mm}, \texttt{seed\_breakdown\_table}.\\[0.6em]
+    \texttt{challenge\_score}, \texttt{score\_success}, \texttt{score\_speed}, \texttt{score\_precision}, \texttt{mean\_steps}, \texttt{mean\_final\_rms\_mm}, \texttt{seed\_breakdown\_table}.\\[0.5em]
     {\bfseries\color{navy}$\bullet$ Central Live Leaderboard URL:}\\[0.2em]
-    {\fs{10.5}{14}\color{primaryblue}\texttt{https://wandb.ai/ai4acc-mini-hackathon-2026/\\ai4acc-mini-hackathon-2026}}\\[0.4em]
+    {\fs{10.5}{14}\color{primaryblue}\texttt{https://wandb.ai/ai4acc-mini-hackathon-2026/\\ai4acc-mini-hackathon-2026}}\\[0.3em]
     Sort by \texttt{challenge\_score} to view live workshop ranks!
   }
 
@@ -477,24 +493,27 @@
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 12: Hands-on Execution Checklist
+% SLIDE 12: Hands-on Execution Checklist (Concurrent Multi-Track Execution)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.28}
+  \slidespread{1.26}
   \slideheader{Execution Checklist}{Ready, Set, Align! Hands-on Participant Action Plan}{Five key computational milestones to guide your development during the mini-hackathon}
 
-  \drawcard{0.8}{1.4}{11.733}{5.3}{Your 5-Step Hackathon Roadmap}
-  \at{1.1}{2.1}{11.1}{\fs{13}{18}\color{darkgray}%
-    {\bfseries\color{primaryblue}Step 1: Environment Launch \& Baseline Verification (13:30 -- 13:45)}\\[0.2em]
-    Double-click launcher $\to$ open \texttt{http://localhost:8888} $\to$ run Steps 0--2 $\to$ verify Baseline 0 reference ($\approx 635$ pts).\\[0.6em]
-    {\bfseries\color{primaryblue}Step 2: Train High-Fidelity Surrogate in TODO 1 (13:45 -- 14:30)}\\[0.2em]
-    Expand sample volume ($n=2500$), tune MLP layers (e.g. \texttt{(128, 64, 32)}), lower holdout RMSE $\to$ verify B1 scores $>850$ pts.\\[0.6em]
-    {\bfseries\color{primaryblue}Step 3: Engineer RL Policy \& Adaptive Damping in TODO 2 (14:30 -- 15:30)}\\[0.2em]
-    Increase initial gain ($\alpha \approx 1.0$), compensate cubic saturation on $\mathbf{I}_t$, apply step damping $\to$ verify Track 2 scores $>900$ pts.\\[0.6em]
-    {\bfseries\color{primaryblue}Step 4: Tune Bayesian Optimization \& Callbacks (15:30 -- 16:15)}\\[0.2em]
-    Tune GP Mat\'{e}rn kernel; implement near-target braking callback ($\text{RMS} < 0.040\text{ mm}$) to maximize precision score.\\[0.6em]
-    {\bfseries\color{gold}Step 5: Official Submission \& Showcase Presentation (16:15 -- 17:00)}\\[0.2em]
-    Execute Step 5 benchmark across 30 seeds; verify W\&B submission URL; prepare 3-minute lightning slides!
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Your 5-Step Hackathon Roadmap (Run All Tracks Concurrently)}
+  \at{1.1}{2.1}{11.1}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{primaryblue}Phase 1: Environment Launch \& Baseline Check (Step 0--2)}\\[0.2em]
+    Double-click launcher $\to$ open \texttt{http://localhost:8888} $\to$ run Steps 0--2 $\to$ verify Baseline 0 reference ($\approx 635$ pts).\\[0.5em]
+    {\bfseries\color{primaryblue}Phase 2: Simultaneous Controller Tuning (Step 3 \& 4: Work on any or all tracks concurrently)}\\[0.2em]
+    $\bullet$ {\bfseries Track 1:} Train MLP surrogate in TODO 1 ($n=2500$, layers \texttt{(128, 64, 32)}), lower holdout RMSE $\to$ verify B1 scores $>850$ pts.\newline
+    $\bullet$ {\bfseries Track 2:} In TODO 2, increase initial gain ($\alpha \approx 1.0$), compensate cubic saturation on $\mathbf{I}_t$, apply step damping $\to$ verify $>900$ pts.\newline
+    $\bullet$ {\bfseries Track 3:} In TODO 3, tune GP Mat\'{e}rn kernel, acquisition exploration $\kappa$, and regularizer $\lambda \to$ verify BO controller.\newline
+    $\bullet$ {\bfseries Step 4 Callbacks:} Register near-target braking ($\text{RMS} < 0.040\text{ mm}$) to glide into noise floor and maximize precision score.\\[0.5em]
+    {\bfseries\color{primaryblue}Phase 3: Unified Benchmark \& Iteration (Step 5)}\\[0.2em]
+    Run locked Step 5 benchmark to evaluate all 4 controllers in parallel across 30 seeds; compare leaderboard ranks and iterate.\\[0.5em]
+    {\bfseries\color{primaryblue}Phase 4: Trajectory Alignment Visualization (Step 6 \& 7)}\\[0.2em]
+    Generate \texttt{img/benchmark\_trajectories.png} showing all controllers side-by-side; inspect convergence curves for your team showcase.\\[0.5em]
+    {\bfseries\color{gold}Phase 5: Official Submission \& Showcase Presentation (16:15 -- 17:00)}\\[0.2em]
+    Verify submission on live W\&B dashboard; connect to room projector for 3-minute lightning talk!
   }
 
   \slidefooter{12}
