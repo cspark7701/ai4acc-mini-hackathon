@@ -14,8 +14,9 @@ services:
     volumes:
       # Mount ONLY the participant notebook and src so changes made inside Jupyter persist on your host
       # while keeping the reference solution notebook isolated and private
-      - ./notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
+      # (the image places the notebook directly in /workspace)
+      - ./notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb:/workspace/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb
       - ./src:/workspace/src
     environment:
       - WANDB_API_KEY=${WANDB_API_KEY:-}
-    restart: unless-stopped
+    restart: "no"  # stop with Ctrl+C / docker compose down; do not restart JupyterLab after a reboot
