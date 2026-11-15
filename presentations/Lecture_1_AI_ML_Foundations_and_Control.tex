@@ -386,7 +386,7 @@
     {\bfseries\color{navy}$\bullet$ Physical Breakdown of Response Terms:}\\[0.3em]
     -- $\mathbf{I} \cdot \mathbf{R}$: Ideal linear betatron wave response predicted by transfer matrix.\\
     -- $-0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R})$: Non-linear iron core soft saturation. At high excitation currents, the iron yoke reaches magnetic saturation, decreasing steerer kick efficiency by 6\% (at 2 A) up to 24\% (at 4 A).\\
-    -- $\mathbf{Y}_0 = a_1\mathbf{R}_{1,:} + a_2\mathbf{R}_{2,:}$: Initial distortion from unknown kicks $a_k \sim \mathcal{U}(-1.2, 1.2)$ A at the first two correctors, drawn per episode ($0.23$--$0.88\text{ mm}$ RMS on the evaluation seeds).\\
+    -- $\mathbf{Y}_0 = \mathbf{a} \cdot \mathbf{R}$: Initial distortion from unknown kicks $a_k \sim \mathcal{U}(-2.5, 2.5)$ A at all six correctors, drawn per episode ($0.93$--$3.59\text{ mm}$ RMS on the evaluation seeds; cancelling it needs up to 2.8 A).\\
     -- $\boldsymbol{\epsilon}$: Diagnostic Gaussian measurement jitter ($\sigma = 10\ \mu\text{m}$).\\[0.8em]
     {\bfseries\color{navy}$\bullet$ Convergence Target:} \textbf{\color{successgreen}Drive orbit error below $\text{RMS} < 0.030\text{ mm}$ ($30\ \mu\text{m}$) within 50 control steps.}
   }
@@ -573,7 +573,7 @@
     -- Static feedback gain: Typically $\alpha \approx 0.45$, with kicks hard clipped to $[-0.8, +0.8]\text{ A}$.\\
     -- Execution latency: $< 0.1\text{ ms}$ (instantaneous analytical matrix-vector product).\\
     -- \textbf{Vulnerability in Non-Linear Regimes:} Completely oblivious to cubic iron core saturation. When magnets operate at high currents, the true response is much weaker than linear $\mathbf{R}$ predicts, leading to over-correction, slow convergence (5.6 mean steps), and high final current demands.\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 5.6 mean steps, 705.337 total score (Rank \#3).}
+    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 9.4 mean steps, 635.277 total score (Rank \#3).}
   }
 
   \slidefooter{18}
@@ -598,7 +598,7 @@
     -- Solver: SciPy \texttt{L-BFGS-B} converges in 8--15 iterations per control step ($\sim 15 - 25\text{ ms}$ latency).\\
     -- $\mathbf{I}$ is the present total current from \texttt{info[\textquotedbl{}currents\textquotedbl{}]}, so the objective uses the predicted next orbit at every step.\\
     -- \textbf{Result:} With the reference MLP (test RMSE 0.11 mm) it succeeds on all 30 seeds; a more accurate surrogate (TODO 1) lands closer to the noise floor.\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 1.6 mean steps, 809.205 total score (Rank \#2).}
+    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 4.0 mean steps, 779.169 total score (Rank \#2).}
   }
 
   \slidefooter{19}
@@ -702,7 +702,7 @@
     -- $\overline{\boldsymbol{\sigma}}_{\text{GP}}(\Delta\mathbf{I})$: Posterior epistemic uncertainty (average standard deviation across BPMs).\\
     -- $\kappa \ge 0$: Exploration coefficient. When $\kappa > 0$, the agent explores uncharted high-current regimes; when $\kappa = 0$, it exploits the calibrated posterior mean.\\
     -- $\lambda \|\Delta\mathbf{I}\|^2$: Regularization penalty that minimizes actuator heating and avoids saturation.\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Exceptional Convergence Speed:} \textbf{\color{successgreen}When calibrated, Track 3 reaches the convergence threshold in about 1.6 steps on average (922.734 points).}
+    {\bfseries\color{navy}$\bullet$ Exceptional Convergence Speed:} \textbf{\color{successgreen}When calibrated, Track 3 reaches the convergence threshold in about 3.6 steps on average (878.384 points).}
   }
 
   \slidefooter{23}
@@ -794,10 +794,10 @@
         \toprule
         \textbf{\color{primaryblue}Rank} & \textbf{\color{primaryblue}Controller Paradigm} & \textbf{\color{primaryblue}Success} & \textbf{\color{primaryblue}Mean Steps} & \textbf{\color{primaryblue}Final RMS} & \textbf{\color{primaryblue}Current} & \textbf{\color{primaryblue}Score} \\
         \midrule
-        \textbf{\color{gold}Rank 1} & Track 3: Bayesian Optimization (BO) & \textbf{100.0\%} & \textbf{1.6 steps} & \textbf{0.0130 mm} & 0.94 A & \textbf{\color{gold}922.734 pts} \\
-        \textbf{\color{primaryblue}Rank 2} & Baseline 1 (Track 1): Supervised Neural Inversion (MLP) & 100.0\% & 1.6 steps & 0.0201 mm & 0.93 A & \textbf{\color{primaryblue}809.205 pts} \\
-        \textbf{Rank 3} & Baseline 0: Classical Linear SVD & 100.0\% & 5.6 steps & 0.0230 mm & 0.90 A & 705.337 pts \\
-        \textbf{Rank 4} & Track 2: Closed-Loop RL Policy Agent & 100.0\% & 6.1 steps & 0.0239 mm & 0.90 A & 686.926 pts \\
+        \textbf{\color{gold}Rank 1} & Track 3: Bayesian Optimization (BO) & \textbf{100.0\%} & \textbf{3.6 steps} & \textbf{0.0136 mm} & 3.85 A & \textbf{\color{gold}878.384 pts} \\
+        \textbf{\color{primaryblue}Rank 2} & Baseline 1 (Track 1): Supervised Neural Inversion (MLP) & 100.0\% & 4.0 steps & 0.0197 mm & 3.84 A & \textbf{\color{primaryblue}779.169 pts} \\
+        \textbf{Rank 3} & Baseline 0: Classical Linear SVD & 100.0\% & 9.4 steps & 0.0235 mm & 3.80 A & 635.277 pts \\
+        \textbf{Rank 4} & Track 2: Closed-Loop RL Policy Agent & 100.0\% & 10.8 steps & 0.0256 mm & 3.79 A & 590.559 pts \\
         \bottomrule
       \end{tabular}
     };
@@ -819,18 +819,18 @@
       \renewcommand{\arraystretch}{1.95}
       \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.05in}>{\raggedright\arraybackslash}p{2.35in}>{\raggedright\arraybackslash}p{1.75in}>{\raggedright\arraybackslash}p{1.95in}>{\raggedright\arraybackslash}p{2.1in}>{\centering\arraybackslash}p{1.45in}@{}}
         \toprule
-        \textbf{\color{primaryblue}Method} & \textbf{\color{primaryblue}Control law} & \textbf{\color{primaryblue}Model \& data} & \textbf{\color{primaryblue}Strengths} & \textbf{\color{primaryblue}Limitations} & \textbf{\color{primaryblue}Score: ref.\ / best agent} \\
+        \textbf{\color{primaryblue}Method} & \textbf{\color{primaryblue}Control law} & \textbf{\color{primaryblue}Model \& data} & \textbf{\color{primaryblue}Strengths} & \textbf{\color{primaryblue}Limitations} & \textbf{\color{primaryblue}Score: ref.\ / solution} \\
         \midrule
-        \textbf{\color{navy}Baseline 0}\newline Classical SVD & $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed gain $\alpha = 0.45$ & Analytic ORM; no training data & Instant, robust, interpretable & Ignores saturation; slow at low gain; fixed reference & 705.337 / --- \\
-        \textbf{\color{navy}Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\|^2$ with L-BFGS-B each step & MLP digital twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest per step & 809.205 / 941.8 \\
-        \textbf{\color{navy}Track 2}\newline RL / adaptive policy & Physics prior $+$ learned residual $+$ damping & Policy parameters; tuned in closed loop & Fastest per step; adapts online & Gain and damping tuning; overshoot risk & 686.926 / 955.0 \\
-        \textbf{\color{navy}Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS each step & Gaussian process; $\sim$300 calibration shots & Sample-efficient; models uncertainty & GP cost grows with data; per-step optimization & 922.734 / 954.8 \\
+        \textbf{\color{navy}Baseline 0}\newline Classical SVD & $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed gain $\alpha = 0.45$ & Analytic ORM; no training data & Instant, robust, interpretable & Ignores saturation; slow at low gain; fixed reference & 635.277 / --- \\
+        \textbf{\color{navy}Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\|^2$ with L-BFGS-B each step & MLP digital twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest per step & 779.169 / 924.2 \\
+        \textbf{\color{navy}Track 2}\newline RL / adaptive policy & Physics prior $+$ learned residual $+$ damping & Policy parameters; tuned in closed loop & Fastest per step; adapts online & Gain and damping tuning; overshoot risk & 590.559 / 940.0 \\
+        \textbf{\color{navy}Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS each step & Gaussian process; $\sim$300 calibration shots & Sample-efficient; models uncertainty & GP cost grows with data; per-step optimization & 878.384 / 909.9 \\
         \bottomrule
       \end{tabular}
     };
 
   \at{0.8}{6.3}{11.733}{\fs{11}{14}\color{mutedgray}%
-    Reference: unmodified notebook controllers (per-seed 0--1000 scoring, mean over 30 seeds). Best agent: highest score per method in the 10-agent W\&B test (2026-11-14), using saturation compensation on the total current and better surrogates. Baseline 0 is a fixed reference and is not tuned by participants.
+    Reference: unmodified notebook controllers (per-seed 0--1000 scoring, mean over 30 seeds). Solution: the organizers' worked solution, which inverts the model on the total current. Baseline 0 is a fixed reference and is not tuned by participants.
   }
 
   \slidefooter{27}
@@ -847,8 +847,8 @@
   \drawcard{0.8}{1.4}{11.733}{5.3}{Engineering Best Practices for Orbit Control}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
     {\fs{15}{18}\bfseries\color{navy}1. If Your Controller Oscillates or Diverges Near Target:}\\[0.3em]
-    $\bullet$ Check your feedback gain $\alpha$. With the plain pseudo-inverse, gains up to about $1.0$ converge fastest (1.6 steps at $1.0$ vs.\ 5.6 at $0.45$); above about $1.0$ the controller overshoots.\\
-    $\bullet$ Compensate the cubic saturation on the total current from \texttt{info[\textquotedbl{}currents\textquotedbl{}]}: with gain $1.0$ this lands in about 1.5 steps.\\
+    $\bullet$ Check your feedback gain $\alpha$. With the plain pseudo-inverse, gains up to about $1.2$ converge fastest (3.7 steps at $1.2$ vs.\ 9.4 at $0.45$); above that the controller overshoots.\\
+    $\bullet$ Compensate the cubic saturation on the total current from \texttt{info[\textquotedbl{}currents\textquotedbl{}]}: with gain $1.0$ this lands in about 3.7 steps at 924 points.\\
     $\bullet$ Without compensation, harmonic step damping $\gamma(t) = 1.0 / (1.0 + \kappa \cdot t)$ suppresses sensor-noise limit cycles near the target.\\[0.9em]
     {\fs{15}{18}\bfseries\color{navy}2. If Your Neural Surrogate Has High Generalization Error:}\\[0.3em]
     $\bullet$ Ensure your training dataset covers steerer excitations across $[-3.0, +3.0]\text{ A}$ so that non-linear cubic saturation is well-sampled.\\
@@ -873,7 +873,7 @@
     {\fs{15}{18}\bfseries\color{navy}Four Core Takeaways from Lecture 1:}\\[0.3em]
     \textbf{1. Physics Guides the AI:} Analytical optics priors (ORM pseudo-inverse) guarantee early stability and avoid millions of blind exploratory steps.\\
     \textbf{2. Surrogates Capture Non-Linearities:} Compact deep MLPs accurately predict cubic core saturation, enabling 2-step bounded inversions.\\
-    \textbf{3. Probabilistic Uncertainty Wins:} Gaussian Process BO with LCB acquisition balances exploration against exploitation, leading the reference scores in about 1.6 steps.\\
+    \textbf{3. Probabilistic Uncertainty Wins:} Gaussian Process BO with LCB acquisition balances exploration against exploitation, leading the reference scores in about 3.6 steps.\\
     \textbf{4. Dynamic Damping Prevents Limit Cycles:} Attenuating feedback near the $10\ \mu\text{m}$ sensor noise floor locks residual orbit error.\\[1.0em]
     {\fs{15}{18}\bfseries\color{navy}Next Session (10:40 -- 12:00):}\\[0.3em]
     {\fs{16}{20}\bfseries\color{primaryblue}Lecture 2: Agentic AI for Accelerator Research (Osprey Applications)}\\[0.2em]

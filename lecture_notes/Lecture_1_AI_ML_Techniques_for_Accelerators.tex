@@ -189,7 +189,7 @@ The mini-hackathon benchmark lattice (Figure~\ref{fig:beamline}) models a 15-met
     \begin{equation}
         \mathbf{Y}_{\text{sat}} = - 0.015 \cdot (\mathbf{I}^3 \cdot \mathbf{R})
     \end{equation}
-    \item \textbf{Initial Orbit Distortion ($\mathbf{Y}_0$):} Steering and alignment errors upstream of the line produce an initial orbit distortion that the controller does not know in advance. The simulator models it as random steering kicks at the first two corrector locations, $\mathbf{Y}_0 = a_1 \mathbf{R}_{1,:} + a_2 \mathbf{R}_{2,:}$ with $a_k \sim \mathcal{U}(-1.2, 1.2)\text{ A}$ drawn for each episode seed, giving initial RMS errors of $0.23$--$0.88\text{ mm}$ on the 30 evaluation seeds. Because the distortion lies in the span of the corrector responses, a perfect controller can cancel it down to the sensor noise.
+    \item \textbf{Initial Orbit Distortion ($\mathbf{Y}_0$):} Steering and alignment errors upstream of the line produce an initial orbit distortion that the controller does not know in advance. The simulator models it as unknown steering kicks at all six corrector locations, $\mathbf{Y}_0 = \mathbf{a} \cdot \mathbf{R}$ with $a_k \sim \mathcal{U}(-2.5, 2.5)\text{ A}$ drawn for each episode seed, giving initial RMS errors of $0.93$--$3.59\text{ mm}$ on the 30 evaluation seeds. Because the distortion lies in the span of the corrector responses, a perfect controller can cancel it down to the sensor noise, but this needs total currents up to about $2.8\text{ A}$, where the cubic saturation softens the magnets by up to 12\%, and about 3 to 4 steps of at most $0.8\text{ A}$.
     \item \textbf{Gaussian Measurement Noise:} Sensor electronics introduce random noise $\boldsymbol{\epsilon} \sim \mathcal{N}(0, \sigma^2)$, with $\sigma = 0.010\text{ mm}$ ($10\ \mu\text{m}$).
 \end{itemize}
 
@@ -443,7 +443,7 @@ The closed-loop correction action per step is:
     \Delta \mathbf{I} = \text{clip}\left( - \alpha \cdot (\mathbf{R}^T)^\dagger \cdot \mathbf{Y}_{\text{obs}}, \ -0.8, \ +0.8 \right)
 \end{equation}
 where $\alpha \approx 0.45$ is the feedback gain.
-While computationally instantaneous, SVD assumes linearity. Gains up to about $1.0$ converge fastest (about 1.6 steps at $\alpha = 1.0$ versus 5.6 at $0.45$); above that the controller overshoots.
+While computationally instantaneous, SVD assumes linearity. Gains up to about $1.2$ converge fastest (about 3.7 steps at $\alpha = 1.2$ versus 9.4 at $0.45$); above that the controller overshoots.
 
 \subsection{Baseline 1 (Track 1): Model-Based Optimization via Digital Twin Inversion}
 Rather than inverting an analytical matrix, Baseline 1 optimizes corrective kicks directly through the forward neural surrogate $f_{\boldsymbol{\theta}}(\Delta \mathbf{I})$ using SciPy's \texttt{L-BFGS-B} algorithm:
@@ -467,7 +467,7 @@ class SupervisedMLPController:
         res = opt.minimize(objective, np.zeros(6), bounds=[(-5.0, 5.0)]*6, method='L-BFGS-B')
         return np.clip(res.x, -0.8, 0.8)
 \end{lstlisting}
-When the surrogate accurately anticipates non-linear saturation falloff, Baseline 1 converges in about 2 iterations (2 steps on test seed 42). Here $\mathbf{I}$ is the present total corrector current from \texttt{info["currents"]}, so the objective uses the predicted next orbit at every step. With the reference MLP settings (test RMSE about $0.11\text{ mm}$) it succeeds on all 30 seeds and scores 809.205; a more accurate surrogate (e.g.\ a small \texttt{tanh} network trained with \texttt{lbfgs}, test RMSE about $0.011\text{ mm}$) lands closer to the noise floor and scores over 940.
+When the surrogate accurately anticipates non-linear saturation falloff, Baseline 1 converges in about 4 iterations (4 steps on test seed 42, against 9 for classical SVD). Here $\mathbf{I}$ is the present total corrector current from \texttt{info["currents"]}, so the objective uses the predicted next orbit at every step. With the reference MLP settings (test RMSE about $0.11\text{ mm}$) it succeeds on all 30 seeds and scores 779.169; a more accurate surrogate (e.g.\ a small \texttt{tanh} network trained with \texttt{lbfgs}, test RMSE about $0.011\text{ mm}$) lands closer to the noise floor and scores over 920.
 
 \subsection{Track 2: Closed-Loop RL Policy with Physics Prior and Adaptive Damping}
 Model-based iterative optimization requires $15$--$30\text{ ms}$ per step. In contrast, a closed-loop policy network executes in $< 0.5\text{ ms}$~\cite{kain2020sample}.
@@ -478,7 +478,7 @@ High-performing accelerator policy agents integrate an analytical \textbf{physic
 \begin{equation}
     \gamma(t) = \frac{1.0}{1.0 + 0.03 \cdot t}
 \end{equation}
-The dynamic damping factor $\gamma(t)$ decays control authority as the beam approaches the $0.030\text{ mm}$ boundary, preventing sensor noise amplification from destabilizing the closed orbit. In the reference agent, $\mathbf{W}_{\text{learned}}$ and $\mathbf{b}$ start at zero and are not trained, so it behaves as a damped pseudo-inverse controller (686.926 points); training or tuning the residual, or replacing the prior with a saturation-aware model inversion, is the Track~2 task.
+The dynamic damping factor $\gamma(t)$ decays control authority as the beam approaches the $0.030\text{ mm}$ boundary, preventing sensor noise amplification from destabilizing the closed orbit. In the reference agent, $\mathbf{W}_{\text{learned}}$ and $\mathbf{b}$ start at zero and are not trained, so it behaves as a damped pseudo-inverse controller (590.559 points); training or tuning the residual, or replacing the prior with a saturation-aware model inversion, is the Track~2 task.
 
 \subsection{Track 3: Closed-Loop Bayesian Optimization with Gaussian Processes}
 Bayesian Optimization (BO) provides sample-efficient optimization in high-dimensional non-linear systems by combining a probabilistic surrogate model with an acquisition function~\cite{roussel2023turnkey, edelen2020machine}. In our closed-loop architecture, a Gaussian Process (GP) regressor models the mapping from corrector kicks $\Delta \mathbf{I}$ to transverse orbit deviations:
@@ -497,7 +497,7 @@ We evaluate candidate corrective kicks using the Lower Confidence Bound (LCB) ac
 \begin{equation}
     \alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y}_{\text{obs}} - \boldsymbol{\mu}(\mathbf{I}) + \boldsymbol{\mu}(\mathbf{I} + \Delta \mathbf{I}) \right) - \kappa \cdot \overline{\boldsymbol{\sigma}}(\Delta \mathbf{I}) + \lambda \|\Delta \mathbf{I}\|_2^2
 \end{equation}
-where $\kappa \ge 0$ balances exploitation (minimizing predicted orbit RMS) with exploration (reducing uncertainty in non-linear saturation regimes). When $\kappa = 0$, the controller performs pure exploitation of the well-calibrated posterior mean, converging in about \textbf{1.6 steps} on average across the benchmark suite (922.734 points).
+where $\kappa \ge 0$ balances exploitation (minimizing predicted orbit RMS) with exploration (reducing uncertainty in non-linear saturation regimes). When $\kappa = 0$, the controller performs pure exploitation of the well-calibrated posterior mean, converging in about \textbf{3.6 steps} on average across the benchmark suite (878.384 points).
 
 \paragraph{Closed-loop control, offline model.} The controller is closed-loop: at every step it re-solves the acquisition problem from the latest BPM reading $\mathbf{Y}_{\text{obs}}$. Its model, however, is not updated online. The reference GP is fitted once on about 300 calibration shots and stays fixed for the whole benchmark, which makes it structurally close to Track~1 (an offline surrogate inverted at every step) with uncertainty available through $\kappa$. Classic Bayesian optimization adds each new (kick, observed orbit) pair to the GP and refits it; participants can do this from a \texttt{step\_callback} registered in the notebook's \texttt{CALLBACKS}, turning Track~3 into true online Bayesian optimization.
 
@@ -581,10 +581,10 @@ Official baseline and challenge policy performance across the 30 standardized ev
 \toprule
 \textbf{Rank} & \textbf{Controller Paradigm} & \textbf{Success Rate} & \textbf{Mean Steps} & \textbf{Final RMS} & \textbf{Current Norm} & \textbf{Official Score} \\
 \midrule
-\textbf{\#1} & Track 3: Bayesian Optimization Controller & \textbf{100.0\%} & \textbf{1.6 steps} & $\mathbf{0.0130\text{ mm}}$ & $0.94\text{ A}$ & $\mathbf{922.734\text{ pts}}$ \\
-\textbf{\#2} & Baseline 1 (Track 1): Supervised MLP Inversion & 100.0\% & 1.6 steps & $0.0201\text{ mm}$ & $0.93\text{ A}$ & 809.205 pts \\
-\textbf{\#3} & Baseline 0: Classical Linear SVD & 100.0\% & 5.6 steps & $0.0230\text{ mm}$ & $0.90\text{ A}$ & 705.337 pts \\
-\textbf{\#4} & Track 2: Closed-Loop RL Policy & 100.0\% & 6.1 steps & $0.0239\text{ mm}$ & $0.90\text{ A}$ & 686.926 pts \\
+\textbf{\#1} & Track 3: Bayesian Optimization Controller & \textbf{100.0\%} & \textbf{3.6 steps} & $\mathbf{0.0136\text{ mm}}$ & $3.85\text{ A}$ & $\mathbf{878.384\text{ pts}}$ \\
+\textbf{\#2} & Baseline 1 (Track 1): Supervised MLP Inversion & 100.0\% & 4.0 steps & $0.0197\text{ mm}$ & $3.84\text{ A}$ & 779.169 pts \\
+\textbf{\#3} & Baseline 0: Classical Linear SVD & 100.0\% & 9.4 steps & $0.0235\text{ mm}$ & $3.80\text{ A}$ & 635.277 pts \\
+\textbf{\#4} & Track 2: Closed-Loop RL Policy & 100.0\% & 10.8 steps & $0.0256\text{ mm}$ & $3.79\text{ A}$ & 590.559 pts \\
 \bottomrule
 \end{tabular}%
 }
@@ -593,7 +593,7 @@ Official baseline and challenge policy performance across the 30 standardized ev
 \end{table}
 
 \subsection{Method Comparison Summary}
-Table~\ref{tab:comparison} summarizes how the two baselines and the two challenge tracks differ. The reference score is that of the unmodified notebook controller; the best-agent score is the highest score per method in the 10-agent W\&B test (2026-11-14), which used saturation compensation on the total current and better surrogates. Baseline 0 is a fixed reference and is not tuned by participants.
+Table~\ref{tab:comparison} summarizes how the two baselines and the two challenge tracks differ. The reference score is that of the unmodified notebook controller; the solution score is that of the organizers' worked solution, which inverts the model on the total current (exact saturation physics for Track~2, an accurate MLP for Track~1, a GP calibrated on $\pm 3.5$~A for Track~3). Baseline 0 is a fixed reference and is not tuned by participants.
 
 \begin{table}[h!]
 \centering
@@ -603,10 +603,10 @@ Table~\ref{tab:comparison} summarizes how the two baselines and the two challeng
 \toprule
 \textbf{Method} & \textbf{Control law} & \textbf{Model \& data} & \textbf{Strengths} & \textbf{Limitations} & \textbf{Score: ref.\ / best} \\
 \midrule
-\textbf{Baseline 0}\newline Classical SVD & $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed $\alpha = 0.45$ & Analytic ORM; no training data & Instant, robust, interpretable & Ignores saturation; slow at low gain & 705.337 / --- \\
-\textbf{Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\|^2$ with L-BFGS-B & MLP twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest & 809.205 / 941.8 \\
-\textbf{Track 2}\newline RL / adaptive policy & Physics prior $+$ learned residual $+$ damping & Policy parameters; closed-loop tuning & Fastest per step; adapts online & Gain and damping tuning; overshoot & 686.926 / 955.0 \\
-\textbf{Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS & Gaussian process; $\sim$300 shots & Sample-efficient; models uncertainty & GP cost grows; per-step optimization & 922.734 / 954.8 \\
+\textbf{Baseline 0}\newline Classical SVD & $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed $\alpha = 0.45$ & Analytic ORM; no training data & Instant, robust, interpretable & Ignores saturation; slow at low gain & 635.277 / --- \\
+\textbf{Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\|^2$ with L-BFGS-B & MLP twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest & 779.169 / 924.2 \\
+\textbf{Track 2}\newline RL / adaptive policy & Physics prior $+$ learned residual $+$ damping & Policy parameters; closed-loop tuning & Fastest per step; adapts online & Gain and damping tuning; overshoot & 590.559 / 940.0 \\
+\textbf{Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS & Gaussian process; $\sim$300 shots & Sample-efficient; models uncertainty & GP cost grows; per-step optimization & 878.384 / 909.9 \\
 \bottomrule
 \end{tabular}
 \caption{Comparison of the baseline and challenge-track controllers.}

@@ -1,5 +1,8 @@
 # Multi-Agent W&B Submission Test — Report
 
+> [!NOTE]
+> **Earlier simulator version.** This test ran on 2026-11-14 with the original initial distortion (kicks at the first two corrector locations, $a_k \sim \mathcal{U}(-1.2, 1.2)$ A). The distortion now has kicks at all six correctors with $a_k \sim \mathcal{U}(-2.5, 2.5)$ A, so the scores below are not comparable with the current benchmark. The W&B submission path it verified is unchanged.
+
 **Date:** 2026-11-14
 **Protocol:** [`MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md`](MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md), with one deliberate change: W&B submission was **on**, so the shared leaderboard could be tested end to end.
 **Scoring:** per-seed 0–1000 points (`score_seed()` in `src/benchmark.py`), mean over seeds `range(1, 31)`.

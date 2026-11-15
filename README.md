@@ -54,7 +54,7 @@ Participants design, optimize, and benchmark closed-loop accelerator controllers
   - Alternating quadrupole focusing/defocusing magnets (`QF`, `QD`).
   - Linear Orbit Response Matrix (ORM) of a single-pass transport line: a corrector at $s_i$ only moves the orbit at BPMs downstream ($s_j > s_i$):
     $$R_{ij} = \frac{1.2\,\sin\!\big(2\pi \cdot 0.18\,(s_j - s_i)\big)}{1 + 0.05\,(s_j - s_i)} \quad (s_j > s_i), \qquad R_{ij} = 0 \text{ otherwise}$$
-  - Initial distortion: an upstream steering error drawn from the episode seed, $\mathbf{Y}_0 = a_1 \mathbf{R}_{1,:} + a_2 \mathbf{R}_{2,:}$ with unknown kicks $a_k \sim \mathcal{U}(-1.2, 1.2)$ A at the first two corrector locations (initial RMS $0.23$–$0.88\text{ mm}$ on seeds 1–30).
+  - Initial distortion: unknown steering errors at all six corrector locations drawn from the episode seed, $\mathbf{Y}_0 = \mathbf{a} \cdot \mathbf{R}$ with $a_k \sim \mathcal{U}(-2.5, 2.5)$ A (initial RMS $0.93$–$3.59\text{ mm}$ on seeds 1–30). Cancelling it needs currents up to about $2.8\text{ A}$, deep in the saturation, and about 3 to 4 steps of at most $0.8\text{ A}$.
   - Non-linear magnetic core saturation: $-0.015 \cdot X^3 \cdot R$
   - Realistic Gaussian diagnostic noise: $\epsilon \sim \mathcal{N}(0, 0.010\text{ mm})$
 - **Goal Condition:** Bring Root-Mean-Square (RMS) beam orbit error below threshold:
@@ -197,14 +197,14 @@ s_k = \begin{cases}
 
 ### Reference Benchmark Performance
 
-Measured with the current code and the unmodified participant notebook (reference controllers). The Solution notebook (`notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb`, organizers only) contains a worked solution that scores 705.337 / 941.787 / 944.710 / 944.031 for Baseline 0 and Tracks 1–3.
+Measured with the current code and the unmodified participant notebook (reference controllers). The Solution notebook (`notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb`, organizers only) contains a worked solution that scores 635.277 / 924.192 / 939.981 / 909.942 for Baseline 0 and Tracks 1–3.
 
 | Rank | Controller / Agent Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Official Score |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| 🥇 | **Track 3: Bayesian Optimization Controller** | 100.0% | 1.6 steps | 0.0130 mm | 0.94 A | **922.734 pts** |
-| 🥈 | **Baseline 1 (Track 1): Supervised MLP Surrogate Inversion** | 100.0% | 1.6 steps | 0.0201 mm | 0.93 A | **809.205 pts** |
-| 🥉 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | 0.0230 mm | 0.90 A | **705.337 pts** |
-| 4 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 0.90 A | **686.926 pts** |
+| 🥇 | **Track 3: Bayesian Optimization Controller** | 100.0% | 3.6 steps | 0.0136 mm | 3.85 A | **878.384 pts** |
+| 🥈 | **Baseline 1 (Track 1): Supervised MLP Surrogate Inversion** | 100.0% | 4.0 steps | 0.0197 mm | 3.84 A | **779.169 pts** |
+| 🥉 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 9.4 steps | 0.0235 mm | 3.80 A | **635.277 pts** |
+| 4 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 10.8 steps | 0.0256 mm | 3.79 A | **590.559 pts** |
 
 ---
 
@@ -236,6 +236,6 @@ For detailed guidelines, refer to the included guides:
 - [W&B Leaderboard Guide](docs/WANDB_LEADERBOARD_GUIDE.md) — Leaderboard setup for the organizer and submission steps for participants.
 - [Participant Modification Guide](docs/PARTICIPANT_MODIFICATION_GUIDE.md) — What participants may change for each controller, and the callback rules.
 - [Docker Installation Guide](docs/DOCKER_INSTALL_GUIDE.md) and [Docker Setup Guide](docs/DOCKER_SETUP_GUIDE.md) — Pre-workshop Docker installation, image download and test.
-- [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md) and [W&B Submission Test Report](docs/MULTI_AGENT_WANDB_REPORT.md) — 10-agent benchmark protocol and the verified results of its W&B run.
+- [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md) and [W&B Submission Test Report](docs/MULTI_AGENT_WANDB_REPORT.md) — 10-agent benchmark protocol and the verified results of its W&B run (scores from the earlier, easier distortion model).
 - [Docker Desktop Setup Guide (Word Document)](docs/Docker%20Desktop%20Setup%20Guide.docx) — Containerized deployment instructions.
 - [AGENTS.md](AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.

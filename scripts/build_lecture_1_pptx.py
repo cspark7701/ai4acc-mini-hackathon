@@ -517,7 +517,7 @@ def create_presentation():
     add_text_run(p2, "• Physical Breakdown of Response Terms:\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p2, "  -- I · R: Ideal linear betatron wave response predicted by transfer matrix.\n"
                      "  -- -0.015 · (I³ · R): Non-linear iron core soft saturation. At high excitation currents, the iron yoke reaches magnetic saturation, decreasing steerer kick efficiency by 6% (at 2 A) up to 24% (at 4 A).\n"
-                     "  -- Y₀ = a₁R₁ + a₂R₂: Initial distortion from unknown kicks aₖ ~ U(-1.2, 1.2) A at the first two correctors, drawn per episode (0.23-0.88 mm RMS on the evaluation seeds).\n"
+                     "  -- Y₀ = a · R: Initial distortion from unknown kicks aₖ ~ U(-2.5, 2.5) A at all six correctors, drawn per episode (0.93-3.59 mm RMS on the evaluation seeds; cancelling it needs up to 2.8 A).\n"
                      "  -- ε: Diagnostic Gaussian measurement jitter (σ = 10 μm).\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p3 = tf11.add_paragraph()
@@ -740,7 +740,7 @@ def create_presentation():
 
     p3 = tf18.add_paragraph()
     add_text_run(p3, "• Tested Benchmark Performance: ", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "100.0% success rate, 5.6 mean steps, 705.337 total score (Rank #3).", bold=True, size=Pt(14), color=PRIMARY)
+    add_text_run(p3, "100.0% success rate, 9.4 mean steps, 635.277 total score (Rank #3).", bold=True, size=Pt(14), color=PRIMARY)
 
     add_footer(s18, 18)
 
@@ -774,7 +774,7 @@ def create_presentation():
 
     p3 = tf19.add_paragraph()
     add_text_run(p3, "• Tested Benchmark Performance: ", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "100.0% success rate, 1.6 mean steps, 809.205 total score (Rank #2).", bold=True, size=Pt(14), color=PRIMARY)
+    add_text_run(p3, "100.0% success rate, 4.0 mean steps, 779.169 total score (Rank #2).", bold=True, size=Pt(14), color=PRIMARY)
 
     add_footer(s19, 19)
 
@@ -913,7 +913,7 @@ def create_presentation():
 
     p3 = tf23.add_paragraph()
     add_text_run(p3, "• Exceptional Convergence Speed: ", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "When calibrated, Track 3 reaches the convergence threshold in about 1.6 steps on average (922.734 points).", bold=True, size=Pt(14), color=SUCCESS_GREEN)
+    add_text_run(p3, "When calibrated, Track 3 reaches the convergence threshold in about 3.6 steps on average (878.384 points).", bold=True, size=Pt(14), color=SUCCESS_GREEN)
 
     add_footer(s23, 23)
 
@@ -1050,10 +1050,10 @@ def create_presentation():
         add_text_run(p_cell, h_text, bold=True, size=Pt(11.5), color=WHITE)
 
     data_rows = [
-        ("Rank 1", "Track 3: Bayesian Optimization (BO)", "100.0%", "1.6 steps", "0.0130 mm", "0.94 A", "922.734 pts", GOLD),
-        ("Rank 2", "Baseline 1 (Track 1): Supervised Neural Inversion (MLP)", "100.0%", "1.6 steps", "0.0201 mm", "0.93 A", "809.205 pts", PRIMARY),
-        ("Rank 3", "Baseline 0: Classical Linear SVD", "100.0%", "5.6 steps", "0.0230 mm", "0.90 A", "705.337 pts", DARK_GRAY),
-        ("Rank 4", "Track 2: Closed-Loop RL Policy Agent", "100.0%", "6.1 steps", "0.0239 mm", "0.90 A", "686.926 pts", DARK_GRAY),
+        ("Rank 1", "Track 3: Bayesian Optimization (BO)", "100.0%", "3.6 steps", "0.0136 mm", "3.85 A", "878.384 pts", GOLD),
+        ("Rank 2", "Baseline 1 (Track 1): Supervised Neural Inversion (MLP)", "100.0%", "4.0 steps", "0.0197 mm", "3.84 A", "779.169 pts", PRIMARY),
+        ("Rank 3", "Baseline 0: Classical Linear SVD", "100.0%", "9.4 steps", "0.0235 mm", "3.80 A", "635.277 pts", DARK_GRAY),
+        ("Rank 4", "Track 2: Closed-Loop RL Policy Agent", "100.0%", "10.8 steps", "0.0256 mm", "3.79 A", "590.559 pts", DARK_GRAY),
     ]
 
     for r_idx, row_data in enumerate(data_rows, start=1):
@@ -1084,15 +1084,15 @@ def create_presentation():
 
     cmp_rows = [
         ("Baseline 0\nClassical SVD", "ΔI = −α (Rᵀ)⁺ Y, fixed gain α = 0.45", "Analytic ORM; no training data",
-         "Instant, robust, interpretable", "Ignores saturation; slow at low gain; fixed reference", "705.337 / —"),
+         "Instant, robust, interpretable", "Ignores saturation; slow at low gain; fixed reference", "635.277 / —"),
         ("Baseline 1 (Track 1)\nSupervised inversion", "Minimize ‖Y − f_θ(I) + f_θ(I+ΔI)‖² with L-BFGS-B each step", "MLP digital twin; 1,500 offline shots",
-         "Learns the non-linear response", "Only as good as the surrogate; slowest per step", "809.205 / 941.8"),
+         "Learns the non-linear response", "Only as good as the surrogate; slowest per step", "779.169 / 924.2"),
         ("Track 2\nRL / adaptive policy", "Physics prior + learned residual + damping", "Policy parameters; tuned in closed loop",
-         "Fastest per step; adapts online", "Gain and damping tuning; overshoot risk", "686.926 / 955.0"),
+         "Fastest per step; adapts online", "Gain and damping tuning; overshoot risk", "590.559 / 940.0"),
         ("Track 3\nBayesian optimization", "Minimize LCB of GP-predicted RMS each step", "Gaussian process; ~300 calibration shots",
-         "Sample-efficient; models uncertainty", "GP cost grows with data; per-step optimization", "922.734 / 954.8"),
+         "Sample-efficient; models uncertainty", "GP cost grows with data; per-step optimization", "878.384 / 909.9"),
     ]
-    cmp_headers = ["Method", "Control law", "Model & data", "Strengths", "Limitations", "Score: ref. / best agent"]
+    cmp_headers = ["Method", "Control law", "Model & data", "Strengths", "Limitations", "Score: ref. / solution"]
     cmp_shape = s_cmp.shapes.add_table(5, 6, Inches(0.8), Inches(1.55), Inches(11.733), Inches(4.5))
     cmp_tbl = cmp_shape.table
     for idx, w in enumerate([Inches(2.05), Inches(2.35), Inches(1.85), Inches(1.95), Inches(2.1), Inches(1.433)]):
@@ -1122,8 +1122,8 @@ def create_presentation():
     tb_cmp = s_cmp.shapes.add_textbox(Inches(0.8), Inches(6.25), Inches(11.733), Inches(0.6))
     tb_cmp.text_frame.word_wrap = True
     add_text_run(tb_cmp.text_frame.paragraphs[0],
-                 "Reference: unmodified notebook controllers (per-seed 0–1000 scoring, mean over 30 seeds). Best agent: highest score per method "
-                 "in the 10-agent W&B test (2026-11-14), using saturation compensation on the total current and better surrogates. "
+                 "Reference: unmodified notebook controllers (per-seed 0–1000 scoring, mean over 30 seeds). Solution: the organizers' worked "
+                 "solution, which inverts the model on the total current. "
                  "Baseline 0 is a fixed reference and is not tuned by participants.", size=Pt(11), color=MUTED)
 
     add_footer(s_cmp, 27)
@@ -1142,8 +1142,8 @@ def create_presentation():
 
     p = tf27.paragraphs[0]
     add_text_run(p, "1. If Your Controller Oscillates or Diverges Near Target:\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p, "   • Check your feedback gain α. With the plain pseudo-inverse, gains up to about 1.0 converge fastest (1.6 steps at 1.0 vs. 5.6 at 0.45); above about 1.0 the controller overshoots.\n"
-                    "   • Compensate the cubic saturation on the total current from info[\"currents\"]: with gain 1.0 this lands in about 1.5 steps.\n"
+    add_text_run(p, "   • Check your feedback gain α. With the plain pseudo-inverse, gains up to about 1.2 converge fastest (3.7 steps at 1.2 vs. 9.4 at 0.45); above that the controller overshoots.\n"
+                    "   • Compensate the cubic saturation on the total current from info[\"currents\"]: with gain 1.0 this lands in about 3.7 steps at 924 points.\n"
                     "   • Without compensation, harmonic step damping γ(t) = 1.0 / (1.0 + κ · t) suppresses sensor-noise limit cycles near the target.\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p2 = tf27.add_paragraph()
@@ -1173,7 +1173,7 @@ def create_presentation():
     add_text_run(p, "Four Core Takeaways from Lecture 1:\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p, "1. Physics Guides the AI: Analytical optics priors (ORM pseudo-inverse) guarantee early stability and avoid millions of blind exploratory steps.\n"
                     "2. Surrogates Capture Non-Linearities: Compact deep MLPs accurately predict cubic core saturation, enabling 2-step bounded inversions.\n"
-                    "3. Probabilistic Uncertainty Wins: Gaussian Process BO with LCB acquisition balances exploration against exploitation, leading the reference scores in about 1.6 steps.\n"
+                    "3. Probabilistic Uncertainty Wins: Gaussian Process BO with LCB acquisition balances exploration against exploitation, leading the reference scores in about 3.6 steps.\n"
                     "4. Dynamic Damping Prevents Limit Cycles: Attenuating feedback near the 10 μm sensor noise floor locks residual orbit error.\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p2 = tf28.add_paragraph()

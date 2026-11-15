@@ -35,7 +35,7 @@ $$\mathbf{Y} = \mathbf{I} \cdot \mathbf{R} - 0.015 \cdot (\mathbf{I}^3 \cdot \ma
   This is the transport-line response $\sqrt{\beta_i \beta_j}\,\sin(\psi_j - \psi_i)$ with simplified optics: a constant phase advance of $2\pi \cdot 0.18$ rad/m and a slowly decaying amplitude. (The ring closed-orbit formula with $2\sin(\pi\nu)$ does not apply to a single-pass line.)
 - **Non-Linear Core Saturation:** Modeled as cubic soft-saturation: $-0.015 \cdot \mathbf{I}^3 \cdot \mathbf{R}$.
 - **Gaussian Measurement Noise:** $\boldsymbol{\epsilon} \sim \mathcal{N}(0, 0.010^2)$ representing sensor jitter.
-- **Initial Distortion ($\mathbf{Y}_0$):** An upstream steering error drawn at episode reset from the seed: $\mathbf{Y}_0 = a_1 \mathbf{R}_{1,:} + a_2 \mathbf{R}_{2,:}$ with $a_k \sim \mathcal{U}(-1.2, 1.2)$ A, i.e. the orbit of random kicks at the first two corrector locations. On the evaluation seeds 1–30 the initial RMS is $0.23$–$0.88\text{ mm}$ (mean $0.59\text{ mm}$). The lecture notes, slides and notebooks state this model in full; the kick amplitudes $a_1, a_2$ are unknown to the controller.
+- **Initial Distortion ($\mathbf{Y}_0$):** Unknown steering errors at all six corrector locations, drawn at episode reset from the seed: $\mathbf{Y}_0 = \mathbf{a} \cdot \mathbf{R}$ with $a_k \sim \mathcal{U}(-2.5, 2.5)$ A, $k = 1..6$ (`env.distortion_kicks`). It lies in the span of the corrector responses, so it can be cancelled, but this needs total currents up to $2.84\text{ A}$ (deep in the cubic saturation) and, with the $0.8\text{ A}$ per-step limit, about 3 to 4 steps. On the evaluation seeds 1–30 the initial RMS is $0.93$–$3.59\text{ mm}$ (mean $1.97\text{ mm}$). The lecture notes, slides and notebooks state this model in full; the six kick amplitudes are unknown to the controller.
 
 ### 3. Gymnasium Environment Contract (`AcceleratorOrbitGymEnv`)
 - **`reset(seed=None)`** $\rightarrow$ `(obs, info)`:
@@ -84,7 +84,7 @@ class BenchmarkController:
    - Trains an `MLPRegressor` (e.g. layers `(128, 64, 32)`, ReLU activation) as a forward digital twin: $\hat{\mathbf{Y}} = f_{\theta}(\mathbf{I})$.
    - Solves a bounded optimization problem per step via SciPy `L-BFGS-B`:
      $$\min_{\Delta \mathbf{I}} \|\mathbf{Y} - f_{\theta}(\mathbf{I}) + f_{\theta}(\mathbf{I} + \Delta \mathbf{I})\|^2 + \lambda \|\Delta \mathbf{I}\|^2$$
-   - $\mathbf{I}$ is the present total corrector current from `info["currents"]`, so $\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I} + \Delta \mathbf{I})$ is the predicted next orbit at every step. With the reference MLP settings this scores 809.205; a more accurate surrogate (TODO 1) scores higher.
+   - $\mathbf{I}$ is the present total corrector current from `info["currents"]`, so $\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I} + \Delta \mathbf{I})$ is the predicted next orbit at every step. With the reference MLP settings this scores 779.169; a more accurate surrogate (TODO 1) scores higher.
 
 3. **Track 2 — Closed-Loop RL / Adaptive Policy Agent:**
    - Combines a physics-informed prior with learned parameter residual and adaptive damping:
@@ -95,7 +95,7 @@ class BenchmarkController:
 4. **Track 3 — Closed-Loop Bayesian Optimization Controller:**
    - Uses a `GaussianProcessRegressor` (Matérn-5/2 kernel with sensor noise floor) to model orbit error with epistemic uncertainty estimation:
      $$\alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y} - \boldsymbol{\mu}_{\text{GP}}(\mathbf{I}) + \boldsymbol{\mu}_{\text{GP}}(\mathbf{I} + \Delta \mathbf{I}) \right) - \kappa \cdot \overline{\boldsymbol{\sigma}}_{\text{GP}}(\Delta \mathbf{I}) + \lambda \|\Delta \mathbf{I}\|^2$$
-   - Balances exploration ($\kappa > 0$) against exploitation ($\kappa = 0$) under non-linear saturation, converging in about $1.6$ steps on average (922.734 points).
+   - Balances exploration ($\kappa > 0$) against exploitation ($\kappa = 0$) under non-linear saturation, converging in about $3.6$ steps on average (878.384 points).
    - The reference GP is fitted once on 300 calibration shots and stays fixed; like Baseline 1 it predicts the next orbit around the present total current $\mathbf{I}$. Refitting the GP online (e.g. from a `step_callback`) turns it into true online Bayesian optimization.
 
 ---
@@ -121,7 +121,7 @@ s_k = \begin{cases}
 The implementation is `score_seed()` in `src/benchmark.py`.
 
 ### Metrics Tracked in Weights & Biases:
-- `challenge_score`: Official total benchmark score, 0 to 1000 points (reference controllers score 687 to 923).
+- `challenge_score`: Official total benchmark score, 0 to 1000 points (reference controllers score 591 to 878).
 - `score_success`, `score_speed`, `score_precision`: The three components of `challenge_score`, averaged over the 30 seeds.
 - `success_rate_pct`: Percentage of the 30 seeds reaching $\text{RMS} < 0.03\text{ mm}$ within 50 steps.
 - `mean_steps`: Average iterations to reach convergence.
@@ -144,7 +144,7 @@ To preserve scientific rigor, academic honesty, and benchmark validity, all AI a
    - Do not cherry-pick or alter test seed indices.
 3. **Respect Participant vs. Solution Notebook Separation:**
    - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb): Must preserve the clear `TODO 1`, `TODO 2`, and `TODO 3` instructional structure for attendees.
-   - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb](notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb): Contains the worked solution (accurate TODO 1 surrogate and model-inversion controllers for Tracks 1–3, scoring 941.787 / 944.710 / 944.031) with saved benchmark outputs. It is excluded from the participant Docker image; keep it out of anything distributed to participants.
+   - [notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb](notebooks/Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb): Contains the worked solution (accurate TODO 1 surrogate and model-inversion controllers for Tracks 1–3, scoring 924.192 / 939.981 / 909.942) with saved benchmark outputs. It is excluded from the participant Docker image; keep it out of anything distributed to participants.
 4. **Action Space Adherence:**
    - The returned action must strictly be a 1D NumPy array or sequence of 6 numerical values.
    - Values exceeding $[-0.8, +0.8]$ A will be hard-clipped by the environment, but well-behaved agents should handle bounds internally.
@@ -217,7 +217,7 @@ for step in range(env.max_steps):
 
 ## 💡 Practical Advice for AI Agents Assisting Participants
 
-- **If an agent's policy diverges or oscillates:** Check the feedback gain $\alpha$. With the plain pseudo-inverse, gains up to about $1.0$ converge fastest (about 1.6 steps at $1.0$ versus 5.6 at $0.45$); above that the policy overshoots. Compensate the cubic saturation using the total currents in `info["currents"]`, or introduce step damping: $\alpha_t = \alpha_0 / (1.0 + \gamma \cdot t)$.
+- **If an agent's policy diverges or oscillates:** Check the feedback gain $\alpha$. With the plain pseudo-inverse, gains up to about $1.2$ converge fastest (about 3.7 steps at $1.2$ versus 9.4 at $0.45$); above that the policy overshoots. The $0.8$ A per-step limit means most seeds need at least 3 to 4 steps. Compensate the cubic saturation using the total currents in `info["currents"]`, or introduce step damping: $\alpha_t = \alpha_0 / (1.0 + \gamma \cdot t)$.
 - **Callbacks:** participants may register `step_callback` / `episode_callback` for Baseline 1, Track 2 and Track 3 in the notebook's `CALLBACKS` dictionary (Step 4); Baseline 0 always runs without callbacks.
-- **If the surrogate model exhibits high holdout error:** Ensure sample coverage in offline training covers $[-3.0, 3.0]$ A and that the non-linear cubic term is represented.
+- **If the surrogate model exhibits high holdout error:** Ensure sample coverage in offline training covers at least $[-3.0, 3.0]$ A (the correction needs up to $2.84$ A) and that the non-linear cubic term is represented.
 - **If W&B logging fails:** Workshop participants authenticate with the shared service key that the launchers pass as `WANDB_API_KEY` (from `wandb.apikey` next to the launcher); no `wandb.login()` is needed. Check that the key file is present and that `WANDB_PROJECT` and `WANDB_ENTITY` are unchanged. If offline, the harness falls back to local reporting.
