@@ -109,10 +109,13 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 │   ├── Lecture_1_AI_ML_Foundations_and_Control_Notes.tex  # Session 1 LaTeX source
 │   └── Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf  # Compiled lecture monograph (PDF, 17 pages)
 │
-├── presentations/                                    # Presentation slides for Session 1
-│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.tex  # Beamer LaTeX slide source
-│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.pptx # PowerPoint slide deck (29 slides)
-│   └── Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf  # Compiled slide deck (PDF, 29 slides)
+├── presentations/                                    # Presentation slides for Sessions 1 & 2
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.tex  # Session 1 Beamer LaTeX slide source
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.pptx # Session 1 PowerPoint slide deck (29 slides)
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf  # Session 1 compiled slide deck (PDF, 29 slides)
+│   ├── Mini_Hackathon_Beam_Orbit_Alignment_Slides.tex      # Session 2 LaTeX slide source
+│   ├── Mini_Hackathon_Beam_Orbit_Alignment_Slides.pptx     # Session 2 PowerPoint slide deck (12 slides)
+│   └── Mini_Hackathon_Beam_Orbit_Alignment_Slides.pdf      # Session 2 compiled slide deck (PDF, 12 slides)
 │
 ├── notebooks/                                        # Interactive Jupyter challenge notebooks
 │   ├── Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb  # Primary challenge notebook for participants (with TODOs)
@@ -235,6 +238,7 @@ For detailed guidelines, refer to the included guides:
 - [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (Markdown)](lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.md) — Master curriculum notes for Morning Session 1.
 - [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf) — Formatted, compiled 17-page PDF monograph.
 - [Lecture 1 Slides: AI/ML Foundations & Closed-Loop Control (PDF Deck)](presentations/Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf) — Formatted 29-slide presentation deck.
+- [Mini-Hackathon Slides: Beam Orbit Alignment Benchmark (PDF Deck)](presentations/Mini_Hackathon_Beam_Orbit_Alignment_Slides.pdf) — Comprehensive 12-slide orientation deck for the afternoon hackathon session.
 - [Lecture 1 LaTeX Source](lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.tex) — LaTeX document source code.
 - [Hackathon Project Guide (Word Document)](<docs/Hackathon Project Guide.docx>) — Complete rules, physics derivations, and scoring breakdown.
 - [Technical Preparation Guide (Word Document)](<docs/Technical Preparation.docx>) — Detailed lecture syllabus, setup recommendations, and schedule.

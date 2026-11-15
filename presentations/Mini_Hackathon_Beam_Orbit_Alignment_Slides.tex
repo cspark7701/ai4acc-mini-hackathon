@@ -1,0 +1,503 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[paperwidth=13.333in,paperheight=7.5in,margin=0pt]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,bm}
+\usepackage{graphicx}
+\graphicspath{{../img/}{./img/}{img/}}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc,shapes.geometric,positioning}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+
+% Color Palette
+\definecolor{navy}{HTML}{002060}
+\definecolor{primaryblue}{HTML}{184C78}
+\definecolor{accent}{HTML}{2980B9}
+\definecolor{darkgray}{HTML}{2C3E50}
+\definecolor{lightbg}{HTML}{F5F7FA}
+\definecolor{bordergray}{HTML}{C8CDD2}
+\definecolor{mutedgray}{HTML}{7F8C8D}
+\definecolor{crimson}{HTML}{9E1636}
+\definecolor{successgreen}{HTML}{27AE60}
+\definecolor{gold}{HTML}{B48C14}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+% Total number of slides
+\newcommand{\totalslides}{12}
+
+% Helper: Place text block at (x, y) inches from top-left with width w inches
+\newcommand{\at}[4]{%
+  \node[anchor=north west,inner sep=0pt,text width=#3in,align=left]
+    at ([xshift=#1in,yshift=-#2in]current page.north west) {#4};%
+}
+
+% Per-slide line spacing
+\newcommand{\slidespread}[1]{\linespread{#1}\selectfont}
+\newcommand{\fs}[2]{\fontsize{#1pt}{#2pt}\selectfont}
+
+% Slide Header Macro
+\newcommand{\slideheader}[3]{%
+  % Top-left KU Logo
+  \node[anchor=west,inner sep=0pt]
+    at ([xshift=0.50in,yshift=-0.70in]current page.north west)
+    {\includegraphics[width=0.70in,height=0.82in]{ku_logo.png}};
+  % Vertical accent bar
+  \fill[accent] ([xshift=1.35in,yshift=-0.25in]current page.north west)
+    rectangle ++(0.06in,-0.90in);
+  % Title & Subtitle Node
+  \node[anchor=west,inner sep=0pt,text width=11.2in,align=left]
+    at ([xshift=1.55in,yshift=-0.70in]current page.north west) {%
+      {\fs{11}{13}\bfseries\color{accent}\MakeUppercase{#1}\quad|\quad}%
+      {\fs{20.5}{24}\bfseries\color{navy}#2}\\[0.18em]
+      \if\relax\detokenize{#3}\relax\else{\fs{13}{16}\color{darkgray}#3}\fi
+    };
+}
+
+% Slide Footer Macro
+\newcommand{\slidefooter}[1]{%
+  \fill[bordergray] ([xshift=0.5in,yshift=-7.0in]current page.north west)
+    rectangle ++(12.333in,-0.02in);
+  \at{0.5}{7.06}{2.5}{\fs{10}{12}\color{mutedgray}November 19, 2026}
+  \node[anchor=north,inner sep=0pt]
+    at ([yshift=-7.06in]current page.north)
+    {\fs{10}{12}\color{mutedgray}Chong Shik Park, Ph.D. \enspace$|$\enspace Korea University, Sejong \enspace$|$\enspace Mini-Hackathon Session};
+  \node[anchor=north east,inner sep=0pt]
+    at ([xshift=-0.5in,yshift=-7.06in]current page.north east)
+    {\fs{10}{12}\bfseries\color{primaryblue}#1 / \totalslides};
+}
+
+% Standard Full-Width Content Card Macro
+\newcommand{\drawcard}[5]{%
+  \draw[rounded corners=8pt,fill=lightbg,draw=bordergray,line width=1.2pt]
+    ([xshift=#1in,yshift=-#2in]current page.north west)
+    rectangle ++(#3in,-#4in);
+  \if\relax\detokenize{#5}\relax\else
+    \pgfmathsetmacro{\cx}{#1+0.25}%
+    \pgfmathsetmacro{\cy}{#2+0.22}%
+    \pgfmathsetmacro{\cw}{#3-0.5}%
+    \at{\cx}{\cy}{\cw}{\fs{15.5}{19}\bfseries\color{navy}#5}
+  \fi
+}
+
+% Code Box Helper Macro
+\newcommand{\drawcodecard}[4]{%
+  \draw[rounded corners=4pt,fill=white,draw=bordergray,line width=0.9pt]
+    ([xshift=#1in,yshift=-#2in]current page.north west)
+    rectangle ++(#3in,-#4in);
+}
+
+\begin{document}
+\linespread{1.22}\selectfont
+
+% ==============================================================================
+% SLIDE 1: Title Slide
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.22}
+  \draw[rounded corners=10pt,fill=white,draw=primaryblue,line width=2pt]
+    ([xshift=0.5in,yshift=-0.5in]current page.north west) rectangle ++(12.333in,-6.5in);
+  \fill[accent] ([xshift=0.5in,yshift=-0.5in]current page.north west)
+    rectangle ++(12.333in,-0.1in);
+
+  \node[anchor=north west,inner sep=0pt]
+    at ([xshift=1.0in,yshift=-0.85in]current page.north west)
+    {\includegraphics[width=0.81in,height=0.95in]{ku_logo.png}};
+
+  \at{2.05}{0.92}{10.2}{\fs{13}{16}\bfseries\color{primaryblue}%
+    AI Applications in Accelerators Tutorial \& Mini-Hackathon\\[0.15em]
+    {\fs{11}{14}\color{mutedgray}Department of Accelerator Science $\cdot$ Center for Accelerator Research $\cdot$ Korea University, Sejong}
+  }
+
+  \fill[bordergray] ([xshift=1.0in,yshift=-2.0in]current page.north west)
+    rectangle ++(11.333in,-0.02in);
+
+  \at{1.0}{2.25}{11.333}{%
+    {\fs{26}{30}\bfseries\color{navy}Session 2: Beam Orbit Alignment Mini-Hackathon}\\[0.45em]
+    {\fs{15}{19}\color{accent}Closed-Loop Neural Surrogates, Reinforcement Learning, and Bayesian Optimization}
+  }
+
+  \drawcard{1.0}{3.3}{11.333}{2.2}{}
+  \at{1.3}{3.55}{10.7}{\fs{13.5}{19}\color{darkgray}%
+    {\bfseries\color{navy}Challenge Objective:}\enspace Stabilize an unknown distorted beam orbit in a non-linear 15-meter transport line to sub-30 $\mu\text{m}$ RMS precision within a 50-step budget, using constrained magnetic actuators under cubic core saturation.\\[0.5em]
+    {\bfseries\color{navy}Three Competitive Tracks:}\enspace Supervised Neural Surrogate Inversion (Track 1), Physics-Informed Closed-Loop RL (Track 2), and Gaussian Process Bayesian Optimization (Track 3) evaluated across 30 standardized seeds with live W\&B telemetry.
+  }
+
+  \at{1.0}{5.75}{11.333}{\fs{12.5}{16}\color{darkgray}%
+    \textbf{Organizer \& Session Lead:}\enspace Chong Shik Park, Ph.D. \quad$|$\quad Korea University, Sejong\\[0.2em]
+    \textbf{Date \& Venue:}\enspace November 19, 2026 \quad$|$\quad Hands-on Computational Session (13:30 -- 17:00 KST)
+  }
+
+  \fill[primaryblue] ([xshift=0.5in,yshift=-6.95in]current page.north west)
+    rectangle ++(12.333in,-0.05in);
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 2: Afternoon Schedule & Milestones
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.26}
+  \slideheader{Schedule \& Roadmap}{Afternoon Mini-Hackathon Timeline (13:30 -- 17:00)}{Structured phases transitioning from environment setup to policy tuning and final showcase}
+
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Mini-Hackathon Operational Milestones}
+  \at{1.1}{2.1}{11.1}{\fs{13}{18}\color{darkgray}%
+    \begin{tabular}{p{2.3in}p{2.4in}p{5.8in}}
+      \toprule
+      \textbf{Time Window} & \textbf{Milestone Phase} & \textbf{Key Action Items \& Deliverables} \\
+      \midrule
+      {\bfseries\color{primaryblue}13:30 -- 13:45 (15 min)} & {\bfseries Environment \& Setup} & Launch container via launcher scripts; open participant notebook; set \texttt{TEAM\_NAME}; verify Baseline 0 reference. \\
+      \addlinespace[0.4em]
+      {\bfseries\color{primaryblue}13:45 -- 14:30 (45 min)} & {\bfseries Phase 1: TODO 1 \& B1} & Generate training data; train Ridge \& MLP neural surrogates; tune hidden layers \& activation; verify B1 score. \\
+      \addlinespace[0.4em]
+      {\bfseries\color{primaryblue}14:30 -- 15:30 (60 min)} & {\bfseries Phase 2: TODO 2 / Track 2} & Design closed-loop RL policy; tune feedback gain, chatter damping, saturation compensation, and reward shaping. \\
+      \addlinespace[0.4em]
+      {\bfseries\color{primaryblue}15:30 -- 16:15 (45 min)} & {\bfseries Phase 3: TODO 3 / Track 3} & Fit Gaussian Process surrogate; tune Mat\'{e}rn kernel, LCB acquisition $\kappa$, regularizer $\lambda$; test Step 4 callbacks. \\
+      \addlinespace[0.4em]
+      {\bfseries\color{primaryblue}16:15 -- 16:30 (15 min)} & {\bfseries Final Submissions} & Execute 30-seed benchmark in Step 5; stream runs to live Weights \& Biases leaderboard; inspect trajectory curves. \\
+      \addlinespace[0.4em]
+      {\bfseries\color{gold}16:30 -- 17:00 (30 min)} & {\bfseries Showcase \& Awards} & 3-minute lightning presentations per team; live leaderboard review; presentation of hackathon awards. \\
+      \bottomrule
+    \end{tabular}
+  }
+
+  \slidefooter{2}
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 3: Physical System & Beamline Layout
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.24}
+  \slideheader{Beamline Physics}{Lattice Architecture \& Diagnostic Instrumentation}{A 15-meter transport line balancing focusing optics, dipole steering, and sub-micron diagnostics}
+
+  \drawcard{0.8}{1.4}{5.7}{5.3}{Magnetic Lattice \& Diagnostic Geometry}
+  \at{1.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Section Length \& Optics:}\\[0.2em]
+    $15.0\text{ m}$ single-pass transport section with alternating focusing (\texttt{QF}) and defocusing (\texttt{QD}) quadrupoles shaping betatron phase advance $\psi(s)$.\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ 6 Dipole Steering Correctors:}\\[0.2em]
+    3 Horizontal (\texttt{HCM1-3}) and 3 Vertical (\texttt{VCM1-3}) magnets located at $s \in [0.2, 8.0]\text{ m}$. Total current bounds $[-5.0, +5.0]\text{ A}$.\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ 12 Beam Position Monitors (BPMs):}\\[0.2em]
+    Diagnostic stations at $s \in [1.0, 15.0]\text{ m}$ measuring transverse beam centroid displacement $\mathbf{Y} \in \mathbb{R}^{12}$ in millimeters ($mm$).\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ Actuator Hardware Constraint:}\\[0.2em]
+    Per-step adjustment is strictly bounded: $\Delta \mathbf{I} \in [-0.8, +0.8]\text{ A}$.
+  }
+
+  \drawcard{6.8}{1.4}{5.7}{5.3}{Core Beamline Schematic Diagram}
+  \at{7.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+    \centering
+    \includegraphics[width=5.1in,height=2.3in,keepaspectratio]{beamline.png}\\[0.5em]
+    \raggedright
+    {\bfseries\color{navy}$\bullet$ Single-Pass Causality:}\enspace Steerers only deflect the orbit at downstream BPMs ($s_j > s_i$). Upstream stations remain unaffected ($R_{ij} = 0$).\\[0.4em]
+    {\bfseries\color{navy}$\bullet$ Transport-Line Response Matrix:}\\[0.2em]
+    $R_{ij} = \frac{1.2 \sin(2\pi \cdot 0.18 (s_j - s_i))}{1 + 0.05 (s_j - s_i)}$ for $s_j > s_i$, modeling betatron oscillation with slowly decaying amplitude envelope.
+  }
+
+  \slidefooter{3}
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 4: Physical Response & Non-Linear Saturation
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.26}
+  \slideheader{Physics Response Model}{Cubic Core Saturation \& Initial 6-Kick Distortion}{Mathematical formulation of the forward simulation environment and sensor noise floor}
+
+  \drawcard{0.8}{1.4}{5.7}{5.3}{Forward Physical Orbit Model}
+  \at{1.05}{2.1}{5.2}{\fs{13}{18}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Response Equation with Saturation:}\\[0.3em]
+    $\mathbf{Y} = \mathbf{I}\mathbf{R} - 0.015\,(\mathbf{I}^3 \mathbf{R}) + \mathbf{Y}_0 + \boldsymbol{\epsilon}$\\[0.5em]
+    where $\mathbf{I} \in \mathbb{R}^6$ is total corrector current, $\mathbf{R} \in \mathbb{R}^{6 \times 12}$ is the linear response, and $\boldsymbol{\epsilon} \sim \mathcal{N}(0, 0.010^2)$ is Gaussian sensor noise.\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ Non-Linear Core Saturation:}\\[0.2em]
+    The odd-symmetric cubic term $-0.015 \mathbf{I}^3 \mathbf{R}$ models iron-core permeability degradation while preserving field polarity $B(-I) = -B(I)$.\\[0.6em]
+    {\bfseries\color{crimson}$\bullet$ Loss of Actuator Authority:}\\[0.2em]
+    At $|I| = 2.5\text{ A}$, saturation reduces steering response by $\approx 23\%$. Linear controllers overshoot or chatter.
+  }
+
+  \drawcard{6.8}{1.4}{5.7}{5.3}{Initial Distortion \& Actuator Budget}
+  \at{7.05}{2.1}{5.2}{\fs{13}{18}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Unknown 6-Kick Error $\mathbf{Y}_0$:}\\[0.3em]
+    $\mathbf{Y}_0 = \mathbf{a}\mathbf{R}, \quad a_k \sim \mathcal{U}(-2.5, 2.5)\text{ A}$\\[0.3em]
+    Unknown kicks applied at all 6 corrector locations upon reset. Initial orbit error spans $0.93$ to $3.59\text{ mm}$ RMS (mean $1.97\text{ mm}$).\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ Exact Cancelling Current:}\\[0.2em]
+    Full cancellation requires total currents up to $2.84\text{ A}$, pushing magnets deep into non-linear saturation.\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ Minimum Theoretical Step Count:}\\[0.2em]
+    With the $|\Delta I| \le 0.8\text{ A}$ hardware slew rate limit, most seeds strictly require at least \textbf{3 to 4 sequential control steps}.
+  }
+
+  \slidefooter{4}
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 5: Gymnasium Environment & Agent Contract
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.26}
+  \slideheader{Gymnasium Interface}{Environment Contract \& Competitor Agent Interface}{Standardized API governing observation space, actions, terminations, and step execution}
+
+  \drawcard{0.8}{1.4}{5.7}{5.3}{Gymnasium Environment Contract}
+  \at{1.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Observation Space:}\enspace $\mathbf{Y} \in \mathbb{R}^{12}$ (12 BPM centroid readings in $mm$, unclipped).\\[0.5em]
+    {\bfseries\color{navy}$\bullet$ Action Space:}\enspace $\Delta\mathbf{I} \in [-0.8, +0.8]^6\text{ A}$ (incremental corrector adjustments).\\[0.5em]
+    {\bfseries\color{navy}$\bullet$ State Accumulator:}\enspace $\mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \Delta\mathbf{I}, -5.0, 5.0)\text{ A}$.\\[0.5em]
+    {\bfseries\color{navy}$\bullet$ Termination Criterion (\texttt{terminated}):}\\[0.2em]
+    Triggered when $\text{RMS} < 0.030\text{ mm}$ ($30\ \mu\text{m}$). Episode succeeds (\texttt{is\_success = True}).\\[0.5em]
+    {\bfseries\color{navy}$\bullet$ Truncation Criterion (\texttt{truncated}):}\\[0.2em]
+    Triggered if step count reaches $\text{max\_steps} = 50$ without reaching target tolerance. Episode fails.
+  }
+
+  \drawcard{6.8}{1.4}{5.7}{5.3}{Standard Competitor Controller Interface}
+  \drawcodecard{7.05}{2.5}{5.2}{2.4}
+  \at{7.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{navy}Universal Agent Execution Contract:}\\[0.2em]
+    All competitor controllers must implement the standardized \texttt{act} method:\\[2.4em]
+    \raggedright
+    {\bfseries\color{navy}$\bullet$ Total Current Access:}\enspace \texttt{info["currents"]} provides present magnet currents $\mathbf{I}_t$ to compute saturation offsets.
+  }
+  \at{7.2}{2.65}{4.9}{\fs{10}{13}\ttfamily\color{darkgray}%
+    class BenchmarkController:\\
+    \quad def act(self, obs: np.ndarray,\\
+    \qquad\qquad\quad info: Optional[dict] = None) -> np.ndarray:\\
+    \qquad """\\
+    \qquad obs:\quad (12,) BPM readings in mm\\
+    \qquad info:\quad \{'rms', 'step', 'currents', ...\}\\
+    \qquad Returns:\quad (6,) delta\_I in [-0.8, 0.8] A\\
+    \qquad """\\
+    \qquad return action
+  }
+
+  \slidefooter{5}
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 6: The Four Benchmark Controllers
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.24}
+  \slideheader{Benchmark Controllers}{The Four Competitor Control Paradigms}{From classical pseudo-inverse baseline to neural surrogates, RL policies, and Bayesian optimization}
+
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Comparative Controller Specifications}
+  \at{1.1}{2.1}{11.1}{\fs{12}{16.5}\color{darkgray}%
+    \begin{tabular}{p{1.9in}p{2.3in}p{4.2in}p{1.9in}}
+      \toprule
+      \textbf{Controller Track} & \textbf{Algorithmic Law} & \textbf{Mechanism \& Optimization} & \textbf{Benchmark Score} \\
+      \midrule
+      {\bfseries Baseline 0}\newline Classical Linear SVD & $\Delta\mathbf{I} = -\alpha (\mathbf{R}^T)^\dagger \mathbf{Y}$ & Moore-Penrose pseudo-inverse with fixed gain $\alpha=0.45$. Ignores saturation; oscillates at high gains. & \textbf{635.277 pts}\newline(9.4 steps, 100\% succ) \\
+      \addlinespace[0.5em]
+      {\bfseries Baseline 1 / Track 1}\newline Supervised Surrogate & $\min_{\Delta\mathbf{I}} \|\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\|^2$ & Trains MLP digital twin $\hat{\mathbf{Y}} = f_\theta(\mathbf{I})$ on offline shots; per-step SciPy \texttt{L-BFGS-B} bounded inversion. & \textbf{779.169 pts}\newline(Tuned: \textbf{924.192 pts}) \\
+      \addlinespace[0.5em]
+      {\bfseries Track 2}\newline Closed-Loop Policy RL & $\Delta\mathbf{I} = d(t)\,[-\alpha (\mathbf{R}^T)^\dagger \mathbf{Y} + \mathbf{W}\mathbf{Y} + \mathbf{b}]$ & Physics-informed prior + learned residual with dynamic damping schedule $d(t) = 1/(1+\gamma t)$. & \textbf{590.559 pts}\newline(Tuned: \textbf{939.981 pts}) \\
+      \addlinespace[0.5em]
+      {\bfseries Track 3}\newline Bayesian Optimization & $\min_{\Delta\mathbf{I}} \mu_{\text{GP}}(\Delta\mathbf{I}) - \kappa \sigma_{\text{GP}} + \lambda \|\Delta\mathbf{I}\|^2$ & GaussianProcessRegressor (Mat\'{e}rn-5/2) with Lower Confidence Bound (LCB) under epistemic uncertainty. & \textbf{878.384 pts}\newline(Tuned: \textbf{909.942 pts}) \\
+      \bottomrule
+    \end{tabular}
+  }
+
+  \slidefooter{6}
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 7: Official Scoring Formula
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.26}
+  \slideheader{Evaluation \& Scoring}{Official Hackathon Scoring Formula (0 to 1000 Points)}{Balancing robust convergence, rapid iteration speed, and sub-micron landing precision}
+
+  \drawcard{0.8}{1.4}{5.7}{5.3}{Mathematical Scoring Formulation}
+  \at{1.05}{2.1}{5.2}{\fs{13}{18}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Overall Score:}\enspace $\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k$\\[0.4em]
+    Evaluated strictly across \textbf{30 standardized seeds} (\texttt{seeds = range(1, 31)}).\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ Per-Seed Score $s_k$ Breakdown:}\\[0.3em]
+    $s_k = 0$ if seed fails ($\ge 50$ steps or $\text{RMS} \ge 0.03\text{ mm}$).\\[0.4em]
+    If seed succeeds ($n_k$ steps, final $\text{RMS}_k$):
+    \begin{equation*}
+      s_k = \underbrace{400}_{\text{Success}} + \underbrace{300 \max\!\left(0, \frac{20 - n_k}{19}\right)}_{\text{Speed (1 to 20 steps)}} + \underbrace{300 \text{clip}\!\left(\frac{\ln(0.030/\text{RMS}_k)}{\ln(3)}, 0, 1\right)}_{\text{Precision (0.030 to 0.010 mm)}}
+    \end{equation*}
+  }
+
+  \drawcard{6.8}{1.4}{5.7}{5.3}{Component Analysis \& Strategic Trade-offs}
+  \at{7.05}{2.1}{5.2}{\fs{13}{18}\color{darkgray}%
+    {\bfseries\color{navy}1. Success Foundation (400 pts):}\\[0.2em]
+    Robustness is paramount. A single divergence sets seed score to 0 and costs 33.3 total benchmark points.\\[0.6em]
+    {\bfseries\color{navy}2. Speed Component (up to 300 pts):}\\[0.2em]
+    Full 300 pts earned at 1 step; decays linearly to 0 at 20 steps. Each saved step earns $\approx 15.8$ points.\\[0.6em]
+    {\bfseries\color{navy}3. Precision Component (up to 300 pts):}\\[0.2em]
+    Logarithmic bonus rewarding sub-micron alignment. Earns 0 at $0.030\text{ mm}$ boundary, up to 300 pts at $0.010\text{ mm}$ sensor floor ($0.017\text{ mm}$ earns $\approx 150$ pts).\\[0.6em]
+    {\bfseries\color{mutedgray}Current Norm:}\enspace Reported but not scored.
+  }
+
+  \slidefooter{7}
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 8: Participant Modification Rules
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.24}
+  \slideheader{Modification Rules}{What Participants CAN and CANNOT Modify}{Clear operational boundary preserving scientific ground truth while maximizing design freedom}
+
+  \drawcard{0.8}{1.4}{5.7}{5.3}{Permitted Participant Modifications [CAN MODIFY]}
+  \at{1.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{successgreen}$\checkmark$ TODO 1 (Surrogate Digital Twin):}\\[0.2em]
+    MLP hidden layers (e.g. \texttt{(128, 64, 32)}), activation (\texttt{relu}, \texttt{tanh}), solver (\texttt{adam}, \texttt{lbfgs}), training samples ($n=1500 \to 3000$), current bounds $[-3.0, 3.0]\text{ A}$.\\[0.5em]
+    {\bfseries\color{successgreen}$\checkmark$ TODO 2 (Track 2 RL Policy Agent):}\\[0.2em]
+    Full \texttt{act()} design: starting gain $\alpha_0$, adaptive gain schedules, residual weights $\mathbf{W}$, saturation compensation on $\mathbf{I}_t$, chatter damping.\\[0.5em]
+    {\bfseries\color{successgreen}$\checkmark$ TODO 3 (Track 3 Bayesian Optimization):}\\[0.2em]
+    GP kernel specification (\texttt{Matern52}, \texttt{WhiteKernel}), calibration shots, acquisition exploration $\kappa$, regularizer $\lambda$.\\[0.5em]
+    {\bfseries\color{successgreen}$\checkmark$ Step 4 Callbacks:}\enspace Register \texttt{step\_callback} and \texttt{episode\_callback} for B1, Track 2, and Track 3.
+  }
+
+  \drawcard{6.8}{1.4}{5.7}{5.3}{Strict Ground Truth Boundaries [DO NOT MODIFY]}
+  \at{7.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{crimson}$\times$ Baseline 0 Reference:}\\[0.2em]
+    The \texttt{gain=0.45} and classical SVD formulation must not be altered. Baseline 0 always runs without callbacks.\\[0.5em]
+    {\bfseries\color{crimson}$\times$ Physical Simulation Ground Truths:}\\[0.2em]
+    Do not modify $\mathbf{R}$, target $\text{RMS} = 0.030\text{ mm}$, $\text{max\_steps} = 50$, cubic saturation factor $0.015$, or noise $\sigma = 0.010\text{ mm}$.\\[0.5em]
+    {\bfseries\color{crimson}$\times$ Evaluation Protocol:}\\[0.2em]
+    Benchmark evaluation must run on standardized seeds \texttt{range(1, 31)} via the locked Step 5 harness.\\[0.5em]
+    {\bfseries\color{crimson}$\times$ Action Hardware Limits:}\\[0.2em]
+    Actions must respect $[-0.8, +0.8]\text{ A}$ per step and total magnet current limits $[-5.0, +5.0]\text{ A}$.
+  }
+
+  \slidefooter{8}
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 9: Advanced Strategy: Callbacks
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.24}
+  \slideheader{Strategic Tuning}{Online Callbacks \& Adaptive Damping Strategies}{Unlocking 900+ scores via dynamic gain schedules, saturation watchdogs, and meta-tuning}
+
+  \drawcard{0.8}{1.4}{5.7}{5.3}{Step Callback: Precision Damping \& Watchdogs}
+  \drawcodecard{1.05}{3.0}{5.2}{1.3}
+  \at{1.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{navy}Adaptive Near-Target Damping (\texttt{step\_callback}):}\\[0.2em]
+    High gains converge in 3--4 steps but overshoot near the $0.030\text{ mm}$ boundary. Dynamically brake when entering precision zone:\\[3.8em]
+    {\bfseries\color{navy}Saturation Watchdog:}\\[0.2em]
+    If $\|\mathbf{I}_t\|_\infty > 2.5\text{ A}$, scale back action size to prevent cubic non-linear overshoots.\\[0.4em]
+    {\bfseries\color{navy}Full Guide:}\enspace See \texttt{docs/CALLBACK\_EXAMPLES.md}.
+  }
+  \at{1.2}{3.15}{4.9}{\fs{9.5}{12.5}\ttfamily\color{darkgray}%
+    def my\_step\_callback(step\_data, agent):\\
+    \quad rms = step\_data["info"]["rms"]\\
+    \quad if rms < 0.040 and hasattr(agent, "gain"):\\
+    \qquad agent.gain *= 0.94  \# Glide into noise floor!
+  }
+
+  \drawcard{6.8}{1.4}{5.7}{5.3}{Episode Callback: Reset \& Meta-Tuning}
+  \drawcodecard{7.05}{3.0}{5.2}{1.3}
+  \at{7.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{navy}Per-Seed State Reset (\texttt{episode\_callback}):}\\[0.2em]
+    Reset dynamic gain and integrator memory back to initial defaults so earlier seeds do not cause drift:\\[3.8em]
+    {\bfseries\color{navy}Cross-Seed Meta-Tuning (Tournament 3 Winner):}\\[0.2em]
+    Adapt baseline gain across seeds based on aggregate outcomes: dial back gain if a seed struggled; boost speed if previous seeds converged cleanly in $\le 3$ steps.\\[0.4em]
+    {\bfseries\color{crimson}Rule:}\enspace Disclose cross-seed learning in team presentation.
+  }
+  \at{7.2}{3.15}{4.9}{\fs{9.5}{12.5}\ttfamily\color{darkgray}%
+    def my\_episode\_callback(ep\_data, agent):\\
+    \quad if hasattr(agent, "gain"):\\
+    \qquad agent.gain = 1.05  \# Restore baseline gain
+  }
+
+  \slidefooter{9}
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 10: Zero-Friction W&B Workflow
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.26}
+  \slideheader{Live Leaderboard}{Zero-Friction Weights \& Biases Workflow}{Automated telemetry streaming, 30-seed breakdown tables, and real-time competition standings}
+
+  \drawcard{0.8}{1.4}{5.7}{5.3}{Zero-Friction Authentication Setup}
+  \drawcodecard{1.05}{3.4}{5.2}{1.1}
+  \at{1.05}{2.1}{5.2}{\fs{13}{18}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ No W\&B Account Required:}\\[0.2em]
+    The offline distribution bundle contains the shared leaderboard key in \texttt{wandb.apikey}. Launchers pass it automatically.\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ Step 0: Set Team Identifier:}\\[0.2em]
+    In Step 0 of the notebook, configure your team name:\\[3.2em]
+    {\bfseries\color{navy}$\bullet$ Seamless Local Fallback:}\\[0.2em]
+    If offline or in isolated network environments, the benchmark executes locally and prints complete scorecard tables.
+  }
+  \at{1.2}{3.55}{4.9}{\fs{10}{13}\ttfamily\color{darkgray}%
+    TEAM\_NAME = "Team\_Alpha"\\
+    WANDB\_PROJECT = "ai4acc-mini-hackathon-2026"
+  }
+
+  \drawcard{6.8}{1.4}{5.7}{5.3}{Automated Telemetry \& Live Leaderboard}
+  \at{7.05}{2.1}{5.2}{\fs{13}{18}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Step 5 Benchmark Execution:}\\[0.2em]
+    Running Step 5 evaluates all 4 controllers across seeds 1--30 and automatically streams telemetry to W\&B.\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ Tracked Metrics in W\&B:}\\[0.2em]
+    \texttt{challenge\_score}, \texttt{score\_success}, \texttt{score\_speed}, \texttt{score\_precision}, \texttt{mean\_steps}, \texttt{mean\_final\_rms\_mm}, \texttt{seed\_breakdown\_table}.\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ Central Live Leaderboard URL:}\\[0.2em]
+    {\fs{10.5}{14}\color{primaryblue}\texttt{https://wandb.ai/ai4acc-mini-hackathon-2026/\\ai4acc-mini-hackathon-2026}}\\[0.4em]
+    Sort by \texttt{challenge\_score} to view live workshop ranks!
+  }
+
+  \slidefooter{10}
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 11: Team Lightning Showcase & Awards
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.24}
+  \slideheader{Showcase \& Awards}{Team Lightning Presentations \& Hackathon Awards (16:30 -- 17:00)}{Celebrating technical excellence, control innovation, and practical beam alignment performance}
+
+  \drawcard{0.8}{1.4}{5.7}{5.3}{3-Minute Lightning Team Presentations}
+  \at{1.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{navy}Presentation Format:}\enspace 3 minutes per team directly from your laptop or W\&B run dashboard.\\[0.5em]
+    {\bfseries\color{navy}Required Presentation Elements:}\\[0.2em]
+    1. {\bfseries Architecture Overview:}\enspace Which track did you focus on? (MLP surrogate, RL policy, or Bayesian Opt?)\\[0.3em]
+    2. {\bfseries Strategic Innovations:}\enspace What hyperparameter, damping schedule, or callback gave your biggest score boost?\\[0.3em]
+    3. {\bfseries Scorecard Display:}\enspace Display your team's W\&B run URL and trajectory plot (\texttt{img/benchmark\_trajectories.png}).\\[0.3em]
+    4. {\bfseries Architectural Disclosure:}\enspace Did your agent use callbacks or cross-seed memory?
+  }
+
+  \drawcard{6.8}{1.4}{5.7}{5.3}{Official Hackathon Award Categories}
+  \at{7.05}{2.1}{5.2}{\fs{12.5}{17}\color{darkgray}%
+    {\bfseries\color{gold}[Grand Champion Award]}\\[0.2em]
+    Highest official benchmark score across all 30 seeds.\\[0.6em]
+    {\bfseries\color{primaryblue}[Speed Demon Award]}\\[0.2em]
+    Fastest average convergence step count among robust controllers achieving 100\% success rate.\\[0.6em]
+    {\bfseries\color{accent}[Sub-Micron Precision Master]}\\[0.2em]
+    Lowest mean residual orbit error ($\text{RMS}$ closest to the $0.010\text{ mm}$ electronic noise floor).\\[0.6em]
+    {\bfseries\color{crimson}[Most Innovative Control Policy]}\\[0.2em]
+    Most creative algorithm design, physics prior integration, or novel callback architecture.
+  }
+
+  \slidefooter{11}
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 12: Hands-on Execution Checklist
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.28}
+  \slideheader{Execution Checklist}{Ready, Set, Align! Hands-on Participant Action Plan}{Five key computational milestones to guide your development during the mini-hackathon}
+
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Your 5-Step Hackathon Roadmap}
+  \at{1.1}{2.1}{11.1}{\fs{13}{18}\color{darkgray}%
+    {\bfseries\color{primaryblue}Step 1: Environment Launch \& Baseline Verification (13:30 -- 13:45)}\\[0.2em]
+    Double-click launcher $\to$ open \texttt{http://localhost:8888} $\to$ run Steps 0--2 $\to$ verify Baseline 0 reference ($\approx 635$ pts).\\[0.6em]
+    {\bfseries\color{primaryblue}Step 2: Train High-Fidelity Surrogate in TODO 1 (13:45 -- 14:30)}\\[0.2em]
+    Expand sample volume ($n=2500$), tune MLP layers (e.g. \texttt{(128, 64, 32)}), lower holdout RMSE $\to$ verify B1 scores $>850$ pts.\\[0.6em]
+    {\bfseries\color{primaryblue}Step 3: Engineer RL Policy \& Adaptive Damping in TODO 2 (14:30 -- 15:30)}\\[0.2em]
+    Increase initial gain ($\alpha \approx 1.0$), compensate cubic saturation on $\mathbf{I}_t$, apply step damping $\to$ verify Track 2 scores $>900$ pts.\\[0.6em]
+    {\bfseries\color{primaryblue}Step 4: Tune Bayesian Optimization \& Callbacks (15:30 -- 16:15)}\\[0.2em]
+    Tune GP Mat\'{e}rn kernel; implement near-target braking callback ($\text{RMS} < 0.040\text{ mm}$) to maximize precision score.\\[0.6em]
+    {\bfseries\color{gold}Step 5: Official Submission \& Showcase Presentation (16:15 -- 17:00)}\\[0.2em]
+    Execute Step 5 benchmark across 30 seeds; verify W\&B submission URL; prepare 3-minute lightning slides!
+  }
+
+  \slidefooter{12}
+\end{tikzpicture}
+
+\end{document}
