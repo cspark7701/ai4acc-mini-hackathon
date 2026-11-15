@@ -97,7 +97,7 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 │   ├── WANDB_LEADERBOARD_GUIDE.md                    # W&B leaderboard guide for the organizer and participants
 │   ├── MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md         # Protocol for the 10-agent benchmark with live W&B submission
 │   ├── MULTI_AGENT_WANDB_REPORT.md                   # Report of the 10-agent W&B submission test (2026-11-14)
-│   ├── MULTI_AGENT_TOURNAMENT_REPORT.md              # Earlier 10-agent tournament report (previous scoring formula)
+│   ├── MULTI_AGENT_TOURNAMENT_REPORT.md              # Superseded earlier tournament report (scores not confirmed on W&B)
 │   ├── experiments/                                  # Multi-agent results log and each agent's executed notebook
 │   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide
 │   ├── Hackathon Project Guide.docx                  # Full challenge rules, physics spec, and scoring breakdown
