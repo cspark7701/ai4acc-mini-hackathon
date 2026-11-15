@@ -30,7 +30,7 @@
 \setlength{\parindent}{0pt}
 
 % Total number of slides
-\newcommand{\totalslides}{12}
+\newcommand{\totalslides}{13}
 
 % Helper: Place text block at (x, y) inches from top-left with width w inches
 \newcommand{\at}[4]{%
@@ -139,30 +139,26 @@
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 2: Afternoon Schedule & Milestones (Concurrent Multi-Track Execution)
+% SLIDE 2: Afternoon Schedule & Milestones
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.26}
+  \slidespread{1.24}
   \slideheader{Schedule \& Roadmap}{Afternoon Mini-Hackathon Timeline (13:30 -- 17:00)}{Open hands-on optimization: participants can run and iterate on all tracks simultaneously}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Mini-Hackathon Operational Milestones}
-  \at{1.1}{2.1}{11.1}{\fs{13}{18}\color{darkgray}%
-    \begin{tabular}{p{2.2in}p{2.7in}p{5.6in}}
+
+  \at{1.1}{2.15}{11.1}{\fs{12}{17.5}\color{darkgray}%
+    \begin{tabular}{p{2.1in}p{2.8in}p{5.8in}}
       \toprule
       \textbf{Time Window} & \textbf{Session Milestone} & \textbf{Operational Focus \& Hands-on Activities} \\
       \midrule
-      {\bfseries\color{primaryblue}13:30 -- 13:45 (15 min)} & {\bfseries Environment \& Setup} & Launch Docker container via launcher scripts; open participant notebook; set \texttt{TEAM\_NAME}; verify Baseline 0 reference. \\
-      \addlinespace[0.6em]
-      {\bfseries\color{primaryblue}13:45 -- 16:15 (2.5 hrs)} & {\bfseries Concurrent Multi-Track Optimization (Open Hackathon)} & \textbf{Participants can develop, tune, and run all tracks at the same time:}\newline
-      $\bullet$ \textbf{Track 1:} Train MLP surrogate digital twin \& invert via \texttt{L-BFGS-B}.\newline
-      $\bullet$ \textbf{Track 2:} Design closed-loop RL policy, gain schedule \& chatter damping.\newline
-      $\bullet$ \textbf{Track 3:} Tune Gaussian Process surrogate \& Bayesian Opt LCB acquisition.\newline
-      $\bullet$ \textbf{Step 4 Callbacks:} Add near-target damping \& saturation watchdogs.\newline
-      $\bullet$ \textbf{Step 5:} Benchmark evaluates all 4 controllers simultaneously! \\
-      \addlinespace[0.6em]
-      {\bfseries\color{primaryblue}16:15 -- 16:30 (15 min)} & {\bfseries Final Submission \& Score Freeze} & Execute final 30-seed benchmark; confirm runs on live W\&B leaderboard; verify generated trajectory alignment figure. \\
-      \addlinespace[0.6em]
-      {\bfseries\color{gold}16:30 -- 17:00 (30 min)} & {\bfseries Showcase \& Awards Ceremony} & 3-minute lightning presentations per team; live leaderboard review; presentation of hackathon champion awards. \\
+      {\bfseries\color{primaryblue}13:30 -- 13:45 (15 min)} & {\bfseries Environment \& Setup} & Unpack offline bundle, launch Docker container via launcher scripts, open participant notebook, set \texttt{TEAM\_NAME}, and verify Baseline 0 reference. \\
+      \addlinespace[0.9em]
+      {\bfseries\color{primaryblue}13:45 -- 16:15 (2.5 hrs)} & {\bfseries Multi-Track Optimization (Open Hackathon)} & \textbf{Open development window:} participants develop, tune, and benchmark all tracks concurrently without sequential restrictions (surrogate, RL, BO, and callbacks). \\
+      \addlinespace[0.9em]
+      {\bfseries\color{primaryblue}16:15 -- 16:30 (15 min)} & {\bfseries Final Submission \& Score Freeze} & Execute final 30-seed benchmark in Step 5, confirm telemetry on live W\&B leaderboard, and inspect trajectory alignment plots. \\
+      \addlinespace[0.9em]
+      {\bfseries\color{gold}16:30 -- 17:00 (30 min)} & {\bfseries Showcase \& Awards Ceremony} & 3-minute lightning presentations per team, live leaderboard review, and presentation of hackathon champion awards. \\
       \bottomrule
     \end{tabular}
   }
@@ -171,7 +167,59 @@
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 3: Physical System & Beamline Layout
+% SLIDE 3: Environment & Setup (Offline Bundle & Container Execution)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.22}
+  \slideheader{Environment \& Setup}{Offline Bundle Structure \& Container Execution}{Zero-dependency offline distribution, one-click platform launchers, and container workspace}
+
+  % Left Card: Bundle Structure
+  \drawcard{0.8}{1.4}{5.7}{5.3}{Offline Distribution Package Structure}
+  \at{1.05}{2.02}{5.2}{\fs{11.5}{15}\color{darkgray}%
+    {\bfseries\color{navy}100\% Self-Contained Offline Bundle (\texttt{ai4acc-hackathon.zip}):}\\[0.15em]
+    Everything required to run the hackathon is pre-packaged locally:
+  }
+  \drawcodecard{1.05}{2.62}{5.2}{1.60}
+  \at{1.2}{2.76}{4.9}{\fs{9}{12}\ttfamily\color{darkgray}%
+    ai4acc-hackathon/\\
+    \ \ \mbox{}|-- ai4acc-image.tar.gz\ \ \ \ \ \ \ \# Docker image (\~{}400 MB)\\
+    \ \ \mbox{}|-- run\_hackathon\_windows.bat \# Windows launcher\\
+    \ \ \mbox{}|-- run\_hackathon\_mac\_linux.sh\# macOS/Linux launcher\\
+    \ \ \mbox{}|-- wandb.apikey\ \ \ \ \ \ \ \ \ \ \ \ \ \# Shared W\&B key\\
+    \ \ \mbox{}|-- image-id.txt\ \ \ \ \ \ \ \ \ \ \ \ \ \# Image cache hash\\
+    \ \ \mbox{}`-- README.txt\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \# Offline instructions
+  }
+  \at{1.05}{4.40}{5.2}{\fs{11}{15}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Zero-Dependency Execution:}\enspace Operates completely offline without internet or Wi-Fi dependencies during the workshop.\\[0.35em]
+    {\bfseries\color{navy}$\bullet$ Pre-Configured Telemetry:}\enspace The launcher automatically injects \texttt{wandb.apikey} as \texttt{WANDB\_API\_KEY} for live leaderboard sync.\\[0.35em]
+    {\bfseries\color{navy}$\bullet$ Pre-Loaded Environment:}\enspace Contains Python 3.12, Gymnasium, PyTorch, scikit-learn, JupyterLab, and the simulation harness.
+  }
+
+  % Right Card: How to Run Docker
+  \drawcard{6.8}{1.4}{5.7}{5.3}{How to Launch Docker \& JupyterLab}
+  \at{7.05}{2.02}{5.2}{\fs{11.5}{15}\color{darkgray}%
+    {\bfseries\color{navy}Step 1: Ensure Docker Desktop is Running}\\[0.15em]
+    Verify Docker Desktop is active (whale icon in system tray).
+  }
+  \drawcodecard{7.05}{2.62}{5.2}{1.60}
+  \at{7.2}{2.76}{4.9}{\fs{9}{12}\ttfamily\color{darkgray}%
+    \# Windows: Double-click launcher\\
+    run\_hackathon\_windows.bat\\[0.3em]
+    \# macOS / Linux (in terminal):\\
+    ./run\_hackathon\_mac\_linux.sh\\[0.3em]
+    \# Browser opens automatically: http://localhost:8888/lab
+  }
+  \at{7.05}{4.40}{5.2}{\fs{11}{15}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Step 2: Instant Browser Access:}\enspace JupyterLab opens automatically in your browser. Token authentication is disabled for instant entry.\\[0.35em]
+    {\bfseries\color{navy}$\bullet$ Step 3: Open Participant Notebook:}\enspace In the Jupyter tree, open \texttt{notebooks/Single\_Notebook\_Beam\_Orbit\_Predictor\_Participant.ipynb}.\\[0.35em]
+    {\bfseries\color{primaryblue}$\bigstar$ Step 4: Configure Team Name:}\enspace Set your team name in Step 0: \texttt{TEAM\_NAME = "Team\_Alpha"} before running Baseline 0!
+  }
+
+  \slidefooter{3}
+\end{tikzpicture}\clearpage
+
+% ==============================================================================
+% SLIDE 4: Physical System & Beamline Layout
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.24}
@@ -199,11 +247,11 @@
     $R_{ij} = \frac{1.2 \sin(2\pi \cdot 0.18 (s_j - s_i))}{1 + 0.05 (s_j - s_i)}$ for $s_j > s_i$, modeling betatron oscillation with slowly decaying amplitude envelope.
   }
 
-  \slidefooter{3}
+  \slidefooter{4}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 4: Physical Response & Non-Linear Saturation
+% SLIDE 5: Physical Response & Non-Linear Saturation
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
@@ -231,11 +279,11 @@
     With the $|\Delta I| \le 0.8\text{ A}$ hardware slew rate limit, most seeds strictly require at least \textbf{3 to 4 sequential control steps}.
   }
 
-  \slidefooter{4}
+  \slidefooter{5}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 5: Gymnasium Environment & Agent Contract (FIXED LAYOUT)
+% SLIDE 6: Gymnasium Environment & Agent Contract (FIXED LAYOUT)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
@@ -277,11 +325,11 @@
     {\bfseries\color{navy}$\bullet$ Output Bounds:}\enspace Actions exceeding $[-0.8, 0.8]\text{ A}$ are hard-clipped by the environment.
   }
 
-  \slidefooter{5}
+  \slidefooter{6}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 6: The Four Benchmark Controllers
+% SLIDE 7: The Four Benchmark Controllers
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.24}
@@ -304,11 +352,11 @@
     \end{tabular}
   }
 
-  \slidefooter{6}
+  \slidefooter{7}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 7: Official Scoring Formula
+% SLIDE 8: Official Scoring Formula
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
@@ -337,11 +385,11 @@
     {\bfseries\color{mutedgray}Current Norm:}\enspace Reported but not scored.
   }
 
-  \slidefooter{7}
+  \slidefooter{8}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 8: Participant Modification Rules
+% SLIDE 9: Participant Modification Rules
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.24}
@@ -370,58 +418,58 @@
     Actions must respect $[-0.8, +0.8]\text{ A}$ per step and total magnet current limits $[-5.0, +5.0]\text{ A}$.
   }
 
-  \slidefooter{8}
+  \slidefooter{9}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 9: Advanced Strategy: Callbacks (FIXED LAYOUT)
+% SLIDE 10: Advanced Strategy: Callbacks (FIXED BALANCED LAYOUT)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.24}
+  \slidespread{1.22}
   \slideheader{Strategic Tuning}{Online Callbacks \& Adaptive Damping Strategies}{Unlocking 900+ scores via dynamic gain schedules, saturation watchdogs, and meta-tuning}
 
   % Left Card: Step Callback
   \drawcard{0.8}{1.4}{5.7}{5.3}{Step Callback: Precision Damping \& Watchdogs}
-  \at{1.05}{2.1}{5.2}{\fs{12}{16}\color{darkgray}%
-    {\bfseries\color{navy}Adaptive Near-Target Damping (\texttt{step\_callback}):}\\[0.2em]
-    Throttle gain when approaching target to glide into noise floor without overshoot:
+  \at{1.05}{2.02}{5.2}{\fs{11.5}{15}\color{darkgray}%
+    {\bfseries\color{navy}Adaptive Near-Target Damping (\texttt{step\_callback}):}\\[0.15em]
+    Throttle gain near target to glide into noise floor without overshoot:
   }
-  \drawcodecard{1.05}{2.7}{5.2}{1.3}
-  \at{1.2}{2.85}{4.9}{\fs{9.5}{12.5}\ttfamily\color{darkgray}%
+  \drawcodecard{1.05}{2.62}{5.2}{1.45}
+  \at{1.2}{2.76}{4.9}{\fs{9.5}{13}\ttfamily\color{darkgray}%
     def my\_step\_callback(step\_data, agent):\\
     \quad rms = step\_data["info"]["rms"]\\
     \quad if rms < 0.040 and hasattr(agent, "gain"):\\
     \qquad agent.gain *= 0.94  \# Glide into noise floor!
   }
-  \at{1.05}{4.25}{5.2}{\fs{12}{16.5}\color{darkgray}%
-    {\bfseries\color{navy}$\bullet$ Saturation Watchdog:}\\[0.2em]
-    If $\|\mathbf{I}_t\|_\infty > 2.5\text{ A}$, scale back action size to prevent cubic non-linear overshoots.\\[0.4em]
-    {\bfseries\color{navy}$\bullet$ Full Reference:}\enspace See \texttt{docs/CALLBACK\_EXAMPLES.md}.
+  \at{1.05}{4.30}{5.2}{\fs{11}{15}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Saturation Watchdog:}\enspace If $\|\mathbf{I}_t\|_\infty > 2.5\text{ A}$, scale back action size to prevent cubic non-linear overshoots deep in core saturation.\\[0.35em]
+    {\bfseries\color{navy}$\bullet$ Step Telemetry Access:}\enspace \texttt{step\_data} exposes \texttt{"step"}, \texttt{"obs"}, \texttt{"action"}, and \texttt{"info"} (\texttt{"rms"} and total \texttt{"currents"}).\\[0.35em]
+    {\bfseries\color{navy}$\bullet$ Implementation:}\enspace Register in \texttt{CALLBACKS["step\_callback"]} in Step 4. See \texttt{docs/CALLBACK\_EXAMPLES.md} for recipes.
   }
 
   % Right Card: Episode Callback
   \drawcard{6.8}{1.4}{5.7}{5.3}{Episode Callback: Reset \& Meta-Tuning}
-  \at{7.05}{2.1}{5.2}{\fs{12}{16}\color{darkgray}%
-    {\bfseries\color{navy}Per-Seed State Reset (\texttt{episode\_callback}):}\\[0.2em]
-    Reset dynamic gain and integrator memory back to initial defaults between seeds:
+  \at{7.05}{2.02}{5.2}{\fs{11.5}{15}\color{darkgray}%
+    {\bfseries\color{navy}Per-Seed State Reset (\texttt{episode\_callback}):}\\[0.15em]
+    Reset dynamic gain and integrator state back to defaults between seeds:
   }
-  \drawcodecard{7.05}{2.7}{5.2}{1.3}
-  \at{7.2}{2.85}{4.9}{\fs{9.5}{12.5}\ttfamily\color{darkgray}%
+  \drawcodecard{7.05}{2.62}{5.2}{1.45}
+  \at{7.2}{2.76}{4.9}{\fs{9.5}{13}\ttfamily\color{darkgray}%
     def my\_episode\_callback(ep\_data, agent):\\
     \quad if hasattr(agent, "gain"):\\
     \qquad agent.gain = 1.05  \# Restore baseline gain
   }
-  \at{7.05}{4.25}{5.2}{\fs{12}{16.5}\color{darkgray}%
-    {\bfseries\color{navy}$\bullet$ Cross-Seed Meta-Tuning (Tournament 3 Winner):}\\[0.2em]
-    Adapt baseline gain across seeds based on prior outcomes: boost speed if $\le 3$ steps; damp if struggling.\\[0.4em]
-    {\bfseries\color{crimson}$\bullet$ Disclosure Rule:}\enspace Disclose cross-seed learning in team presentation.
+  \at{7.05}{4.30}{5.2}{\fs{11}{15}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Cross-Seed Meta-Tuning (Tournament 3 Winner):}\enspace Adapt base gain across seeds based on prior outcomes: boost speed if prior seed converged in $\le 3$ steps; damp if struggling.\\[0.35em]
+    {\bfseries\color{navy}$\bullet$ Episode Telemetry Access:}\enspace \texttt{ep\_data} exposes \texttt{"seed"}, \texttt{"final\_rms"}, \texttt{"steps"}, \texttt{"success"}, and \texttt{"current\_norm"}.\\[0.35em]
+    {\bfseries\color{crimson}$\bullet$ Disclosure Rule:}\enspace Any cross-seed state retention must be disclosed during your team's 3-minute lightning presentation!
   }
 
-  \slidefooter{9}
+  \slidefooter{10}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 10: Zero-Friction W&B Workflow (FIXED LAYOUT)
+% SLIDE 11: Zero-Friction W&B Workflow (FIXED LAYOUT)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
@@ -457,11 +505,11 @@
     Sort by \texttt{challenge\_score} to view live workshop ranks!
   }
 
-  \slidefooter{10}
+  \slidefooter{11}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 11: Team Lightning Showcase & Awards
+% SLIDE 12: Team Lightning Showcase & Awards
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.24}
@@ -489,11 +537,11 @@
     Most creative algorithm design, physics prior integration, or novel callback architecture.
   }
 
-  \slidefooter{11}
+  \slidefooter{12}
 \end{tikzpicture}\clearpage
 
 % ==============================================================================
-% SLIDE 12: Hands-on Execution Checklist (Concurrent Multi-Track Execution)
+% SLIDE 13: Hands-on Execution Checklist (Concurrent Multi-Track Execution)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
@@ -516,7 +564,7 @@
     Verify submission on live W\&B dashboard; connect to room projector for 3-minute lightning talk!
   }
 
-  \slidefooter{12}
+  \slidefooter{13}
 \end{tikzpicture}
 
 \end{document}
