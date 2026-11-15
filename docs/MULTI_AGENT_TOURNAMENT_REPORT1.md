@@ -1,9 +1,9 @@
 # 📊 10-Agent Benchmark Tournament Evaluation & Analysis Report
 
 > [!WARNING]
-> **Superseded.** The scores in this report were not confirmed on Weights & Biases and do not match the verified run. Use [`MULTI_AGENT_WANDB_REPORT.md`](MULTI_AGENT_WANDB_REPORT.md) and [`experiments/multi_agent_benchmark_results.json`](experiments/multi_agent_benchmark_results.json), whose 40 runs were checked against the W&B API (best agent score 955.0). This file is kept only as a record.
+> **Superseded.** The scores in this report were not confirmed on Weights & Biases and do not match the verified run. Use [`MULTI_AGENT_TOURNAMENT_REPORT2.md`](MULTI_AGENT_TOURNAMENT_REPORT2.md) and [`experiments/multi_agent_benchmark_results.json`](experiments/multi_agent_benchmark_results.json), whose 40 runs were checked against the W&B API (best agent score 955.0). This file is kept only as a record.
 
-**Document Location:** [docs/MULTI_AGENT_TOURNAMENT_REPORT.md](MULTI_AGENT_TOURNAMENT_REPORT.md)  
+**Document Location:** [docs/MULTI_AGENT_TOURNAMENT_REPORT1.md](MULTI_AGENT_TOURNAMENT_REPORT1.md)  
 **Experiment Date:** November 14, 2026  
 **Evaluation Scope:** 10 Autonomous Test Agents competing across all 4 Tracks on 30 Standardized Seeds (`range(1, 31)`).  
 **Telemetry Destination:** Weights & Biases Project [`ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026`](https://wandb.ai/ai4acc-mini-hackathon-2026/ai4acc-mini-hackathon-2026)  

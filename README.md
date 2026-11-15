@@ -96,8 +96,8 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 │   ├── PARTICIPANT_MODIFICATION_GUIDE.md             # What participants may change for each controller, and callback rules
 │   ├── WANDB_LEADERBOARD_GUIDE.md                    # W&B leaderboard guide for the organizer and participants
 │   ├── MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md         # Protocol for the 10-agent benchmark with live W&B submission
-│   ├── MULTI_AGENT_WANDB_REPORT.md                   # Report of the 10-agent W&B submission test (2026-11-14)
-│   ├── MULTI_AGENT_TOURNAMENT_REPORT.md              # Superseded earlier tournament report (scores not confirmed on W&B)
+│   ├── MULTI_AGENT_TOURNAMENT_REPORT1.md             # Superseded earlier tournament report (scores not confirmed on W&B)
+│   ├── MULTI_AGENT_TOURNAMENT_REPORT2.md             # Report of the 10-agent W&B submission test (2026-11-14)
 │   ├── experiments/                                  # Multi-agent results log and each agent's executed notebook
 │   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide
 │   ├── Hackathon Project Guide.docx                  # Full challenge rules, physics spec, and scoring breakdown
@@ -236,6 +236,6 @@ For detailed guidelines, refer to the included guides:
 - [W&B Leaderboard Guide](docs/WANDB_LEADERBOARD_GUIDE.md) — Leaderboard setup for the organizer and submission steps for participants.
 - [Participant Modification Guide](docs/PARTICIPANT_MODIFICATION_GUIDE.md) — What participants may change for each controller, and the callback rules.
 - [Docker Installation Guide](docs/DOCKER_INSTALL_GUIDE.md) and [Docker Setup Guide](docs/DOCKER_SETUP_GUIDE.md) — Pre-workshop Docker installation, image download and test.
-- [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md) and [W&B Submission Test Report](docs/MULTI_AGENT_WANDB_REPORT.md) — 10-agent benchmark protocol and the verified results of its W&B run (scores from the earlier, easier distortion model).
+- [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md) and [W&B Submission Test Report](docs/MULTI_AGENT_TOURNAMENT_REPORT2.md) — 10-agent benchmark protocol and the verified results of its W&B run (scores from the earlier, easier distortion model).
 - [Docker Desktop Setup Guide (Word Document)](<docs/Docker Desktop Setup Guide.docx>) — Containerized deployment instructions.
 - [AGENTS.md](AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.
