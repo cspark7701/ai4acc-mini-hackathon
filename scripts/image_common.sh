@@ -24,6 +24,7 @@ IMAGE_CHECK_FILES=(
     "src/environment.py:SRCDIR/environment.py"
     "src/controllers.py:SRCDIR/controllers.py"
     "presentations/Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf:/workspace/Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf"
+    "presentations/Mini_Hackathon_Beam_Orbit_Alignment_Slides.pdf:/workspace/Mini_Hackathon_Beam_Orbit_Alignment_Slides.pdf"
     "lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf:/workspace/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf"
     "docs/pdf/PARTICIPANT_MODIFICATION_GUIDE.pdf:/workspace/PARTICIPANT_MODIFICATION_GUIDE.pdf"
     "img/beamline.png:/workspace/img/beamline.png"
