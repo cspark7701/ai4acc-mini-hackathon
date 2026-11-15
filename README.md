@@ -201,10 +201,10 @@ Measured with the current code and the unmodified participant notebook (referenc
 
 | Rank | Controller / Agent Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Official Score |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| 🥇 | **Track 3: Bayesian Optimization Controller** | 100.0% | 1.5 steps | 0.0160 mm | 0.93 A | **873.163 pts** |
-| 🥈 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | 0.0230 mm | 0.90 A | **705.337 pts** |
-| 🥉 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 0.90 A | **686.926 pts** |
-| 4 | **Baseline 1 (Track 1): Supervised MLP Surrogate Inversion** | 73.3% | 22.2 steps | 0.0301 mm | 0.95 A | **441.644 pts** |
+| 🥇 | **Track 3: Bayesian Optimization Controller** | 100.0% | 1.6 steps | 0.0130 mm | 0.94 A | **922.734 pts** |
+| 🥈 | **Baseline 1 (Track 1): Supervised MLP Surrogate Inversion** | 100.0% | 1.6 steps | 0.0201 mm | 0.93 A | **809.205 pts** |
+| 🥉 | **Baseline 0: Classical Linear SVD Controller** | 100.0% | 5.6 steps | 0.0230 mm | 0.90 A | **705.337 pts** |
+| 4 | **Track 2: Closed-Loop RL / Adaptive Policy** | 100.0% | 6.1 steps | 0.0239 mm | 0.90 A | **686.926 pts** |
 
 ---
 

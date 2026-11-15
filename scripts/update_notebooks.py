@@ -161,9 +161,13 @@ def update_participant_notebook():
         "        [PARTICIPANT TODO]: Minimize acquisition function to select optimal delta current kick.\n",
         "        \"\"\"\n",
         "        import scipy.optimize as opt\n",
+        "        # The GP models the orbit response to the TOTAL corrector current. The next orbit after\n",
+        "        # a kick delta_I is predicted as  obs - mu(I_now) + mu(I_now + delta_I).\n",
+        "        I_now = np.asarray(info[\"currents\"], dtype=float) if info and \"currents\" in info else np.zeros(6)\n",
+        "        mu_now = self.gp.predict(I_now.reshape(1, -1))[0]\n",
         "        def acquisition_lcb(delta_I):\n",
-        "            pred_mean, pred_std = self.gp.predict(delta_I.reshape(1, -1), return_std=True)\n",
-        "            res = obs + pred_mean[0]\n",
+        "            pred_mean, pred_std = self.gp.predict((I_now + delta_I).reshape(1, -1), return_std=True)\n",
+        "            res = obs - mu_now + pred_mean[0]\n",
         "            rms_pred = np.sqrt(np.mean(res**2))\n",
         "            unc = np.mean(pred_std)\n",
         "            # Lower Confidence Bound (LCB) acquisition\n",
@@ -279,7 +283,7 @@ def update_participant_notebook():
     ]
 
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(nb, f, indent=1)
+        json.dump(nb, f, indent=1, ensure_ascii=False)
     print("Updated Participant notebook successfully!")
 
 
@@ -293,7 +297,7 @@ def update_solution_notebook():
         "# Accelerator Orbit Alignment Hackathon: Beam Orbit Benchmark\n",
         "## Solution & Reference Benchmark Edition (with Weights & Biases / W&B Leaderboard Integration)\n",
         "\n",
-        "> **Worked solution.** TODO 1 uses an accurate MLP surrogate, and Tracks 1–3 share one strategy: estimate the orbit distortion from `info[\"currents\"]`, solve for the currents that cancel it, and move there in equal steps of at most 0.8 A. Expected scores: Baseline 0 705.337, Track 1 941.787, Track 2 944.710, Track 3 944.031. The unmodified participant notebook scores 441.644 / 686.926 / 873.163 on Tracks 1–3.\n",
+        "> **Worked solution.** TODO 1 uses an accurate MLP surrogate, and Tracks 1–3 share one strategy: estimate the orbit distortion from `info[\"currents\"]`, solve for the currents that cancel it, and move there in equal steps of at most 0.8 A. Expected scores: Baseline 0 705.337, Track 1 941.787, Track 2 944.710, Track 3 944.031. The unmodified participant notebook scores 809.205 / 686.926 / 922.734 on Tracks 1–3.\n",
         "\n",
         "**Workshop & Challenge Context:**\n",
         "* **Author:** Chong Shik Park, Ph.D.\n",
@@ -577,7 +581,8 @@ def update_solution_notebook():
     ]
 
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(nb, f, indent=1)
+        json.dump(nb, f, indent=1, ensure_ascii=False)
+        f.write("\n")
     print("Updated Solution notebook successfully!")
 
 if __name__ == "__main__":

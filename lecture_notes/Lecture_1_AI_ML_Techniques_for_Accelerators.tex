@@ -230,7 +230,7 @@ In Forward Supervised Learning, the model learns the predictive forward response
     Through Adam backpropagation, the neural surrogate captures non-linear magnetic core saturation $B(I) \approx I - 0.015 \cdot I^3$ down to the $0.010\text{ mm}$ diagnostic noise floor.
     \item \textbf{Online Inversion for Beam Alignment:} During beam operations, observed orbit distortions $\mathbf{Y}_{\text{obs}}$ are corrected by solving an online bounded minimization problem:
     \begin{equation}
-        \Delta \mathbf{I}^* = \arg\min_{\Delta \mathbf{I}} \left\| \mathbf{Y}_{\text{obs}} + f_{\boldsymbol{\theta}}(\Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2 \quad \text{subject to } \Delta \mathbf{I} \in [-0.8\text{ A}, +0.8\text{ A}]^6
+        \Delta \mathbf{I}^* = \arg\min_{\Delta \mathbf{I}} \left\| \mathbf{Y}_{\text{obs}} - f_{\boldsymbol{\theta}}(\mathbf{I}) + f_{\boldsymbol{\theta}}(\mathbf{I} + \Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2 \quad \text{subject to } \Delta \mathbf{I} \in [-0.8\text{ A}, +0.8\text{ A}]^6
     \end{equation}
     Because the surrogate captures soft saturation, this approach converges in as few as 2 to 3 iterations.
 \end{enumerate}
@@ -448,7 +448,7 @@ While computationally instantaneous, SVD assumes linearity. Gains up to about $1
 \subsection{Baseline 1 (Track 1): Model-Based Optimization via Digital Twin Inversion}
 Rather than inverting an analytical matrix, Baseline 1 optimizes corrective kicks directly through the forward neural surrogate $f_{\boldsymbol{\theta}}(\Delta \mathbf{I})$ using SciPy's \texttt{L-BFGS-B} algorithm:
 \begin{equation}
-    \min_{\Delta \mathbf{I}} \mathcal{L}(\Delta \mathbf{I}) = \left\| \mathbf{Y}_{\text{obs}} + f_{\boldsymbol{\theta}}(\Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2 \quad \text{s.t.} \quad \Delta \mathbf{I} \in [-5.0\text{ A}, +5.0\text{ A}]^6
+    \min_{\Delta \mathbf{I}} \mathcal{L}(\Delta \mathbf{I}) = \left\| \mathbf{Y}_{\text{obs}} - f_{\boldsymbol{\theta}}(\mathbf{I}) + f_{\boldsymbol{\theta}}(\mathbf{I} + \Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2 \quad \text{s.t.} \quad \Delta \mathbf{I} \in [-5.0\text{ A}, +5.0\text{ A}]^6
 \end{equation}
 
 \begin{lstlisting}[language=Python]
@@ -457,15 +457,17 @@ class SupervisedMLPController:
         self.surrogate = surrogate
 
     def act(self, obs, info=None):
+        I_now = np.asarray(info["currents"]) if info else np.zeros(6)   # present total current
+        f_now = self.surrogate.predict(I_now.reshape(1, -1))[0]
         def objective(delta_I):
-            pred = self.surrogate.predict(delta_I.reshape(1, -1))[0]
-            residual = obs + pred
+            pred = self.surrogate.predict((I_now + delta_I).reshape(1, -1))[0]
+            residual = obs - f_now + pred                                  # predicted next orbit
             return np.sum(residual**2) + 0.0001 * np.sum(delta_I**2)
             
         res = opt.minimize(objective, np.zeros(6), bounds=[(-5.0, 5.0)]*6, method='L-BFGS-B')
         return np.clip(res.x, -0.8, 0.8)
 \end{lstlisting}
-When the surrogate accurately anticipates non-linear saturation falloff, Baseline 1 converges in about 2 iterations (2 steps on test seed 42). With the reference MLP settings (test RMSE about $0.11\text{ mm}$) it succeeds on only 73.3\% of the 30 seeds; a more accurate surrogate (e.g.\ a small \texttt{tanh} network trained with \texttt{lbfgs}, test RMSE about $0.011\text{ mm}$) raises it to 100\% success and over 900 points. Note also that the reference controller (like Track~3's) evaluates the surrogate at $f_{\boldsymbol{\theta}}(\Delta\mathbf{I})$, as if the correctors started from zero at every step; this is exact only on the first step, and inverting around the total current from \texttt{info["currents"]} removes the error.
+When the surrogate accurately anticipates non-linear saturation falloff, Baseline 1 converges in about 2 iterations (2 steps on test seed 42). Here $\mathbf{I}$ is the present total corrector current from \texttt{info["currents"]}, so the objective uses the predicted next orbit at every step. With the reference MLP settings (test RMSE about $0.11\text{ mm}$) it succeeds on all 30 seeds and scores 809.205; a more accurate surrogate (e.g.\ a small \texttt{tanh} network trained with \texttt{lbfgs}, test RMSE about $0.011\text{ mm}$) lands closer to the noise floor and scores over 940.
 
 \subsection{Track 2: Closed-Loop RL Policy with Physics Prior and Adaptive Damping}
 Model-based iterative optimization requires $15$--$30\text{ ms}$ per step. In contrast, a closed-loop policy network executes in $< 0.5\text{ ms}$~\cite{kain2020sample}.
@@ -493,9 +495,9 @@ where $r = \|\mathbf{x} - \mathbf{x}'\|_2$, $\ell$ is the characteristic length 
 Unlike standard point-prediction neural networks, the Gaussian Process yields both a posterior mean $\boldsymbol{\mu}(\Delta \mathbf{I})$ and a posterior standard deviation $\boldsymbol{\sigma}(\Delta \mathbf{I})$ quantifying epistemic uncertainty.
 We evaluate candidate corrective kicks using the Lower Confidence Bound (LCB) acquisition function:
 \begin{equation}
-    \alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y}_{\text{obs}} + \boldsymbol{\mu}(\Delta \mathbf{I}) \right) - \kappa \cdot \overline{\boldsymbol{\sigma}}(\Delta \mathbf{I}) + \lambda \|\Delta \mathbf{I}\|_2^2
+    \alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y}_{\text{obs}} - \boldsymbol{\mu}(\mathbf{I}) + \boldsymbol{\mu}(\mathbf{I} + \Delta \mathbf{I}) \right) - \kappa \cdot \overline{\boldsymbol{\sigma}}(\Delta \mathbf{I}) + \lambda \|\Delta \mathbf{I}\|_2^2
 \end{equation}
-where $\kappa \ge 0$ balances exploitation (minimizing predicted orbit RMS) with exploration (reducing uncertainty in non-linear saturation regimes). When $\kappa = 0$, the controller performs pure exploitation of the well-calibrated posterior mean, converging in an average of only \textbf{1.5 steps} across the benchmark suite.
+where $\kappa \ge 0$ balances exploitation (minimizing predicted orbit RMS) with exploration (reducing uncertainty in non-linear saturation regimes). When $\kappa = 0$, the controller performs pure exploitation of the well-calibrated posterior mean, converging in about \textbf{1.6 steps} on average across the benchmark suite (922.734 points).
 
 \paragraph{Closed-loop control, offline model.} The controller is closed-loop: at every step it re-solves the acquisition problem from the latest BPM reading $\mathbf{Y}_{\text{obs}}$. Its model, however, is not updated online. The reference GP is fitted once on about 300 calibration shots and stays fixed for the whole benchmark, which makes it structurally close to Track~1 (an offline surrogate inverted at every step) with uncertainty available through $\kappa$. Classic Bayesian optimization adds each new (kick, observed orbit) pair to the GP and refits it; participants can do this from a \texttt{step\_callback} registered in the notebook's \texttt{CALLBACKS}, turning Track~3 into true online Bayesian optimization.
 
@@ -507,9 +509,11 @@ class BayesianOptimizationController:
         self.l2_reg = l2_reg
 
     def act(self, obs, info=None):
+        I_now = np.asarray(info["currents"]) if info else np.zeros(6)   # present total current
+        mu_now = self.gp.predict(I_now.reshape(1, -1))[0]
         def acquisition_lcb(delta_I):
-            pred_mean, pred_std = self.gp.predict(delta_I.reshape(1, -1), return_std=True)
-            res = obs + pred_mean[0]
+            pred_mean, pred_std = self.gp.predict((I_now + delta_I).reshape(1, -1), return_std=True)
+            res = obs - mu_now + pred_mean[0]                              # predicted next orbit
             rms_pred = np.sqrt(np.mean(res**2))
             unc = np.mean(pred_std)
             return float(rms_pred - self.kappa * unc + self.l2_reg * np.sum(delta_I**2))
@@ -577,10 +581,10 @@ Official baseline and challenge policy performance across the 30 standardized ev
 \toprule
 \textbf{Rank} & \textbf{Controller Paradigm} & \textbf{Success Rate} & \textbf{Mean Steps} & \textbf{Final RMS} & \textbf{Current Norm} & \textbf{Official Score} \\
 \midrule
-\textbf{\#1} & Track 3: Bayesian Optimization Controller & \textbf{100.0\%} & \textbf{1.5 steps} & $\mathbf{0.0160\text{ mm}}$ & $0.93\text{ A}$ & $\mathbf{873.163\text{ pts}}$ \\
-\textbf{\#2} & Baseline 0: Classical Linear SVD & 100.0\% & 5.6 steps & $0.0230\text{ mm}$ & $0.90\text{ A}$ & 705.337 pts \\
-\textbf{\#3} & Track 2: Closed-Loop RL Policy & 100.0\% & 6.1 steps & $0.0239\text{ mm}$ & $0.90\text{ A}$ & 686.926 pts \\
-\textbf{\#4} & Baseline 1 (Track 1): Supervised MLP Inversion & 73.3\% & 22.2 steps & $0.0301\text{ mm}$ & $0.95\text{ A}$ & 441.644 pts \\
+\textbf{\#1} & Track 3: Bayesian Optimization Controller & \textbf{100.0\%} & \textbf{1.6 steps} & $\mathbf{0.0130\text{ mm}}$ & $0.94\text{ A}$ & $\mathbf{922.734\text{ pts}}$ \\
+\textbf{\#2} & Baseline 1 (Track 1): Supervised MLP Inversion & 100.0\% & 1.6 steps & $0.0201\text{ mm}$ & $0.93\text{ A}$ & 809.205 pts \\
+\textbf{\#3} & Baseline 0: Classical Linear SVD & 100.0\% & 5.6 steps & $0.0230\text{ mm}$ & $0.90\text{ A}$ & 705.337 pts \\
+\textbf{\#4} & Track 2: Closed-Loop RL Policy & 100.0\% & 6.1 steps & $0.0239\text{ mm}$ & $0.90\text{ A}$ & 686.926 pts \\
 \bottomrule
 \end{tabular}%
 }
@@ -600,9 +604,9 @@ Table~\ref{tab:comparison} summarizes how the two baselines and the two challeng
 \textbf{Method} & \textbf{Control law} & \textbf{Model \& data} & \textbf{Strengths} & \textbf{Limitations} & \textbf{Score: ref.\ / best} \\
 \midrule
 \textbf{Baseline 0}\newline Classical SVD & $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed $\alpha = 0.45$ & Analytic ORM; no training data & Instant, robust, interpretable & Ignores saturation; slow at low gain & 705.337 / --- \\
-\textbf{Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} + f_\theta(\Delta\mathbf{I})\|^2$ with L-BFGS-B & MLP twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest & 441.644 / 941.8 \\
+\textbf{Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\|^2$ with L-BFGS-B & MLP twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest & 809.205 / 941.8 \\
 \textbf{Track 2}\newline RL / adaptive policy & Physics prior $+$ learned residual $+$ damping & Policy parameters; closed-loop tuning & Fastest per step; adapts online & Gain and damping tuning; overshoot & 686.926 / 955.0 \\
-\textbf{Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS & Gaussian process; $\sim$300 shots & Sample-efficient; models uncertainty & GP cost grows; per-step optimization & 873.163 / 954.8 \\
+\textbf{Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS & Gaussian process; $\sim$300 shots & Sample-efficient; models uncertainty & GP cost grows; per-step optimization & 922.734 / 954.8 \\
 \bottomrule
 \end{tabular}
 \caption{Comparison of the baseline and challenge-track controllers.}

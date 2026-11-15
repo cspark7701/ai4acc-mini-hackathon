@@ -83,8 +83,8 @@ class BenchmarkController:
 2. **Baseline 1 — Supervised Neural Surrogate Inversion:**
    - Trains an `MLPRegressor` (e.g. layers `(128, 64, 32)`, ReLU activation) as a forward digital twin: $\hat{\mathbf{Y}} = f_{\theta}(\mathbf{I})$.
    - Solves a bounded optimization problem per step via SciPy `L-BFGS-B`:
-     $$\min_{\Delta \mathbf{I}} \|\mathbf{Y} + f_{\theta}(\Delta \mathbf{I})\|^2 + \lambda \|\Delta \mathbf{I}\|^2$$
-   - Simplification in the reference code: $f_\theta$ is evaluated at the kick $\Delta \mathbf{I}$ as if the correctors started from zero at every step, which is exact only on the first step. Inverting around the total current from `info["currents"]` (as the Solution notebook does) removes the error.
+     $$\min_{\Delta \mathbf{I}} \|\mathbf{Y} - f_{\theta}(\mathbf{I}) + f_{\theta}(\mathbf{I} + \Delta \mathbf{I})\|^2 + \lambda \|\Delta \mathbf{I}\|^2$$
+   - $\mathbf{I}$ is the present total corrector current from `info["currents"]`, so $\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I} + \Delta \mathbf{I})$ is the predicted next orbit at every step. With the reference MLP settings this scores 809.205; a more accurate surrogate (TODO 1) scores higher.
 
 3. **Track 2 — Closed-Loop RL / Adaptive Policy Agent:**
    - Combines a physics-informed prior with learned parameter residual and adaptive damping:
@@ -94,9 +94,9 @@ class BenchmarkController:
 
 4. **Track 3 — Closed-Loop Bayesian Optimization Controller:**
    - Uses a `GaussianProcessRegressor` (Matérn-5/2 kernel with sensor noise floor) to model orbit error with epistemic uncertainty estimation:
-     $$\alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y} + \boldsymbol{\mu}_{\text{GP}}(\Delta \mathbf{I}) \right) - \kappa \cdot \overline{\boldsymbol{\sigma}}_{\text{GP}}(\Delta \mathbf{I}) + \lambda \|\Delta \mathbf{I}\|^2$$
-   - Balances exploration ($\kappa > 0$) against exploitation ($\kappa = 0$) under non-linear saturation, converging in an average of $1.5$ steps.
-   - The reference GP is fitted once on 300 calibration shots and stays fixed, and like Baseline 1 it evaluates the model at $\Delta \mathbf{I}$ as if the correctors started from zero. Refitting the GP online (e.g. from a `step_callback`) turns it into true online Bayesian optimization.
+     $$\alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y} - \boldsymbol{\mu}_{\text{GP}}(\mathbf{I}) + \boldsymbol{\mu}_{\text{GP}}(\mathbf{I} + \Delta \mathbf{I}) \right) - \kappa \cdot \overline{\boldsymbol{\sigma}}_{\text{GP}}(\Delta \mathbf{I}) + \lambda \|\Delta \mathbf{I}\|^2$$
+   - Balances exploration ($\kappa > 0$) against exploitation ($\kappa = 0$) under non-linear saturation, converging in about $1.6$ steps on average (922.734 points).
+   - The reference GP is fitted once on 300 calibration shots and stays fixed; like Baseline 1 it predicts the next orbit around the present total current $\mathbf{I}$. Refitting the GP online (e.g. from a `step_callback`) turns it into true online Bayesian optimization.
 
 ---
 
@@ -121,7 +121,7 @@ s_k = \begin{cases}
 The implementation is `score_seed()` in `src/benchmark.py`.
 
 ### Metrics Tracked in Weights & Biases:
-- `challenge_score`: Official total benchmark score, 0 to 1000 points (reference controllers score 442 to 873).
+- `challenge_score`: Official total benchmark score, 0 to 1000 points (reference controllers score 687 to 923).
 - `score_success`, `score_speed`, `score_precision`: The three components of `challenge_score`, averaged over the 30 seeds.
 - `success_rate_pct`: Percentage of the 30 seeds reaching $\text{RMS} < 0.03\text{ mm}$ within 50 steps.
 - `mean_steps`: Average iterations to reach convergence.

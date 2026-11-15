@@ -740,7 +740,7 @@ def create_presentation():
 
     p3 = tf18.add_paragraph()
     add_text_run(p3, "• Tested Benchmark Performance: ", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "100.0% success rate, 5.6 mean steps, 705.337 total score (Rank #2).", bold=True, size=Pt(14), color=PRIMARY)
+    add_text_run(p3, "100.0% success rate, 5.6 mean steps, 705.337 total score (Rank #3).", bold=True, size=Pt(14), color=PRIMARY)
 
     add_footer(s18, 18)
 
@@ -762,18 +762,19 @@ def create_presentation():
 
     p_eq = tf19.add_paragraph()
     p_eq.alignment = PP_ALIGN.CENTER
-    add_text_run(p_eq, "min_{ΔI} ℒ(ΔI) = || Y_obs + f_θ(ΔI) ||²  +  λ ||ΔI||²\nsubject to ΔI ∈ [-5.0, +5.0]⁶ A\n", bold=True, size=Pt(16), color=PRIMARY)
+    add_text_run(p_eq, "min_{ΔI} ℒ(ΔI) = || Y_obs − f_θ(I) + f_θ(I + ΔI) ||²  +  λ ||ΔI||²\nsubject to ΔI ∈ [-5.0, +5.0]⁶ A\n", bold=True, size=Pt(16), color=PRIMARY)
 
     p2 = tf19.add_paragraph()
     p2.space_before = Pt(8)
     add_text_run(p2, "• Why Supervised Inversion Outperforms Classical SVD:\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p2, "  -- Because f_θ captures the cubic saturation falloff, the optimizer automatically calculates higher current demands for saturated correctors.\n"
                      "  -- Solver: SciPy L-BFGS-B converges in 8-15 iterations per control step (~15 - 25 ms latency).\n"
-                     "  -- Result: Only as good as the surrogate: with the reference MLP (test RMSE 0.11 mm) it succeeds on 73.3% of seeds. The reference also models each kick as if the correctors started from zero; inverting around info[\"currents\"] fixes that.\n\n", size=Pt(13.5), color=DARK_GRAY)
+                     "  -- I is the present total current from info[\"currents\"], so the objective uses the predicted next orbit at every step.\n"
+                     "  -- Result: With the reference MLP (test RMSE 0.11 mm) it succeeds on all 30 seeds; a more accurate surrogate (TODO 1) lands closer to the noise floor.\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p3 = tf19.add_paragraph()
     add_text_run(p3, "• Tested Benchmark Performance: ", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "73.3% success rate, 22.2 mean steps, 441.644 total score (Rank #4).", bold=True, size=Pt(14), color=PRIMARY)
+    add_text_run(p3, "100.0% success rate, 1.6 mean steps, 809.205 total score (Rank #2).", bold=True, size=Pt(14), color=PRIMARY)
 
     add_footer(s19, 19)
 
@@ -900,7 +901,7 @@ def create_presentation():
 
     p_eq = tf23.add_paragraph()
     p_eq.alignment = PP_ALIGN.CENTER
-    add_text_run(p_eq, "α_LCB(ΔI) = RMS( Y_obs + μ_GP(ΔI) )  -  κ · σ̄_GP(ΔI)  +  λ ||ΔI||²\n", bold=True, size=Pt(16), color=PRIMARY)
+    add_text_run(p_eq, "α_LCB(ΔI) = RMS( Y_obs − μ_GP(I) + μ_GP(I + ΔI) )  -  κ · σ̄_GP(ΔI)  +  λ ||ΔI||²\n", bold=True, size=Pt(16), color=PRIMARY)
 
     p2 = tf23.add_paragraph()
     p2.space_before = Pt(8)
@@ -912,7 +913,7 @@ def create_presentation():
 
     p3 = tf23.add_paragraph()
     add_text_run(p3, "• Exceptional Convergence Speed: ", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "When calibrated, Track 3 reaches the convergence threshold in an average of only 1.5 steps!", bold=True, size=Pt(14), color=SUCCESS_GREEN)
+    add_text_run(p3, "When calibrated, Track 3 reaches the convergence threshold in about 1.6 steps on average (922.734 points).", bold=True, size=Pt(14), color=SUCCESS_GREEN)
 
     add_footer(s23, 23)
 
@@ -1049,10 +1050,10 @@ def create_presentation():
         add_text_run(p_cell, h_text, bold=True, size=Pt(11.5), color=WHITE)
 
     data_rows = [
-        ("Rank 1", "Track 3: Bayesian Optimization (BO)", "100.0%", "1.5 steps", "0.0160 mm", "0.93 A", "873.163 pts", GOLD),
-        ("Rank 2", "Baseline 0: Classical Linear SVD", "100.0%", "5.6 steps", "0.0230 mm", "0.90 A", "705.337 pts", PRIMARY),
-        ("Rank 3", "Track 2: Closed-Loop RL Policy Agent", "100.0%", "6.1 steps", "0.0239 mm", "0.90 A", "686.926 pts", DARK_GRAY),
-        ("Rank 4", "Baseline 1 (Track 1): Supervised Neural Inversion (MLP)", "73.3%", "22.2 steps", "0.0301 mm", "0.95 A", "441.644 pts", DARK_GRAY),
+        ("Rank 1", "Track 3: Bayesian Optimization (BO)", "100.0%", "1.6 steps", "0.0130 mm", "0.94 A", "922.734 pts", GOLD),
+        ("Rank 2", "Baseline 1 (Track 1): Supervised Neural Inversion (MLP)", "100.0%", "1.6 steps", "0.0201 mm", "0.93 A", "809.205 pts", PRIMARY),
+        ("Rank 3", "Baseline 0: Classical Linear SVD", "100.0%", "5.6 steps", "0.0230 mm", "0.90 A", "705.337 pts", DARK_GRAY),
+        ("Rank 4", "Track 2: Closed-Loop RL Policy Agent", "100.0%", "6.1 steps", "0.0239 mm", "0.90 A", "686.926 pts", DARK_GRAY),
     ]
 
     for r_idx, row_data in enumerate(data_rows, start=1):
@@ -1084,12 +1085,12 @@ def create_presentation():
     cmp_rows = [
         ("Baseline 0\nClassical SVD", "ΔI = −α (Rᵀ)⁺ Y, fixed gain α = 0.45", "Analytic ORM; no training data",
          "Instant, robust, interpretable", "Ignores saturation; slow at low gain; fixed reference", "705.337 / —"),
-        ("Baseline 1 (Track 1)\nSupervised inversion", "Minimize ‖Y + f_θ(ΔI)‖² with L-BFGS-B each step", "MLP digital twin; 1,500 offline shots",
-         "Learns the non-linear response", "Only as good as the surrogate; slowest per step", "441.644 / 941.8"),
+        ("Baseline 1 (Track 1)\nSupervised inversion", "Minimize ‖Y − f_θ(I) + f_θ(I+ΔI)‖² with L-BFGS-B each step", "MLP digital twin; 1,500 offline shots",
+         "Learns the non-linear response", "Only as good as the surrogate; slowest per step", "809.205 / 941.8"),
         ("Track 2\nRL / adaptive policy", "Physics prior + learned residual + damping", "Policy parameters; tuned in closed loop",
          "Fastest per step; adapts online", "Gain and damping tuning; overshoot risk", "686.926 / 955.0"),
         ("Track 3\nBayesian optimization", "Minimize LCB of GP-predicted RMS each step", "Gaussian process; ~300 calibration shots",
-         "Sample-efficient; models uncertainty", "GP cost grows with data; per-step optimization", "873.163 / 954.8"),
+         "Sample-efficient; models uncertainty", "GP cost grows with data; per-step optimization", "922.734 / 954.8"),
     ]
     cmp_headers = ["Method", "Control law", "Model & data", "Strengths", "Limitations", "Score: ref. / best agent"]
     cmp_shape = s_cmp.shapes.add_table(5, 6, Inches(0.8), Inches(1.55), Inches(11.733), Inches(4.5))
@@ -1172,7 +1173,7 @@ def create_presentation():
     add_text_run(p, "Four Core Takeaways from Lecture 1:\n", bold=True, size=Pt(15), color=NAVY)
     add_text_run(p, "1. Physics Guides the AI: Analytical optics priors (ORM pseudo-inverse) guarantee early stability and avoid millions of blind exploratory steps.\n"
                     "2. Surrogates Capture Non-Linearities: Compact deep MLPs accurately predict cubic core saturation, enabling 2-step bounded inversions.\n"
-                    "3. Probabilistic Uncertainty Wins: Gaussian Process BO with LCB acquisition balances exploration against exploitation, leading tested scores in 1.5 steps.\n"
+                    "3. Probabilistic Uncertainty Wins: Gaussian Process BO with LCB acquisition balances exploration against exploitation, leading the reference scores in about 1.6 steps.\n"
                     "4. Dynamic Damping Prevents Limit Cycles: Attenuating feedback near the 10 μm sensor noise floor locks residual orbit error.\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p2 = tf28.add_paragraph()
