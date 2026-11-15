@@ -46,3 +46,55 @@ Callbacks let a controller adapt online while the benchmark runs.
   `final_rms`, `is_success`, `current_norm`, `elapsed_ms` and `info`.
 - **Disclosure:** a callback that carries information from earlier evaluation seeds into later ones
   (for example a prior learned across seeds) is allowed, but say so in your team presentation.
+
+---
+
+## Available Activation Functions & Optimizers Reference
+
+### 1. Neural Surrogate Model (`MLPRegressor` in TODO 1 / Step 3)
+
+When tuning the forward digital twin surrogate (`surrogate_model = MLPRegressor(...)`), participants can configure the following activation functions and weight optimizers:
+
+#### Activation Functions (`activation`):
+| Option | Mathematical Definition | Characteristics & Practical Guidance |
+| :--- | :---: | :--- |
+| `'relu'` *(Default)* | $f(x) = \max(0, x)$ | **Rectified Linear Unit.** Fast forward/backward passes, sparse gradient propagation, avoids vanishing gradients in deeper networks. The recommended baseline choice. |
+| `'tanh'` | $f(x) = \tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$ | **Hyperbolic Tangent.** Smooth, continuously differentiable, zero-centered with outputs bounded in $(-1, 1)$. Particularly well-suited for modeling smooth physical response curves and soft saturation transitions. |
+| `'logistic'` | $f(x) = \frac{1}{1 + e^{-x}}$ | **Logistic Sigmoid.** Smooth S-shaped curve with outputs bounded in $(0, 1)$. Can suffer from vanishing gradients at saturation extremes. |
+| `'identity'` | $f(x) = x$ | **Linear Activation (No-op).** Computes purely linear transformations; useful for linear bottleneck layers or benchmarking against linear Ridge models. |
+
+#### Training Solvers / Weight Optimizers (`solver`):
+| Option | Algorithm | Characteristics & Practical Guidance |
+| :--- | :--- | :--- |
+| `'adam'` *(Default)* | **Adaptive Moment Estimation** (Kingma & Ba) | Stochastic gradient-based optimizer maintaining per-parameter adaptive learning rates and momentum. Highly robust across architectures, learning rates, and dataset sizes ($N \ge 1500$). |
+| `'lbfgs'` | **Limited-Memory BFGS** (Quasi-Newton) | Approximates the second-order Hessian matrix. For small to moderate datasets ($N \le 2000$), it often converges significantly faster and to lower training loss than first-order stochastic methods. |
+| `'sgd'` | **Stochastic Gradient Descent** | Classic gradient descent with support for momentum (`momentum=0.9`) and learning rate schedules (e.g. `learning_rate='adaptive'`). Requires careful tuning of `learning_rate_init`. |
+
+---
+
+### 2. Action Inversion & Acquisition Solvers (`scipy.optimize.minimize`)
+
+In **Track 1** (`SupervisedMLPController`), **Track 3** (`BayesianOptimizationController`), or custom policy optimization in **Track 2**, the controller solves an online bounded optimization problem per step to find the optimal corrective kick $\Delta \mathbf{I} \in [-0.8, +0.8]^6$:
+
+$$\min_{\Delta \mathbf{I}} \|\mathbf{Y}_{\text{pred}}\|^2 + \lambda \|\Delta \mathbf{I}\|^2$$
+
+SciPy provides the following bounded optimization algorithms via `scipy.optimize.minimize(..., method=...)`:
+
+| Method | Optimizer Family | Bounds Support | Characteristics & Accelerator Application |
+| :--- | :--- | :---: | :--- |
+| `'L-BFGS-B'` *(Default)* | Quasi-Newton (Bounded BFGS) | ✅ Yes | **Standard Choice.** Approximates Hessian using limited memory; highly efficient for smooth non-linear objective functions with hardware box constraints. Fast sub-millisecond execution. |
+| `'SLSQP'` | Sequential Least Squares Programming | ✅ Yes | Solves quadratic subproblems with bound constraints. Robust when adding explicit physics constraints (e.g., maximum total corrector current norm $\|\mathbf{I}\| \le 5.0\text{ A}$). |
+| `'TNC'` | Truncated Newton Conjugate Gradient | ✅ Yes | Suitable for large-scale unconstrained or box-constrained problems. Computes search directions via conjugate gradients. |
+| `'Powell'` | Powell's Conjugate Direction Method | ✅ Yes | **Derivative-Free.** Does not compute objective gradients; robust against noisy objective landscapes or non-smooth acquisition functions. |
+| `'Nelder-Mead'` | Downhill Simplex Algorithm | ✅ Yes | **Derivative-Free.** Heuristic geometric simplex search. Slower convergence than gradient methods, but resilient against local sensor jitter. |
+
+---
+
+### 3. Linear Baseline Solvers (`Ridge` in Step 3)
+
+For the linear baseline surrogate (`Ridge(solver=...)`), scikit-learn supports:
+- `'auto'` *(Default)*: Automatically selects solver based on data matrix type (uses `'lsqr'` or `'cholesky'`).
+- `'svd'`: Singular Value Decomposition (exact, stable Moore-Penrose pseudo-inverse).
+- `'cholesky'`: Standard closed-form Cholesky decomposition of normal equations.
+- `'lsqr'`: Least-squares conjugate gradient; fastest for regularized regression.
+- `'sag'` / `'saga'`: Stochastic Average Gradient descent for large datasets.
