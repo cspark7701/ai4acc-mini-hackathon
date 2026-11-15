@@ -100,8 +100,7 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 │   ├── experiments/                                  # Multi-agent results log and each agent's executed notebook
 │   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide
 │   ├── Hackathon Project Guide.docx                  # Full challenge rules, physics spec, and scoring breakdown
-│   ├── Mini-Hackathon Participant Instructions.docx   # Quick-reference participant milestone checklist
-│   └── Docker Desktop Setup Guide.docx               # Offline and container contingency deployment guide
+│   └── Mini-Hackathon Participant Instructions.docx   # Quick-reference participant milestone checklist
 │
 ├── lecture_notes/                                    # Master lecture notes for Session 1 (Dr. Chong Shik Park)
 │   ├── Lecture_1_AI_ML_Techniques_for_Accelerators.md    # Session 1 master notes (Markdown)
@@ -236,5 +235,4 @@ For detailed guidelines, refer to the included guides:
 - [Participant Modification Guide](docs/PARTICIPANT_MODIFICATION_GUIDE.md) — What participants may change for each controller, and the callback rules.
 - [Docker Installation Guide](docs/DOCKER_INSTALL_GUIDE.md) and [Docker Environment Guide](docs/DOCKER_GUIDE.md) — Pre-workshop Docker installation, image download and test.
 - [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md) and [W&B Submission Test Report](docs/MULTI_AGENT_TOURNAMENT_REPORT2.md) — 10-agent benchmark protocol and the verified results of its W&B run (scores from the earlier, easier distortion model).
-- [Docker Desktop Setup Guide (Word Document)](<docs/Docker Desktop Setup Guide.docx>) — Containerized deployment instructions.
 - [AGENTS.md](AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.

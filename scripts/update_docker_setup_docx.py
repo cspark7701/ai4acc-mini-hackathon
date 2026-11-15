@@ -2,6 +2,7 @@
 Update docx guides for participants with the universal Docker run command:
 docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 """
+import os
 import docx
 from docx.shared import Pt, RGBColor
 
@@ -29,6 +30,8 @@ def set_text(paragraph, text, font="Calibri", size=None):
 
 def update_docker_guide_docx():
     path = "docs/Docker Desktop Setup Guide.docx"
+    if not os.path.exists(path):
+        return
     doc = docx.Document(path)
 
     # Subtitle
