@@ -94,7 +94,7 @@
   - **macOS / Linux 간편 실행:** 터미널에서 `./run_hackathon_mac_linux.sh` 실행 (또는 더블 클릭).
   - **직접 터미널 명령어 입력:**
     ```bash
-    docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+    docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest
     ```
   *(어떤 터미널에서든 위 단 한 줄의 명령어를 실행하거나 배치 파일을 더블 클릭한 후, 웹 브라우저에서 `http://localhost:8888`로 접속하시면 즉시 실습을 시작하실 수 있습니다.)*
 

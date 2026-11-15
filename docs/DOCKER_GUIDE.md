@@ -11,16 +11,19 @@ This guide explains system requirements, terminal options across operating syste
 
 Because all required libraries, simulation models, and the participant challenge notebook are baked into the pre-compiled image, the launch command is identical and universal across all operating systems and shells:
 ```bash
-docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
 | Operating System | Supported Terminals | Launch Command |
 | :--- | :--- | :--- |
-| **Windows** | **Command Prompt (`cmd.exe`)** | `docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
-| **Windows** | **PowerShell** | `docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
-| **Windows** | **Git Bash / WSL 2** | `docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
-| **macOS** | **Terminal / iTerm2 (zsh / bash)** | `docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
-| **Linux** | **Bash / Zsh / Any terminal** | `docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
+| **Windows** | **Command Prompt (`cmd.exe`)** | `docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
+| **Windows** | **PowerShell** | `docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
+| **Windows** | **Git Bash / WSL 2** | `docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
+| **macOS** | **Terminal / iTerm2 (zsh / bash)** | `docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
+| **Linux** | **Bash / Zsh / Any terminal** | `docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest` |
+
+> [!IMPORTANT]
+> **Keep `127.0.0.1` in the port mapping.** JupyterLab in the container runs without a token or password. `-p 127.0.0.1:8888:8888` makes it reachable only from your own computer; a plain `-p 8888:8888` would let anyone on the same network (for example the venue Wi-Fi) open your JupyterLab, run code in it and read the leaderboard key.
 
 > [!TIP]
 > **Zero Setup Required:** Attendees do not need to clone the git repository, configure local Python virtual environments, or worry about shell-specific volume mount path syntax. Once the container is running, open **`http://localhost:8888`** in your browser.
@@ -96,7 +99,7 @@ docker build -t ai4acc-hackathon-2026 .
 
 Run the official container directly in your terminal:
 ```bash
-docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
 > [!NOTE]
@@ -174,7 +177,7 @@ docker push <your-username>/ai4acc-hackathon-2026:latest
 ### Step 5: Participant Usage from Docker Hub
 Once pushed, participants do not need to clone the repo or build the image. They can simply run:
 ```bash
-docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
 ---
@@ -185,7 +188,7 @@ docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 - **Cause:** Another process on your host machine (such as a local Jupyter server or another Docker container) is already listening on port `8888`.
 - **Fix 1 (Map to another port, e.g., 8889):**
   ```bash
-  docker run -it --rm -p 8889:8888 cspark7701/ai4acc-hackathon-2026:latest
+  docker run -it --rm -p 127.0.0.1:8889:8888 cspark7701/ai4acc-hackathon-2026:latest
   ```
   Then access Jupyter at **`http://localhost:8889`**.
 - **Fix 2 (Stop the host process):**
@@ -206,7 +209,7 @@ docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 The launchers (`run_hackathon_windows.bat`, `run_hackathon_mac_linux.sh`) read `wandb.apikey` from their own folder and pass it to the container automatically. If you start the container by hand, pass the key yourself:
 ```bash
 docker run -it --rm \
-  -p 8888:8888 \
+  -p 127.0.0.1:8888:8888 \
   -e WANDB_API_KEY="$(cat wandb.apikey)" \
   cspark7701/ai4acc-hackathon-2026:latest
 ```

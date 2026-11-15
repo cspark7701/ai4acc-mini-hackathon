@@ -92,7 +92,7 @@ To guarantee a seamless and productive hands-on experience, please review the fo
   - **macOS / Linux:** Run `./run_hackathon_mac_linux.sh` in your terminal.
   - **Direct Terminal Command:**
     ```bash
-    docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+    docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest
     ```
   *(After launching via the script or command, open your web browser and browse to `http://localhost:8888` to begin).*
 

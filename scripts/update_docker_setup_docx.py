@@ -1,11 +1,11 @@
 """
 Update docx guides for participants with the universal Docker run command:
-docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 """
 import docx
 from docx.shared import Pt, RGBColor
 
-DOCKER_CMD = "docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest"
+DOCKER_CMD = "docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest"
 
 def find_paragraph(doc, predicate, description):
     """Return (index, paragraph) of the first paragraph matching predicate.
@@ -54,7 +54,7 @@ def update_docker_guide_docx():
     set_text(
         p_port,
         "Port 8888 in use error: If port 8888 is already occupied by a local Jupyter instance, change the port mapping to 8889: "
-        "docker run -it --rm -p 8889:8888 cspark7701/ai4acc-hackathon-2026:latest "
+        "docker run -it --rm -p 127.0.0.1:8889:8888 cspark7701/ai4acc-hackathon-2026:latest "
         "... and browse to http://localhost:8889.",
     )
 

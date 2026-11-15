@@ -138,7 +138,7 @@ Participants run the challenge in the official Docker container; no Git clone or
 The launcher checks Docker, loads the image, passes the leaderboard key to the container, and opens JupyterLab at **`http://localhost:8888/lab`**. Without the launcher, the same container starts with:
 
 ```bash
-docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
 The container includes Python, all required packages (`gymnasium`, `scikit-learn`, `wandb`, `jupyterlab`), the participant notebook and the lecture PDFs. Download your notebook with **File → Download** before stopping the container; its files are deleted when it stops.

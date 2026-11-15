@@ -51,7 +51,7 @@ With Docker running (Linux: `sudo systemctl start docker`; macOS with Colima:
 `colima start`; Windows and macOS with Docker Desktop: open the app), run:
 
 ```bash
-docker run -it --rm -p 8888:8888 cspark7701/ai4acc-hackathon-2026:latest
+docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
 The command is the same on every operating system and in every terminal.
@@ -131,7 +131,7 @@ stop it, download your notebook from JupyterLab with **File → Download**.
   server, is using the port. Use port 8889 instead and open `http://localhost:8889/lab`:
 
   ```bash
-  docker run -it --rm -p 8889:8888 cspark7701/ai4acc-hackathon-2026:latest
+  docker run -it --rm -p 127.0.0.1:8889:8888 cspark7701/ai4acc-hackathon-2026:latest
   ```
 
 - **`[!] No W&B key found` from the launcher:** `wandb.apikey` is not in the same folder

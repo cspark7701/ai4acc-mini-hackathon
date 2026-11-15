@@ -10,7 +10,7 @@ services:
     image: cspark7701/ai4acc-hackathon-2026:latest
     container_name: ai4acc-hackathon-2026
     ports:
-      - "8888:8888"
+      - "127.0.0.1:8888:8888"  # local only: Jupyter has no token, so never expose it to the network
     volumes:
       # Mount ONLY the participant notebook and src so changes made inside Jupyter persist on your host
       # while keeping the reference solution notebook isolated and private

@@ -92,7 +92,7 @@ if defined WANDB_API_KEY (
 )
 echo.
 
-docker run -it --rm -p 8888:8888 %WANDB_ARGS% cspark7701/ai4acc-hackathon-2026:latest
+docker run -it --rm -p 127.0.0.1:8888:8888 %WANDB_ARGS% cspark7701/ai4acc-hackathon-2026:latest
 
 echo.
 echo ======================================================================
