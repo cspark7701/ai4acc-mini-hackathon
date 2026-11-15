@@ -18,6 +18,7 @@ def update_participant_notebook():
         "\n",
         "**Workshop & Challenge Context:**\n",
         "* **Author:** Chong Shik Park, Ph.D.\n",
+        "* **Affiliation:** Korea University, Sejong\n",
         "* **Date:** November 19, 2026\n",
         "* **Target Audience:** Graduate Students & Early-Career Accelerator Researchers\n",
         "* **Curricular Alignment:** \n",
