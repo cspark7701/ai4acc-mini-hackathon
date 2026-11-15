@@ -60,6 +60,7 @@ class AcceleratorOrbitGymEnv:
                     self.R[i, j] = 1.2 * np.sin(phase) / (1.0 + 0.05 * (sb - sc))
 
         self.I_corr = np.zeros(self.n_correctors, dtype=np.float32)
+        self.distortion_kicks = np.zeros(self.n_correctors)
         self.perturbation = np.zeros(self.n_bpms, dtype=np.float32)
         self.initial_rms = 0.0
         self.current_step = 0
@@ -71,9 +72,11 @@ class AcceleratorOrbitGymEnv:
         self.current_step = 0
         self.I_corr = np.zeros(self.n_correctors, dtype=np.float32)
 
-        # Realistic upstream steering misalignment drift perturbation
-        drift = self.np_random.uniform(-1.2, 1.2, size=2)
-        self.perturbation = (drift[0] * self.R[0] + drift[1] * self.R[1]).astype(np.float32)
+        # Initial orbit distortion: unknown steering errors (kicks) at all six corrector locations,
+        # a_k ~ U(-2.5, 2.5) A, so Y0 = a @ R. Cancelling it needs total currents up to about 3 A,
+        # deep in the cubic saturation, and several 0.8 A steps.
+        self.distortion_kicks = self.np_random.uniform(-2.5, 2.5, size=self.n_correctors)
+        self.perturbation = (self.distortion_kicks @ self.R).astype(np.float32)
 
         obs = self._get_obs()
         self.initial_rms = float(np.sqrt(np.mean(obs**2)))
