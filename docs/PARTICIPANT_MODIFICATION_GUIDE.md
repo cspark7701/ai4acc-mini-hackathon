@@ -46,6 +46,7 @@ Callbacks let a controller adapt online while the benchmark runs.
   `final_rms`, `is_success`, `current_norm`, `elapsed_ms` and `info`.
 - **Disclosure:** a callback that carries information from earlier evaluation seeds into later ones
   (for example a prior learned across seeds) is allowed, but say so in your team presentation.
+- **Detailed Examples & Schemas:** see [`CALLBACK_EXAMPLES.md`](CALLBACK_EXAMPLES.md) for complete data dictionary specifications and ready-to-use implementations of adaptive precision damping, saturation watchdogs, cross-seed meta-tuning, and diagnostic loggers.
 
 ---
 

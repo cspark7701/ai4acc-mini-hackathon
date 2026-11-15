@@ -93,6 +93,7 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 │   ├── DOCKER_INSTALL_GUIDE.md                       # Docker installation steps for Linux, macOS & Windows
 │   ├── DOCKER_GUIDE.md                               # Complete Docker, Docker Compose & Docker Hub user guide
 │   ├── PARTICIPANT_MODIFICATION_GUIDE.md             # What participants may change for each controller, and callback rules
+│   ├── CALLBACK_EXAMPLES.md                          # Callback reference schemas, adaptive strategies & integration guide
 │   ├── WANDB_LEADERBOARD_GUIDE.md                    # W&B leaderboard guide for the organizer and participants
 │   ├── MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md         # Protocol for the 10-agent benchmark with live W&B submission
 │   ├── MULTI_AGENT_TOURNAMENT_REPORT1.md             # Superseded earlier tournament report (scores not confirmed on W&B)
@@ -217,7 +218,7 @@ Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](n
 4. **Step 4 (Baseline 0 & Baseline 1 / Track 1):** Baseline 0, the classical SVD controller, is a fixed reference. Baseline 1 inverts your TODO 1 surrogate with SciPy `L-BFGS-B`, so a more accurate surrogate improves its score.
 5. **Step 4 (TODO 2 / Track 2):** Implement and tune your custom closed-loop policy agent: gain (up to about 1.0), saturation compensation on the total current from `info["currents"]`, damping schedules and reward shaping.
 6. **Step 4 (TODO 3 / Track 3):** Implement and tune your sample-efficient Bayesian Optimization controller with GaussianProcessRegressor and Lower Confidence Bound (LCB) acquisition.
-7. **Step 4 (optional callbacks):** Register `step_callback` / `episode_callback` functions for Baseline 1, Track 2 and Track 3 in the `CALLBACKS` dictionary at the end of Step 4. Baseline 0 always runs without callbacks.
+7. **Step 4 (optional callbacks):** Register `step_callback` / `episode_callback` functions for Baseline 1, Track 2 and Track 3 in the `CALLBACKS` dictionary at the end of Step 4 (see [`docs/CALLBACK_EXAMPLES.md`](docs/CALLBACK_EXAMPLES.md)). Baseline 0 always runs without callbacks.
 8. **Step 5:** Run the locked benchmark cell, which evaluates all four controllers on the 30 seeds, passes your `CALLBACKS`, and logs each run to W&B with its URL and score.
 9. **Step 6 & 7:** Generate trajectory alignment plots and prepare your team's 3-minute showcase presentation.
 
@@ -234,6 +235,7 @@ For detailed guidelines, refer to the included guides:
 - [Mini-Hackathon Participant Instructions (Word Document)](<docs/Mini-Hackathon Participant Instructions.docx>) — Quick participant checklist.
 - [W&B Leaderboard Guide](docs/WANDB_LEADERBOARD_GUIDE.md) — Leaderboard setup for the organizer and submission steps for participants.
 - [Participant Modification Guide](docs/PARTICIPANT_MODIFICATION_GUIDE.md) — What participants may change for each controller, and the callback rules.
+- [Callback Examples & Integration Guide](docs/CALLBACK_EXAMPLES.md) — Reference schemas, adaptive gain strategies, watchdogs, and step/episode callback recipes.
 - [Docker Installation Guide](docs/DOCKER_INSTALL_GUIDE.md) and [Docker Environment Guide](docs/DOCKER_GUIDE.md) — Pre-workshop Docker installation, image download and test.
 - [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md), [Tournament 2 Report](docs/MULTI_AGENT_TOURNAMENT_REPORT2.md), and [Tournament 3 Report](docs/MULTI_AGENT_TOURNAMENT_REPORT3.md) — Multi-agent benchmark protocols and verified W&B tournament results on the 6-kick benchmark.
 - [AGENTS.md](AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.
