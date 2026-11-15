@@ -688,7 +688,7 @@ def create_presentation():
     # ==========================================
     s17 = prs.slides.add_slide(blank_layout)
     add_header(s17, "Closed-Loop Control", "Closed-Loop Control Architecture",
-               "Transitioning from predictive surrogate modeling to active closed-loop trajectory correction")
+               "Three learning paradigms behind the challenge tracks; all three act on the measured orbit at every step")
 
     # Image scaled: Height = 4.25 in, aspect ratio preserved and centered (Top: 1.38 to 5.63in)
     ctrl_img = IMG_DIR / "forward_sl_and_rl_schematic.png"
@@ -702,9 +702,10 @@ def create_presentation():
     tf17 = tb17.text_frame
     tf17.word_wrap = True
     tf17.vertical_anchor = MSO_ANCHOR.MIDDLE
-    add_text_run(tf17.paragraphs[0], 
-                 "• Forward Supervised Model (Left): Maps candidate corrector kick commands ΔI to predicted BPM displacement vectors Ŷ.\n"
-                 "• Closed-Loop Control Loop (Right): Senses true BPM displacement Y, passes error through the controller policy, updates magnet power supplies, and repeats until convergence.", 
+    add_text_run(tf17.paragraphs[0],
+                 "• Supervised (Track 1): trains an MLP surrogate offline, then inverts it at each step for the kick ΔI.\n"
+                 "• Reinforcement (Track 2): a policy acts on the measured orbit Y and improves from the reward it receives.\n"
+                 "• Bayesian Optimization (Track 3): a GP models the response with uncertainty; each step minimizes the LCB.",
                  size=Pt(12.5), color=DARK_GRAY)
 
     add_footer(s17, 17)

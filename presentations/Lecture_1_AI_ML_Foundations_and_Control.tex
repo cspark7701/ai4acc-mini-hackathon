@@ -534,7 +534,7 @@
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
-  \slideheader{Closed-Loop Control}{Closed-Loop Control Architecture}{Transitioning from predictive surrogate modeling to active closed-loop trajectory correction}
+  \slideheader{Closed-Loop Control}{Closed-Loop Control Architecture}{Three learning paradigms behind the challenge tracks; all three act on the measured orbit at every step}
 
   % Sized Image: Height = 4.25 in (aspect ratio preserved)
   \node[anchor=north,inner sep=0pt]
@@ -545,8 +545,9 @@
   \drawcard{0.8}{5.72}{11.733}{1.18}{}
   \node[anchor=west,inner sep=0pt,text width=11.3in,align=left]
     at ([xshift=1.0in,yshift=-6.31in]current page.north west) {\fs{12.5}{15}\color{darkgray}%
-    $\bullet$ \textbf{Forward Supervised Model (Left):} Maps candidate corrector kick commands $\Delta\mathbf{I}$ to predicted BPM displacement vectors $\hat{\mathbf{Y}}$.\\[0.1em]
-    $\bullet$ \textbf{Closed-Loop Control Loop (Right):} Senses true BPM displacement $\mathbf{Y}$, passes error through the controller policy, updates magnet power supplies, and repeats until convergence.
+    $\bullet$ \textbf{Supervised (Track 1):} trains an MLP surrogate offline, then inverts it at each step for the kick $\Delta\mathbf{I}$.\\[0.1em]
+    $\bullet$ \textbf{Reinforcement (Track 2):} a policy acts on the measured orbit $\mathbf{Y}$ and improves from the reward it receives.\\[0.1em]
+    $\bullet$ \textbf{Bayesian Optimization (Track 3):} a GP models the response with uncertainty; each step minimizes the LCB.
   };
 
   \slidefooter{17}

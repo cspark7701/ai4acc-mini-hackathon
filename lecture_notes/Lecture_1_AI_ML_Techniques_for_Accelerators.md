@@ -155,7 +155,9 @@ graph TD
 
 To successfully design autonomous beam alignment systems, it is essential to understand the fundamental distinction between **Forward Supervised Learning** (learning a digital twin of the accelerator to be inverted) and **Reinforcement Learning** (learning a closed-loop policy agent that directly interacts with the machine).
 
-![Forward Supervised Learning vs. Reinforcement Learning Paradigms in Accelerators](../img/forward_sl_and_rl_schematic.png)
+![Three learning paradigms behind the challenge tracks: supervised surrogate with online inversion (Track 1), reinforcement learning (Track 2), and Bayesian optimization with a Gaussian process (Track 3)](../img/forward_sl_and_rl_schematic.png)
+
+*The three learning paradigms behind the challenge tracks. All three act on the measured orbit at every step; they differ in what is learned and when. Bayesian optimization (Track 3) is covered in Section 4.4.*
 
 #### 3.2.1 Forward Supervised Learning: Surrogate Digital Twin & Online Inversion (Track 1)
 In Forward Supervised Learning, the algorithm learns an input-to-output mapping from static, pre-collected datasets without directly steering the physical machine during training:
