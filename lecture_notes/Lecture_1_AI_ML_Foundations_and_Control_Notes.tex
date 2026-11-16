@@ -163,17 +163,17 @@ The closed-form betatron solution is given by:
 where $\beta(s)$ is the Courant-Snyder beta function, $\psi(s) = \int_0^s \frac{d\bar{s}}{\beta(\bar{s})}$ is the betatron phase advance, and $\nu = \frac{1}{2\pi} \oint \frac{ds}{\beta(s)}$ is the betatron tune.
 
 \subsection{Derivation of the Orbit Response Matrix (ORM)}
-When an angular kick $\theta_j = \Delta x'_j = \frac{e B L}{p}$ is applied by a dipole corrector at longitudinal position $s_j$, the transverse displacement registered at a Beam Position Monitor (BPM) at position $s_i$ is linearly proportional to the kick angle. In a single-pass transport line or linac, which is the hackathon case, only downstream BPMs see the kick, which propagates as a betatron oscillation:
+When an angular kick $\theta_i = \Delta x'_i = \frac{e B L}{p}$ is applied by dipole corrector $i$ at longitudinal position $s_i$, the transverse displacement registered at Beam Position Monitor (BPM) $j$ at position $s_j$ is linearly proportional to the kick angle. (Rows of $\mathbf{R}$ are correctors and columns are BPMs, as in the simulator's \texttt{env.R}.) In a single-pass transport line or linac, which is the hackathon case, only downstream BPMs see the kick, which propagates as a betatron oscillation:
 \begin{equation}
-    R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \begin{cases} \sqrt{\beta(s_i)\beta(s_j)}\, \sin\left( \psi(s_i) - \psi(s_j) \right) & (s_i > s_j) \\ 0 & (s_i \le s_j) \end{cases}
+    R_{ij} = \frac{\Delta x(s_j)}{\theta_i} = \begin{cases} \sqrt{\beta(s_i)\beta(s_j)}\, \sin\left( \psi(s_j) - \psi(s_i) \right) & (s_j > s_i) \\ 0 & (s_j \le s_i) \end{cases}
 \end{equation}
 In a circular ring, the kick instead produces a periodic closed-orbit distortion:
 \begin{equation}
-    R_{ij} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_i) - \psi(s_j)| - \pi \nu \right)
+    R_{ij} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_j) - \psi(s_i)| - \pi \nu \right)
 \end{equation}
 The hackathon simulator models the single-pass transport line using simplified betatron optics with a constant phase advance of $2\pi \cdot 0.18\text{ rad/m}$ and a slowly decaying amplitude:
 \begin{equation}
-    R_{ij} = \frac{1.2\,\sin\left(2\pi \cdot 0.18\,(s_i - s_j)\right)}{1 + 0.05\,(s_i - s_j)}, \qquad (s_i > s_j)
+    R_{ij} = \frac{1.2\,\sin\left(2\pi \cdot 0.18\,(s_j - s_i)\right)}{1 + 0.05\,(s_j - s_i)}, \qquad (s_j > s_i)
 \end{equation}
 For $M$ BPMs and $N$ dipole steerers, the linear response is encapsulated by the matrix $\mathbf{R} \in \mathbb{R}^{N \times M}$~\cite{minty2003measurement}:
 \begin{equation}
@@ -863,9 +863,9 @@ Table~\ref{tab:comparison} summarizes how the two baselines and the two challeng
 \textbf{Method} & \textbf{Control law} & \textbf{Model \& data} & \textbf{Strengths} & \textbf{Limitations} & \textbf{Score: ref.\ / best} \\
 \midrule
 \textbf{Baseline 0}\newline Classical SVD & $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed $\alpha = 0.45$ & Analytic ORM; no training data & Instant, robust, interpretable & Ignores saturation; slow at low gain & 635.277 / --- \\
-\textbf{Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\|^2$ with L-BFGS-B & MLP twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest & 779.169 / 924.2 \\
+\textbf{Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\|^2$ with L-BFGS-B & MLP twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; about 27 ms per step & 779.169 / 924.2 \\
 \textbf{Track 2}\newline RL / adaptive policy & Physics prior $+$ learned residual $+$ damping & Policy parameters; closed-loop tuning & Fastest per step; adapts online & Gain and damping tuning; overshoot & 590.559 / 940.0 \\
-\textbf{Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS & Gaussian process; $\sim$300 shots & Sample-efficient; models uncertainty & GP cost grows; per-step optimization & 878.384 / 909.9 \\
+\textbf{Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS & Gaussian process; $\sim$300 shots & Sample-efficient; models uncertainty & GP cost grows with data; slowest per step (about 66 ms) & 878.384 / 909.9 \\
 \bottomrule
 \end{tabular}%
 }

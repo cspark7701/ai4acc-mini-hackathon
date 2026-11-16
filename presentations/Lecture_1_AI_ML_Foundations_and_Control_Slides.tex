@@ -303,17 +303,17 @@
   \drawcard{0.8}{1.4}{11.733}{5.3}{The Analytical ORM Transfer Function}
   \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
     {\bfseries\color{navy}Orbit Response of a Single-Pass Transport Line to a Steerer Kick:}\\[0.3em]
-    When a steering dipole at $s_j$ applies an angular kick $\theta_j = \frac{e B L}{p}$, only BPMs downstream ($s_i > s_j$) see it:\\[0.5em]
-    \centering{\fs{16}{20}\bfseries\color{primaryblue}$R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \sqrt{\beta_i \beta_j}\, \sin\left( \psi_i - \psi_j \right) \quad (s_i > s_j), \qquad R_{ij} = 0 \ \ \text{upstream}$}\\[0.4em]
+    When steering dipole $i$ at $s_i$ applies an angular kick $\theta_i = \frac{e B L}{p}$, only BPMs $j$ downstream ($s_j > s_i$) see it:\\[0.5em]
+    \centering{\fs{16}{20}\bfseries\color{primaryblue}$R_{ij} = \frac{\Delta x(s_j)}{\theta_i} = \sqrt{\beta_i \beta_j}\, \sin\left( \psi_j - \psi_i \right) \quad (s_j > s_i), \qquad R_{ij} = 0 \ \ \text{upstream}$}\\[0.4em]
     \raggedright
-    {\fs{12}{15}\color{mutedgray}(A ring has the closed-orbit form $\frac{\sqrt{\beta_i \beta_j}}{2\sin\pi\nu}\cos(|\psi_i - \psi_j| - \pi\nu)$; the hackathon line uses constant phase advance $2\pi \cdot 0.18$ rad/m.)}\\[0.7em]
+    {\fs{12}{15}\color{mutedgray}(A ring has the closed-orbit form $\frac{\sqrt{\beta_i \beta_j}}{2\sin\pi\nu}\cos(|\psi_j - \psi_i| - \pi\nu)$; the hackathon line uses constant phase advance $2\pi \cdot 0.18$ rad/m.)}\\[0.7em]
     \raggedright
     {\bfseries\color{navy}$\bullet$ Global Matrix Superposition Formulation:}\\[0.3em]
     For $N$ corrector magnets and $M$ Beam Position Monitors, the linear response is encapsulated as:\\[0.4em]
     \centering{\fs{18}{22}\bfseries\color{primaryblue}$\mathbf{Y}_{\text{linear}} = \mathbf{I} \cdot \mathbf{R}$}\\[0.6em]
     \raggedright
     -- $\mathbf{I} \in \mathbb{R}^6$: Vector of corrector coil currents in Amperes, mapped to kicks via magnetic field integration.\\
-    -- $\mathbf{R} \in \mathbb{R}^{6 \times 12}$: The linear Orbit Response Matrix (ORM).\\
+    -- $\mathbf{R} \in \mathbb{R}^{6 \times 12}$: The linear Orbit Response Matrix (ORM); rows are correctors, columns are BPMs.\\
     -- $\mathbf{Y} \in \mathbb{R}^{12}$: Transverse displacements measured at all 12 downstream BPM stations.\\
     -- Cross-plane coupling: Any single corrector deflection alters the entire beam trajectory downstream.
   }
@@ -1167,9 +1167,9 @@
         \textbf{\color{primaryblue}Method} & \textbf{\color{primaryblue}Control law} & \textbf{\color{primaryblue}Model \& data} & \textbf{\color{primaryblue}Strengths} & \textbf{\color{primaryblue}Limitations} & \textbf{\color{primaryblue}Score: ref.\ / solution} \\
         \midrule
         \textbf{\color{navy}Baseline 0}\newline Classical SVD & $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed gain $\alpha = 0.45$ & Analytic ORM; no training data & Instant, robust, interpretable & Ignores saturation; slow at low gain; fixed reference & 635.277 / --- \\
-        \textbf{\color{navy}Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\|^2$ with L-BFGS-B each step & MLP digital twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; slowest per step & 779.169 / 924.2 \\
+        \textbf{\color{navy}Baseline 1 (Track 1)}\newline Supervised inversion & Minimize $\|\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\|^2$ with L-BFGS-B each step & MLP digital twin; 1,500 offline shots & Learns the non-linear response & Only as good as the surrogate; about 27 ms per step & 779.169 / 924.2 \\
         \textbf{\color{navy}Track 2}\newline RL / adaptive policy & Physics prior $+$ learned residual $+$ damping & Policy parameters; tuned in closed loop & Fastest per step; adapts online & Gain and damping tuning; overshoot risk & 590.559 / 940.0 \\
-        \textbf{\color{navy}Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS each step & Gaussian process; $\sim$300 calibration shots & Sample-efficient; models uncertainty & GP cost grows with data; per-step optimization & 878.384 / 909.9 \\
+        \textbf{\color{navy}Track 3}\newline Bayesian optimization & Minimize LCB of GP-predicted RMS each step & Gaussian process; $\sim$300 calibration shots & Sample-efficient; models uncertainty & GP cost grows with data; slowest per step (about 66 ms) & 878.384 / 909.9 \\
         \bottomrule
       \end{tabular}
     };

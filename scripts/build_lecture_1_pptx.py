@@ -410,12 +410,12 @@ def create_presentation():
 
     p = tf8.paragraphs[0]
     add_text_run(p, "Orbit Response of a Single-Pass Transport Line to a Steerer Kick:\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p, "When a steering dipole at position s_j applies an angular kick θ_j = e B L / p, the orbit shift at BPM position s_i is:\n\n", size=Pt(13.5), color=DARK_GRAY)
+    add_text_run(p, "When steering dipole i at position s_i applies an angular kick θ_i = e B L / p, the orbit shift at BPM j at position s_j is:\n\n", size=Pt(13.5), color=DARK_GRAY)
 
     p_eq = tf8.add_paragraph()
     p_eq.alignment = PP_ALIGN.CENTER
-    add_text_run(p_eq, "R_ij = Δx(s_i) / θ_j = √(β_i β_j) · sin( ψ_i - ψ_j )   for s_i > s_j  (0 upstream)\n", bold=True, size=Pt(16), color=PRIMARY)
-    add_text_run(p_eq, "(A ring has the closed-orbit form √(β_i β_j)/(2 sin πν) · cos(|ψ_i - ψ_j| - πν); the hackathon line uses phase advance 2π·0.18 rad/m.)\n", size=Pt(12), color=MUTED)
+    add_text_run(p_eq, "R_ij = Δx(s_j) / θ_i = √(β_i β_j) · sin( ψ_j - ψ_i )   for s_j > s_i  (0 upstream)\n", bold=True, size=Pt(16), color=PRIMARY)
+    add_text_run(p_eq, "(A ring has the closed-orbit form √(β_i β_j)/(2 sin πν) · cos(|ψ_j - ψ_i| - πν); the hackathon line uses phase advance 2π·0.18 rad/m.)\n", size=Pt(12), color=MUTED)
 
     p2 = tf8.add_paragraph()
     p2.space_before = Pt(8)
@@ -1474,11 +1474,11 @@ def create_presentation():
         ("Baseline 0\nClassical SVD", "ΔI = −α (Rᵀ)⁺ Y, fixed gain α = 0.45", "Analytic ORM; no training data",
          "Instant, robust, interpretable", "Ignores saturation; slow at low gain; fixed reference", "635.277 / —"),
         ("Baseline 1 (Track 1)\nSupervised inversion", "Minimize ‖Y − f_θ(I) + f_θ(I+ΔI)‖² with L-BFGS-B each step", "MLP digital twin; 1,500 offline shots",
-         "Learns the non-linear response", "Only as good as the surrogate; slowest per step", "779.169 / 924.2"),
+         "Learns the non-linear response", "Only as good as the surrogate; about 27 ms per step", "779.169 / 924.2"),
         ("Track 2\nRL / adaptive policy", "Physics prior + learned residual + damping", "Policy parameters; tuned in closed loop",
          "Fastest per step; adapts online", "Gain and damping tuning; overshoot risk", "590.559 / 940.0"),
         ("Track 3\nBayesian optimization", "Minimize LCB of GP-predicted RMS each step", "Gaussian process; ~300 calibration shots",
-         "Sample-efficient; models uncertainty", "GP cost grows with data; per-step optimization", "878.384 / 909.9"),
+         "Sample-efficient; models uncertainty", "GP cost grows with data; slowest per step (about 66 ms)", "878.384 / 909.9"),
     ]
     cmp_headers = ["Method", "Control law", "Model & data", "Strengths", "Limitations", "Score: ref. / solution"]
     cmp_shape_32 = s33.shapes.add_table(5, 6, Inches(0.8), Inches(1.55), Inches(11.733), Inches(4.5))

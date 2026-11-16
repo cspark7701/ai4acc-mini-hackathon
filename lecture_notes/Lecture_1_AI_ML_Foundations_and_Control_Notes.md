@@ -99,18 +99,17 @@ $$x(s) = \sqrt{\epsilon \beta(s)} \cos\left( \psi(s) + \phi_0 \right)$$
 - $\nu = \frac{1}{2\pi} \oint \frac{ds}{\beta(s)}$: The betatron tune (total phase advance in units of $2\pi$).
 
 ### 2.3 Derivation of the Orbit Response Matrix (ORM)
-When a localized angular deflection (kick) $\theta_j = \Delta x'_j = \frac{e B L}{p}$ is applied by a dipole steering corrector at position $s_j$, the orbit shift observed by a Beam Position Monitor (BPM) at position $s_i$ depends on the machine type:
+When a localized angular deflection (kick) $\theta_i = \Delta x'_i = \frac{e B L}{p}$ is applied by dipole steering corrector $i$ at position $s_i$, the orbit shift observed by Beam Position Monitor (BPM) $j$ at position $s_j$ depends on the machine type. Rows of $\mathbf{R}$ are correctors and columns are BPMs, as in the simulator's `env.R`:
 
 - **Single-pass transport line or linac** (the hackathon case): only BPMs downstream of the corrector see the kick, which propagates as a betatron oscillation:
-  $$R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \begin{cases} \sqrt{\beta(s_i)\beta(s_j)}\, \sin\left( \psi(s_i) - \psi(s_j) \right) & (s_i > s_j) \\ 0 & (s_i \le s_j) \end{cases}$$
+  $$R_{ij} = \frac{\Delta x(s_j)}{\theta_i} = \begin{cases} \sqrt{\beta(s_i)\beta(s_j)}\, \sin\left( \psi(s_j) - \psi(s_i) \right) & (s_j > s_i) \\ 0 & (s_j \le s_i) \end{cases}$$
 - **Circular ring:** the kick produces a periodic closed-orbit distortion seen at every BPM:
-  $$R_{ij} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_i) - \psi(s_j)| - \pi \nu \right)$$
+  $$R_{ij} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_j) - \psi(s_i)| - \pi \nu \right)$$
 - **Hackathon simplified optics model:** constant phase advance of $2\pi \cdot 0.18\text{ rad/m}$ and slowly decaying amplitude:
-  $$R_{ij} = \frac{1.2\,\sin\big(2\pi \cdot 0.18\,(s_i - s_j)\big)}{1 + 0.05\,(s_i - s_j)}, \qquad (s_i > s_j)$$
+  $$R_{ij} = \frac{1.2\,\sin\big(2\pi \cdot 0.18\,(s_j - s_i)\big)}{1 + 0.05\,(s_j - s_i)}, \qquad (s_j > s_i)$$
 
-For $M$ BPMs and $N$ dipole steerers, the linear response is encapsulated by the matrix $\mathbf{R} \in \mathbb{R}^{N \times M}$ ([Minty & Zimmermann, 2003](https://doi.org/10.1007/978-3-662-08581-3)):
-$$\mathbf{Y}_{\text{linear}} = \mathbf{R} \cdot \boldsymbol{\theta} = \mathbf{I} \cdot \mathbf{R}$$
-where $\mathbf{R} \in \mathbb{R}^{N \times M}$ is the **Orbit Response Matrix (ORM)**.
+For $N$ dipole steerers and $M$ BPMs, the linear response is encapsulated by the **Orbit Response Matrix (ORM)** $\mathbf{R} \in \mathbb{R}^{N \times M}$ ([Minty & Zimmermann, 2003](https://doi.org/10.1007/978-3-662-08581-3)). With the currents and the orbit written as row vectors:
+$$\mathbf{Y}_{\text{linear}} = \mathbf{I} \cdot \mathbf{R}$$
 
 ### 2.4 The Mini-Hackathon Lattice Geometry
 The hackathon environment models a 15-meter transport line:
@@ -774,9 +773,9 @@ Across the 30 standardized seeds, the four unmodified reference controllers scor
 | Method | Control law | Model & data | Strengths | Limitations | Score: reference / worked solution |
 | :--- | :--- | :--- | :--- | :--- | :---: |
 | **Baseline 0**<br>Classical SVD | $\Delta\mathbf{I} = -\alpha(\mathbf{R}^T)^\dagger\mathbf{Y}$, fixed gain $\alpha = 0.45$ | Analytic ORM; no training data | Instant, robust, interpretable | Ignores saturation; slow at low gain; fixed reference | 635.277 / — |
-| **Baseline 1 (Track 1)**<br>Supervised inversion | Minimize $\lVert\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\rVert^2$ with L-BFGS-B each step | MLP digital twin; 1,500 offline shots | Learns the non-linear response | Only as good as the surrogate; slowest per step | 779.169 / 924.2 |
+| **Baseline 1 (Track 1)**<br>Supervised inversion | Minimize $\lVert\mathbf{Y} - f_\theta(\mathbf{I}) + f_\theta(\mathbf{I}+\Delta\mathbf{I})\rVert^2$ with L-BFGS-B each step | MLP digital twin; 1,500 offline shots | Learns the non-linear response | Only as good as the surrogate; about 27 ms per step | 779.169 / 924.2 |
 | **Track 2**<br>RL / adaptive policy | Physics prior + learned residual + damping | Policy parameters; tuned in closed loop | Fastest per step; adapts online | Gain and damping tuning; overshoot risk | 590.559 / 940.0 |
-| **Track 3**<br>Bayesian optimization | Minimize LCB of GP-predicted RMS each step | Gaussian process; ~300 calibration shots | Sample-efficient; models uncertainty | GP cost grows with data; per-step optimization | 878.384 / 909.9 |
+| **Track 3**<br>Bayesian optimization | Minimize LCB of GP-predicted RMS each step | Gaussian process; ~300 calibration shots | Sample-efficient; models uncertainty | GP cost grows with data; slowest per step (about 66 ms) | 878.384 / 909.9 |
 
 *Reference:* unmodified notebook controllers. *Worked solution:* the organizers' Solution notebook, which inverts the model on the total current (exact saturation physics for Track 2, an accurate MLP for Track 1, a GP calibrated on $\pm 3.5$ A for Track 3). Baseline 0 is a fixed reference and is not tuned by participants.
 
