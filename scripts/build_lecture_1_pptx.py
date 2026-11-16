@@ -37,6 +37,7 @@ BORDER_GRAY = RGBColor(200, 205, 210) # Border Outline (#C8CDD2)
 MUTED = RGBColor(127, 140, 141)       # Muted text (#7F8C8D)
 WHITE = RGBColor(255, 255, 255)
 CRIMSON = RGBColor(158, 22, 54)       # Highlight Red (#9E1636)
+TUNABLE_RED = RGBColor(192, 57, 43)   # Tunable Hyperparameter Red (#C0392B)
 SUCCESS_GREEN = RGBColor(39, 174, 96) # Green (#27AE60)
 GOLD = RGBColor(180, 140, 20)
 
@@ -665,62 +666,88 @@ def create_presentation():
                "How choice of activation function governs phase space distortion, symplecticity, and extrapolation")
 
     add_card(s15, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Behavior of Activation Functions on Phase Space (x, x') and Transfer Matrix M")
-    tb15 = s15.shapes.add_textbox(Inches(1.1), Inches(2.05), Inches(11.1), Inches(4.5))
-    tf15 = tb15.text_frame
-    tf15.word_wrap = True
 
-    p = tf15.paragraphs[0]
-    add_text_run(p, "1. Linear / Identity Activation (σ(z) = z):\n", bold=True, size=Pt(14), color=NAVY)
-    add_text_run(p, "   • Matrix Collapse: Stacking linear layers collapses to W⁽ᴸ⁾...W⁽¹⁾ x + b_net ≡ M_eff x + b_net. Mathematically identical to a transfer matrix.\n"
-                    "   • Beam Optics Impact: Exactly preserves linear phase-space ellipses (γ x² + 2α x x' + β x'² = ε) and symplecticity (det M = 1). Extrapolates perfectly to arbitrary beam sizes.\n"
-                    "   • Limitation: Fundamentally incapable of learning non-linear chromaticity, sextupole kicks (x' ∝ x²), or magnetic core saturation.\n\n", size=Pt(12.5), color=DARK_GRAY)
+    # Left Column: Linear/Identity & ReLU (width 5.4 in)
+    tb15_l = s15.shapes.add_textbox(Inches(1.1), Inches(2.05), Inches(5.4), Inches(4.5))
+    tf15_l = tb15_l.text_frame
+    tf15_l.word_wrap = True
 
-    p2 = tf15.add_paragraph()
-    add_text_run(p2, "2. Rectified Linear Unit (ReLU: σ(z) = max(0, z)):\n", bold=True, size=Pt(14), color=NAVY)
-    add_text_run(p2, "   • Piecewise Linear Facets: Partitions phase space (x, x') into polyhedral regions bounded by hyperplanes wⱼᵀ x + bⱼ = 0.\n"
-                    "   • Beam Optics Impact: Deforms smooth phase-space ellipses into faceted polygons with sharp slope kinks (non-differentiable points).\n"
-                    "   • Dying Neurons Risk: Particles entering inactive half-spaces (z < 0) have zero gradient and output 0, locally collapsing phase-space dimensions and violating Liouville area conservation.\n\n", size=Pt(12.5), color=DARK_GRAY)
+    p_15l1 = tf15_l.paragraphs[0]
+    add_text_run(p_15l1, "1. Linear / Identity Activation (σ(z) = z):\n", bold=True, size=Pt(13), color=NAVY)
+    add_text_run(p_15l1, "• Matrix Collapse: Stacking linear layers collapses to W⁽ᴸ⁾...W⁽¹⁾ x + b_net ≡ M_eff x + b_net. Mathematically identical to a transfer matrix.\n"
+                         "• Beam Optics Impact: Exactly preserves linear phase-space ellipses (γ x² + 2α x x' + β x'² = ε) and symplecticity (det M = 1). Extrapolates perfectly to arbitrary beam sizes.\n"
+                         "• Limitation: Fundamentally incapable of learning non-linear chromaticity, sextupole kicks (x' ∝ x²), or magnetic core saturation.\n\n", size=Pt(11), color=DARK_GRAY)
 
-    p3 = tf15.add_paragraph()
-    add_text_run(p3, "3. Hyperbolic Tangent (Tanh: σ(z) = tanh(z)):\n", bold=True, size=Pt(14), color=NAVY)
-    add_text_run(p3, "   • Smooth Non-Linearity: Continuously differentiable (C^∞). Near the beam core (|z| ≪ 1), tanh(z) ≈ z, so the surrogate behaves linearly and learns M accurately.\n"
-                    "   • Beam Optics Impact: At large amplitudes (beam halo, large steering errors), hidden neurons saturate (tanh(z) → ±1). Squashes phase-space ellipses into S-curves, artificially compressing emittance (det J → 0) and violating symplecticity in the wings.\n\n", size=Pt(12.5), color=DARK_GRAY)
+    p_15l2 = tf15_l.add_paragraph()
+    add_text_run(p_15l2, "2. Rectified Linear Unit (ReLU: σ(z) = max(0, z)):\n", bold=True, size=Pt(13), color=NAVY)
+    add_text_run(p_15l2, "• Piecewise Linear Facets: Partitions phase space (x, x') into polyhedral regions bounded by hyperplanes wⱼᵀ x + bⱼ = 0.\n"
+                         "• Beam Optics Impact: Deforms smooth phase-space ellipses into faceted polygons with sharp slope kinks (non-differentiable points).\n"
+                         "• Dying Neurons Risk: Particles entering inactive half-spaces (z < 0) have zero gradient and output 0, locally collapsing phase-space dimensions and violating Liouville area conservation.", size=Pt(11), color=DARK_GRAY)
 
-    p4 = tf15.add_paragraph()
-    add_text_run(p4, "4. Output Layer Architecture Requirement: ", bold=True, size=Pt(14), color=NAVY)
-    add_text_run(p4, "Must be Linear (Identity)! Transverse coordinates x_f and angles x'_f are unbounded real values. Bounded activations on outputs impose an unphysical aperture cap.", bold=True, size=Pt(13), color=CRIMSON)
+    # Right Column: Tanh & Output Layer Requirement (width 5.4 in)
+    tb15_r = s15.shapes.add_textbox(Inches(6.8), Inches(2.05), Inches(5.4), Inches(4.5))
+    tf15_r = tb15_r.text_frame
+    tf15_r.word_wrap = True
+
+    p_15r1 = tf15_r.paragraphs[0]
+    add_text_run(p_15r1, "3. Hyperbolic Tangent (Tanh: σ(z) = tanh(z)):\n", bold=True, size=Pt(13), color=NAVY)
+    add_text_run(p_15r1, "• Smooth Non-Linearity: Continuously differentiable (C^∞). Near the beam core (|z| ≪ 1), tanh(z) ≈ z, so the surrogate behaves linearly and learns M accurately.\n"
+                         "• Beam Optics Impact: At large amplitudes (beam halo, large steering errors), hidden neurons saturate (tanh(z) → ±1). Squashes phase-space ellipses into S-curves, artificially compressing emittance (det J → 0) and violating symplecticity in the wings.\n\n", size=Pt(11), color=DARK_GRAY)
+
+    p_15r2 = tf15_r.add_paragraph()
+    add_text_run(p_15r2, "4. Output Layer Architecture Requirement:\n", bold=True, size=Pt(13), color=NAVY)
+    add_text_run(p_15r2, "• Strictly Linear (Identity) Output: Transverse coordinates x_f and angles x'_f are unbounded physical quantities.\n"
+                         "• Risk of Bounded Activations: Using Sigmoid or Tanh on outputs imposes an unphysical aperture cap, clipping large kicks and destroying model inversion.", size=Pt(11), color=CRIMSON)
 
     add_footer(s15, 15)
 
     # ==========================================
-    # SLIDE 16: Optimization Algorithms in Machine Learning (DEDICATED SLIDE)
+    # SLIDE 16: Optimization Algorithms in Machine Learning
     # ==========================================
     s16 = prs.slides.add_slide(blank_layout)
     add_header(s16, "ML Foundations", "Optimization Algorithms in Machine Learning",
                "First-order stochastic gradient methods, momentum, adaptive learning rates, and quasi-Newton solvers")
 
     add_card(s16, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Evolution of Solvers: From Standard SGD to Adam and L-BFGS-B")
-    tb16_opt = s16.shapes.add_textbox(Inches(1.1), Inches(2.05), Inches(11.1), Inches(4.5))
-    tf16_opt = tb16_opt.text_frame
-    tf16_opt.word_wrap = True
 
-    opts = [
-        ("1. SGD (Stochastic Gradient Descent):", "θ ← θ - η · g", "• Basic first-order step. Prone to severe oscillation across ill-conditioned curvatures and high sensitivity to learning rate η."),
-        ("2. Momentum SGD:", "v ← γ·v + η·g,  θ ← θ - v", "• Accumulates velocity in directions of consistent gradients, dampening oscillations and accelerating through saddle points."),
-        ("3. AdaGrad (Adaptive Gradient):", "θ ← θ - [η / √(G + ε)] · g", "• Adapts learning rates per-parameter based on historical squared gradients. However, learning rate decays monotonically to zero."),
-        ("4. RMSProp:", "v ← β·v + (1-β)·g²,  θ ← θ - [η / √(v + ε)] · g", "• Uses exponentially decaying moving average of squared gradients. Solves AdaGrad's premature stopping problem."),
-        ("5. Adam (Adaptive Moment Estimation):", "m_t (1st moment) + v_t (2nd moment)", "• Combines Momentum and RMSProp with bias correction. Default gold standard for deep neural network surrogate training."),
-        ("6. AdamW (Decoupled Weight Decay):", "Direct L2 weight decay subtraction", "• Decouples L2 penalty from adaptive gradient scaling. Dramatically improves generalization performance."),
-        ("7. L-BFGS-B (Quasi-Newton with Box Bounds):", "Second-order Hessian approximation", "• Highly effective for bounded parameter inversion (Baseline 1 & Track 3) with tight box bounds [-0.8, +0.8] A.")
+    # Left Column: SGD, Momentum, AdaGrad, RMSProp (width 5.4 in)
+    tb16_l = s16.shapes.add_textbox(Inches(1.1), Inches(2.05), Inches(5.4), Inches(4.5))
+    tf16_l = tb16_l.text_frame
+    tf16_l.word_wrap = True
+
+    opts_l = [
+        ("1. SGD (Stochastic Gradient):", "θ ← θ - η · g", "Basic first-order step. Prone to severe oscillation across ill-conditioned curvatures and high sensitivity to learning rate η."),
+        ("2. Momentum SGD:", "v ← γ·v + η·g,  θ ← θ - v", "Accumulates velocity in directions of consistent gradients, dampening oscillations and accelerating through saddle points."),
+        ("3. AdaGrad (Adaptive Gradient):", "θ ← θ - [η / √(G + ε)] · g", "Adapts learning rates per-parameter based on historical squared gradients. However, learning rate decays monotonically to zero."),
+        ("4. RMSProp:", "v ← β·v + (1-β)·g²,  θ ← θ - [η / √(v + ε)] · g", "Uses exponentially decaying moving average of squared gradients. Solves AdaGrad's premature stopping problem.")
     ]
 
-    for i, (name, formula, desc) in enumerate(opts):
-        p_opt = tf16_opt.paragraphs[0] if i == 0 else tf16_opt.add_paragraph()
+    for i, (name, formula, desc) in enumerate(opts_l):
+        p_opt = tf16_l.paragraphs[0] if i == 0 else tf16_l.add_paragraph()
         if i > 0:
             p_opt.space_before = Pt(4)
-        add_text_run(p_opt, f"{name} ", bold=True, size=Pt(12.5), color=NAVY)
-        add_text_run(p_opt, f"{formula}  --  ", bold=True, size=Pt(12), color=PRIMARY)
-        add_text_run(p_opt, desc, size=Pt(11.5), color=DARK_GRAY)
+        add_text_run(p_opt, f"{name} ", bold=True, size=Pt(11.5), color=NAVY)
+        add_text_run(p_opt, f"{formula}\n", bold=True, size=Pt(11), color=PRIMARY)
+        add_text_run(p_opt, f"• {desc}", size=Pt(10.5), color=DARK_GRAY)
+
+    # Right Column: Adam, AdamW, L-BFGS-B (width 5.4 in)
+    tb16_r = s16.shapes.add_textbox(Inches(6.8), Inches(2.05), Inches(5.4), Inches(4.5))
+    tf16_r = tb16_r.text_frame
+    tf16_r.word_wrap = True
+
+    opts_r = [
+        ("5. Adam (Adaptive Moment Estimation):", "m_t (1st moment) + v_t (2nd moment)", "Combines Momentum and RMSProp with bias correction. Default gold standard for deep neural network surrogate training."),
+        ("6. AdamW (Decoupled Weight Decay):", "Direct L2 weight decay subtraction", "Decouples L2 penalty from adaptive gradient scaling. Dramatically improves generalization performance."),
+        ("7. L-BFGS-B (Quasi-Newton with Bounds):", "Second-order Hessian approximation", "Highly effective for bounded parameter inversion (Baseline 1 & Track 3) with tight box bounds [-0.8, +0.8] A.")
+    ]
+
+    for i, (name, formula, desc) in enumerate(opts_r):
+        p_opt = tf16_r.paragraphs[0] if i == 0 else tf16_r.add_paragraph()
+        if i > 0:
+            p_opt.space_before = Pt(6)
+        add_text_run(p_opt, f"{name} ", bold=True, size=Pt(11.5), color=NAVY)
+        add_text_run(p_opt, f"{formula}\n", bold=True, size=Pt(11), color=PRIMARY)
+        add_text_run(p_opt, f"• {desc}", size=Pt(10.5), color=DARK_GRAY)
 
     add_footer(s16, 16)
 
@@ -750,9 +777,9 @@ def create_presentation():
                        "• Generalization & Early Stopping: Halts training when validation loss stops improving, avoiding memorizing sensor noise (10 μm).", size=Pt(11.5), color=DARK_GRAY)
 
     # Right Box: Hyperparameter Table
-    sl_table_shape = s17.shapes.add_table(7, 3, Inches(6.6), Inches(2.05), Inches(5.7), Inches(4.4))
+    sl_table_shape = s17.shapes.add_table(7, 3, Inches(6.6), Inches(2.05), Inches(5.7), Inches(4.1))
     sl_tbl = sl_table_shape.table
-    for idx, w in enumerate([Inches(1.4), Inches(1.4), Inches(2.9)]):
+    for idx, w in enumerate([Inches(1.45), Inches(1.35), Inches(2.9)]):
         sl_tbl.columns[idx].width = w
 
     for c_idx, h_text in enumerate(["Hyperparameter", "Typical Value", "Physical Meaning & Effect"]):
@@ -761,15 +788,15 @@ def create_presentation():
         cell.fill.fore_color.rgb = PRIMARY
         p_c = cell.text_frame.paragraphs[0]
         p_c.alignment = PP_ALIGN.CENTER if c_idx < 2 else PP_ALIGN.LEFT
-        add_text_run(p_c, h_text, bold=True, size=Pt(11), color=WHITE)
+        add_text_run(p_c, h_text, bold=True, size=Pt(10.5), color=WHITE)
 
     sl_rows = [
-        ("Learning Rate (η)", "10⁻³ (Adam)", "Step size along gradient. Too large diverges; too small stagnates in local plateaus."),
-        ("Batch Size (B)", "32 to 128", "Samples per gradient step. Smaller batches provide regularization; larger give speed."),
-        ("Architecture", "(128, 64, 32)", "Depth and width. Must have capacity to capture cubic saturation without overfitting."),
-        ("Activation (σ)", "ReLU / Leaky ReLU", "Non-linearity in hidden layers. Linear activation strictly reserved for output layer."),
-        ("L2 Penalty (α)", "10⁻⁴", "Weight decay penalty (1/2)α||w||². Suppresses overfitting to BPM jitter (10 μm)."),
-        ("Max Epochs / Early Stop", "400 ep, tol=10⁻⁴", "Halts optimization when validation loss stops improving, avoiding overtraining.")
+        ("Learning Rate (η)*", "10⁻³ (Adam)", "Step size along gradient. Too large diverges; too small stagnates in local plateaus."),
+        ("Batch Size (B)*", "32 to 128", "Samples per gradient step. Smaller batches provide regularization; larger give speed."),
+        ("Architecture*", "(128, 64, 32)", "Depth and width. Must have capacity to capture cubic saturation without overfitting."),
+        ("Activation (σ)*", "ReLU / Leaky ReLU", "Non-linearity in hidden layers. Linear activation strictly reserved for output layer."),
+        ("L2 Penalty (α)*", "10⁻⁴", "Weight decay penalty (1/2)α||w||². Suppresses overfitting to BPM jitter (10 μm)."),
+        ("Max Epochs / Tol*", "400 ep, tol=10⁻⁴", "Halts optimization when validation loss stops improving, avoiding overtraining.")
     ]
     for r_idx, row_vals in enumerate(sl_rows, start=1):
         for c_idx, text_val in enumerate(row_vals):
@@ -779,7 +806,13 @@ def create_presentation():
             cell.text_frame.word_wrap = True
             p_cell = cell.text_frame.paragraphs[0]
             p_cell.alignment = PP_ALIGN.LEFT
-            add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(10), color=NAVY if c_idx == 0 else DARK_GRAY)
+            add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(9.5), color=TUNABLE_RED if c_idx == 0 else DARK_GRAY)
+
+    # Footnote on modifiable hyperparameters
+    tb17_fn = s17.shapes.add_textbox(Inches(6.6), Inches(6.22), Inches(5.7), Inches(0.4))
+    tb17_fn.text_frame.word_wrap = True
+    p_fn17 = tb17_fn.text_frame.paragraphs[0]
+    add_text_run(p_fn17, "* Red text: Hyperparameters participants can modify in notebook TODO 1", bold=True, size=Pt(9.5), color=TUNABLE_RED)
 
     add_footer(s17, 17)
 
@@ -790,15 +823,15 @@ def create_presentation():
     add_header(s18, "Surrogate Modeling", "Neural Surrogate Digital Twin",
                "Deep Multi-Layer Perceptron (128-64-32) capturing non-linear cubic saturation")
 
-    # Image scaled: Height = 4.25 in, aspect ratio preserved and centered (Top: 1.38 to 5.63in)
+    # Image scaled: Height = 3.85 in, aspect ratio preserved and centered
     mlp_img = IMG_DIR / "mlp_schematic.png"
     if mlp_img.exists():
-        pic = s18.shapes.add_picture(str(mlp_img), Inches(0), Inches(1.38), height=Inches(4.25))
+        pic = s18.shapes.add_picture(str(mlp_img), Inches(0), Inches(1.38), height=Inches(3.85))
         pic.left = int((SLIDE_WIDTH - pic.width) / 2)
 
     # Card below the image
-    add_card(s18, Inches(0.8), Inches(5.72), Inches(11.733), Inches(1.18), bg_color=LIGHT_BG)
-    tb18 = s18.shapes.add_textbox(Inches(1.0), Inches(5.76), Inches(11.3), Inches(1.1))
+    add_card(s18, Inches(0.8), Inches(5.38), Inches(11.733), Inches(1.22), bg_color=LIGHT_BG)
+    tb18 = s18.shapes.add_textbox(Inches(1.0), Inches(5.42), Inches(11.3), Inches(1.14))
     tf18 = tb18.text_frame
     tf18.word_wrap = True
     tf18.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -848,15 +881,15 @@ def create_presentation():
     add_header(s20, "Closed-Loop Control", "Closed-Loop Control Architecture",
                "Three learning paradigms behind the challenge tracks; all three act on the measured orbit at every step")
 
-    # Image scaled: Height = 4.25 in, aspect ratio preserved and centered (Top: 1.38 to 5.63in)
+    # Image scaled: Height = 3.85 in, aspect ratio preserved and centered
     ctrl_img = IMG_DIR / "forward_sl_and_rl_schematic.png"
     if ctrl_img.exists():
-        pic = s20.shapes.add_picture(str(ctrl_img), Inches(0), Inches(1.38), height=Inches(4.25))
+        pic = s20.shapes.add_picture(str(ctrl_img), Inches(0), Inches(1.38), height=Inches(3.85))
         pic.left = int((SLIDE_WIDTH - pic.width) / 2)
 
     # Card below the image
-    add_card(s20, Inches(0.8), Inches(5.72), Inches(11.733), Inches(1.18), bg_color=LIGHT_BG)
-    tb20 = s20.shapes.add_textbox(Inches(1.0), Inches(5.76), Inches(11.3), Inches(1.1))
+    add_card(s20, Inches(0.8), Inches(5.38), Inches(11.733), Inches(1.22), bg_color=LIGHT_BG)
+    tb20 = s20.shapes.add_textbox(Inches(1.0), Inches(5.42), Inches(11.3), Inches(1.14))
     tf20 = tb20.text_frame
     tf20.word_wrap = True
     tf20.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -961,9 +994,9 @@ def create_presentation():
                        "• Policy Architecture: Physics prior (Rᵀ)⁺ + learned residual W_learned.", size=Pt(11.5), color=DARK_GRAY)
 
     # Right Box: Hyperparameter Table
-    rl_table_shape = s23.shapes.add_table(7, 3, Inches(6.6), Inches(2.05), Inches(5.7), Inches(4.4))
+    rl_table_shape = s23.shapes.add_table(7, 3, Inches(6.6), Inches(2.05), Inches(5.7), Inches(4.1))
     rl_tbl = rl_table_shape.table
-    for idx, w in enumerate([Inches(1.4), Inches(1.4), Inches(2.9)]):
+    for idx, w in enumerate([Inches(1.45), Inches(1.35), Inches(2.9)]):
         rl_tbl.columns[idx].width = w
 
     for c_idx, h_text in enumerate(["Hyperparameter", "Typical Value", "Role in Orbit Control"]):
@@ -972,15 +1005,15 @@ def create_presentation():
         cell.fill.fore_color.rgb = PRIMARY
         p_c = cell.text_frame.paragraphs[0]
         p_c.alignment = PP_ALIGN.CENTER if c_idx < 2 else PP_ALIGN.LEFT
-        add_text_run(p_c, h_text, bold=True, size=Pt(11), color=WHITE)
+        add_text_run(p_c, h_text, bold=True, size=Pt(10.5), color=WHITE)
 
     rl_rows = [
-        ("Discount Factor (γ)", "0.95 - 0.99", "Temporal horizon weight. High γ prioritizes final sub-30 μm landing over per-step penalty."),
-        ("Learning Rate (η_π)", "10⁻⁴ - 10⁻³", "Step size for policy / actor updates. Must be stable against stochastic sensor noise."),
-        ("Exploration Noise (σ)", "𝒩(0, 0.05²) A", "Action perturbations during training to probe saturation; decays towards zero."),
-        ("Harmonic Damping (κ)", "κ ≈ 0.03", "Temporal authority schedule γ(t) = 1/(1+κ t) suppressing sensor jitter amplification."),
-        ("Reward Weights", "w_rms=10, w_act=0.01", "Balances orbit error penalty against coil resistive heating and power supply strain."),
-        ("Step Penalty (c_step)", "0.5 pts/step", "Incentivizes fastest convergence to maximize hackathon speed score (up to 300 pts).")
+        ("Discount Factor (γ)*", "0.95 - 0.99", "Temporal horizon weight. High γ prioritizes final sub-30 μm landing over per-step penalty."),
+        ("Policy LR (η_π)*", "10⁻⁴ - 10⁻³", "Step size for policy / actor updates. Must be stable against stochastic sensor noise."),
+        ("Exploration Noise (σ)*", "𝒩(0, 0.05²) A", "Action perturbations during training to probe saturation; decays towards zero."),
+        ("Harmonic Damping (κ)*", "κ ≈ 0.03", "Temporal authority schedule γ(t) = 1/(1+κ t) suppressing sensor jitter amplification."),
+        ("Reward Weights*", "w_rms=10, w_act=0.01", "Balances orbit error penalty against coil resistive heating and power supply strain."),
+        ("Step Penalty (c_step)*", "0.5 pts/step", "Incentivizes fastest convergence to maximize hackathon speed score (up to 300 pts).")
     ]
     for r_idx, row_vals in enumerate(rl_rows, start=1):
         for c_idx, text_val in enumerate(row_vals):
@@ -990,7 +1023,13 @@ def create_presentation():
             cell.text_frame.word_wrap = True
             p_cell = cell.text_frame.paragraphs[0]
             p_cell.alignment = PP_ALIGN.LEFT
-            add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(10), color=NAVY if c_idx == 0 else DARK_GRAY)
+            add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(9.5), color=TUNABLE_RED if c_idx == 0 else DARK_GRAY)
+
+    # Footnote on modifiable hyperparameters
+    tb23_fn = s23.shapes.add_textbox(Inches(6.6), Inches(6.22), Inches(5.7), Inches(0.4))
+    tb23_fn.text_frame.word_wrap = True
+    p_fn23 = tb23_fn.text_frame.paragraphs[0]
+    add_text_run(p_fn23, "* Red text: Hyperparameters participants can modify in notebook TODO 2", bold=True, size=Pt(9.5), color=TUNABLE_RED)
 
     add_footer(s23, 23)
 
@@ -1084,9 +1123,9 @@ def create_presentation():
                        "• Step 4: Machine Evaluation & Iteration: Query real beamline at x_{t+1}, update 𝒟_{t+1}, and refit hyperparameters.", size=Pt(11.5), color=DARK_GRAY)
 
     # Right Box: Hyperparameter Table
-    bo_table_shape = s26.shapes.add_table(7, 3, Inches(6.6), Inches(2.05), Inches(5.7), Inches(4.4))
+    bo_table_shape = s26.shapes.add_table(7, 3, Inches(6.6), Inches(2.00), Inches(5.7), Inches(4.1))
     bo_tbl = bo_table_shape.table
-    for idx, w in enumerate([Inches(1.4), Inches(1.4), Inches(2.9)]):
+    for idx, w in enumerate([Inches(1.45), Inches(1.35), Inches(2.9)]):
         bo_tbl.columns[idx].width = w
 
     for c_idx, h_text in enumerate(["Hyperparameter", "Typical Value", "Role in Beam Alignment"]):
@@ -1095,25 +1134,33 @@ def create_presentation():
         cell.fill.fore_color.rgb = PRIMARY
         p_c = cell.text_frame.paragraphs[0]
         p_c.alignment = PP_ALIGN.CENTER if c_idx < 2 else PP_ALIGN.LEFT
-        add_text_run(p_c, h_text, bold=True, size=Pt(11), color=WHITE)
+        add_text_run(p_c, h_text, bold=True, size=Pt(10.5), color=WHITE)
 
     bo_rows = [
-        ("Kernel Function (k)", "Matérn-5/2", "Models twice-differentiable magnetic saturation without unrealistic C^∞ stiffness of RBF."),
-        ("Lengthscale (ℓ_k)", "ℓ ~ 1.0 - 2.5 A", "Actuator correlation length per magnet. Dictates how rapidly orbit decorrelates in current space."),
-        ("Signal Variance (σ_f²)", "σ_f ~ 1.5 mm", "Overall vertical variance scale of beam trajectory deviations across typical operating kicks."),
-        ("Noise Variance (σ_n²)", "σ_n = 0.010 mm", "Diagnostic sensor jitter nugget floor (10 μm). Prevents GP interpolation from overfitting noise."),
-        ("Exploration (κ)", "κ = 0.0 → 1.5", "Trade-off parameter in LCB. κ > 0 probes unmapped saturation; κ = 0 exploits calibrated mean."),
-        ("Regularizer (λ)", "λ = 10⁻⁴", "Actuator norm penalty ||ΔI||² protecting power supplies and preventing coil heating.")
+        ("Kernel Function (k)*", "Matérn-5/2", "Models twice-differentiable magnetic saturation without unrealistic C^∞ stiffness of RBF.", True),
+        ("Lengthscale (ℓ_k)*", "ℓ ~ 1.0 - 2.5 A", "Actuator correlation length per magnet. Dictates how rapidly orbit decorrelates in current space.", True),
+        ("Signal Variance (σ_f²)*", "σ_f ~ 1.5 mm", "Overall vertical variance scale of beam trajectory deviations across typical operating kicks.", True),
+        ("Noise Variance (σ_n²)", "σ_n = 0.010 mm", "Fixed sensor noise floor (10 μm); do not modify. Prevents GP interpolation from overfitting noise.", False),
+        ("Exploration (κ)*", "κ = 0.0 → 1.5", "Trade-off parameter in LCB. κ > 0 probes unmapped saturation; κ = 0 exploits calibrated mean.", True),
+        ("Regularizer (λ)*", "λ = 10⁻⁴", "Actuator norm penalty ||ΔI||² protecting power supplies and preventing coil heating.", True)
     ]
     for r_idx, row_vals in enumerate(bo_rows, start=1):
-        for c_idx, text_val in enumerate(row_vals):
+        name_val, typ_val, desc_val, is_tunable = row_vals
+        for c_idx, text_val in enumerate([name_val, typ_val, desc_val]):
             cell = bo_tbl.cell(r_idx, c_idx)
             cell.fill.solid()
             cell.fill.fore_color.rgb = LIGHT_BG if r_idx % 2 == 1 else WHITE
             cell.text_frame.word_wrap = True
             p_cell = cell.text_frame.paragraphs[0]
             p_cell.alignment = PP_ALIGN.LEFT
-            add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(10), color=NAVY if c_idx == 0 else DARK_GRAY)
+            col = (TUNABLE_RED if is_tunable else NAVY) if c_idx == 0 else DARK_GRAY
+            add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(9.5), color=col)
+
+    # Footnote on modifiable hyperparameters
+    tb26_fn = s26.shapes.add_textbox(Inches(6.6), Inches(6.18), Inches(5.7), Inches(0.4))
+    tb26_fn.text_frame.word_wrap = True
+    p_fn26 = tb26_fn.text_frame.paragraphs[0]
+    add_text_run(p_fn26, "* Red text: Hyperparameters participants can modify in notebook TODO 3", bold=True, size=Pt(9.5), color=TUNABLE_RED)
 
     add_footer(s26, 26)
 

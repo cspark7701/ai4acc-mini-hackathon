@@ -102,11 +102,11 @@ $$x(s) = \sqrt{\epsilon \beta(s)} \cos\left( \psi(s) + \phi_0 \right)$$
 When a localized angular deflection (kick) $\theta_j = \Delta x'_j = \frac{e B L}{p}$ is applied by a dipole steering corrector at position $s_j$, the orbit shift observed by a Beam Position Monitor (BPM) at position $s_i$ depends on the machine type:
 
 - **Single-pass transport line or linac** (the hackathon case): only BPMs downstream of the corrector see the kick, which propagates as a betatron oscillation:
-  $$R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \sqrt{\beta(s_i)\beta(s_j)}\, \sin\left( \psi(s_i) - \psi(s_j) \right) \quad (s_i > s_j), \qquad R_{ij} = 0 \quad (s_i \le s_j)$$
+  $$R_{ij} = \frac{\Delta x(s_i)}{\theta_j} = \begin{cases} \sqrt{\beta(s_i)\beta(s_j)}\, \sin\left( \psi(s_i) - \psi(s_j) \right) & (s_i > s_j) \\ 0 & (s_i \le s_j) \end{cases}$$
 - **Circular ring:** the kick produces a periodic closed-orbit distortion seen at every BPM:
   $$R_{ij} = \frac{\sqrt{\beta(s_i)\beta(s_j)}}{2 \sin(\pi \nu)} \cos\left( |\psi(s_i) - \psi(s_j)| - \pi \nu \right)$$
-
-The hackathon simulator uses the transport-line form with simplified optics: a constant phase advance of $2\pi \cdot 0.18$ rad/m and a slowly decaying amplitude, $R_{ij} = 1.2\,\sin\big(2\pi \cdot 0.18\,\Delta s\big) / (1 + 0.05\,\Delta s)$ with $\Delta s = s_i - s_j > 0$.
+- **Hackathon simplified optics model:** constant phase advance of $2\pi \cdot 0.18\text{ rad/m}$ and slowly decaying amplitude:
+  $$R_{ij} = \frac{1.2\,\sin\big(2\pi \cdot 0.18\,(s_i - s_j)\big)}{1 + 0.05\,(s_i - s_j)}, \qquad (s_i > s_j)$$
 
 For $M$ BPMs and $N$ dipole steerers, the linear response is encapsulated by the matrix $\mathbf{R} \in \mathbb{R}^{N \times M}$ ([Minty & Zimmermann, 2003](https://doi.org/10.1007/978-3-662-08581-3)):
 $$\mathbf{Y}_{\text{linear}} = \mathbf{R} \cdot \boldsymbol{\theta} = \mathbf{I} \cdot \mathbf{R}$$
@@ -172,7 +172,8 @@ In Forward Supervised Learning, the algorithm learns an input-to-output mapping 
    - Through gradient backpropagation and the Adam optimizer, the neural surrogate fits the non-linear magnetic core saturation $B(I) \approx I - 0.015 \cdot I^3$ down to the $0.010\text{ mm}$ sensor noise floor.
 2. **Online Inversion for Beam Alignment:**
    - In operations, the trained surrogate $f_{\boldsymbol{\theta}}$ acts as an ultra-fast **digital twin**. Given an observed distorted orbit $\mathbf{Y}_{\text{obs}}$, we find the corrective kick $\Delta \mathbf{I}^*$ by numerically inverting the surrogate via bounded optimization (e.g., SciPy `L-BFGS-B`):
-     $$\Delta \mathbf{I}^* = \arg\min_{\Delta \mathbf{I}} \left\| \mathbf{Y}_{\text{obs}} - f_{\boldsymbol{\theta}}(\mathbf{I}) + f_{\boldsymbol{\theta}}(\mathbf{I} + \Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2 \quad \text{subject to } \Delta \mathbf{I} \in [-0.8\text{ A}, +0.8\text{ A}]^6$$
+     $$\Delta \mathbf{I}^* = \arg\min_{\Delta \mathbf{I}} \left\| \mathbf{Y}_{\text{obs}} - f_{\boldsymbol{\theta}}(\mathbf{I}) + f_{\boldsymbol{\theta}}(\mathbf{I} + \Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2$$
+     subject to hardware delta limits $\Delta \mathbf{I} \in [-0.8\text{ A}, +0.8\text{ A}]^6$.
    - **Key Advantage:** Extremely fast convergence (often 2–3 iterations) because the surrogate accurately anticipates magnetic saturation.
 
 #### 3.2.2 Reinforcement Learning: Closed-Loop Policy Control (Track 2)
@@ -317,7 +318,9 @@ $$\mathcal{L}_{\text{MSE}}(\boldsymbol{\theta}) = \frac{1}{N} \sum_{i=1}^N \left
 The selection of the hidden activation function $\sigma(z)$ exerts a profound physical impact on phase-space geometry, symplecticity, and extrapolation:
 
 1. **Linear / Identity Activation ($\sigma(z) = z$):**
-   - **Mathematical Behavior:** Stacking linear layers collapses to $\mathbf{W}^{(3)}\mathbf{W}^{(2)}\mathbf{W}^{(1)}\mathbf{x} + \mathbf{b}_{\text{net}} \equiv \mathbf{M}_{\text{eff}}\mathbf{x} + \mathbf{b}_{\text{net}}$. The surrogate is mathematically identical to a linear matrix.
+   - **Mathematical Behavior:** Stacking linear layers mathematically collapses to:
+     $$\mathbf{W}^{(3)}\mathbf{W}^{(2)}\mathbf{W}^{(1)}\mathbf{x} + \mathbf{b}_{\text{net}} \equiv \mathbf{M}_{\text{eff}}\mathbf{x} + \mathbf{b}_{\text{net}}$$
+     The surrogate is mathematically identical to a linear matrix.
    - **Optics Impact:** If trained on symplectic data, the network learns an effective matrix $\mathbf{M}_{\text{eff}} \approx \mathbf{M}$ with $\det \mathbf{M}_{\text{eff}} \approx 1$. It preserves smooth phase space ellipses and extrapolates linearly to arbitrarily large beam amplitudes.
    - **Limitation:** Incapable of representing non-linear physical phenomena (e.g. sextupole kicks $\Delta x' = \frac{1}{2} k_2 L x^2$, chromatic aberrations, or magnetic core saturation).
 
@@ -545,15 +548,16 @@ class SupervisedMLPController:
 - With the reference MLP settings (test RMSE about 0.11 mm) it succeeds on all 30 seeds and scores 779.169. A more accurate surrogate (e.g. a small `tanh` network trained with `lbfgs`, test RMSE about 0.011 mm) lands closer to the noise floor and scores over 920.
 
 #### Supervised Learning Surrogate Hyperparameters
+*(Items in **<span style="color:#C0392B;">Red</span>** with an asterisk ($\ast$) can be modified and tuned by participants in notebook `TODO 1`)*
 
 | Hyperparameter | Typical Value | Physical Meaning \& Role in Accelerator Surrogate |
 | :--- | :--- | :--- |
-| **Learning Rate ($\eta$)** | $10^{-3}$ (Adam) | Gradient update scale. Too large oscillates or diverges; too small stagnates in flat loss ravines. |
-| **Batch Size ($B$)** | $32 - 128$ | Number of shots evaluated per backpropagation step. Mini-batches provide regularization against sensor jitter. |
-| **Layer Architecture** | $(128, 64, 32)$ | Hidden units depth and width. Sufficient capacity to represent cubic saturation without memorizing noise. |
-| **Activation ($\sigma$)** | ReLU / Leaky ReLU | Element-wise non-linearity in hidden layers. Linear identity strictly required for output layer ($\mathbf{Y}$ in mm). |
-| **$L_2$ Regularization ($\alpha$)** | $10^{-4}$ | Weight decay penalty $\frac{1}{2}\alpha\|\mathbf{W}\|_2^2$ suppressing overfitting to diagnostic noise ($\sigma = 10\ \mu\text{m}$). |
-| **Max Epochs / Early Stopping** | 400 epochs, tol=$10^{-4}$ | Terminates training when validation loss plateaus, guaranteeing model generalization. |
+| <span style="color:#C0392B; font-weight:bold;">Learning Rate ($\eta$)*</span> | $10^{-3}$ (Adam) | Gradient update scale. Too large oscillates or diverges; too small stagnates in flat loss ravines. |
+| <span style="color:#C0392B; font-weight:bold;">Batch Size ($B$)*</span> | $32 - 128$ | Number of shots evaluated per backpropagation step. Mini-batches provide regularization against sensor jitter. |
+| <span style="color:#C0392B; font-weight:bold;">Layer Architecture*</span> | $(128, 64, 32)$ | Hidden units depth and width. Sufficient capacity to represent cubic saturation without memorizing noise. |
+| <span style="color:#C0392B; font-weight:bold;">Activation ($\sigma$)*</span> | ReLU / Leaky ReLU | Element-wise non-linearity in hidden layers. Linear identity strictly required for output layer ($\mathbf{Y}$ in mm). |
+| <span style="color:#C0392B; font-weight:bold;">$L_2$ Regularization ($\alpha$)*</span> | $10^{-4}$ | Weight decay penalty $\frac{1}{2}\alpha\|\mathbf{W}\|_2^2$ suppressing overfitting to diagnostic noise ($\sigma = 10\ \mu\text{m}$). |
+| <span style="color:#C0392B; font-weight:bold;">Max Epochs / Early Stopping*</span> | 400 epochs, tol=$10^{-4}$ | Terminates training when validation loss plateaus, guaranteeing model generalization. |
 
 ### 4.3 Track 2: Closed-Loop RL & Physics-Informed Policy Agents
 While numerical optimization per step is powerful, iterative gradient solvers add execution latency ($\sim 15 - 30\text{ ms}$). In contrast, a direct continuous policy network executes in $< 0.5\text{ ms}$ ([Kain et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.124801)).
@@ -572,16 +576,18 @@ $$\gamma(t) = \frac{1.0}{1.0 + \kappa \cdot t}, \quad \kappa \approx 0.03$$
 - **Step 5+ ($t \ge 4$):** Damped kick authority prevents sensor noise amplification and locks the trajectory below $0.030\text{ mm}$.
 
 #### Reinforcement Learning MDP Hyperparameters
+*(Items in **<span style="color:#C0392B;">Red</span>** with an asterisk ($\ast$) can be modified and tuned by participants in notebook `TODO 2`)*
 
 | Hyperparameter | Typical Value | Physical Meaning \& Role in Orbit Control |
 | :--- | :--- | :--- |
-| **Discount Factor ($\gamma$)** | $0.95 - 0.99$ | Effective temporal horizon. High $\gamma$ prioritizes terminal alignment ($< 0.030\text{ mm}$) over step cost. |
-| **Policy Learning Rate ($\eta_\pi$)** | $10^{-4} - 10^{-3}$ | Step size for policy parameter updates. Must remain small to avoid policy collapse under sensor noise. |
-| **Exploration Noise ($\sigma$)** | $\mathcal{N}(0, 0.05^2)\text{ A}$ | Gaussian perturbation on delta currents to probe saturation limits during offline/online training. |
-| **Harmonic Damping ($\kappa$)** | $\approx 0.03$ | Damping schedule $\gamma(t) = 1/(1+\kappa t)$ attenuating kick authority to eliminate noise limit cycles. |
-| **Reward Weights ($w_{\text{rms}}, w_{\text{act}}$)** | $w_{\text{rms}}=10, w_{\text{act}}=0.01$ | Balances orbit minimization priority against coil resistive heating and power supply strain. |
-| **Step Penalty ($c_{\text{step}}$)** | $0.5\text{ pts/step}$ | Time penalty encouraging minimum-step convergence to maximize benchmark speed score (up to 300 pts). |
-| **Success Bonus ($b_{\text{term}}$)** | $50.0\text{ pts}$ | Large positive terminal reward upon reaching $\text{RMS} < 0.030\text{ mm}$. |
+| <span style="color:#C0392B; font-weight:bold;">Discount Factor ($\gamma$)*</span> | $0.95 - 0.99$ | Effective temporal horizon. High $\gamma$ prioritizes terminal alignment ($< 0.030\text{ mm}$) over step cost. |
+| <span style="color:#C0392B; font-weight:bold;">Policy Learning Rate ($\eta_\pi$)*</span> | $10^{-4} - 10^{-3}$ | Step size for policy parameter updates. Must remain small to avoid policy collapse under sensor noise. |
+| <span style="color:#C0392B; font-weight:bold;">Exploration Noise ($\sigma$)*</span> | $\mathcal{N}(0, 0.05^2)\text{ A}$ | Gaussian perturbation on delta currents to probe saturation limits during offline/online training. |
+| <span style="color:#C0392B; font-weight:bold;">Harmonic Damping ($\kappa$)*</span> | $\approx 0.03$ | Damping schedule $\gamma(t) = 1/(1+\kappa t)$ attenuating kick authority to eliminate noise limit cycles. |
+| <span style="color:#C0392B; font-weight:bold;">Feedback Gain ($\alpha$)*</span> | $0.45 \to 1.0$ | Scaling factor on optics pseudo-inverse prior; higher gains accelerate convergence. |
+| <span style="color:#C0392B; font-weight:bold;">Reward Weights ($w_{\text{rms}}, w_{\text{act}}$)*</span> | $w_{\text{rms}}=10, w_{\text{act}}=0.01$ | Balances orbit minimization priority against coil resistive heating and power supply strain. |
+| <span style="color:#C0392B; font-weight:bold;">Step Penalty ($c_{\text{step}}$)*</span> | $0.5\text{ pts/step}$ | Time penalty encouraging minimum-step convergence to maximize benchmark speed score (up to 300 pts). |
+| <span style="color:#C0392B; font-weight:bold;">Success Bonus ($b_{\text{term}}$)*</span> | $50.0\text{ pts}$ | Large positive terminal reward upon reaching $\text{RMS} < 0.030\text{ mm}$. |
 
 ---
 
@@ -625,16 +631,17 @@ class BayesianOptimizationController:
 ```
 
 #### Bayesian Optimization & Gaussian Process Hyperparameters
+*(Items in **<span style="color:#C0392B;">Red</span>** with an asterisk ($\ast$) can be modified and tuned by participants in notebook `TODO 3`)*
 
 | Hyperparameter | Typical Value | Role in Gaussian Process \& Beam Alignment |
 | :--- | :--- | :--- |
-| **Kernel Function ($k$)** | Matérn-5/2 | Twice-differentiable covariance modeling physical saturation without the excessive stiffness of RBF. |
-| **Lengthscales ($\ell_k$)** | $\ell \sim 1.0 - 2.5\text{ A}$ | Input correlation distance per magnet actuator. Sets how rapidly orbit effects decorrelate in current space. |
-| **Signal Variance ($\sigma_f^2$)** | $\sigma_f \sim 1.5\text{ mm}$ | Expected vertical amplitude variation of transverse orbit distortions across the operating domain. |
-| **Noise Variance Floor ($\sigma_n^2$)** | $\sigma_n = 0.010\text{ mm}$ | Sensor noise floor ($10\ \mu\text{m}$). Prevents GP interpolation from overfitting diagnostic jitter. |
-| **Exploration Weight ($\kappa$)** | $\kappa = 0.0 \to 1.5$ | Balances exploitation ($\kappa=0$) vs exploration ($\kappa > 0$) in LCB acquisition $\mu - \kappa \sigma + \lambda \|\Delta \mathbf{I}\|^2$. |
-| **Action Penalty ($\lambda$)** | $10^{-4}$ | Regularizes delta kick effort to avoid unnecessary high-current excursions. |
-| **Model Updating** | Offline / Online Refit | Fixed 300-shot calibration GP (offline baseline) or online recursive GP updating from `step_callback`. |
+| <span style="color:#C0392B; font-weight:bold;">Kernel Function ($k$)*</span> | Matérn-5/2 | Twice-differentiable covariance modeling physical saturation without the excessive stiffness of RBF. |
+| <span style="color:#C0392B; font-weight:bold;">Lengthscales ($\ell_k$)*</span> | $\ell \sim 1.0 - 2.5\text{ A}$ | Input correlation distance per magnet actuator. Sets how rapidly orbit effects decorrelate in current space. |
+| <span style="color:#C0392B; font-weight:bold;">Signal Variance ($\sigma_f^2$)*</span> | $\sigma_f \sim 1.5\text{ mm}$ | Expected vertical amplitude variation of transverse orbit distortions across the operating domain. |
+| **Noise Variance Floor ($\sigma_n^2$)** | $\sigma_n = 0.010\text{ mm}$ | **Fixed** physical sensor noise floor ($10\ \mu\text{m}$); *do not modify*. Prevents GP overfitting. |
+| <span style="color:#C0392B; font-weight:bold;">Exploration Weight ($\kappa$)*</span> | $\kappa = 0.0 \to 1.5$ | Balances exploitation ($\kappa=0$) vs exploration ($\kappa > 0$) in LCB acquisition $\mu - \kappa \sigma + \lambda \|\Delta \mathbf{I}\|^2$. |
+| <span style="color:#C0392B; font-weight:bold;">Action Penalty ($\lambda$)*</span> | $10^{-4}$ | Regularizes delta kick effort to avoid unnecessary high-current excursions. |
+| <span style="color:#C0392B; font-weight:bold;">Model Updating*</span> | Offline / Online Refit | Fixed 300-shot calibration GP (offline baseline) or online recursive GP updating from `step_callback`. |
 
 ---
 
@@ -673,8 +680,10 @@ To prevent evaluation bias or seed cherry-picking, all controllers are evaluated
 ### 5.4 The Official Hackathon Scoring Formula
 Each of the 30 seeds is scored from 0 to 1000 points, and the official score is the mean:
 
-$$\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k, \qquad
-s_k = \begin{cases}
+$$\text{Score} = \frac{1}{30}\sum_{k=1}^{30} s_k$$
+
+where each per-seed score $s_k \in [0, 1000]$ is evaluated as:
+$$s_k = \begin{cases}
 400 + 300\,\max\!\left(0,\,\dfrac{20 - n_k}{19}\right) + 300\,\text{clip}\!\left(\dfrac{\ln(0.030/\text{RMS}_k)}{\ln(0.030/0.010)},\,0,\,1\right) & \text{if seed } k \text{ succeeds} \\
 0 & \text{otherwise}
 \end{cases}$$
