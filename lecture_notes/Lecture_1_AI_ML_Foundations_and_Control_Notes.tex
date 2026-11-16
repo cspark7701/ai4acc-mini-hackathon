@@ -463,6 +463,85 @@ During backpropagation, loss gradients $\nabla_{\boldsymbol{\theta}} \mathcal{L}
     \item \textbf{L-BFGS-B (Quasi-Newton with Box Constraints):} Approximates the inverse Hessian $\mathbf{H}^{-1}$ from gradient history. Used for bounded parameter inversion in Baseline~1 and Track~3.
 \end{enumerate}
 
+\subsection{Specialized Neural Architectures in Accelerators: Beyond Plain MLPs}
+While standard Multi-Layer Perceptrons (MLPs) serve as effective general-purpose regression digital twins for low-dimensional static mappings, accelerator physics and diagnostics frequently present challenges that violate the core assumptions of plain feedforward networks:
+\begin{enumerate}
+    \item Physical conservation laws (symplectic phase-space area preservation, energy conservation, Maxwell's divergence constraints) are not inherently respected by standard MLPs, leading to unphysical long-term trajectory drift in data-sparse operating regimes.
+    \item Dynamic accelerator phenomena exhibit non-Markovian memory, temporal eddy current delays, and magnetic iron-core hysteresis that static feedforward mappings cannot represent.
+    \item High-dimensional diagnostic distributions (such as 6D particle bunch phase space and 2D beam profile imaging screens) require specialized spatial equivariance, multiscale localization, or probabilistic continuous manifold compression.
+\end{enumerate}
+To address these domains, accelerator AI practitioners deploy specialized deep learning topologies (Table~\ref{tab:specialized_nn_architectures}).
+
+\subsubsection{Physics-Informed Neural Networks (PINNs)}
+Physics-Informed Neural Networks embed known governing ordinary and partial differential equations directly into the network training loss via automatic differentiation (Raissi et al., 2019). Given a physical differential operator $\mathcal{D}$ (such as Hill's equation $x'' + K(s)x = 0$, Poisson's space-charge equation $\nabla^2 \phi = -\rho / \epsilon_0$, or Maxwell's equations), the PINN objective is formulated as:
+\begin{equation}
+    \mathcal{L}_{\text{PINN}}(\boldsymbol{\theta}) = \mathcal{L}_{\text{data}}(\boldsymbol{\theta}) + \lambda_{\text{phys}} \mathcal{L}_{\text{physics}}(\boldsymbol{\theta}) = \frac{1}{N} \sum_{i=1}^N \left\| \mathbf{y}_i - f_{\boldsymbol{\theta}}(\mathbf{x}_i) \right\|^2 + \frac{\lambda_{\text{phys}}}{M} \sum_{j=1}^M \left\| \mathcal{D}\left[ f_{\boldsymbol{\theta}} \right](\mathbf{x}_j) \right\|^2
+\end{equation}
+where $M$ denotes collocation evaluation points distributed across the physical domain, and gradients $\partial f_{\boldsymbol{\theta}} / \partial \mathbf{x}$ are computed analytically through network backpropagation (autograd) without finite-difference grid errors.
+\begin{itemize}
+    \item \textbf{Why Beyond Plain MLP:} Standard MLPs act as purely empirical black-box interpolators, requiring massive datasets and failing unphysically when extrapolating outside the calibration envelope. PINNs enforce physical conservation principles ($\det \mathbf{J} \equiv 1$, energy conservation), regularizing network weights and ensuring valid physical predictions even in data-sparse lattice sections.
+    \item \textbf{Accelerator Applications:} Space-charge field solvers, beam envelope tracking through complex transport lines, and continuous trajectory reconstruction across unmonitored drift sections where BPM diagnostics are absent.
+\end{itemize}
+
+\subsubsection{Physics-Guided Recurrent Neural Networks (PRNN, RNN \& LSTM)}
+Recurrent Neural Networks (RNNs) and Long Short-Term Memory (LSTM) networks process sequential time-series data by maintaining an internal hidden recurrence state vector $\mathbf{h}_t \in \mathbb{R}^d$:
+\begin{equation}
+    \mathbf{h}_t = \sigma\left( \mathbf{W}_h \mathbf{h}_{t-1} + \mathbf{W}_x \mathbf{x}_t + \mathbf{b}_h \right), \quad \hat{\mathbf{y}}_t = \mathbf{W}_y \mathbf{h}_t + \mathbf{b}_y
+\end{equation}
+Physics-Guided Recurrent Neural Networks (PRNNs) augment standard RNN cells by embedding inductive physical models (such as magnetic dipole hysteresis loops, thermal dissipation time constants, or RF cavity decay differential equations) directly into the state transition dynamics.
+\begin{itemize}
+    \item \textbf{Why Beyond Plain MLP:} Feedforward MLPs treat every observation as independent and identically distributed (i.i.d.), unable to account for historical machine state. PRNNs capture non-Markovian memory, temporal eddy current lag, and magnet cycling history.
+    \item \textbf{Accelerator Applications:} Magnetic iron-core hysteresis tracking in ramping synchrotrons and cycling steerers, superconducting RF cavity decay and quenching precursor warning systems, and time-series beam jitter forecasting.
+\end{itemize}
+
+\subsubsection{Variational Autoencoders (VAEs)}
+Variational Autoencoders (VAEs) are directed probabilistic generative models consisting of an encoder $q_{\boldsymbol{\phi}}(\mathbf{z}|\mathbf{x})$ that maps high-dimensional measurements $\mathbf{x} \in \mathbb{R}^D$ into a continuous low-dimensional latent Gaussian distribution $\mathbf{z} \sim \mathcal{N}(\boldsymbol{\mu}_{\mathbf{z}}, \boldsymbol{\Sigma}_{\mathbf{z}})$, and a decoder $p_{\boldsymbol{\theta}}(\mathbf{x}|\mathbf{z})$ that reconstructs the observation (Kingma \& Welling, 2013). VAEs are trained by maximizing the Evidence Lower Bound (ELBO):
+\begin{equation}
+    \mathcal{L}_{\text{ELBO}}(\boldsymbol{\theta}, \boldsymbol{\phi}) = \mathbb{E}_{q_{\boldsymbol{\phi}}(\mathbf{z}|\mathbf{x})}\left[ \log p_{\boldsymbol{\theta}}(\mathbf{x}|\mathbf{z}) \right] - D_{\text{KL}}\left( q_{\boldsymbol{\phi}}(\mathbf{z}|\mathbf{x}) \,\big\|\, p(\mathbf{z}) \right)
+\end{equation}
+where the first term is the reconstruction fidelity and the second term is the Kullback-Leibler divergence constraining the latent posterior against a standard Gaussian prior $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$.
+\begin{itemize}
+    \item \textbf{Why Beyond Plain MLP:} While MLPs perform discrete deterministic regression, VAEs learn smooth, continuous, probabilistic latent manifolds that enable unsupervised clustering, anomaly scoring, and synthetic generative sampling.
+    \item \textbf{Accelerator Applications:} 6D particle bunch phase-space distribution compression, unsupervised anomaly detection (identifying abnormal beam loss spike precursors or impending vacuum trips), and generative synthesis of realistic machine operating states for virtual commissioning.
+\end{itemize}
+
+\subsubsection{Convolutional Encoder-Decoders (U-Net \& CNNs)}
+Convolutional Neural Networks (CNNs) process multi-dimensional spatial diagnostic arrays by sharing localized filter kernels across the input, preserving translation equivariance: $\text{Conv}(\mathbf{X})_{i,j} = \sum_{u,v} K_{u,v} X_{i-u, j-v}$. The U-Net topology (Ronneberger et al., 2015) extends this into a symmetric encoder-decoder:
+\begin{enumerate}
+    \item \textbf{Contracting Encoder Path:} Successive convolution and pooling layers downsample spatial resolution while progressively extracting hierarchical feature abstractions.
+    \item \textbf{Expanding Decoder Path:} Successive transpose convolutions (or bilinear upsampling) restore original spatial dimensions.
+    \item \textbf{Cross-Layer Skip Connections:} Direct tensor concatenation bridges encoder feature maps to matching decoder stages:
+    \begin{equation}
+        \mathbf{x}_{\text{dec}}^{(l)} = \text{Conv}\left( \text{Upsample}\left(\mathbf{x}_{\text{dec}}^{(l+1)}\right) \;\oplus\; \mathbf{x}_{\text{enc}}^{(l)} \right)
+    \end{equation}
+    retaining fine, high-resolution edge details that would otherwise be lost in the bottleneck compression.
+\end{enumerate}
+\begin{itemize}
+    \item \textbf{Why Beyond Plain MLP:} A standard MLP applied to a $1024 \times 1024$ diagnostic camera image requires millions of weights per neuron, causing parameter explosion and discarding 2D spatial pixel correlations. U-Net leverages spatial parameter sharing and multiscale skip pathways to achieve pixel-level accuracy.
+    \item \textbf{Accelerator Applications:} Real-time transverse beam profile reconstruction from scintillation screen cameras (YAG, OTR), transverse halo segmentation, phase-space tomography, and 2D/3D magnet fringe field map interpolation.
+\end{itemize}
+
+\begin{table}[h!]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{2.5cm} p{3.3cm} p{4.2cm} p{4.7cm}@{}}
+\toprule
+\textbf{Architecture} & \textbf{Core Mechanism} & \textbf{Why Beyond Plain MLP} & \textbf{Key Accelerator Use Cases} \\
+\midrule
+\textbf{PINN}\newline (Physics-Informed) & ODE/PDE residual in loss: $\mathcal{L}_{\text{data}} + \lambda_{\text{phys}}\|\mathcal{D}[f]\|^2$ via autograd & Enforces physical conservation ($\det\mathbf{J}\equiv 1$, energy) in data-sparse domains & Space-charge Poisson solvers, envelope equations, unmonitored drift prediction \\
+\midrule
+\textbf{PRNN / RNN}\newline (Physics-Guided Recurrent) & Dynamic recurrent hidden state $\mathbf{h}_t = \sigma(\mathbf{W}_h \mathbf{h}_{t-1} + \dots)$ + physical delay biases & Models non-Markovian memory, temporal eddy current lags, and state dependence & Magnetic hysteresis tracking during cycling, superconducting RF cavity decay, jitter forecasting \\
+\midrule
+\textbf{VAE}\newline (Variational Autoencoder) & Probabilistic latent space $\mathbf{z}\sim\mathcal{N}(\boldsymbol{\mu},\boldsymbol{\Sigma})$ via ELBO optimization & Unsupervised generative density modeling; continuous manifold representation & 6D particle bunch phase-space compression, unsupervised trip/anomaly detection, virtual diagnostics \\
+\midrule
+\textbf{U-Net / CNN}\newline (Convolutional Encoder-Decoder) & Multiscale contracting \& expanding paths with cross-layer skip connections & Exploits spatial translation equivariance; retains fine pixel details with global context & Transverse beam profile camera reconstruction (YAG/OTR), halo segmentation, 3D field map interpolation \\
+\bottomrule
+\end{tabular}
+\caption{Specialized deep neural network architectures deployed in modern particle accelerator physics and beamline diagnostics.}
+\label{tab:specialized_nn_architectures}
+\end{table}
+
 \subsection{Dataset Partitioning \& The Bias-Variance Tradeoff}
 To prevent memorization of diagnostic noise, data is partitioned into:
 \begin{itemize}

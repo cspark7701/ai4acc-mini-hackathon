@@ -430,7 +430,51 @@ A quasi-Newton second-order method that approximates the inverse Hessian $\mathb
 
 ---
 
-### 3.9 Rigorous Dataset Partitioning: Train, Validation, and Test (Holdout) Splits
+### 3.9 Specialized Neural Architectures in Accelerators: Beyond Plain MLPs
+
+While standard Multi-Layer Perceptrons (MLPs) serve as effective general-purpose regression digital twins for low-dimensional static mappings, accelerator physics and diagnostics frequently present challenges that violate the core assumptions of plain feedforward networks:
+1. **Conservation Laws:** Physical conservation principles (symplectic phase-space area preservation $\det\mathbf{J} \equiv 1$, energy conservation, Maxwell's equations) are not inherently guaranteed by MLPs, causing unphysical trajectory drift in data-sparse operating regimes.
+2. **Temporal Dynamics & Memory:** Dynamic accelerator phenomena exhibit non-Markovian memory, temporal eddy current lag, and magnetic iron-core hysteresis that static feedforward networks cannot represent.
+3. **High-Dimensional Spatial Structures:** 2D/3D diagnostic arrays (such as beam profile imaging screens and magnet field maps) require spatial translation equivariance and multiscale localization rather than parameter-heavy dense projections.
+
+To address these domains, accelerator AI practitioners deploy specialized deep learning topologies:
+
+#### 1. Physics-Informed Neural Networks (PINNs)
+- **Mathematical Mechanism:** Embeds known governing differential equations (ODEs/PDEs, such as Hill's equation $x'' + K(s)x = 0$ or Poisson's space-charge equation $\nabla^2 \phi = -\rho / \epsilon_0$) directly into the training loss:
+  $$\mathcal{L}_{\text{PINN}}(\boldsymbol{\theta}) = \mathcal{L}_{\text{data}}(\boldsymbol{\theta}) + \lambda_{\text{phys}} \mathcal{L}_{\text{physics}}(\boldsymbol{\theta}) = \frac{1}{N} \sum_{i=1}^N \|\mathbf{y}_i - f_{\boldsymbol{\theta}}(\mathbf{x}_i)\|^2 + \frac{\lambda_{\text{phys}}}{M} \sum_{j=1}^M \|\mathcal{D}[f_{\boldsymbol{\theta}}](\mathbf{x}_j)\|^2$$
+  where differential operators $\mathcal{D}$ are evaluated via exact automatic differentiation (autograd).
+- **Why Beyond Plain MLP:** Standard MLPs act as purely empirical black-box interpolators, requiring massive datasets and failing unphysically when extrapolating outside the calibration envelope. PINNs enforce physical conservation principles ($\det \mathbf{J} \equiv 1$, energy conservation), regularizing network weights and ensuring valid physical predictions even in data-sparse lattice sections.
+- **Accelerator Applications:** Space-charge potential solvers, beam envelope tracking, and trajectory prediction across unmonitored lattice drift sections lacking BPMs.
+
+#### 2. Physics-Guided Recurrent Neural Networks (PRNN / RNN / LSTM)
+- **Mathematical Mechanism:** Sequential state transitions with internal dynamic recurrence memory:
+  $$\mathbf{h}_t = \sigma(\mathbf{W}_h \mathbf{h}_{t-1} + \mathbf{W}_x \mathbf{x}_t + \mathbf{b}_h), \quad \hat{\mathbf{y}}_t = \mathbf{W}_y \mathbf{h}_t + \mathbf{b}_y$$
+  augmented with physics inductive biases (e.g. magnetic hysteresis models, thermal delay constants, RF cavity decay laws).
+- **Why Beyond Plain MLP:** MLPs assume independent static inputs; PRNNs model non-Markovian memory, temporal lags, and hysteretic state dependence.
+- **Accelerator Applications:** Magnetic iron-core hysteresis tracking in cycling magnets, superconducting RF cavity decay and quenching precursor detection, and time-series beam jitter forecasting.
+
+#### 3. Variational Autoencoders (VAEs)
+- **Mathematical Mechanism:** Probabilistic encoder-decoder mapping inputs to a continuous latent Gaussian distribution $\mathbf{z} \sim \mathcal{N}(\boldsymbol{\mu}_{\mathbf{z}}, \boldsymbol{\Sigma}_{\mathbf{z}})$, trained by maximizing the Evidence Lower Bound (ELBO):
+  $$\mathcal{L}_{\text{ELBO}}(\boldsymbol{\theta}, \boldsymbol{\phi}) = \mathbb{E}_{q_{\boldsymbol{\phi}}(\mathbf{z}|\mathbf{x})}\left[ \log p_{\boldsymbol{\theta}}(\mathbf{x}|\mathbf{z}) \right] - D_{\text{KL}}\left( q_{\boldsymbol{\phi}}(\mathbf{z}|\mathbf{x}) \,\|\, p(\mathbf{z}) \right)$$
+- **Why Beyond Plain MLP:** Learns smooth, continuous, probabilistic latent manifolds rather than deterministic black-box point mappings.
+- **Accelerator Applications:** 6D particle bunch phase-space compression, unsupervised anomaly detection (identifying abnormal beam loss spike precursors or machine trips), and synthetic generative beam diagnostics.
+
+#### 4. Convolutional Encoder-Decoders (U-Net & CNNs)
+- **Mathematical Mechanism:** Fully convolutional architecture featuring a contracting feature extraction path paired with a symmetric expanding localization path, bridged by multiscale cross-layer skip connections:
+  $$\mathbf{x}_{\text{dec}}^{(l)} = \text{Conv}\left( \text{Upsample}\left(\mathbf{x}_{\text{dec}}^{(l+1)}\right) \;\oplus\; \mathbf{x}_{\text{enc}}^{(l)} \right)$$
+- **Why Beyond Plain MLP:** Exploits 2D/3D spatial translation equivariance; retains high-resolution local details while capturing global topological context, avoiding the parameter explosion of dense layers.
+- **Accelerator Applications:** Transverse beam profile reconstruction from YAG/OTR screen diagnostic cameras, transverse halo segmentation, phase-space tomography, and 2D/3D magnet fringe field map interpolation.
+
+| Architecture | Core Mathematical Mechanism | Why Beyond Plain MLP | Key Accelerator Use Cases |
+| :--- | :--- | :--- | :--- |
+| **PINN**<br>*(Physics-Informed)* | ODE/PDE residual in loss: $\mathcal{L}_{\text{data}} + \lambda_{\text{phys}}\|\mathcal{D}[f]\|^2$ via autograd | Enforces physical conservation ($\det\mathbf{J}\equiv 1$, energy) in data-sparse domains | Space-charge Poisson solvers, envelope equations, unmonitored drift prediction |
+| **PRNN / RNN**<br>*(Physics-Guided Recurrent)* | Dynamic recurrent hidden state $\mathbf{h}_t = \sigma(\mathbf{W}_h \mathbf{h}_{t-1} + \dots)$ + physical delay biases | Models non-Markovian memory, temporal eddy current lags, and state dependence | Magnetic hysteresis tracking during cycling, superconducting RF cavity decay, jitter forecasting |
+| **VAE**<br>*(Variational Autoencoder)* | Probabilistic latent space $\mathbf{z}\sim\mathcal{N}(\boldsymbol{\mu},\boldsymbol{\Sigma})$ via ELBO optimization | Unsupervised generative density modeling; continuous manifold representation | 6D particle bunch phase-space compression, unsupervised trip/anomaly detection, virtual diagnostics |
+| **U-Net / CNN**<br>*(Convolutional Encoder-Decoder)* | Multiscale contracting & expanding paths with cross-layer skip connections | Exploits spatial translation equivariance; retains fine pixel details with global context | Transverse beam profile camera reconstruction (YAG/OTR), halo segmentation, 3D field map interpolation |
+
+---
+
+### 3.10 Rigorous Dataset Partitioning: Train, Validation, and Test (Holdout) Splits
 
 A neural network with 11,596 parameters can easily memorize random noise if not evaluated correctly. We enforce strict data partitioning:
 
@@ -455,7 +499,7 @@ Total Offline Experimental Dataset (1,500 Simulation Shots)
 
 ---
 
-### 3.10 Challenge Implementation & Empirical Validation
+### 3.11 Challenge Implementation & Empirical Validation
 In Step 3 of [`notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`](../notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb), we compare the Linear Ridge baseline against the MLP Neural Surrogate:
 
 ```python

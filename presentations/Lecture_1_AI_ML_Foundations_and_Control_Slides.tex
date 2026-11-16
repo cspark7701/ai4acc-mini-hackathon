@@ -31,7 +31,7 @@
 \setlength{\parindent}{0pt}
 
 % Total Slides Count
-\newcommand{\totalslides}{34}
+\newcommand{\totalslides}{35}
 
 % Positioning helper
 \newcommand{\at}[4]{%
@@ -625,7 +625,65 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 17: Paradigm 1: Supervised Learning | Digital Twin Surrogates & Hyperparameters (NEW)
+% SLIDE 17: Neural Architectures Beyond MLPs: PINN, PRNN, VAE & U-Net (NEW)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.10}
+  \slideheader{ML Foundations}{Specialized Neural Architectures: Beyond Plain MLPs}{Domain-adapted deep learning topologies tailored to accelerator physics, time dynamics, and imaging}
+
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Taxonomy of Specialized Deep Learning Architectures in Particle Accelerators}
+
+  % 1. PINN Panel (Top-Left: x=1.00, y=1.95, w=5.40, h=2.15)
+  \draw[rounded corners=4pt,draw=primaryblue!45,fill=primaryblue!4,thick]
+    ([xshift=1.00in,yshift=-1.95in]current page.north west) rectangle ++(5.40in,-2.17in);
+  \at{1.12}{2.05}{5.15}{\fs{10.5}{13.5}\color{darkgray}%
+    {\fs{12}{14}\bfseries\color{primaryblue}1. PINN: Physics-Informed Neural Networks}\\[0.25em]
+    $\bullet$ \textbf{Mechanism:} Embeds governing ODEs/PDEs directly into the training loss:
+    $$\mathcal{L}_{\text{PINN}} = \mathcal{L}_{\text{data}} + \lambda_{\text{phys}}\,\big\|\mathcal{D}[f_{\boldsymbol{\theta}}](\mathbf{x})\big\|^2$$\\[-0.5em]
+    where differential operator $\mathcal{D}$ is evaluated via exact automatic differentiation.\\
+    $\bullet$ \textbf{Why Beyond MLP:} Enforces physical conservation (energy, symplecticity $\det\mathbf{J}\equiv 1$) even in data-sparse regimes where MLPs produce unphysical drift.\\
+    $\bullet$ \textbf{Accelerator Use:} Space-charge Poisson solvers, beam envelope tracking, and trajectory prediction across unmonitored lattice drift sections.
+  }
+
+  % 2. PRNN / RNN Panel (Top-Right: x=6.75, y=1.95, w=5.40, h=2.15)
+  \draw[rounded corners=4pt,draw=accent!50,fill=accent!4,thick]
+    ([xshift=6.75in,yshift=-1.95in]current page.north west) rectangle ++(5.40in,-2.17in);
+  \at{6.87}{2.05}{5.15}{\fs{10.5}{13.5}\color{darkgray}%
+    {\fs{12}{14}\bfseries\color{accent}2. PRNN / RNN: Physics-Guided Recurrent Networks}\\[0.25em]
+    $\bullet$ \textbf{Mechanism:} Sequential state transitions with internal dynamic memory:
+    $$\mathbf{h}_t = \sigma(\mathbf{W}_h \mathbf{h}_{t-1} + \mathbf{W}_x \mathbf{x}_t + \mathbf{b}_h)$$\\[-0.5em]
+    augmented with physics inductive biases (e.g., hysteresis models, thermal delay).\\
+    $\bullet$ \textbf{Why Beyond MLP:} MLPs assume independent static inputs; PRNNs model non-Markovian memory, temporal lags, and hysteretic state dependence.\\
+    $\bullet$ \textbf{Accelerator Use:} Magnet iron hysteresis tracking during cycling, superconducting RF cavity decay, and precursor thermal drift forecasting.
+  }
+
+  % 3. VAE Panel (Bottom-Left: x=1.00, y=4.28, w=5.40, h=2.15)
+  \draw[rounded corners=4pt,draw=successgreen!50,fill=successgreen!4,thick]
+    ([xshift=1.00in,yshift=-4.28in]current page.north west) rectangle ++(5.40in,-2.17in);
+  \at{1.12}{4.38}{5.15}{\fs{10.5}{13.5}\color{darkgray}%
+    {\fs{12}{14}\bfseries\color{successgreen}3. VAE: Variational Autoencoders}\\[0.25em]
+    $\bullet$ \textbf{Mechanism:} Probabilistic encoder-decoder mapping inputs to latent Gaussian distribution $\mathbf{z} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})$, optimizing the Evidence Lower Bound:
+    $$\mathcal{L}_{\text{ELBO}} = \mathbb{E}_{q}[\log p_{\boldsymbol{\theta}}(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}\big(q_{\boldsymbol{\phi}}(\mathbf{z}|\mathbf{x})\,\|\,p(\mathbf{z})\big)$$\\[-0.5em]
+    $\bullet$ \textbf{Why Beyond MLP:} Learns continuous, structured generative latent manifolds rather than deterministic black-box point mappings.\\
+    $\bullet$ \textbf{Accelerator Use:} 6D particle bunch phase-space compression, unsupervised anomaly/trip detection, and synthetic generative beam diagnostics.
+  }
+
+  % 4. U-Net / CNN Panel (Bottom-Right: x=6.75, y=4.28, w=5.40, h=2.15)
+  \draw[rounded corners=4pt,draw=gold!60,fill=gold!4,thick]
+    ([xshift=6.75in,yshift=-4.28in]current page.north west) rectangle ++(5.40in,-2.17in);
+  \at{6.87}{4.38}{5.15}{\fs{10.5}{13.5}\color{darkgray}%
+    {\fs{12}{14}\bfseries\color{gold}4. U-Net / CNN: Convolutional Encoder-Decoders}\\[0.25em]
+    $\bullet$ \textbf{Mechanism:} Contracting feature extraction path paired with symmetric upsampling path, bridged by multiscale cross-layer skip connections:
+    $$\mathbf{x}_{\text{dec}}^{(l)} = \text{Conv}\big(\text{Upsample}(\mathbf{x}_{\text{dec}}^{(l+1)}) \;\oplus\; \mathbf{x}_{\text{enc}}^{(l)}\big)$$\\[-0.5em]
+    $\bullet$ \textbf{Why Beyond MLP:} Exploits 2D/3D spatial translation equivariance; retains high-resolution local details while capturing global topological context.\\
+    $\bullet$ \textbf{Accelerator Use:} YAG/OTR beam screen image reconstruction, transverse halo segmentation, phase-space tomography, and 3D magnet field interpolation.
+  }
+
+  \slidefooter{17}
+\end{tikzpicture}
+\clearpage
+
+% SLIDE 18: Paradigm 1: Supervised Learning | Digital Twin Surrogates & Hyperparameters (NEW)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.18}
@@ -667,12 +725,12 @@
       \end{tabular}
     };
 
-  \slidefooter{17}
+  \slidefooter{18}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 18: Neural Surrogate Digital Twin (RESIZED - ZERO OVERLAP)
+% SLIDE 19: Neural Surrogate Digital Twin (RESIZED - ZERO OVERLAP)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.15}
@@ -692,12 +750,12 @@
     $\bullet$ \textbf{Output Layer:} 12 predicted Beam Position Monitor readings [BPM1-12] in millimeters, evaluated in $< 0.2\text{ milliseconds}$.
   };
 
-  \slidefooter{18}
+  \slidefooter{19}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 19: Surrogate Training & Holdout Validation
+% SLIDE 20: Surrogate Training & Holdout Validation
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.38}
@@ -718,12 +776,12 @@
     $\bullet$ \textbf{Sub-Millisecond Execution:} Forward inference takes $< 0.2\text{ ms}$ per call, 10,000$\times$ faster than numerical tracking.
   }
 
-  \slidefooter{19}
+  \slidefooter{20}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 20: Closed-Loop Control Architecture (RESIZED - ZERO OVERLAP)
+% SLIDE 21: Closed-Loop Control Architecture (RESIZED - ZERO OVERLAP)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.15}
@@ -743,12 +801,12 @@
     $\bullet$ \textbf{Bayesian Optimization (Track 3):} a GP models the response with uncertainty; each step minimizes the LCB.
   };
 
-  \slidefooter{20}
+  \slidefooter{21}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 21: Baseline 0: Classical Linear SVD
+% SLIDE 22: Baseline 0: Classical Linear SVD
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.55}
@@ -767,12 +825,12 @@
     {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 9.4 mean steps, 635.277 total score (Rank \#3).}
   }
 
-  \slidefooter{21}
+  \slidefooter{22}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 22: Baseline 1 (Track 1): Supervised Neural Inversion
+% SLIDE 23: Baseline 1 (Track 1): Supervised Neural Inversion
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.58}
@@ -792,12 +850,12 @@
     {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 4.0 mean steps, 779.169 total score (Rank \#2).}
   }
 
-  \slidefooter{22}
+  \slidefooter{23}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 23: Paradigm 2: Reinforcement Learning | MDP Formulation & Hyperparameters (NEW)
+% SLIDE 24: Paradigm 2: Reinforcement Learning | MDP Formulation & Hyperparameters (NEW)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.18}
@@ -839,12 +897,12 @@
       \end{tabular}
     };
 
-  \slidefooter{23}
+  \slidefooter{24}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 24: Track 2: Closed-Loop RL with Physics Priors
+% SLIDE 25: Track 2: Closed-Loop RL with Physics Priors
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.30}
@@ -866,12 +924,12 @@
     \textbf{3. Execution Latency:} $< 0.4\text{ ms}$ (pure feedforward matrix multiply, 50$\times$ faster than iterative \texttt{L-BFGS-B}).
   }
 
-  \slidefooter{24}
+  \slidefooter{25}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 25: Dynamic Harmonic Step Damping
+% SLIDE 26: Dynamic Harmonic Step Damping
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.75}
@@ -890,12 +948,12 @@
     $\bullet$ \textbf{Step 5+ ($t \ge 4, \gamma < 0.88$):} Attenuated feedback prevents sensor jitter amplification, locking the orbit cleanly below $0.030\text{ mm}$.
   }
 
-  \slidefooter{25}
+  \slidefooter{26}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 26: Paradigm 3: Bayesian Optimization | Probabilistic GPs & Hyperparameters (NEW)
+% SLIDE 27: Paradigm 3: Bayesian Optimization | Probabilistic GPs & Hyperparameters (NEW)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.18}
@@ -938,12 +996,12 @@
       \end{tabular}
     };
 
-  \slidefooter{26}
+  \slidefooter{27}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 27: Track 3: Closed-Loop Bayesian Optimization
+% SLIDE 28: Track 3: Closed-Loop Bayesian Optimization
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.08}
@@ -966,12 +1024,12 @@
     Each step re-solves the acquisition from the latest BPM reading, but the reference GP is fitted once on $\sim$300 calibration shots and stays fixed. Refitting it with every new step (e.g.\ from a \texttt{step\_callback}) turns Track 3 into true online Bayesian optimization.
   }
 
-  \slidefooter{27}
+  \slidefooter{28}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 28: Lower Confidence Bound Acquisition
+% SLIDE 29: Lower Confidence Bound Acquisition
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.40}
@@ -991,12 +1049,12 @@
     {\bfseries\color{navy}$\bullet$ Exceptional Convergence Speed:} \textbf{\color{successgreen}When calibrated, Track 3 reaches the convergence threshold in about 3.6 steps on average (878.384 points).}
   }
 
-  \slidefooter{28}
+  \slidefooter{29}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 29: Gymnasium Environment Contract
+% SLIDE 30: Gymnasium Environment Contract
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.50}
@@ -1017,12 +1075,12 @@
     $\bullet$ \textbf{Termination Criteria:} \texttt{terminated = True} when $\text{RMS} < 0.030\text{ mm}$ (success); \texttt{truncated = True} when $\text{step} \ge 50$ (budget exhausted).
   }
 
-  \slidefooter{29}
+  \slidefooter{30}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 30: Standardized 30-Seed Scoring Formula
+% SLIDE 31: Standardized 30-Seed Scoring Formula
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
@@ -1056,12 +1114,12 @@
     \textbf{Current norm:} Reported on the leaderboard but not scored; it varies by only a few percent between controllers.
   }
 
-  \slidefooter{30}
+  \slidefooter{31}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 31: Tested Benchmark Leaderboard & Trajectories (TABLE FORMAT - NO WRAPPING)
+% SLIDE 32: Tested Benchmark Leaderboard & Trajectories (TABLE FORMAT - NO WRAPPING)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
@@ -1088,12 +1146,12 @@
       \end{tabular}
     };
 
-  \slidefooter{31}
+  \slidefooter{32}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 32: Method Comparison Summary (Baselines & Tracks)
+% SLIDE 33: Method Comparison Summary (Baselines & Tracks)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.15}
@@ -1119,12 +1177,12 @@
     Reference: unmodified notebook controllers (per-seed 0--1000 scoring, mean over 30 seeds). Solution: the organizers' worked solution, which inverts the model on the total current. Baseline 0 is a fixed reference and is not tuned by participants.
   }
 
-  \slidefooter{32}
+  \slidefooter{33}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 33: Strategic Advice for Competitors
+% SLIDE 34: Strategic Advice for Competitors
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.39}
@@ -1143,12 +1201,12 @@
     $\bullet$ Connect your notebook runs to Weights \& Biases (\texttt{wandb.ai}) to visualize step-by-step RMS decay against reference baselines on the live leaderboard.
   }
 
-  \slidefooter{33}
+  \slidefooter{34}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 34: Summary & Transition to Lecture 2
+% SLIDE 35: Summary & Transition to Lecture 2
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.18}
@@ -1168,7 +1226,7 @@
     {\fs{16}{20}\bfseries\color{accent}Q \& A Discussion}
   }
 
-  \slidefooter{34}
+  \slidefooter{35}
 \end{tikzpicture}
 
 \end{document}
