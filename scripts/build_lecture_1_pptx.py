@@ -48,7 +48,7 @@ TOTAL_SLIDES = 35
 # Line spacing (multiple of single spacing) for the body text of each slide, matching the
 # per-slide \slidespread values of the LaTeX deck so that text fills each content card.
 LINE_SPACING = {
-    1: 1.22, 2: 1.31, 3: 1.35, 4: 1.80, 5: 1.27, 6: 1.14, 7: 1.14, 8: 1.11, 9: 1.22, 10: 1.50,
+    1: 1.22, 2: 1.22, 3: 1.35, 4: 1.80, 5: 1.27, 6: 1.14, 7: 1.14, 8: 1.11, 9: 1.22, 10: 1.50,
     11: 1.12, 12: 1.38, 13: 1.25, 14: 1.18, 15: 1.18, 16: 1.25, 17: 1.14, 18: 1.22, 19: 1.38,
     20: 1.22, 21: 1.55, 22: 1.58, 23: 1.14, 24: 1.30, 25: 1.75, 26: 1.14, 27: 1.08, 28: 1.40,
     29: 1.50, 30: 1.22, 31: 1.22, 32: 1.22, 33: 1.39, 34: 1.18
