@@ -445,23 +445,23 @@ def create_presentation():
     # SLIDE 7: Advanced Strategy: Callbacks (FIXED BALANCED)
     # ==========================================
     s7 = prs.slides.add_slide(blank_layout)
-    add_header(s7, "Strategic Tuning", "Online Callbacks & Adaptive Damping Strategies", "Unlocking 900+ scores via dynamic gain schedules, saturation watchdogs, and meta-tuning")
+    add_header(s7, "Strategic Tuning", "Online Callbacks: Mechanics & Measured Effects", "Hooks after every step and every seed; always reset what you change, and measure the result")
     add_footer(s7, 7)
 
     # Left Card: Step Callback
-    add_card(s7, Inches(0.8), Inches(1.4), Inches(5.7), Inches(5.3), "Step Callback: Precision Damping & Watchdogs")
+    add_card(s7, Inches(0.8), Inches(1.4), Inches(5.7), Inches(5.3), "Step Callback: Runs After Every Step")
     tb_s7lt = s7.shapes.add_textbox(Inches(1.05), Inches(2.00), Inches(5.2), Inches(0.55))
     tf_s7lt = tb_s7lt.text_frame
     tf_s7lt.word_wrap = True
     p_s7lta = tf_s7lt.paragraphs[0]
     add_text_run(p_s7lta, "Adaptive Near-Target Damping (step_callback):\n", bold=True, size=Pt(11.5), color=NAVY)
-    add_text_run(p_s7lta, "Throttle gain near target to glide into noise floor without overshoot:", size=Pt(10.5), color=DARK_GRAY)
+    add_text_run(p_s7lta, "Reduce the gain near the target (needs the reset on the right):", size=Pt(10.5), color=DARK_GRAY)
 
     code_s7l = [
         "def my_step_callback(step_data, agent):",
         "    rms = step_data[\"info\"][\"rms\"]",
         "    if rms < 0.040 and hasattr(agent, \"gain\"): ",
-        "        agent.gain *= 0.94  # Glide into noise floor!",
+        "        agent.gain *= 0.94  # brake near the target",
     ]
     add_code_card(s7, Inches(1.05), Inches(2.62), Inches(5.2), Inches(1.45), code_s7l)
 
@@ -470,9 +470,9 @@ def create_presentation():
     tf_s7lb.word_wrap = True
 
     items_s7l = [
-        ("• Saturation Watchdog:\n", "If ||I_t||_∞ > 2.5 A, scale back action size to prevent cubic non-linear overshoots deep in core saturation."),
+        ("• Measured:\n", "This pair is about neutral (744 vs. 747 points). Without the reset it scores 323 (53% success): the gain keeps shrinking from seed to seed."),
         ("• Step Telemetry Access:\n", "step_data exposes 'step', 'obs', 'action', and 'info' ('rms' and total 'currents')."),
-        ("• Implementation:\n", "Register in CALLBACKS['step_callback'] in Step 4. See docs/CALLBACK_EXAMPLES.md for recipes."),
+        ("• What helped:\n", "Refitting the Track 3 GP online from a step callback: 882.9 vs. 878.4. Throttling above 2.5 A lowered the score."),
     ]
     for i, (hd, body) in enumerate(items_s7l):
         p = tf_s7lb.paragraphs[0] if i == 0 else tf_s7lb.add_paragraph()
@@ -482,18 +482,18 @@ def create_presentation():
         add_text_run(p_b, body, size=Pt(10), color=DARK_GRAY)
 
     # Right Card: Episode Callback
-    add_card(s7, Inches(6.8), Inches(1.4), Inches(5.7), Inches(5.3), "Episode Callback: Reset & Meta-Tuning")
+    add_card(s7, Inches(6.8), Inches(1.4), Inches(5.7), Inches(5.3), "Episode Callback: Runs After Every Seed")
     tb_s7rt = s7.shapes.add_textbox(Inches(7.05), Inches(2.00), Inches(5.2), Inches(0.55))
     tf_s7rt = tb_s7rt.text_frame
     tf_s7rt.word_wrap = True
     p_s7rta = tf_s7rt.paragraphs[0]
     add_text_run(p_s7rta, "Per-Seed State Reset (episode_callback):\n", bold=True, size=Pt(11.5), color=NAVY)
-    add_text_run(p_s7rta, "Reset dynamic gain and integrator state back to defaults between seeds:", size=Pt(10.5), color=DARK_GRAY)
+    add_text_run(p_s7rta, "Restore the starting gain and any per-episode state between seeds:", size=Pt(10.5), color=DARK_GRAY)
 
     code_s7r = [
         "def my_episode_callback(ep_data, agent):",
         "    if hasattr(agent, \"gain\"): ",
-        "        agent.gain = 1.05  # Restore baseline gain",
+        "        agent.gain = 1.05  # the gain b2 was created with",
     ]
     add_code_card(s7, Inches(7.05), Inches(2.62), Inches(5.2), Inches(1.45), code_s7r)
 
@@ -502,8 +502,8 @@ def create_presentation():
     tf_s7rb.word_wrap = True
 
     items_s7r = [
-        ("• Cross-Seed Meta-Tuning (Tournament 3 Winner):\n", "Adapt base gain across seeds based on prior outcomes: boost speed if prior seed converged in ≤ 3 steps; damp if struggling."),
-        ("• Episode Telemetry Access:\n", "ep_data exposes 'seed', 'final_rms', 'steps', 'success', and 'current_norm'."),
+        ("• Cross-Seed Tuning:\n", "Adapting the gain from earlier seeds is allowed. Check that your rules actually fire, and compare with a better constant gain."),
+        ("• Episode Telemetry Access:\n", "ep_data exposes 'seed', 'final_rms', 'steps', 'is_success', and 'current_norm'."),
         ("• Disclosure Rule:\n", "Any cross-seed state retention must be disclosed during your team's 3-minute lightning presentation!"),
     ]
     for i, (hd, body) in enumerate(items_s7r):
@@ -619,7 +619,7 @@ def create_presentation():
     tf_s10.word_wrap = True
     roadmap = [
         ("Phase 1: Environment Launch & Baseline Check (Step 0–2)\n", "Double-click launcher → open http://localhost:8888 → run Steps 0–2 → verify Baseline 0 reference (~635 pts)."),
-        ("Phase 2: Simultaneous Controller Tuning (Step 3 & 4: Work on any or all tracks concurrently)\n", "• Track 1: Improve the MLP surrogate in TODO 1 (try activation='tanh', solver='lbfgs'); holdout RMSE near 0.012 mm → B1 scores about 900 pts.\n• Track 2: In TODO 2, increase initial gain (α ≈ 1.0), compensate cubic saturation on I_t, apply step damping → verify >900 pts.\n• Track 3: In TODO 3, tune GP Matérn kernel, acquisition exploration κ, and regularizer λ → verify BO controller.\n• Step 4 Callbacks: Register near-target braking (RMS < 0.040 mm) to glide into noise floor and maximize precision score."),
+        ("Phase 2: Simultaneous Controller Tuning (Step 3 & 4: Work on any or all tracks concurrently)\n", "• Track 1: Improve the MLP surrogate in TODO 1 (try activation='tanh', solver='lbfgs'); holdout RMSE near 0.012 mm → B1 scores about 900 pts.\n• Track 2: In TODO 2, increase initial gain (α ≈ 1.0), compensate cubic saturation on I_t, apply step damping → verify >900 pts.\n• Track 3: In TODO 3, tune GP Matérn kernel, acquisition exploration κ, and regularizer λ → verify BO controller.\n• Step 4 Callbacks: Optional. Always pair a gain change with a reset after each seed, and compare the score with and without the callback."),
         ("Phase 3: Unified Benchmark & Iteration (Step 5)\n", "Run locked Step 5 benchmark to evaluate all 4 controllers in parallel across 30 seeds; compare leaderboard ranks and iterate."),
         ("Phase 4: Trajectory Alignment Visualization (Step 6 & 7)\n", "Generate img/benchmark_trajectories.png showing all controllers side-by-side; inspect convergence curves for your team showcase."),
         ("Phase 5: Official Submission & Showcase Presentation (16:15 – 17:00)\n", "Verify submission on live W&B dashboard; connect to room projector for 3-minute lightning talk!"),

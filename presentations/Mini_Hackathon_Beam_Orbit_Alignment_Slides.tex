@@ -316,42 +316,42 @@
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
-  \slideheader{Strategic Tuning}{Online Callbacks \& Adaptive Damping Strategies}{Unlocking 900+ scores via dynamic gain schedules, saturation watchdogs, and meta-tuning}
+  \slideheader{Strategic Tuning}{Online Callbacks: Mechanics \& Measured Effects}{Hooks after every step and every seed; always reset what you change, and measure the result}
 
   % Left Card: Step Callback
-  \drawcard{0.8}{1.4}{5.7}{5.3}{Step Callback: Precision Damping \& Watchdogs}
+  \drawcard{0.8}{1.4}{5.7}{5.3}{Step Callback: Runs After Every Step}
   \at{1.05}{2.02}{5.2}{\fs{11.5}{15}\color{darkgray}%
     {\bfseries\color{navy}Adaptive Near-Target Damping (\texttt{step\_callback}):}\\[0.15em]
-    Throttle gain near target to glide into noise floor without overshoot:
+    Reduce the gain near the target (needs the reset on the right):
   }
   \drawcodecard{1.05}{2.62}{5.2}{1.45}
   \at{1.2}{2.76}{4.9}{\fs{9.5}{13}\ttfamily\color{darkgray}%
     def my\_step\_callback(step\_data, agent):\\
     \quad rms = step\_data["info"]["rms"]\\
     \quad if rms < 0.040 and hasattr(agent, "gain"):\\
-    \qquad agent.gain *= 0.94  \# Glide into noise floor!
+    \qquad agent.gain *= 0.94  \# brake near the target
   }
   \at{1.05}{4.30}{5.2}{\fs{11}{15}\color{darkgray}%
-    {\bfseries\color{navy}$\bullet$ Saturation Watchdog:}\enspace If $\|\mathbf{I}_t\|_\infty > 2.5\text{ A}$, scale back action size to prevent cubic non-linear overshoots deep in core saturation.\\[0.35em]
+    {\bfseries\color{crimson}$\bullet$ Measured:}\enspace This pair is about neutral (744 vs.\ 747 points). \textbf{Without the reset it scores 323} (53\% success): the gain keeps shrinking from seed to seed.\\[0.35em]
     {\bfseries\color{navy}$\bullet$ Step Telemetry Access:}\enspace \texttt{step\_data} exposes \texttt{"step"}, \texttt{"obs"}, \texttt{"action"}, and \texttt{"info"} (\texttt{"rms"} and total \texttt{"currents"}).\\[0.35em]
-    {\bfseries\color{navy}$\bullet$ Implementation:}\enspace Register in \texttt{CALLBACKS["step\_callback"]} in Step 4. See \texttt{docs/CALLBACK\_EXAMPLES.md} for recipes.
+    {\bfseries\color{navy}$\bullet$ What helped:}\enspace Refitting the Track 3 GP online from a step callback: 882.9 vs.\ 878.4. Throttling above 2.5 A lowered the score.
   }
 
   % Right Card: Episode Callback
-  \drawcard{6.8}{1.4}{5.7}{5.3}{Episode Callback: Reset \& Meta-Tuning}
+  \drawcard{6.8}{1.4}{5.7}{5.3}{Episode Callback: Runs After Every Seed}
   \at{7.05}{2.02}{5.2}{\fs{11.5}{15}\color{darkgray}%
     {\bfseries\color{navy}Per-Seed State Reset (\texttt{episode\_callback}):}\\[0.15em]
-    Reset dynamic gain and integrator state back to defaults between seeds:
+    Restore the starting gain and any per-episode state between seeds:
   }
   \drawcodecard{7.05}{2.62}{5.2}{1.45}
   \at{7.2}{2.76}{4.9}{\fs{9.5}{13}\ttfamily\color{darkgray}%
     def my\_episode\_callback(ep\_data, agent):\\
     \quad if hasattr(agent, "gain"):\\
-    \qquad agent.gain = 1.05  \# Restore baseline gain
+    \qquad agent.gain = 1.05  \# the gain b2 was created with
   }
   \at{7.05}{4.30}{5.2}{\fs{11}{15}\color{darkgray}%
-    {\bfseries\color{navy}$\bullet$ Cross-Seed Meta-Tuning (Tournament 3 Winner):}\enspace Adapt base gain across seeds based on prior outcomes: boost speed if prior seed converged in $\le 3$ steps; damp if struggling.\\[0.35em]
-    {\bfseries\color{navy}$\bullet$ Episode Telemetry Access:}\enspace \texttt{ep\_data} exposes \texttt{"seed"}, \texttt{"final\_rms"}, \texttt{"steps"}, \texttt{"success"}, and \texttt{"current\_norm"}.\\[0.35em]
+    {\bfseries\color{navy}$\bullet$ Cross-Seed Tuning:}\enspace Adapting the gain from earlier seeds is allowed. Check that your rules actually fire, and compare with a better constant gain.\\[0.35em]
+    {\bfseries\color{navy}$\bullet$ Episode Telemetry Access:}\enspace \texttt{ep\_data} exposes \texttt{"seed"}, \texttt{"final\_rms"}, \texttt{"steps"}, \texttt{"is\_success"}, and \texttt{"current\_norm"}.\\[0.35em]
     {\bfseries\color{crimson}$\bullet$ Disclosure Rule:}\enspace Any cross-seed state retention must be disclosed during your team's 3-minute lightning presentation!
   }
 
@@ -445,7 +445,7 @@
     $\bullet$ {\bfseries Track 1:} Improve the MLP surrogate in TODO 1 (try \texttt{activation='tanh'}, \texttt{solver='lbfgs'}); holdout RMSE near 0.012 mm $\to$ B1 scores about 900 pts.\newline
     $\bullet$ {\bfseries Track 2:} In TODO 2, increase initial gain ($\alpha \approx 1.0$), compensate cubic saturation on $\mathbf{I}_t$, apply step damping $\to$ verify $>900$ pts.\newline
     $\bullet$ {\bfseries Track 3:} In TODO 3, tune GP Mat\'{e}rn kernel, acquisition exploration $\kappa$, and regularizer $\lambda \to$ verify BO controller.\newline
-    $\bullet$ {\bfseries Step 4 Callbacks:} Register near-target braking ($\text{RMS} < 0.040\text{ mm}$) to glide into noise floor and maximize precision score.\\[0.5em]
+    $\bullet$ {\bfseries Step 4 Callbacks:} Optional. Always pair a gain change with a reset after each seed, and compare the score with and without the callback.\\[0.5em]
     {\bfseries\color{primaryblue}Phase 3: Unified Benchmark \& Iteration (Step 5)}\\[0.2em]
     Run locked Step 5 benchmark to evaluate all 4 controllers in parallel across 30 seeds; compare leaderboard ranks and iterate.\\[0.5em]
     {\bfseries\color{primaryblue}Phase 4: Trajectory Alignment Visualization (Step 6 \& 7)}\\[0.2em]

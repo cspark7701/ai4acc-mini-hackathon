@@ -46,7 +46,8 @@ Callbacks let a controller adapt online while the benchmark runs.
   `final_rms`, `is_success`, `current_norm`, `elapsed_ms` and `info`.
 - **Disclosure:** a callback that carries information from earlier evaluation seeds into later ones
   (for example a prior learned across seeds) is allowed, but say so in your team presentation.
-- **Detailed Examples & Schemas:** see [`CALLBACK_EXAMPLES.md`](CALLBACK_EXAMPLES.md) for complete data dictionary specifications and ready-to-use implementations of adaptive precision damping, saturation watchdogs, cross-seed meta-tuning, and diagnostic loggers.
+- **Detailed Examples & Schemas:** see [`CALLBACK_EXAMPLES.md`](CALLBACK_EXAMPLES.md) for the full data schemas and tested examples (state reset, near-target damping, online GP refit, cross-seed tuning, telemetry), each with its measured effect on the score.
+- **Reset what you change:** the same controller object is used for all 30 seeds. A step callback that lowers `agent.gain` without an `episode_callback` restoring it makes the gain shrink from seed to seed; in testing, Example 1 of the callback guide run without a reset dropped a 747-point controller to 241 points with 40% success.
 
 ---
 
@@ -59,35 +60,37 @@ When tuning the forward digital twin surrogate (`surrogate_model = MLPRegressor(
 #### Activation Functions (`activation`):
 | Option | Mathematical Definition | Characteristics & Practical Guidance |
 | :--- | :---: | :--- |
-| `'relu'` *(Default)* | $f(x) = \max(0, x)$ | **Rectified Linear Unit.** Fast forward/backward passes, sparse gradient propagation, avoids vanishing gradients in deeper networks. The recommended baseline choice. |
-| `'tanh'` | $f(x) = \tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$ | **Hyperbolic Tangent.** Smooth, continuously differentiable, zero-centered with outputs bounded in $(-1, 1)$. Particularly well-suited for modeling smooth physical response curves and soft saturation transitions. |
+| `'relu'` *(Default)* | $f(x) = \max(0, x)$ | **Rectified Linear Unit.** Fast forward/backward passes, sparse gradient propagation, avoids vanishing gradients in deeper networks. With the notebook's default settings it reaches a test RMSE of 0.109 mm, worse than the linear Ridge model (0.082 mm). |
+| `'tanh'` | $f(x) = \tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$ | **Hyperbolic Tangent.** Smooth, continuously differentiable, zero-centered with outputs bounded in $(-1, 1)$. Well suited to smooth physical response curves such as the cubic saturation here: a `(64, 64)` `tanh` network trained with `solver='lbfgs'` reached a test RMSE of about 0.012 mm in testing. |
 | `'logistic'` | $f(x) = \frac{1}{1 + e^{-x}}$ | **Logistic Sigmoid.** Smooth S-shaped curve with outputs bounded in $(0, 1)$. Can suffer from vanishing gradients at saturation extremes. |
 | `'identity'` | $f(x) = x$ | **Linear Activation (No-op).** Computes purely linear transformations; useful for linear bottleneck layers or benchmarking against linear Ridge models. |
 
 #### Training Solvers / Weight Optimizers (`solver`):
 | Option | Algorithm | Characteristics & Practical Guidance |
 | :--- | :--- | :--- |
-| `'adam'` *(Default)* | **Adaptive Moment Estimation** (Kingma & Ba) | Stochastic gradient-based optimizer maintaining per-parameter adaptive learning rates and momentum. Highly robust across architectures, learning rates, and dataset sizes ($N \ge 1500$). |
-| `'lbfgs'` | **Limited-Memory BFGS** (Quasi-Newton) | Approximates the second-order Hessian matrix. For small to moderate datasets ($N \le 2000$), it often converges significantly faster and to lower training loss than first-order stochastic methods. |
+| `'adam'` *(Default)* | **Adaptive Moment Estimation** (Kingma & Ba) | Stochastic gradient-based optimizer maintaining per-parameter adaptive learning rates and momentum. A good default for large datasets. On this small dataset the default run stops after about 85 epochs, well before `max_iter`, and leaves the network under-trained (0.109 mm). |
+| `'lbfgs'` | **Limited-Memory BFGS** (Quasi-Newton) | Full-batch quasi-Newton method that approximates the Hessian. For small, smooth datasets like this one (1,200 training shots) it reaches a much lower loss than the default Adam run: about 0.012 mm with `tanh`, against 0.034 mm with `relu`. Raise `max_iter` (for example to 2000). |
 | `'sgd'` | **Stochastic Gradient Descent** | Classic gradient descent with support for momentum (`momentum=0.9`) and learning rate schedules (e.g. `learning_rate='adaptive'`). Requires careful tuning of `learning_rate_init`. |
 
 ---
 
 ### 2. Action Inversion & Acquisition Solvers (`scipy.optimize.minimize`)
 
-In **Track 1** (`SupervisedMLPController`), **Track 3** (`BayesianOptimizationController`), or custom policy optimization in **Track 2**, the controller solves an online bounded optimization problem per step to find the optimal corrective kick $\Delta \mathbf{I} \in [-0.8, +0.8]^6$:
+In **Track 1** (`SupervisedMLPController`), **Track 3** (`BayesianOptimizationController`), or custom policy optimization in **Track 2**, the controller solves a bounded optimization problem at every step to find the corrective kick $\Delta \mathbf{I}$:
 
-$$\min_{\Delta \mathbf{I}} \|\mathbf{Y}_{\text{pred}}\|^2 + \lambda \|\Delta \mathbf{I}\|^2$$
+$$\min_{\Delta \mathbf{I}} \|\mathbf{Y}_{\text{pred}}(\mathbf{I} + \Delta \mathbf{I})\|^2 + \lambda \|\Delta \mathbf{I}\|^2$$
 
-SciPy provides the following bounded optimization algorithms via `scipy.optimize.minimize(..., method=...)`:
+where $\mathbf{Y}_{\text{pred}}$ is the predicted next orbit and $\mathbf{I}$ the present total current. The reference controllers search within $\pm 5\text{ A}$ and then clip the kick to the $\pm 0.8\text{ A}$ step limit.
 
-| Method | Optimizer Family | Bounds Support | Characteristics & Accelerator Application |
-| :--- | :--- | :---: | :--- |
-| `'L-BFGS-B'` *(Default)* | Quasi-Newton (Bounded BFGS) | ✅ Yes | **Standard Choice.** Approximates Hessian using limited memory; highly efficient for smooth non-linear objective functions with hardware box constraints. Fast sub-millisecond execution. |
-| `'SLSQP'` | Sequential Least Squares Programming | ✅ Yes | Solves quadratic subproblems with bound constraints. Robust when adding explicit physics constraints (e.g., maximum total corrector current norm $\|\mathbf{I}\| \le 5.0\text{ A}$). |
-| `'TNC'` | Truncated Newton Conjugate Gradient | ✅ Yes | Suitable for large-scale unconstrained or box-constrained problems. Computes search directions via conjugate gradients. |
-| `'Powell'` | Powell's Conjugate Direction Method | ✅ Yes | **Derivative-Free.** Does not compute objective gradients; robust against noisy objective landscapes or non-smooth acquisition functions. |
-| `'Nelder-Mead'` | Downhill Simplex Algorithm | ✅ Yes | **Derivative-Free.** Heuristic geometric simplex search. Slower convergence than gradient methods, but resilient against local sensor jitter. |
+SciPy provides the following bounded optimization algorithms via `scipy.optimize.minimize(..., method=...)`. The last column was measured with Baseline 1 and the reference MLP on the 30 seeds:
+
+| Method | Optimizer Family | Bounds Support | Characteristics | Measured: score, time per step |
+| :--- | :--- | :---: | :--- | :--- |
+| `'L-BFGS-B'` *(Default)* | Quasi-Newton (Bounded BFGS) | ✅ Yes | **Standard Choice.** Approximates the Hessian using limited memory; efficient for smooth non-linear objectives with box constraints. | 779.2, 24 ms |
+| `'SLSQP'` | Sequential Least Squares Programming | ✅ Yes | Solves quadratic subproblems with bound constraints; also accepts general constraints (e.g., a limit on the total current norm). | 779.2, 11 ms (same result, about twice as fast) |
+| `'TNC'` | Truncated Newton Conjugate Gradient | ✅ Yes | Truncated Newton method; computes search directions via conjugate gradients. | 789.7, 94 ms |
+| `'Powell'` | Powell's Conjugate Direction Method | ✅ Yes | **Derivative-Free.** Does not use gradients; tolerates non-smooth objectives. | 779.3, 85 ms |
+| `'Nelder-Mead'` | Downhill Simplex Algorithm | ✅ Yes | **Derivative-Free.** Simplex search; slower than gradient methods. | 763.5, 126 ms (slower and less accurate) |
 
 ---
 
