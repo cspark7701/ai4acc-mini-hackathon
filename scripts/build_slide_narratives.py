@@ -1228,6 +1228,7 @@ def build_english_tex():
 
 \usepackage{amsmath,amssymb,amsfonts,bm}
 \usepackage{xcolor}
+\usepackage{multicol}
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,breakable}
 \usepackage{fancyhdr}
@@ -1259,7 +1260,70 @@ def build_english_tex():
 }
 
 \begin{document}
+
+% --- Title Page ---
+\begin{titlepage}
+    \centering
+    \vspace*{1.2cm}
+    {\Huge\bfseries\color{navy}AI Applications in Accelerators\\[0.3em]Tutorial \& Mini-Hackathon\par}
+    \vspace{0.8cm}
+    {\LARGE\bfseries\color{primaryblue}Lecture 1: AI/ML Foundations \& Closed-Loop Control\par}
+    \vspace{0.3cm}
+    {\Large\color{accent}Comprehensive Slide-by-Slide Presenter Script \& Technical Companion\par}
+    \vspace{1.2cm}
+
+    \begin{tcolorbox}[colback=white,colframe=accent,width=0.88\textwidth,arc=4pt]
+        \centering
+        \textbf{Author \& Instructor:}\\[0.2em]
+        {\large\bfseries Chong Shik Park, Ph.D.}\\[0.2em]
+        Department of Accelerator Science, Korea University, Sejong\\[0.2em]
+        \texttt{kuphy@korea.ac.kr} \enspace$|$\enspace November 19, 2026
+    \end{tcolorbox}
+
+    \vspace{1.2cm}
+    \begin{minipage}{0.88\textwidth}
+        \small\color{darkgray}
+        \textbf{Document Overview \& Pedagogical Structure:}\\
+        This authoritative companion provides the complete word-for-word spoken narrative, technical physics context, slide visual architecture blueprints, pedagogical focus points, anticipated participant questions with model answers, and natural verbal transition cues for all 35 slides comprising Lecture 1.
+        \par\vspace{0.6em}
+        Each slide is formatted on its own dedicated single page (1:1 correspondence with Slides 1 to 35), allowing the lecturer to present seamlessly from the lectern and providing hackathon attendees with a self-contained, reproducible reference for all three competition tracks.
+    \end{minipage}
+    \vfill
+    {\footnotesize\color{darkgray}Korea University Accelerator Physics Laboratory \enspace$\bullet$\enspace 2026}
+\end{titlepage}
 ''']
+
+    # --- Table of Contents Page ---
+    toc_lines = []
+    for s in SLIDES:
+        num = s['num']
+        title = tex_clean(s['title_en'])
+        toc_lines.append(f"\\noindent\\hyperlink{{slide.{num}}}{{\\textbf{{\\color{{primaryblue}}Slide {num}:}}\\enspace {title}\\enspace\\dotfill\\enspace\\textbf{{{num}}}}} \\\\[0.22em]")
+    toc_body = "\n".join(toc_lines)
+
+    out.append(r'''% --- Table of Contents Page ---
+\clearpage
+\pagenumbering{roman}
+\fancyfoot[C]{\small\color{darkgray}Table of Contents}
+
+\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=8pt,right=8pt,top=4pt,bottom=4pt,boxrule=0pt,arc=2pt]
+{\large\bfseries\color{white}Table of Contents \enspace$|$\enspace Lecture 1 Slide Directory (Slides 1--35)}
+\end{tcolorbox}
+\vspace{0.4em}
+
+{\footnotesize
+\begin{multicols}{2}
+''' + toc_body + r'''
+\end{multicols}}
+''')
+
+    # --- Slide Pages (1 to 35) ---
+    out.append(r'''% --- Slide Pages (1 to 35) ---
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\fancyfoot[C]{\small\bfseries\color{primaryblue}Slide \thepage\ of 35}
+''')
 
     for s in SLIDES:
         num = s['num']
@@ -1272,6 +1336,7 @@ def build_english_tex():
         trans = tex_clean(s['trans_en'])
 
         out.append(r'\clearpage')
+        out.append(f'\\hypertarget{{slide.{num}}}{{}}')
         out.append(r'\phantomsection')
         out.append(f'\\addcontentsline{{toc}}{{section}}{{Slide {num}: {title}}}')
         out.append(r'\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]')
@@ -1309,6 +1374,7 @@ def build_korean_tex():
 
 \usepackage{amsmath,amssymb,amsfonts,bm}
 \usepackage{xcolor}
+\usepackage{multicol}
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,breakable}
 \usepackage{fancyhdr}
@@ -1340,7 +1406,70 @@ def build_korean_tex():
 }
 
 \begin{document}
+
+% --- Title Page ---
+\begin{titlepage}
+    \centering
+    \vspace*{1.2cm}
+    {\Huge\bfseries\color{navy}가속기 인공지능 응용\\[0.3em]튜토리얼 및 미니 해커톤\par}
+    \vspace{0.8cm}
+    {\LARGE\bfseries\color{primaryblue}제1강: AI/ML 기초 및 폐루프 궤도 제어\par}
+    \vspace{0.3cm}
+    {\Large\color{accent}슬라이드별 상세 구두 발표 대본 및 기술 해설서 (한국어판)\par}
+    \vspace{1.2cm}
+
+    \begin{tcolorbox}[colback=white,colframe=accent,width=0.88\textwidth,arc=4pt]
+        \centering
+        \textbf{강연자 및 저자:}\\[0.2em]
+        {\large\bfseries 박종식 교수 (Chong Shik Park, Ph.D.)}\\[0.2em]
+        고려대학교 세종캠퍼스 가속기과학과\\[0.2em]
+        \texttt{kuphy@korea.ac.kr} \enspace$|$\enspace 2026년 11월 19일
+    \end{tcolorbox}
+
+    \vspace{1.2cm}
+    \begin{minipage}{0.88\textwidth}
+        \small\color{darkgray}
+        \textbf{문서 개요 및 교수학적 구성 체계:}\\
+        본 문서는 제1강 총 35개 슬라이드 전체에 대한 구두 발표 대본(Verbatim Script), 물리 이론 배경, 슬라이드 시각 구성 요약, 교육적 강조 포인트, 예상 질의응답(Q\&A), 그리고 다음 슬라이드로의 자연스러운 전환 멘트를 수록한 공식 강연 해설서입니다.
+        \par\vspace{0.6em}
+        각 슬라이드의 내용 전체가 정확히 1페이지 안에 완결되도록 조판(1번부터 35번 슬라이드와 1:1 페이지 대응)되어, 발표자가 강단에서 편리하게 직관적으로 슬라이드를 넘기며 강연할 수 있으며, 참가자들의 실전 해커톤 자습 교재로 최적화되었습니다.
+    \end{minipage}
+    \vfill
+    {\footnotesize\color{darkgray}고려대학교 가속기물리연구실 \enspace$\bullet$\enspace 2026}
+\end{titlepage}
 ''']
+
+    # --- Table of Contents Page ---
+    toc_lines = []
+    for s in SLIDES:
+        num = s['num']
+        title = tex_clean(s['title_kr'])
+        toc_lines.append(f"\\noindent\\hyperlink{{slide.{num}}}{{\\textbf{{\\color{{primaryblue}}슬라이드 {num}:}}\\enspace {title}\\enspace\\dotfill\\enspace\\textbf{{{num}}}}} \\\\[0.22em]")
+    toc_body = "\n".join(toc_lines)
+
+    out.append(r'''% --- Table of Contents Page ---
+\clearpage
+\pagenumbering{roman}
+\fancyfoot[C]{\small\color{darkgray}목차}
+
+\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=8pt,right=8pt,top=4pt,bottom=4pt,boxrule=0pt,arc=2pt]
+{\large\bfseries\color{white}목차 (Table of Contents) \enspace$|$\enspace 제1강 슬라이드 디렉토리 (슬라이드 1--35)}
+\end{tcolorbox}
+\vspace{0.4em}
+
+{\footnotesize
+\begin{multicols}{2}
+''' + toc_body + r'''
+\end{multicols}}
+''')
+
+    # --- Slide Pages (1 to 35) ---
+    out.append(r'''% --- Slide Pages (1 to 35) ---
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\fancyfoot[C]{\small\bfseries\color{primaryblue}슬라이드 \thepage\ / 35}
+''')
 
     for s in SLIDES:
         num = s['num']
@@ -1353,6 +1482,7 @@ def build_korean_tex():
         trans = tex_clean(s['trans_kr'])
 
         out.append(r'\clearpage')
+        out.append(f'\\hypertarget{{slide.{num}}}{{}}')
         out.append(r'\phantomsection')
         out.append(f'\\addcontentsline{{toc}}{{section}}{{슬라이드 {num}: {title}}}')
         out.append(r'\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]')

@@ -7,6 +7,7 @@
 
 \usepackage{amsmath,amssymb,amsfonts,bm}
 \usepackage{xcolor}
+\usepackage{multicol}
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,breakable}
 \usepackage{fancyhdr}
@@ -39,7 +40,94 @@
 
 \begin{document}
 
+% --- Title Page ---
+\begin{titlepage}
+    \centering
+    \vspace*{1.2cm}
+    {\Huge\bfseries\color{navy}AI Applications in Accelerators\\[0.3em]Tutorial \& Mini-Hackathon\par}
+    \vspace{0.8cm}
+    {\LARGE\bfseries\color{primaryblue}Lecture 1: AI/ML Foundations \& Closed-Loop Control\par}
+    \vspace{0.3cm}
+    {\Large\color{accent}Comprehensive Slide-by-Slide Presenter Script \& Technical Companion\par}
+    \vspace{1.2cm}
+
+    \begin{tcolorbox}[colback=white,colframe=accent,width=0.88\textwidth,arc=4pt]
+        \centering
+        \textbf{Author \& Instructor:}\\[0.2em]
+        {\large\bfseries Chong Shik Park, Ph.D.}\\[0.2em]
+        Department of Accelerator Science, Korea University, Sejong\\[0.2em]
+        \texttt{kuphy@korea.ac.kr} \enspace$|$\enspace November 19, 2026
+    \end{tcolorbox}
+
+    \vspace{1.2cm}
+    \begin{minipage}{0.88\textwidth}
+        \small\color{darkgray}
+        \textbf{Document Overview \& Pedagogical Structure:}\\
+        This authoritative companion provides the complete word-for-word spoken narrative, technical physics context, slide visual architecture blueprints, pedagogical focus points, anticipated participant questions with model answers, and natural verbal transition cues for all 35 slides comprising Lecture 1.
+        \par\vspace{0.6em}
+        Each slide is formatted on its own dedicated single page (1:1 correspondence with Slides 1 to 35), allowing the lecturer to present seamlessly from the lectern and providing hackathon attendees with a self-contained, reproducible reference for all three competition tracks.
+    \end{minipage}
+    \vfill
+    {\footnotesize\color{darkgray}Korea University Accelerator Physics Laboratory \enspace$\bullet$\enspace 2026}
+\end{titlepage}
+
+% --- Table of Contents Page ---
 \clearpage
+\pagenumbering{roman}
+\fancyfoot[C]{\small\color{darkgray}Table of Contents}
+
+\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=8pt,right=8pt,top=4pt,bottom=4pt,boxrule=0pt,arc=2pt]
+{\large\bfseries\color{white}Table of Contents \enspace$|$\enspace Lecture 1 Slide Directory (Slides 1--35)}
+\end{tcolorbox}
+\vspace{0.4em}
+
+{\footnotesize
+\begin{multicols}{2}
+\noindent\hyperlink{slide.1}{\textbf{\color{primaryblue}Slide 1:}\enspace AI/ML Foundations \& Closed-Loop Control\enspace\dotfill\enspace\textbf{1}} \\[0.22em]
+\noindent\hyperlink{slide.2}{\textbf{\color{primaryblue}Slide 2:}\enspace Why AI in Particle Accelerators?\enspace\dotfill\enspace\textbf{2}} \\[0.22em]
+\noindent\hyperlink{slide.3}{\textbf{\color{primaryblue}Slide 3:}\enspace Master Curriculum \& Program Schedule\enspace\dotfill\enspace\textbf{3}} \\[0.22em]
+\noindent\hyperlink{slide.4}{\textbf{\color{primaryblue}Slide 4:}\enspace AI Pillars: Surrogates \& Optimization\enspace\dotfill\enspace\textbf{4}} \\[0.22em]
+\noindent\hyperlink{slide.5}{\textbf{\color{primaryblue}Slide 5:}\enspace AI Pillars: Diagnostics, Protection \& Agents\enspace\dotfill\enspace\textbf{5}} \\[0.22em]
+\noindent\hyperlink{slide.6}{\textbf{\color{primaryblue}Slide 6:}\enspace Hill's Equation \& Transverse Motion\enspace\dotfill\enspace\textbf{6}} \\[0.22em]
+\noindent\hyperlink{slide.7}{\textbf{\color{primaryblue}Slide 7:}\enspace Betatron Motion \& Courant-Snyder Optics\enspace\dotfill\enspace\textbf{7}} \\[0.22em]
+\noindent\hyperlink{slide.8}{\textbf{\color{primaryblue}Slide 8:}\enspace Orbit Response Matrix Derivation\enspace\dotfill\enspace\textbf{8}} \\[0.22em]
+\noindent\hyperlink{slide.9}{\textbf{\color{primaryblue}Slide 9:}\enspace 15-Meter Transport Lattice Architecture\enspace\dotfill\enspace\textbf{9}} \\[0.22em]
+\noindent\hyperlink{slide.10}{\textbf{\color{primaryblue}Slide 10:}\enspace Hardware Limits \& Actuator Bounds\enspace\dotfill\enspace\textbf{10}} \\[0.22em]
+\noindent\hyperlink{slide.11}{\textbf{\color{primaryblue}Slide 11:}\enspace Magnetic Core Non-Linear Saturation\enspace\dotfill\enspace\textbf{11}} \\[0.22em]
+\noindent\hyperlink{slide.12}{\textbf{\color{primaryblue}Slide 12:}\enspace Artificial Neurons \& Layer Composition\enspace\dotfill\enspace\textbf{12}} \\[0.22em]
+\noindent\hyperlink{slide.13}{\textbf{\color{primaryblue}Slide 13:}\enspace Activation Functions in Neural Networks\enspace\dotfill\enspace\textbf{13}} \\[0.22em]
+\noindent\hyperlink{slide.14}{\textbf{\color{primaryblue}Slide 14:}\enspace NN Surrogate Example: Particle Transfer Matrix\enspace\dotfill\enspace\textbf{14}} \\[0.22em]
+\noindent\hyperlink{slide.15}{\textbf{\color{primaryblue}Slide 15:}\enspace NN Surrogate: Activation Functions in Beam Transport\enspace\dotfill\enspace\textbf{15}} \\[0.22em]
+\noindent\hyperlink{slide.16}{\textbf{\color{primaryblue}Slide 16:}\enspace Optimization Algorithms in Machine Learning\enspace\dotfill\enspace\textbf{16}} \\[0.22em]
+\noindent\hyperlink{slide.17}{\textbf{\color{primaryblue}Slide 17:}\enspace Specialized Neural Architectures: Beyond Plain MLPs\enspace\dotfill\enspace\textbf{17}} \\[0.22em]
+\noindent\hyperlink{slide.18}{\textbf{\color{primaryblue}Slide 18:}\enspace Supervised Learning: Digital Twins \& Hyperparameters\enspace\dotfill\enspace\textbf{18}} \\[0.22em]
+\noindent\hyperlink{slide.19}{\textbf{\color{primaryblue}Slide 19:}\enspace The Neural Surrogate Digital Twin\enspace\dotfill\enspace\textbf{19}} \\[0.22em]
+\noindent\hyperlink{slide.20}{\textbf{\color{primaryblue}Slide 20:}\enspace Surrogate Training \& Holdout Validation\enspace\dotfill\enspace\textbf{20}} \\[0.22em]
+\noindent\hyperlink{slide.21}{\textbf{\color{primaryblue}Slide 21:}\enspace Closed-Loop Control Architecture\enspace\dotfill\enspace\textbf{21}} \\[0.22em]
+\noindent\hyperlink{slide.22}{\textbf{\color{primaryblue}Slide 22:}\enspace Baseline 0: Classical Linear SVD\enspace\dotfill\enspace\textbf{22}} \\[0.22em]
+\noindent\hyperlink{slide.23}{\textbf{\color{primaryblue}Slide 23:}\enspace Baseline 1 (Track 1): Supervised Neural Inversion\enspace\dotfill\enspace\textbf{23}} \\[0.22em]
+\noindent\hyperlink{slide.24}{\textbf{\color{primaryblue}Slide 24:}\enspace Reinforcement Learning: MDP Formulation \& Hyperparameters\enspace\dotfill\enspace\textbf{24}} \\[0.22em]
+\noindent\hyperlink{slide.25}{\textbf{\color{primaryblue}Slide 25:}\enspace Track 2: Closed-Loop RL with Physics Priors\enspace\dotfill\enspace\textbf{25}} \\[0.22em]
+\noindent\hyperlink{slide.26}{\textbf{\color{primaryblue}Slide 26:}\enspace Dynamic Harmonic Step Damping\enspace\dotfill\enspace\textbf{26}} \\[0.22em]
+\noindent\hyperlink{slide.27}{\textbf{\color{primaryblue}Slide 27:}\enspace Bayesian Optimization: Probabilistic GPs \& Hyperparameters\enspace\dotfill\enspace\textbf{27}} \\[0.22em]
+\noindent\hyperlink{slide.28}{\textbf{\color{primaryblue}Slide 28:}\enspace Track 3: Closed-Loop Bayesian Optimization\enspace\dotfill\enspace\textbf{28}} \\[0.22em]
+\noindent\hyperlink{slide.29}{\textbf{\color{primaryblue}Slide 29:}\enspace Lower Confidence Bound Acquisition\enspace\dotfill\enspace\textbf{29}} \\[0.22em]
+\noindent\hyperlink{slide.30}{\textbf{\color{primaryblue}Slide 30:}\enspace Gymnasium Environment Contract\enspace\dotfill\enspace\textbf{30}} \\[0.22em]
+\noindent\hyperlink{slide.31}{\textbf{\color{primaryblue}Slide 31:}\enspace Standardized 30-Seed Scoring Formula\enspace\dotfill\enspace\textbf{31}} \\[0.22em]
+\noindent\hyperlink{slide.32}{\textbf{\color{primaryblue}Slide 32:}\enspace Tested Benchmark Leaderboard \& Trajectories\enspace\dotfill\enspace\textbf{32}} \\[0.22em]
+\noindent\hyperlink{slide.33}{\textbf{\color{primaryblue}Slide 33:}\enspace Method Comparison Summary\enspace\dotfill\enspace\textbf{33}} \\[0.22em]
+\noindent\hyperlink{slide.34}{\textbf{\color{primaryblue}Slide 34:}\enspace Strategic Advice for Competitors\enspace\dotfill\enspace\textbf{34}} \\[0.22em]
+\noindent\hyperlink{slide.35}{\textbf{\color{primaryblue}Slide 35:}\enspace Summary \& Transition to Lecture 2\enspace\dotfill\enspace\textbf{35}} \\[0.22em]
+\end{multicols}}
+
+% --- Slide Pages (1 to 35) ---
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\fancyfoot[C]{\small\bfseries\color{primaryblue}Slide \thepage\ of 35}
+
+\clearpage
+\hypertarget{slide.1}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 1: AI/ML Foundations \& Closed-Loop Control}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -61,6 +149,7 @@ Good morning, everyone, and welcome to Lecture 1 of our AI Applications in Accel
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{To motivate our journey, let us first examine why modern particle accelerators demand artificial intelligence.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.2}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 2: Why AI in Particle Accelerators?}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -82,6 +171,7 @@ Modern particle accelerators—whether synchrotrons, free-electron lasers, or hi
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us review the master roadmap for today's workshop.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.3}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 3: Master Curriculum \& Program Schedule}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -103,6 +193,7 @@ Here is our program for the day, carefully structured to move from rigorous foun
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Let us now survey the broader landscape of AI applications across modern accelerators.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.4}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 4: AI Pillars: Surrogates \& Optimization}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -124,6 +215,7 @@ Artificial intelligence in accelerators is typically organized into four foundat
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us examine the remaining two pillars: anomaly detection and autonomous scientific agents.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.5}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 5: AI Pillars: Diagnostics, Protection \& Agents}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -145,6 +237,7 @@ Pillar 3 encompasses Diagnostics, Anomaly Detection, and Machine Protection. Mod
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{With this landscape established, let us dive into the core physics of transverse beam dynamics.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.6}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 6: Hill's Equation \& Transverse Motion}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -166,6 +259,7 @@ Transverse beam dynamics begins with the Lorentz force: d p / d t = q ( E + v cr
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{How do we solve Hill's equation analytically? That brings us to Courant-Snyder optics.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.7}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 7: Betatron Motion \& Courant-Snyder Optics}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -187,6 +281,7 @@ Because the restoring coefficient K(s) varies with s, the solution to Hill's equ
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us derive how steering magnets kick this betatron oscillation downstream: the Orbit Response Matrix.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.8}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 8: Orbit Response Matrix Derivation}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -208,6 +303,7 @@ When a dipole corrector magnet located at longitudinal position s\_i applies an 
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Let us examine the physical layout of the transport lattice designed for our hackathon challenge.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.9}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 9: 15-Meter Transport Lattice Architecture}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -229,6 +325,7 @@ Here is the physical layout of our hackathon challenge lattice. It represents a 
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{However, in real accelerators, power supplies and sensors have hard physical limitations.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.10}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 10: Hardware Limits \& Actuator Bounds}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -250,6 +347,7 @@ A major reason toy simulation algorithms fail when deployed on real physical acc
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Beyond linear limits, magnetic cores exhibit non-linear physical saturation.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.11}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 11: Magnetic Core Non-Linear Saturation}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -271,6 +369,7 @@ In introductory accelerator physics courses, magnetic field strength B is assume
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us transition into Machine Learning: how do neural networks model complex non-linear functions?}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.12}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 12: Artificial Neurons \& Layer Composition}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -292,6 +391,7 @@ The fundamental building block of deep learning is the artificial neuron, origin
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{This brings us to a critical question: how do different activation functions shape neural representations?}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.13}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 13: Activation Functions in Neural Networks}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -313,6 +413,7 @@ Activation functions fulfill four essential operational roles in accelerator neu
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{To make this concrete, let us look at a worked example: surrogating an analytical particle transfer matrix.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.14}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 14: NN Surrogate Example: Particle Transfer Matrix}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -334,6 +435,7 @@ To bridge machine learning directly with beam optics, let us construct a neural 
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{What happens if we choose different activation functions inside this surrogate? Let us look at Slide 15.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.15}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 15: NN Surrogate: Activation Functions in Beam Transport}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -355,6 +457,7 @@ This slide reveals the profound geometric impact of activation function selectio
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Once an architecture is defined, how do we optimize its millions of parameters? Let us examine modern optimization algorithms.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.16}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 16: Optimization Algorithms in Machine Learning}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -376,6 +479,7 @@ Training a neural network means finding parameter weights theta that minimize th
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Are MLPs the only neural network used in accelerators? Absolutely not. Let us examine specialized neural architectures.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.17}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 17: Specialized Neural Architectures: Beyond Plain MLPs}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -397,6 +501,7 @@ While plain MLPs excel at static black-box regression, physical accelerators pre
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us enter the core competitive tracks of our mini-hackathon, beginning with Paradigm 1: Supervised Learning.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.18}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 18: Supervised Learning: Digital Twins \& Hyperparameters}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -418,6 +523,7 @@ Paradigm 1 represents the standard digital twin approach: supervised forward sur
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Let us examine the exact architecture of the MLP surrogate digital twin.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.19}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 19: The Neural Surrogate Digital Twin}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -439,6 +545,7 @@ Here is the detailed topology of our neural surrogate digital twin. It maps the 
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{How well does this surrogate perform when tested on unseen validation data? Let us look at Slide 20.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.20}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 20: Surrogate Training \& Holdout Validation}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -460,6 +567,7 @@ To prove that our neural surrogate has learned the true physics rather than memo
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now that we have an accurate forward digital twin, how do we use it for closed-loop orbit control?}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.21}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 21: Closed-Loop Control Architecture}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -481,6 +589,7 @@ Here is the architecture of closed-loop orbit control. Notice the information fl
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Let us contrast this with the classical approach used in accelerators for decades: Baseline 0 SVD.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.22}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 22: Baseline 0: Classical Linear SVD}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -502,6 +611,7 @@ Baseline 0 represents classical accelerator orbit correction: Moore-Penrose pseu
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us see what happens when we replace linear SVD with our non-linear neural surrogate: Baseline 1.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.23}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 23: Baseline 1 (Track 1): Supervised Neural Inversion}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -523,6 +633,7 @@ Baseline 1 is the core controller for Track 1: model-based optimization via digi
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us shift to Paradigm 2: Reinforcement Learning and adaptive closed-loop policies.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.24}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 24: Reinforcement Learning: MDP Formulation \& Hyperparameters}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -544,6 +655,7 @@ Reinforcement Learning treats orbit correction as a sequential decision-making p
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{How do we structure an RL agent that learns quickly without destroying the beam? Track 2: Physics Priors.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.25}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 25: Track 2: Closed-Loop RL with Physics Priors}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -565,6 +677,7 @@ Training an RL agent from pure scratch (tabula rasa) on an accelerator is danger
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Notice the gamma(t) term in front of the policy. What is its mathematical role? Let us look at Slide 26.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.26}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 26: Dynamic Harmonic Step Damping}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -586,6 +699,7 @@ When high-gain closed-loop policies approach the target convergence boundary (RM
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us turn to our third paradigm: Bayesian Optimization and Gaussian Processes.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.27}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 27: Bayesian Optimization: Probabilistic GPs \& Hyperparameters}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -607,6 +721,7 @@ Bayesian Optimization is the premier paradigm for sample-efficient black-box tun
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{How does this GP model operate inside our closed-loop challenge? Let us examine Track 3 on Slide 28.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.28}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 28: Track 3: Closed-Loop Bayesian Optimization}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -628,6 +743,7 @@ Here is how Track 3 operates. In the reference implementation, a GaussianProcess
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Let us examine the exact mathematical formulation of the Lower Confidence Bound acquisition function.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.29}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 29: Lower Confidence Bound Acquisition}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -649,6 +765,7 @@ The decision engine of Track 3 is the Lower Confidence Bound (LCB) acquisition f
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us examine the formal Gymnasium software contract governing your code in this afternoon's challenge.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.30}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 30: Gymnasium Environment Contract}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -670,6 +787,7 @@ To ensure scientific reproducibility, our simulation environment AcceleratorOrbi
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{How are controllers officially scored across the 30 seeds? Let us examine the official scoring formula on Slide 31.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.31}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 31: Standardized 30-Seed Scoring Formula}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -691,6 +809,7 @@ To establish a fair, mathematically rigorous benchmark, your controllers are eva
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{How do our reference baselines and tracks perform under this official formula? Let us examine the live leaderboard.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.32}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 32: Tested Benchmark Leaderboard \& Trajectories}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -712,6 +831,7 @@ Here is the official baseline leaderboard across all 30 evaluation seeds. All fo
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Let us summarize how all these controllers compare across methodology, latency, and sample efficiency.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.33}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 33: Method Comparison Summary}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -733,6 +853,7 @@ This table presents a comprehensive trade-off matrix across all methods. Classic
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now, what specific strategies can you execute this afternoon to climb the leaderboard? Let us look at Slide 34.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.34}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 34: Strategic Advice for Competitors}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
@@ -754,6 +875,7 @@ Here is your tactical playbook for this afternoon's mini-hackathon. For Track 1 
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Finally, let us summarize our morning journey and transition to Lecture 2 with Dr. Thorsten Hellert.}
 \end{tcolorbox}
 \clearpage
+\hypertarget{slide.35}{}
 \phantomsection
 \addcontentsline{toc}{section}{Slide 35: Summary \& Transition to Lecture 2}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
