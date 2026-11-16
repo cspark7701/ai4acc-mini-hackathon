@@ -285,7 +285,7 @@ The choice of activation function directly determines the non-linear expressive 
 
 ### 3.5 Worked Example: Neural Surrogate for a Particle Transfer Matrix
 
-To bridge abstract deep learning concepts directly with accelerator beam physics, consider the canonical problem of surrogating a linear beamline section characterized by a particle transfer matrix.
+To bridge abstract deep learning concepts directly with accelerator beam physics, consider the canonical problem of surrogating a linear beamline section characterized by a particle transfer matrix. The companion notebook [`notebooks/Transfer_Matrix_Surrogate_Phase_Space.ipynb`](../notebooks/Transfer_Matrix_Surrogate_Phase_Space.ipynb) trains this network for a FODO cell and compares it with the matrix in phase space.
 
 #### 1. Classical Analytical Transfer Matrix Formulation
 In linear beam optics, the transverse phase-space trajectory of a particle through a transport lattice from initial position $s_0$ to final diagnostic station $s_f$ is described by the $2 \times 2$ transfer matrix $\mathbf{M}$:

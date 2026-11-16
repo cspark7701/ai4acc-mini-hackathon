@@ -119,7 +119,8 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 │
 ├── notebooks/                                        # Interactive Jupyter challenge notebooks
 │   ├── Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb  # Primary challenge notebook for participants (with TODOs)
-│   └── Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb     # Reference solutions and benchmark code
+│   ├── Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb     # Reference solutions and benchmark code
+│   └── Transfer_Matrix_Surrogate_Phase_Space.ipynb             # Lecture 1, slides 14-15: NN surrogate of a FODO transfer matrix in phase space
 │
 ├── src/                                              # Reusable Python simulation & controller package
 │   ├── __init__.py                                   # Package exports
