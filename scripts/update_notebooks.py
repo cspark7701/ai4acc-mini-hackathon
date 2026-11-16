@@ -99,12 +99,14 @@ def update_participant_notebook():
         "\n",
         "1. **Baseline 0 (Classical SVD Controller):** Inverts the linear Orbit Response Matrix via Moore-Penrose pseudo-inverse: $\\Delta \\mathbf{I} = - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y}$.\n",
         "2. **Baseline 1 / Track 1 (Supervised Neural Inversion):** Solves an optimization problem per step using the trained neural surrogate digital twin:\n",
-        "   $$\\min_{\\Delta \\mathbf{I}} \\|\\mathbf{Y} + f_{\\theta}(\\Delta \\mathbf{I})\\|^2 + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n",
+        "   $$\\min_{\\Delta \\mathbf{I}} \\|\\mathbf{Y} - f_{\\theta}(\\mathbf{I}) + f_{\\theta}(\\mathbf{I} + \\Delta \\mathbf{I})\\|^2 + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n",
+        "   where $\\mathbf{I}$ is the present total current from `info[\"currents\"]`, so the norm is the predicted next orbit.\n",
         "3. **Challenge Track 2 (Closed-Loop RL / Adaptive Agent):** Combines physics prior feedback with adaptive step damping:\n",
-        "   $$\\Delta \\mathbf{I}_t = \\text{damping}(t) \\cdot \\left[ - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y} + \\mathbf{W}_{\\text{tune}} \\mathbf{Y} + \\mathbf{b} \\right]$$\n",
-        "   RL agents learn or optimize policy parameters by interacting with `AcceleratorOrbitGymEnv`. By tuning reward and penalty weights (`step_penalty`, `action_weight`, `rms_weight`, `success_bonus`), you can directly incentivize the agent to converge in fewer steps and use minimal corrector current!\n",
+        "   $$\\Delta \\mathbf{I}_t = \\text{damping}(t) \\cdot \\left[ - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y} + \\mathbf{W}_{\\text{learned}} \\mathbf{Y} + \\mathbf{b} \\right]$$\n",
+        "   ($\\mathbf{W}_{\\text{learned}}$ is `W_tune` in the code; it starts at zero, so the unmodified agent is a damped pseudo-inverse.)\n",
+        "   RL agents learn or optimize policy parameters by interacting with `AcceleratorOrbitGymEnv`. If you train a policy with RL, the reward and penalty weights (`step_penalty`, `action_weight`, `rms_weight`, `success_bonus`) let you favor fewer steps; they have no effect on a controller that does not learn from the reward.\n",
         "4. **Challenge Track 3 (Bayesian Optimization Controller):** Uses a Gaussian Process surrogate with epistemic uncertainty estimation to evaluate an acquisition function (Lower Confidence Bound, LCB) balancing exploitation of predicted orbit corrections with exploration:\n",
-        "   $$\\alpha_{\\text{LCB}}(\\Delta \\mathbf{I}) = \\text{RMS}(\\mathbf{Y}_{\\text{obs}} + \\mu_{\\text{GP}}(\\Delta \\mathbf{I})) - \\kappa \\cdot \\sigma_{\\text{GP}}(\\Delta \\mathbf{I}) + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n"
+        "   $$\\alpha_{\\text{LCB}}(\\Delta \\mathbf{I}) = \\text{RMS}(\\mathbf{Y}_{\\text{obs}} - \\mu_{\\text{GP}}(\\mathbf{I}) + \\mu_{\\text{GP}}(\\mathbf{I} + \\Delta \\mathbf{I})) - \\kappa \\cdot \\sigma_{\\text{GP}}(\\mathbf{I} + \\Delta \\mathbf{I}) + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n"
     ]
 
     # 4. Update Cell 9 (Code: add TODO 3 for Bayesian Optimization)
@@ -382,11 +384,13 @@ def update_solution_notebook():
         "\n",
         "1. **Baseline 0 (Classical SVD Controller):** Inverts the linear Orbit Response Matrix via Moore-Penrose pseudo-inverse: $\\Delta \\mathbf{I} = - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y}$.\n",
         "2. **Baseline 1 / Track 1 (Supervised Neural Inversion):** Solves an optimization problem per step using the trained neural surrogate digital twin:\n",
-        "   $$\\min_{\\Delta \\mathbf{I}} \\|\\mathbf{Y} + f_{\\theta}(\\Delta \\mathbf{I})\\|^2 + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n",
+        "   $$\\min_{\\Delta \\mathbf{I}} \\|\\mathbf{Y} - f_{\\theta}(\\mathbf{I}) + f_{\\theta}(\\mathbf{I} + \\Delta \\mathbf{I})\\|^2 + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n",
+        "   where $\\mathbf{I}$ is the present total current from `info[\"currents\"]`, so the norm is the predicted next orbit.\n",
         "3. **Challenge Track 2 (Closed-Loop RL / Adaptive Agent):** Combines physics prior feedback with adaptive step damping:\n",
-        "   $$\\Delta \\mathbf{I}_t = \\text{damping}(t) \\cdot \\left[ - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y} + \\mathbf{W}_{\\text{tune}} \\mathbf{Y} + \\mathbf{b} \\right]$$\n",
+        "   $$\\Delta \\mathbf{I}_t = \\text{damping}(t) \\cdot \\left[ - \\alpha (\\mathbf{R}^T)^{\\dagger} \\mathbf{Y} + \\mathbf{W}_{\\text{learned}} \\mathbf{Y} + \\mathbf{b} \\right]$$\n",
+        "   ($\\mathbf{W}_{\\text{learned}}$ is `W_tune` in the code; it starts at zero, so the unmodified agent is a damped pseudo-inverse.)\n",
         "4. **Challenge Track 3 (Bayesian Optimization Controller):** Uses a Gaussian Process surrogate with epistemic uncertainty estimation to evaluate an acquisition function (Lower Confidence Bound, LCB) balancing exploitation of predicted orbit corrections with exploration:\n",
-        "   $$\\alpha_{\\text{LCB}}(\\Delta \\mathbf{I}) = \\text{RMS}(\\mathbf{Y}_{\\text{obs}} + \\mu_{\\text{GP}}(\\Delta \\mathbf{I})) - \\kappa \\cdot \\sigma_{\\text{GP}}(\\Delta \\mathbf{I}) + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n"
+        "   $$\\alpha_{\\text{LCB}}(\\Delta \\mathbf{I}) = \\text{RMS}(\\mathbf{Y}_{\\text{obs}} - \\mu_{\\text{GP}}(\\mathbf{I}) + \\mu_{\\text{GP}}(\\mathbf{I} + \\Delta \\mathbf{I})) - \\kappa \\cdot \\sigma_{\\text{GP}}(\\mathbf{I} + \\Delta \\mathbf{I}) + \\lambda \\|\\Delta \\mathbf{I}\\|^2$$\n"
     ]
 
     # 4. Update Cell 9 (Code: add Track 3 reference controller)
