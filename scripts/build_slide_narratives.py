@@ -1191,10 +1191,13 @@ def tex_clean(text: str) -> str:
     """Escape TeX special characters (&, %, _, ^) outside math mode, and &/% inside math mode."""
     unicode_map = [
         ("⁽¹⁾", "$^{(1)}$"), ("⁽²⁾", "$^{(2)}$"), ("⁽³⁾", "$^{(3)}$"),
-        ("μ₀", r"$\mu_0$"), ("φ₀", r"$\phi_0$"), ("ẑ_f", r"$\hat{z}_f$"),
+        ("μ₀", r"$\mu_0$"), ("φ₀", r"$\phi_0$"),
+        ("ẑ_f", r"$\hat{z}_f$"), ("ẑ", r"$\hat{z}$"), ("Ŷ", r"$\hat{Y}$"), ("ŷ", r"$\hat{y}$"),
         ("det(J)", r"$\det(J)$"), ("det(M)", r"$\det(M)$"), ("det M", r"$\det M$"),
         ("₀", "$_0$"), ("₁", "$_1$"), ("₂", "$_2$"), ("₃", "$_3$"),
-        ("³", "$^3$"), ("²", "$^2$"), ("ᵀ", "$^T$"),
+        ("₄", "$_4$"), ("₅", "$_5$"), ("₆", "$_6$"),
+        ("³", "$^3$"), ("²", "$^2$"), ("⁶", "$^6$"),
+        ("⁻¹", "$^{-1}$"), ("⁻", "$^-$"), ("ᵀ", "$^T$"),
     ]
     for u, rep in unicode_map:
         text = text.replace(u, rep)
@@ -1217,14 +1220,14 @@ def tex_clean(text: str) -> str:
 
 def build_english_tex():
     out = [r'''\documentclass[11pt,a4paper]{article}
-\usepackage[margin=1in]{geometry}
+\usepackage[a4paper,top=1.3cm,bottom=1.3cm,left=1.5cm,right=1.5cm,headheight=14pt,headsep=8pt,footskip=16pt]{geometry}
 \usepackage{fontspec}
 \setmainfont{DejaVu Serif}
 \setsansfont{DejaVu Sans}
 \setmonofont{DejaVu Sans Mono}
+
 \usepackage{amsmath,amssymb,amsfonts,bm}
 \usepackage{xcolor}
-\usepackage{booktabs}
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,breakable}
 \usepackage{fancyhdr}
@@ -1236,17 +1239,16 @@ def build_english_tex():
 \definecolor{darkgray}{HTML}{2C3E50}
 \definecolor{lightbg}{HTML}{F8FAFC}
 \definecolor{bordergray}{HTML}{CBD5E1}
-\definecolor{tunablered}{HTML}{C0392B}
 \definecolor{successgreen}{HTML}{27AE60}
-\definecolor{gold}{HTML}{B48C14}
 
 \pagestyle{fancy}
 \fancyhf{}
-\setlength{\headheight}{15pt}
 \fancyhead[L]{\small\bfseries\color{primaryblue}AI Applications in Accelerators \enspace$|$\enspace Lecture 1 Slide Narratives}
 \fancyhead[R]{\small\color{darkgray}Chong Shik Park, Ph.D.}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0.5pt}
+\fancyfoot[C]{\small\bfseries\color{primaryblue}Slide \thepage\ of 35}
+\fancyfoot[R]{\footnotesize\color{darkgray}AI4ACC Tutorial 2026}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
 
 \hypersetup{
     colorlinks=true,
@@ -1257,40 +1259,10 @@ def build_english_tex():
 }
 
 \begin{document}
-
-\begin{titlepage}
-    \centering
-    \vspace*{1.5cm}
-    {\Huge\bfseries\color{navy}AI Applications in Accelerators\\[0.3em]Tutorial \& Mini-Hackathon\par}
-    \vspace{1.0cm}
-    {\LARGE\bfseries\color{primaryblue}Lecture 1: AI/ML Foundations \& Closed-Loop Control\par}
-    \vspace{0.4cm}
-    {\Large\color{accent}Comprehensive Slide-by-Slide Presenter Script \& Technical Companion\par}
-    \vspace{1.5cm}
-
-    \begin{tcolorbox}[colback=white,colframe=accent,width=0.85\textwidth,arc=4pt]
-        \centering
-        \textbf{Author \& Instructor:}\\[0.2em]
-        {\large\bfseries Chong Shik Park, Ph.D.}\\[0.2em]
-        Department of Accelerator Science, Korea University, Sejong\\[0.2em]
-        \texttt{kuphy@korea.ac.kr} \enspace$|$\enspace November 19, 2026
-    \end{tcolorbox}
-
-    \vspace{1.5cm}
-    \begin{minipage}{0.85\textwidth}
-        \small\color{darkgray}
-        \textbf{Document Overview:}\\
-        This document provides the complete word-for-word spoken narrative, technical background notes, slide visual descriptions, pedagogical focus points, anticipated participant questions with model answers, and natural verbal transition cues for all 35 slides comprising Lecture 1. It serves as an authoritative speaker reference for delivering the lecture and as a self-contained study companion for hackathon participants.
-    \end{minipage}
-    \vfill
-    {\footnotesize\color{darkgray}Korea University Accelerator Physics Laboratory \enspace$\bullet$\enspace 2026}
-\end{titlepage}
-
-\tableofcontents
-\clearpage
 ''']
 
     for s in SLIDES:
+        num = s['num']
         title = tex_clean(s['title_en'])
         cat = tex_clean(s['category'])
         visual = tex_clean(s['visual_en'])
@@ -1299,31 +1271,37 @@ def build_english_tex():
         qa = tex_clean(s['qa_en'])
         trans = tex_clean(s['trans_en'])
 
-        out.append(f"\\section{{Slide {s['num']}: {title}}}\n")
-        out.append(f"\\textbf{{\\color{{accent}}Category:}} {cat} \\hfill \\textbf{{\\color{{primaryblue}}Slide Index:}} {s['num']} / 35\n\n")
+        out.append(r'\clearpage')
+        out.append(r'\phantomsection')
+        out.append(f'\\addcontentsline{{toc}}{{section}}{{Slide {num}: {title}}}')
+        out.append(r'\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]')
+        out.append(f'{{\\large\\bfseries\\color{{white}}Slide {num}:\\enspace {title}}}\\hfill{{\\footnotesize\\bfseries\\color{{white!85!lightbg}}{cat} \\enspace$|$\\enspace Slide {num} of 35}}')
+        out.append(r'\end{tcolorbox}')
+        out.append(r'\vspace{0.2em}')
 
-        out.append(r"\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]")
-        out.append(visual + "\n")
-        out.append(r"\end{tcolorbox}" + "\n\n")
+        out.append(r'\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]')
+        out.append(visual)
+        out.append(r'\end{tcolorbox}')
+        out.append(r'\vspace{0.2em}')
 
-        out.append(r"\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]")
-        out.append(script + "\n")
-        out.append(r"\end{tcolorbox}" + "\n\n")
+        out.append(r'\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}Spoken Presenter Script},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]')
+        out.append(script)
+        out.append(r'\end{tcolorbox}')
+        out.append(r'\vspace{0.2em}')
 
-        out.append(r"\begin{itemize}")
-        out.append(f"    \\item \\textbf{{\\color{{navy}}Pedagogical Focus \\& Emphasis:}} {cues}")
-        out.append(f"    \\item \\textbf{{\\color{{successgreen}}Anticipated Participant Q\\&A:}} {qa}")
-        out.append(f"    \\item \\textbf{{\\color{{accent}}Verbal Transition to Next Slide:}} \\emph{{{trans}}}")
-        out.append(r"\end{itemize}")
-        out.append(r"\vspace{0.8em}\hrule\vspace{1.2em}")
-        out.append("\n")
+        out.append(r'\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]')
+        out.append(r'\small')
+        out.append(f'\\noindent\\textbf{{\\color{{navy}}Pedagogical Focus \\& Emphasis:}}\\enspace {cues}\\par\\vspace{{0.3em}}')
+        out.append(f'\\noindent\\textbf{{\\color{{successgreen}}Anticipated Participant Q\\&A:}}\\enspace {qa}\\par\\vspace{{0.3em}}')
+        out.append(f'\\noindent\\textbf{{\\color{{accent}}Verbal Transition to Next Slide:}}\\enspace \\emph{{{trans}}}')
+        out.append(r'\end{tcolorbox}')
 
-    out.append(r"\end{document}")
+    out.append(r'\end{document}')
     return "\n".join(out)
 
 def build_korean_tex():
     out = [r'''\documentclass[11pt,a4paper]{article}
-\usepackage[margin=1in]{geometry}
+\usepackage[a4paper,top=1.3cm,bottom=1.3cm,left=1.5cm,right=1.5cm,headheight=14pt,headsep=8pt,footskip=16pt]{geometry}
 \usepackage{fontspec}
 \setmainfont{Noto Serif CJK KR}
 \setsansfont{Noto Sans CJK KR}
@@ -1331,7 +1309,6 @@ def build_korean_tex():
 
 \usepackage{amsmath,amssymb,amsfonts,bm}
 \usepackage{xcolor}
-\usepackage{booktabs}
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,breakable}
 \usepackage{fancyhdr}
@@ -1343,17 +1320,16 @@ def build_korean_tex():
 \definecolor{darkgray}{HTML}{2C3E50}
 \definecolor{lightbg}{HTML}{F8FAFC}
 \definecolor{bordergray}{HTML}{CBD5E1}
-\definecolor{tunablered}{HTML}{C0392B}
 \definecolor{successgreen}{HTML}{27AE60}
-\definecolor{gold}{HTML}{B48C14}
 
 \pagestyle{fancy}
 \fancyhf{}
-\setlength{\headheight}{15pt}
 \fancyhead[L]{\small\bfseries\color{primaryblue}가속기 인공지능 튜토리얼 \enspace$|$\enspace 제1강 슬라이드 내러티브 대본}
 \fancyhead[R]{\small\color{darkgray}박종식 교수 (고려대학교)}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0.5pt}
+\fancyfoot[C]{\small\bfseries\color{primaryblue}슬라이드 \thepage\ / 35}
+\fancyfoot[R]{\footnotesize\color{darkgray}AI4ACC Tutorial 2026}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
 
 \hypersetup{
     colorlinks=true,
@@ -1364,40 +1340,10 @@ def build_korean_tex():
 }
 
 \begin{document}
-
-\begin{titlepage}
-    \centering
-    \vspace*{1.5cm}
-    {\Huge\bfseries\color{navy}가속기 인공지능 응용\\[0.3em]튜토리얼 및 미니 해커톤\par}
-    \vspace{1.0cm}
-    {\LARGE\bfseries\color{primaryblue}제1강: AI/ML 기초 및 폐루프 궤도 제어\par}
-    \vspace{0.4cm}
-    {\Large\color{accent}슬라이드별 상세 구두 발표 대본 및 기술 해설서 (한국어판)\par}
-    \vspace{1.5cm}
-
-    \begin{tcolorbox}[colback=white,colframe=accent,width=0.85\textwidth,arc=4pt]
-        \centering
-        \textbf{강연자 및 저자:}\\[0.2em]
-        {\large\bfseries 박종식 교수 (Chong Shik Park, Ph.D.)}\\[0.2em]
-        고려대학교 세종캠퍼스 가속기과학과\\[0.2em]
-        \texttt{kuphy@korea.ac.kr} \enspace$|$\enspace 2026년 11월 19일
-    \end{tcolorbox}
-
-    \vspace{1.5cm}
-    \begin{minipage}{0.85\textwidth}
-        \small\color{darkgray}
-        \textbf{문서 개요 및 목적:}\\
-        본 문서는 제1강 총 35개 슬라이드 전체에 대한 구두 발표 대본(Verbatim Script), 슬라이드 시각 구성 요약, 교육적 강조 포인트, 예상 질의응답(Q\&A), 그리고 다음 슬라이드로의 자연스러운 전환 멘트를 수록한 공식 강연 해설서입니다. 강연자의 실전 발표 가이드이자, 해커톤 참가자들의 자습 및 복습용 교재로 활용됩니다.
-    \end{minipage}
-    \vfill
-    {\footnotesize\color{darkgray}고려대학교 가속기물리연구실 \enspace$\bullet$\enspace 2026}
-\end{titlepage}
-
-\tableofcontents
-\clearpage
 ''']
 
     for s in SLIDES:
+        num = s['num']
         title = tex_clean(s['title_kr'])
         cat = tex_clean(s['category'])
         visual = tex_clean(s['visual_kr'])
@@ -1406,26 +1352,32 @@ def build_korean_tex():
         qa = tex_clean(s['qa_kr'])
         trans = tex_clean(s['trans_kr'])
 
-        out.append(f"\\section{{슬라이드 {s['num']}: {title}}}\n")
-        out.append(f"\\textbf{{\\color{{accent}}분류:}} {cat} \\hfill \\textbf{{\\color{{primaryblue}}슬라이드 번호:}} {s['num']} / 35\n\n")
+        out.append(r'\clearpage')
+        out.append(r'\phantomsection')
+        out.append(f'\\addcontentsline{{toc}}{{section}}{{슬라이드 {num}: {title}}}')
+        out.append(r'\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]')
+        out.append(f'{{\\large\\bfseries\\color{{white}}슬라이드 {num}:\\enspace {title}}}\\hfill{{\\footnotesize\\bfseries\\color{{white!85!lightbg}}{cat} \\enspace$|$\\enspace 슬라이드 {num} / 35}}')
+        out.append(r'\end{tcolorbox}')
+        out.append(r'\vspace{0.2em}')
 
-        out.append(r"\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{슬라이드 시각 구성 요약},fonttitle=\small\color{darkgray},arc=3pt]")
-        out.append(visual + "\n")
-        out.append(r"\end{tcolorbox}" + "\n\n")
+        out.append(r'\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}슬라이드 시각 구성 요약},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]')
+        out.append(visual)
+        out.append(r'\end{tcolorbox}')
+        out.append(r'\vspace{0.2em}')
 
-        out.append(r"\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{발표자 구두 대본 (Spoken Script)},fonttitle=\bfseries\color{white},arc=4pt]")
-        out.append(script + "\n")
-        out.append(r"\end{tcolorbox}" + "\n\n")
+        out.append(r'\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}발표자 구두 대본 (Spoken Script)},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]')
+        out.append(script)
+        out.append(r'\end{tcolorbox}')
+        out.append(r'\vspace{0.2em}')
 
-        out.append(r"\begin{itemize}")
-        out.append(f"    \\item \\textbf{{\\color{{navy}}교수학적 강조점 (Focus Point):}} {cues}")
-        out.append(f"    \\item \\textbf{{\\color{{successgreen}}예상 질문 및 모범 답변 (Q\\&A):}} {qa}")
-        out.append(f"    \\item \\textbf{{\\color{{accent}}다음 슬라이드 연결 멘트 (Transition):}} {trans}")
-        out.append(r"\end{itemize}")
-        out.append(r"\vspace{0.8em}\hrule\vspace{1.2em}")
-        out.append("\n")
+        out.append(r'\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]')
+        out.append(r'\small')
+        out.append(f'\\noindent\\textbf{{\\color{{navy}}교수학적 강조점 (Focus Point):}}\\enspace {cues}\\par\\vspace{{0.3em}}')
+        out.append(f'\\noindent\\textbf{{\\color{{successgreen}}예상 질문 및 모범 답변 (Q\\&A):}}\\enspace {qa}\\par\\vspace{{0.3em}}')
+        out.append(f'\\noindent\\textbf{{\\color{{accent}}다음 슬라이드 연결 멘트 (Transition):}}\\enspace {trans}')
+        out.append(r'\end{tcolorbox}')
 
-    out.append(r"\end{document}")
+    out.append(r'\end{document}')
     return "\n".join(out)
 
 def main():
