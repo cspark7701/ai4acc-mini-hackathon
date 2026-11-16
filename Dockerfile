@@ -40,12 +40,14 @@ COPY . .
 # 3. Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf
 # 4. Mini_Hackathon_Beam_Orbit_Alignment_Slides.pdf
 # 5. PARTICIPANT_MODIFICATION_GUIDE.pdf
+# 6. Transfer_Matrix_Surrogate_Phase_Space.ipynb (self-contained companion notebook to Lecture 1, slides 14-15)
 # Plus internal img/ needed by the notebook's draw_beamline / save_path.
 RUN mv /workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb /workspace/ && \
     mv /workspace/lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf /workspace/ && \
     mv /workspace/presentations/Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf /workspace/ && \
     mv /workspace/presentations/Mini_Hackathon_Beam_Orbit_Alignment_Slides.pdf /workspace/ && \
     mv /workspace/docs/pdf/PARTICIPANT_MODIFICATION_GUIDE.pdf /workspace/ && \
+    mv /workspace/notebooks/Transfer_Matrix_Surrogate_Phase_Space.ipynb /workspace/ && \
     rm -rf /workspace/notebooks \
            /workspace/lecture_notes \
            /workspace/presentations \

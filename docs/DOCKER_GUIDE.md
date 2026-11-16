@@ -103,7 +103,7 @@ docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:late
 ```
 
 > [!NOTE]
-> The pre-compiled image contains all dependencies, simulation models, and the participant challenge notebook (`Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`). The reference solution notebook is completely excluded to protect competition integrity.
+> The pre-compiled image contains all dependencies, simulation models, the participant challenge notebook (`Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`), the lecture PDFs and the Lecture 1 companion notebook (`Transfer_Matrix_Surrogate_Phase_Space.ipynb`). The reference solution notebook is completely excluded to protect competition integrity.
 >
 > *(Participants can save their notebook inside JupyterLab and download a local copy at any time via **File → Download**).*
 
@@ -123,7 +123,7 @@ docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:late
 If workshop organizers wish to distribute a pre-compiled image so attendees can skip the local build step:
 
 > [!TIP]
-> **Recommended: the two release scripts.** Both always build a fresh image from the current repository (never an older local image), check that the participant notebook, benchmark code and lecture PDFs inside it match the repository and that no solution notebook is included, and refuse to run with uncommitted changes unless you pass `--allow-dirty`.
+> **Recommended: the two release scripts.** Both always build a fresh image from the current repository (never an older local image), check that the notebooks, benchmark code and lecture PDFs inside it match the repository and that no solution notebook is included, and refuse to run with uncommitted changes unless you pass `--allow-dirty`.
 > ```bash
 > # Build, verify and push cspark7701/ai4acc-hackathon-2026:latest (linux/amd64 + linux/arm64),
 > # then confirm that Docker Hub carries the current commit for every architecture:
