@@ -614,43 +614,43 @@ def create_presentation():
     add_card(s14, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Transfer Matrix Surrogate Formulation: [x₀, x'₀] → [x_f, x'_f]")
 
     # Left Box
-    tb14_l = s14.shapes.add_textbox(Inches(1.1), Inches(2.05), Inches(6.8), Inches(4.5))
+    tb14_l = s14.shapes.add_textbox(Inches(1.05), Inches(1.95), Inches(5.35), Inches(4.5))
     tf14_l = tb14_l.text_frame
     tf14_l.word_wrap = True
 
     p = tf14_l.paragraphs[0]
-    add_text_run(p, "1. Classical Analytical Transfer Matrix:\n", bold=True, size=Pt(14), color=NAVY)
-    add_text_run(p, "In linear beam optics, transverse particle trajectory through a beamline element is governed by the 2 × 2 transfer matrix M:\n\n", size=Pt(12.5), color=DARK_GRAY)
+    add_text_run(p, "1. Classical Analytical Transfer Matrix:\n", bold=True, size=Pt(13.5), color=NAVY)
+    add_text_run(p, "In linear beam optics, transverse particle trajectory through a beamline element is governed by the 2 × 2 transfer matrix M:\n\n", size=Pt(12), color=DARK_GRAY)
 
     p_eq = tf14_l.add_paragraph()
     p_eq.alignment = PP_ALIGN.CENTER
-    add_text_run(p_eq, "[x_f, x'_f]ᵀ = M · [x₀, x'₀]ᵀ,      det(M) = 1\n", bold=True, size=Pt(15), color=PRIMARY)
+    add_text_run(p_eq, "[x_f, x'_f]ᵀ = M · [x₀, x'₀]ᵀ,      det(M) = 1\n", bold=True, size=Pt(14), color=PRIMARY)
 
     p2 = tf14_l.add_paragraph()
     p2.space_before = Pt(4)
-    add_text_run(p2, "• det(M) = 1 ensures phase-space area preservation (Liouville's theorem / symplecticity).\n\n", size=Pt(12), color=DARK_GRAY)
+    add_text_run(p2, "• det(M) = 1 ensures phase-space area preservation (Liouville's theorem / symplecticity).\n\n", size=Pt(11.5), color=DARK_GRAY)
 
-    add_text_run(p2, "2. Neural Network Surrogate Formulation:\n", bold=True, size=Pt(14), color=NAVY)
-    add_text_run(p2, "Instead of numerical tracking, we train a neural network f_θ: ℝ² → ℝ²:\n\n", size=Pt(12.5), color=DARK_GRAY)
+    add_text_run(p2, "2. Neural Network Surrogate Formulation:\n", bold=True, size=Pt(13.5), color=NAVY)
+    add_text_run(p2, "Instead of numerical tracking, we train a neural network f_θ: ℝ² → ℝ²:\n\n", size=Pt(12), color=DARK_GRAY)
 
     p_eq2 = tf14_l.add_paragraph()
     p_eq2.alignment = PP_ALIGN.CENTER
-    add_text_run(p_eq2, "[x̂_f, x̂'_f]ᵀ = f_θ([x₀, x'₀]ᵀ) = W⁽ᴸ⁾ σ( W⁽ᴸ⁻¹⁾ ... σ( W⁽¹⁾ x + b⁽¹⁾ ) ) + b⁽ᴸ⁾\n", bold=True, size=Pt(13.5), color=PRIMARY)
+    add_text_run(p_eq2, "[x̂_f, x̂'_f]ᵀ = f_θ([x₀, x'₀]ᵀ) = W⁽ᴸ⁾ σ( W⁽ᴸ⁻¹⁾ ... σ( W⁽¹⁾ x + b⁽¹⁾ ) ) + b⁽ᴸ⁾\n", bold=True, size=Pt(13), color=PRIMARY)
 
     p3 = tf14_l.add_paragraph()
     p3.space_before = Pt(4)
-    add_text_run(p3, "3. Supervised Objective & Conservation Target:\n", bold=True, size=Pt(14), color=NAVY)
+    add_text_run(p3, "3. Supervised Objective & Conservation Target:\n", bold=True, size=Pt(13.5), color=NAVY)
     add_text_run(p3, "• MSE Loss: ℒ_MSE = (1/N) ∑ [ (x_f - x̂_f)² + (x'_f - x̂'_f)² ]\n"
-                     "• Symplectic Condition: det(J_f) = (∂x̂_f/∂x₀)(∂x̂'_f/∂x'₀) - (∂x̂_f/∂x'₀)(∂x̂'_f/∂x₀) ≡ 1.", size=Pt(12), color=DARK_GRAY)
+                     "• Symplectic Condition: det(J_f) = (∂x̂_f/∂x₀)(∂x̂'_f/∂x'₀) - (∂x̂_f/∂x'₀)(∂x̂'_f/∂x₀) ≡ 1.", size=Pt(11.5), color=DARK_GRAY)
 
-    # Right Box: Architectural Card
-    add_card(s14, Inches(8.1), Inches(2.05), Inches(4.2), Inches(4.5), title="", bg_color=WHITE, border_color=PRIMARY)
-    tb14_r = s14.shapes.add_textbox(Inches(8.25), Inches(2.15), Inches(3.9), Inches(4.3))
+    # Right Box: Architectural Card (ENLARGED to 5.4 in x 4.4 in)
+    add_card(s14, Inches(6.75), Inches(1.95), Inches(5.4), Inches(4.4), title="", bg_color=WHITE, border_color=PRIMARY)
+    tb14_r = s14.shapes.add_textbox(Inches(6.9), Inches(2.05), Inches(5.1), Inches(4.2))
     tf14_r = tb14_r.text_frame
     tf14_r.word_wrap = True
 
     p_r0 = tf14_r.paragraphs[0]
-    add_text_run(p_r0, "Surrogate Architecture Layout\n\n", bold=True, size=Pt(14), color=NAVY)
+    add_text_run(p_r0, "Surrogate Architecture Layout: ℝ² → ℝ²\n\n", bold=True, size=Pt(14), color=NAVY)
     add_text_run(p_r0, "• Input Layer (2 nodes):\n  -- Transverse position x₀ [mm]\n  -- Transverse divergence x'₀ [mrad]\n\n", size=Pt(12), color=DARK_GRAY)
     add_text_run(p_r0, "• Hidden Layers (4 units each):\n  -- Layer 1: W⁽¹⁾ ∈ ℝ⁴ˣ², b⁽¹⁾ ∈ ℝ⁴, σ\n  -- Layer 2: W⁽²⁾ ∈ ℝ⁴ˣ⁴, b⁽²⁾ ∈ ℝ⁴, σ\n  -- Progressive feature abstraction\n\n", size=Pt(12), color=DARK_GRAY)
     add_text_run(p_r0, "• Output Layer (2 nodes):\n  -- Predicted position x̂_f [mm]\n  -- Predicted divergence x̂'_f [mrad]\n  -- W⁽³⁾ ∈ ℝ²ˣ⁴, b⁽³⁾ ∈ ℝ²\n\n", size=Pt(12), color=DARK_GRAY)
@@ -761,7 +761,7 @@ def create_presentation():
     add_card(s17, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Supervised Learning Workflow, Optimization & Hyperparameter Taxonomy")
 
     # Left Box: Model Training Terminology
-    tb17_l = s17.shapes.add_textbox(Inches(1.1), Inches(2.05), Inches(5.3), Inches(4.5))
+    tb17_l = s17.shapes.add_textbox(Inches(1.05), Inches(2.00), Inches(4.85), Inches(4.5))
     tf17_l = tb17_l.text_frame
     tf17_l.word_wrap = True
 
@@ -776,8 +776,8 @@ def create_presentation():
                        "  -- Step / Iteration: A single weight vector update θ ← θ - Δθ.\n"
                        "• Generalization & Early Stopping: Halts training when validation loss stops improving, avoiding memorizing sensor noise (10 μm).", size=Pt(11.5), color=DARK_GRAY)
 
-    # Right Box: Hyperparameter Table
-    sl_table_shape = s17.shapes.add_table(7, 3, Inches(6.6), Inches(2.05), Inches(5.7), Inches(4.1))
+    # Right Box: Hyperparameter Table (starts at 6.45 in, 0.55 in gutter)
+    sl_table_shape = s17.shapes.add_table(7, 3, Inches(6.45), Inches(2.00), Inches(5.7), Inches(4.1))
     sl_tbl = sl_table_shape.table
     for idx, w in enumerate([Inches(1.45), Inches(1.35), Inches(2.9)]):
         sl_tbl.columns[idx].width = w
@@ -809,7 +809,7 @@ def create_presentation():
             add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(9.5), color=TUNABLE_RED if c_idx == 0 else DARK_GRAY)
 
     # Footnote on modifiable hyperparameters
-    tb17_fn = s17.shapes.add_textbox(Inches(6.6), Inches(6.22), Inches(5.7), Inches(0.4))
+    tb17_fn = s17.shapes.add_textbox(Inches(6.45), Inches(6.18), Inches(5.7), Inches(0.4))
     tb17_fn.text_frame.word_wrap = True
     p_fn17 = tb17_fn.text_frame.paragraphs[0]
     add_text_run(p_fn17, "* Red text: Hyperparameters participants can modify in notebook TODO 1", bold=True, size=Pt(9.5), color=TUNABLE_RED)
@@ -978,7 +978,7 @@ def create_presentation():
     add_card(s23, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Markov Decision Process (MDP) Framework & Policy Hyperparameter Taxonomy")
 
     # Left Box: MDP formulation
-    tb23_l = s23.shapes.add_textbox(Inches(1.1), Inches(2.05), Inches(5.3), Inches(4.5))
+    tb23_l = s23.shapes.add_textbox(Inches(1.05), Inches(2.00), Inches(4.85), Inches(4.5))
     tf23_l = tb23_l.text_frame
     tf23_l.word_wrap = True
 
@@ -993,8 +993,8 @@ def create_presentation():
                        "  J(θ) = 𝔼_{π_θ} [ ∑ γᵗ r_t ]\n"
                        "• Policy Architecture: Physics prior (Rᵀ)⁺ + learned residual W_learned.", size=Pt(11.5), color=DARK_GRAY)
 
-    # Right Box: Hyperparameter Table
-    rl_table_shape = s23.shapes.add_table(7, 3, Inches(6.6), Inches(2.05), Inches(5.7), Inches(4.1))
+    # Right Box: Hyperparameter Table (starts at 6.45 in, 0.55 in gutter)
+    rl_table_shape = s23.shapes.add_table(7, 3, Inches(6.45), Inches(2.00), Inches(5.7), Inches(4.1))
     rl_tbl = rl_table_shape.table
     for idx, w in enumerate([Inches(1.45), Inches(1.35), Inches(2.9)]):
         rl_tbl.columns[idx].width = w
@@ -1026,7 +1026,7 @@ def create_presentation():
             add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(9.5), color=TUNABLE_RED if c_idx == 0 else DARK_GRAY)
 
     # Footnote on modifiable hyperparameters
-    tb23_fn = s23.shapes.add_textbox(Inches(6.6), Inches(6.22), Inches(5.7), Inches(0.4))
+    tb23_fn = s23.shapes.add_textbox(Inches(6.45), Inches(6.18), Inches(5.7), Inches(0.4))
     tb23_fn.text_frame.word_wrap = True
     p_fn23 = tb23_fn.text_frame.paragraphs[0]
     add_text_run(p_fn23, "* Red text: Hyperparameters participants can modify in notebook TODO 2", bold=True, size=Pt(9.5), color=TUNABLE_RED)
@@ -1108,7 +1108,7 @@ def create_presentation():
     add_card(s26, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Gaussian Process Surrogate Modeling, Acquisition Decisions & Hyperparameter Taxonomy")
 
     # Left Box: How BO Works
-    tb26_l = s26.shapes.add_textbox(Inches(1.1), Inches(2.05), Inches(5.3), Inches(4.5))
+    tb26_l = s26.shapes.add_textbox(Inches(1.05), Inches(2.00), Inches(4.85), Inches(4.5))
     tf26_l = tb26_l.text_frame
     tf26_l.word_wrap = True
 
@@ -1122,8 +1122,8 @@ def create_presentation():
                        "  Balances exploitation (low μ) vs exploration (high σ).\n"
                        "• Step 4: Machine Evaluation & Iteration: Query real beamline at x_{t+1}, update 𝒟_{t+1}, and refit hyperparameters.", size=Pt(11.5), color=DARK_GRAY)
 
-    # Right Box: Hyperparameter Table
-    bo_table_shape = s26.shapes.add_table(7, 3, Inches(6.6), Inches(2.00), Inches(5.7), Inches(4.1))
+    # Right Box: Hyperparameter Table (starts at 6.45 in, 0.55 in gutter)
+    bo_table_shape = s26.shapes.add_table(7, 3, Inches(6.45), Inches(2.00), Inches(5.7), Inches(4.1))
     bo_tbl = bo_table_shape.table
     for idx, w in enumerate([Inches(1.45), Inches(1.35), Inches(2.9)]):
         bo_tbl.columns[idx].width = w
@@ -1157,7 +1157,7 @@ def create_presentation():
             add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(9.5), color=col)
 
     # Footnote on modifiable hyperparameters
-    tb26_fn = s26.shapes.add_textbox(Inches(6.6), Inches(6.18), Inches(5.7), Inches(0.4))
+    tb26_fn = s26.shapes.add_textbox(Inches(6.45), Inches(6.18), Inches(5.7), Inches(0.4))
     tb26_fn.text_frame.word_wrap = True
     p_fn26 = tb26_fn.text_frame.paragraphs[0]
     add_text_run(p_fn26, "* Red text: Hyperparameters participants can modify in notebook TODO 3", bold=True, size=Pt(9.5), color=TUNABLE_RED)
