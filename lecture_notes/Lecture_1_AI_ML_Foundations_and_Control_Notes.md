@@ -44,23 +44,23 @@ This lecture provides the rigorous theoretical and computational bridge between 
 
 ## 1. Introduction: AI Applications in Modern Particle Accelerators
 
-Over the past decade, Artificial Intelligence (AI) and Machine Learning (ML) have evolved from experimental proofs-of-concept into mission-critical operational tools across modern particle accelerator facilities, including synchrotron light sources, free-electron lasers (XFELs), spallation neutron sources, high-intensity hadron linacs, and energy-frontier colliders ([Edelen et al., 2020](https://inspirehep.net/literature/1841328)). Modern accelerators operate with thousands of distributed, non-linearly coupled magnet actuators, radiofrequency (RF) accelerating stations, and high-rate diagnostic monitors under stringent beam quality and stability demands.
+Over the past decade, Artificial Intelligence (AI) and Machine Learning (ML) have evolved from experimental proofs-of-concept into mission-critical operational tools across modern particle accelerator facilities, including synchrotron light sources, free-electron lasers (XFELs), spallation neutron sources, high-intensity hadron linacs, and energy-frontier colliders ([Edelen et al., 2018](https://arxiv.org/abs/1811.03172)). Modern accelerators operate with thousands of distributed, non-linearly coupled magnet actuators, radiofrequency (RF) accelerating stations, and high-rate diagnostic monitors under stringent beam quality and stability demands.
 
 The landscape of AI applications in particle accelerators is broadly categorized into five foundational pillars:
 
-1. **Surrogate Modeling & Fast Digital Twins ([Edelen et al., 2018](https://doi.org/10.1109/TNS.2018.2818987), [Edelen et al., 2020](https://inspirehep.net/literature/1841328)):**  
+1. **Surrogate Modeling & Fast Digital Twins ([Edelen et al., 2016](https://doi.org/10.1109/TNS.2016.2543203), [Edelen et al., 2018](https://arxiv.org/abs/1811.03172)):**  
    High-fidelity numerical particle tracking codes (such as `ELEGANT`, `MAD-X`, and `OPAL`) simulate complex beam dynamics, space-charge forces, and collective effects, but require minutes to hours per run. Deep neural networks (Multi-Layer Perceptrons, Convolutional Networks, and Physics-Informed Neural Networks) learn fast surrogate representations capable of evaluating beamline outcomes in sub-millisecond execution times. These ultra-fast surrogates serve as digital twins for real-time model-predictive control, online trajectory correction, and rapid parametric sensitivity analysis.
 
-2. **Multi-Objective Autonomous Optimization & Tuning ([Roussel et al., 2023](https://doi.org/10.1103/PhysRevAccelBeams.26.094601), [Edelen et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.044601)):**  
+2. **Multi-Objective Autonomous Optimization & Tuning ([Roussel et al., 2021](https://doi.org/10.1038/s41467-021-25757-3), [Edelen et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.044601)):**  
    Commissioning and daily operations involve optimizing conflicting performance objectives—such as maximizing beam transmission and photon brightness while minimizing transverse emittance and beam halo. Bayesian Optimization (BO) with Gaussian Processes, combined with active learning and exploration-exploitation acquisition functions, enables sample-efficient multi-objective optimization directly on physical machines, converging in dozens of shots compared to thousands of iterations required by brute-force parameter scans.
 
-3. **Virtual Diagnostics & Non-Destructive Phase Space Reconstruction ([Emma et al., 2021](https://doi.org/10.1038/s41467-020-20593-3)):**  
+3. **Virtual Diagnostics & Non-Destructive Phase Space Reconstruction ([Emma et al., 2018](https://doi.org/10.1103/PhysRevAccelBeams.21.112802)):**  
    Critical beam properties—such as 6D phase space, bunch slice emittance, and femtosecond current profiles—often require interceptive diagnostics (e.g., transverse deflection cavities, wire scanners, or screens) that disrupt or destroy the beam. Virtual diagnostics leverage supervised machine learning to accurately reconstruct unmeasured or destructive bunch characteristics shot-by-shot from non-invasive upstream RF probes, magnet currents, and Beam Position Monitor (BPM) signals.
 
-4. **Anomaly Detection, Fault Prediction & Machine Protection ([Tennant et al., 2020](https://doi.org/10.1088/2632-2153/ab822e)):**  
+4. **Anomaly Detection, Fault Classification & Machine Protection ([Tennant et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.114601)):**  
    Unscheduled beam downtime in multi-megawatt hadron linacs and synchrotron facilities incurs heavy scientific and operational costs. Unsupervised machine learning (autoencoders, isolation forests) continuously monitors archival and real-time telemetry to detect subtle precursor drift patterns, while deep sequence models predict high-voltage RF breakdowns, ion source dropouts, and superconducting cavity quenches milliseconds before catastrophic failure, triggering proactive mitigation and machine protection interlocks.
 
-5. **Agentic AI & Autonomous Operation Workflows ([Hellert et al., 2024](https://doi.org/10.1103/PhysRevAccelBeams.27.064601)):**  
+5. **Agentic AI & Autonomous Operation Workflows ([Hellert et al., 2025](https://arxiv.org/abs/2508.15066)):**  
    Moving beyond single-purpose neural networks, modern research explores autonomous agent architectures (such as *Osprey* and LLM-driven scientific agents). These systems integrate large language models with standardized Python control APIs, simulation engines, and diagnostic databases, enabling high-level natural language operational commands (e.g., "align the transport line orbit and optimize injection efficiency") to be autonomously planned, validated, and executed under strict domain guardrails.
 
 ---
@@ -173,21 +173,21 @@ In Forward Supervised Learning, the algorithm learns an input-to-output mapping 
 2. **Online Inversion for Beam Alignment:**
    - In operations, the trained surrogate $f_{\boldsymbol{\theta}}$ acts as an ultra-fast **digital twin**. Given an observed distorted orbit $\mathbf{Y}_{\text{obs}}$, we find the corrective kick $\Delta \mathbf{I}^*$ by numerically inverting the surrogate via bounded optimization (e.g., SciPy `L-BFGS-B`):
      $$\Delta \mathbf{I}^* = \arg\min_{\Delta \mathbf{I}} \left\| \mathbf{Y}_{\text{obs}} - f_{\boldsymbol{\theta}}(\mathbf{I}) + f_{\boldsymbol{\theta}}(\mathbf{I} + \Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2$$
-     subject to hardware delta limits $\Delta \mathbf{I} \in [-0.8\text{ A}, +0.8\text{ A}]^6$.
-   - **Key Advantage:** Extremely fast convergence (often 2–3 iterations) because the surrogate accurately anticipates magnetic saturation.
+     where $\mathbf{I}$ is the present total corrector current. The applied kick is limited to $\Delta \mathbf{I} \in [-0.8\text{ A}, +0.8\text{ A}]^6$ per step.
+   - **Key Advantage:** Convergence in about 4 steps, close to the limit set by the $0.8\text{ A}$ step size, because the surrogate anticipates magnetic saturation.
 
 #### 3.2.2 Reinforcement Learning: Closed-Loop Policy Control (Track 2)
 In Reinforcement Learning (RL), the system is formulated as a sequential **Markov Decision Process (MDP)** $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, where an agent policy learns through continuous trial-and-error interaction:
 1. **State Space ($\mathcal{S}$):** Current transverse beam displacements at diagnostic stations, $\mathbf{s}_t = \mathbf{Y}_t \in \mathbb{R}^{12}$, bounded in $[-10.0\text{ mm}, +10.0\text{ mm}]$.
 2. **Action Space ($\mathcal{A}$):** Corrective magnet current adjustments, $\mathbf{a}_t = \Delta \mathbf{I}_t \in \mathbb{R}^6$, constrained by hardware delta limits $[-0.8\text{ A}, +0.8\text{ A}]$.
-3. **Environment Transition Dynamics ($\mathcal{P}$):** Physical beamline transport response, including linear betatron motion, non-linear saturation, initial quadrupole drift $\mathbf{Y}_0$, and sensor noise $\boldsymbol{\epsilon}$:
+3. **Environment Transition Dynamics ($\mathcal{P}$):** Physical beamline transport response, including linear betatron motion, non-linear saturation, the initial steering-error distortion $\mathbf{Y}_0$, and sensor noise $\boldsymbol{\epsilon}$:
    $$\mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \mathbf{a}_t, -5.0, +5.0)\text{ A}, \quad \mathbf{s}_{t+1} = \mathbf{I}_{t+1} \cdot \mathbf{R} - 0.015 \cdot (\mathbf{I}_{t+1}^3 \cdot \mathbf{R}) + \mathbf{Y}_0 + \boldsymbol{\epsilon}$$
 4. **Reward Signal ($\mathcal{R}$):** Scalar performance feedback evaluated at each interaction step:
    $$r_t = - w_{\text{rms}} \cdot \text{RMS}_{t+1} - w_{\text{act}} \cdot \|\mathbf{a}_t\|_2^2 - c_{\text{step}} + (B_{\text{success}} \text{ if terminated else } 0.0)$$
    where $w_{\text{rms}}$ penalizes beam offset, $w_{\text{act}}$ penalizes large kick effort, $c_{\text{step}}$ penalizes elapsed control steps, and $B_{\text{success}} = 50.0$ rewards achieving $\text{RMS} < 0.030\text{ mm}$.
 5. **Policy Architecture & Damping:** Rather than learning from scratch, high-performance accelerator RL policies leverage **physics-informed priors** (such as Moore-Penrose pseudo-inverse of ORM) augmented with learned neural residuals and dynamic step damping:
-   $$\Delta \mathbf{I}_t = \gamma(t) \cdot \left[ - \alpha (\mathbf{R}^T)^\dagger \mathbf{Y}_t + \mathbf{W}_{\text{tune}} \mathbf{Y}_t + \mathbf{b} \right], \quad \gamma(t) = \frac{1.0}{1.0 + 0.03 \cdot t}$$
-   - **Key Advantage:** Ultra-low latency ($\approx 0.2\text{ ms}$ forward pass) and direct real-time adaptability without requiring iterative numerical optimization loops.
+   $$\Delta \mathbf{I}_t = \gamma(t) \cdot \left[ - \alpha (\mathbf{R}^T)^\dagger \mathbf{Y}_t + \mathbf{W}_{\text{learned}} \mathbf{Y}_t + \mathbf{b} \right], \quad \gamma(t) = \frac{1.0}{1.0 + 0.03 \cdot t}$$
+   - **Key Advantage:** Very low latency (about $0.01\text{ ms}$ per step for the reference agent, against about $27\text{ ms}$ for per-step surrogate inversion) with no iterative optimization in the loop.
 
 #### 3.2.3 Comparative Architectural Analysis: Forward SL vs. Closed-Loop RL
 
@@ -198,7 +198,7 @@ In Reinforcement Learning (RL), the system is formulated as a sequential **Marko
 | **Learning Signal** | Vector ground-truth labels $\mathbf{Y}_{\text{true}}$ (BPM vectors) | Scalar reward $r_t$ (Alignment quality + energy penalty) |
 | **Loss / Objective** | Minimize MSE / RMSE prediction error | Maximize expected cumulative return $\mathbb{E}[\sum \gamma^t r_t]$ |
 | **Control Mechanism** | Forward twin evaluation + SciPy `L-BFGS-B` solver | Direct feedback policy evaluation in single matrix pass |
-| **Execution Latency** | $\sim 15 - 30\text{ ms}$ (due to iterative optimization steps) | $\sim 0.2\text{ ms}$ (direct feedforward matrix computation) |
+| **Execution Latency** | About $27\text{ ms}$ per step (iterative optimization, hundreds of surrogate calls) | About $0.01\text{ ms}$ per step (one matrix-vector product) |
 | **Sample Efficiency** | High (1,500 shots trains complete non-linear model) | Moderate to high (when initialized with physics priors) |
 | **Failure Handling** | Constrained explicitly by optimizer bounds | Constrained by hardware action clipping & damping schedule |
 
@@ -420,13 +420,14 @@ In our challenge notebook, we configure `solver='adam'`. Adam combines the advan
    $$\hat{\mathbf{m}}_t = \frac{\mathbf{m}_t}{1 - \beta_1^t}, \quad \hat{\mathbf{v}}_t = \frac{\mathbf{v}_t}{1 - \beta_2^t}$$
 4. **Parameter Update Rule:**
    $$\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \frac{\eta}{\sqrt{\hat{\mathbf{v}}_t} + \epsilon} \hat{\mathbf{m}}_t$$
-- **Why Adam is superior for accelerator digital twins:** Automatically scales down steps for parameters associated with high-gain correctors and scales up steps for subtle higher-order non-linear terms.
+- **Why Adam is the usual default:** It scales each parameter's step by its own gradient history, so it needs little tuning and works with mini-batches on large datasets.
+- **Caveat for this challenge:** With only 1,200 smooth, low-noise training shots, the default Adam run stops after about 85 epochs at a test RMSE of $0.109\text{ mm}$. A full-batch quasi-Newton solver (`solver='lbfgs'`) with `tanh` activations reaches $0.012\text{ mm}$ on the same data (Section 3.11).
 
 #### 5. AdamW (Decoupled Weight Decay):
 Unlike standard Adam where $L_2$ penalties are mixed into moment estimators, AdamW decouples weight decay: $\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \lambda \boldsymbol{\theta}_t - \frac{\eta}{\sqrt{\hat{\mathbf{v}}_t} + \epsilon} \hat{\mathbf{m}}_t$. This yields superior holdout generalization.
 
 #### 6. L-BFGS-B (Limited-Memory BFGS with Box Constraints):
-A quasi-Newton second-order method that approximates the inverse Hessian $\mathbf{H}^{-1}$ from recent gradient histories without storing full matrices. In accelerator closed-loop control (Baseline 1 and Track 3), `L-BFGS-B` is exceptionally effective for inverting non-linear surrogate models under strict actuator current box constraints $[-0.8\text{ A}, +0.8\text{ A}]$.
+A quasi-Newton second-order method that approximates the inverse Hessian $\mathbf{H}^{-1}$ from recent gradient histories without storing full matrices. In accelerator closed-loop control (Baseline 1 and Track 3), `L-BFGS-B` inverts the non-linear surrogate at every step: the six-dimensional problem is smooth and box-constrained, which suits a quasi-Newton method. The reference controllers search within $\pm 5\text{ A}$ and then clip the kick to the $[-0.8\text{ A}, +0.8\text{ A}]$ step limit.
 
 ---
 
@@ -476,7 +477,7 @@ To address these domains, accelerator AI practitioners deploy specialized deep l
 
 ### 3.10 Rigorous Dataset Partitioning: Train, Validation, and Test (Holdout) Splits
 
-A neural network with 11,596 parameters can easily memorize random noise if not evaluated correctly. We enforce strict data partitioning:
+A neural network with 11,628 parameters can easily memorize random noise if not evaluated correctly. We enforce strict data partitioning:
 
 ```
 Total Offline Experimental Dataset (1,500 Simulation Shots)
@@ -521,30 +522,35 @@ rmse_mlp = root_mean_squared_error(Y_test, surrogate_model.predict(X_test))
 
 #### Holdout Evaluation Benchmark:
 
-| Model Architecture | Parameters | Holdout RMSE | Inference Latency | Physical Regimes Captured |
+Measured on the 300 holdout shots of the notebook dataset (1,500 shots over $\pm 3.0\text{ A}$, `random_state=42`):
+
+| Model | Parameters | Holdout RMSE | Inference Latency | What it captures |
 | :--- | :---: | :---: | :---: | :--- |
-| **Linear Ridge ($\alpha=1.0$)** | 72 | **$0.0558\text{ mm}$** | $< 0.01\text{ ms}$ | Linear betatron response only; misses saturation. |
-| **MLP Neural Surrogate** | 11,596 | **$0.0118\text{ mm}$** | $\approx 0.15\text{ ms}$ | Linear ORM and cubic core saturation down to noise floor. |
+| **Linear Ridge ($\alpha=1.0$)** | 84 | $0.082\text{ mm}$ | $< 0.01\text{ ms}$ | Linear betatron response only; misses saturation. |
+| **Reference MLP** (ReLU, Adam, 128-64-32) | 11,628 | $0.109\text{ mm}$ | $\approx 0.1\text{ ms}$ | Under-trained: Adam stops after about 85 epochs, and the result is worse than the linear model. |
+| **Tuned MLP** (`tanh`, `lbfgs`, 64-64) | 5,388 | **$0.012\text{ mm}$** | $\approx 0.1\text{ ms}$ | Linear response and cubic saturation, down to the sensor noise. |
 
 > [!NOTE]
-> The holdout RMSE of the MLP ($0.0118\text{ mm}$) approaches the theoretical Bayesian limit set by Gaussian sensor noise ($0.0100\text{ mm}$). The network has learned the physical non-linearity without overfitting.
+> A larger network is not automatically a better surrogate. The reference MLP has 140 times more parameters than the linear model and still predicts worse, because its training stops early. The tuned MLP has half as many parameters as the reference and reaches $0.012\text{ mm}$, close to the $0.010\text{ mm}$ limit set by the sensor noise; no model can do better on noisy test data. Always judge a surrogate by its holdout RMSE, not by its size. Improving the surrogate is `TODO 1`.
 
 ---
 
 ## 4. Closed-Loop Control Paradigms
 
-Having established the forward mapping, we examine three control paradigms evaluated in the benchmark.
+Having established the forward mapping, we examine the four controllers evaluated in the benchmark: two baselines and two further challenge tracks.
 
 ```mermaid
 graph TD
-    subgraph Control_Methods["Three Benchmark Control Strategies"]
+    subgraph Control_Methods["Four Benchmark Controllers"]
         M0["Baseline 0: Classical SVD Pinv"]
-        M1["Baseline 1: Supervised Surrogate Inversion"]
+        M1["Baseline 1 / Track 1: Supervised Surrogate Inversion"]
         M2["Track 2: Closed-Loop RL Policy"]
+        M3["Track 3: Bayesian Optimization"]
     end
     M0 -->|"Delta I = -alpha * R_pinv * Y"| Env["Accelerator Environment"]
-    M1 -->|"min ||Y + f_theta(Delta I)||^2 via L-BFGS-B"| Env
+    M1 -->|"min ||Y - f(I) + f(I + Delta I)||^2 via L-BFGS-B"| Env
     M2 -->|"Delta I = Damping(t) * [Phys_Prior + Learned_Residual]"| Env
+    M3 -->|"min LCB of GP-predicted next orbit"| Env
 ```
 
 ### 4.1 Baseline 0: Classical Linear SVD Pseudo-Inverse Control
@@ -559,10 +565,10 @@ where $\alpha \in (0, 1]$ is the feedback loop gain (typically $\alpha \approx 0
 - ❌ **Cons:** Ignores non-linear saturation. Gains up to about $1.2$ converge fastest (about 3.7 steps at $\alpha = 1.2$ versus 9.4 at $0.45$); above that the controller overshoots.
 
 ### 4.2 Baseline 1 (Track 1): Supervised Surrogate + SciPy Bounded Inversion
-Instead of inverting an analytical matrix, Baseline 1 leverages the trained neural digital twin $\hat{\mathbf{Y}} = f_{\boldsymbol{\theta}}(\Delta \mathbf{I})$ directly within an optimization loop:
+Instead of inverting an analytical matrix, Baseline 1 uses the trained neural digital twin $\hat{\mathbf{Y}} = f_{\boldsymbol{\theta}}(\mathbf{I})$, which maps the total corrector current to the orbit, inside an optimization loop:
 
 $$\min_{\Delta \mathbf{I}} \mathcal{L}(\Delta \mathbf{I}) = \left\| \mathbf{Y}_{\text{obs}} - f_{\boldsymbol{\theta}}(\mathbf{I}) + f_{\boldsymbol{\theta}}(\mathbf{I} + \Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2$$
-$$\text{subject to } \Delta \mathbf{I} \in [-5.0\text{ A}, +5.0\text{ A}]^6$$
+The reference controller searches $\Delta \mathbf{I} \in [-5.0\text{ A}, +5.0\text{ A}]^6$ and then clips the result to the $\pm 0.8\text{ A}$ step limit.
 
 ```python
 class SupervisedMLPController:
@@ -589,7 +595,7 @@ class SupervisedMLPController:
 **Why Baseline 1 Depends on the Surrogate:**
 - When $f_{\boldsymbol{\theta}}$ accurately predicts cubic soft saturation, the optimizer chooses kicks that anticipate saturation falloff; on test seed 42 it converges ($\text{RMS} < 0.03\text{ mm}$) in 4 steps, compared to 9 for classical SVD.
 - $\mathbf{I}$ is the present total corrector current from `info["currents"]`, so the objective uses the predicted next orbit $\mathbf{Y}_{\text{obs}} - f_{\boldsymbol{\theta}}(\mathbf{I}) + f_{\boldsymbol{\theta}}(\mathbf{I} + \Delta \mathbf{I})$ at every step.
-- With the reference MLP settings (test RMSE about 0.11 mm) it succeeds on all 30 seeds and scores 779.169. A more accurate surrogate (e.g. a small `tanh` network trained with `lbfgs`, test RMSE about 0.011 mm) lands closer to the noise floor and scores over 920.
+- With the reference MLP settings (test RMSE about 0.11 mm) it succeeds on all 30 seeds and scores 779.169: the feedback loop corrects much of the model error, because every step starts from a fresh measurement. A more accurate surrogate (a small `tanh` network trained with `lbfgs`, test RMSE about 0.012 mm) lands closer to the noise floor: 902.5 with the same controller, and 924.2 with the worked-solution controller.
 
 #### Supervised Learning Surrogate Hyperparameters
 *(Items in **<span style="color:#C0392B;">Red</span>** with an asterisk ($\ast$) can be modified and tuned by participants in notebook `TODO 1`)*
@@ -599,25 +605,36 @@ class SupervisedMLPController:
 | <span style="color:#C0392B; font-weight:bold;">Learning Rate ($\eta$)*</span> | $10^{-3}$ (Adam) | Gradient update scale. Too large oscillates or diverges; too small stagnates in flat loss ravines. |
 | <span style="color:#C0392B; font-weight:bold;">Batch Size ($B$)*</span> | $32 - 128$ | Number of shots evaluated per backpropagation step. Mini-batches provide regularization against sensor jitter. |
 | <span style="color:#C0392B; font-weight:bold;">Layer Architecture*</span> | $(128, 64, 32)$ | Hidden units depth and width. Sufficient capacity to represent cubic saturation without memorizing noise. |
-| <span style="color:#C0392B; font-weight:bold;">Activation ($\sigma$)*</span> | ReLU / Leaky ReLU | Element-wise non-linearity in hidden layers. Linear identity strictly required for output layer ($\mathbf{Y}$ in mm). |
+| <span style="color:#C0392B; font-weight:bold;">Activation ($\sigma$)*</span> | `relu` (default), `tanh` | Element-wise non-linearity in hidden layers (`MLPRegressor` offers `relu`, `tanh`, `logistic`, `identity`). The output layer is always linear ($\mathbf{Y}$ in mm). |
+| <span style="color:#C0392B; font-weight:bold;">Solver*</span> | `adam` (default), `lbfgs` | Training algorithm. `lbfgs` is full-batch and suits small, smooth datasets like this one. |
 | <span style="color:#C0392B; font-weight:bold;">$L_2$ Regularization ($\alpha$)*</span> | $10^{-4}$ | Weight decay penalty $\frac{1}{2}\alpha\|\mathbf{W}\|_2^2$ suppressing overfitting to diagnostic noise ($\sigma = 10\ \mu\text{m}$). |
-| <span style="color:#C0392B; font-weight:bold;">Max Epochs / Early Stopping*</span> | 400 epochs, tol=$10^{-4}$ | Terminates training when validation loss plateaus, guaranteeing model generalization. |
+| <span style="color:#C0392B; font-weight:bold;">Max Epochs / Early Stopping*</span> | 400 epochs, tol=$10^{-4}$ | Training stops when the loss improves by less than `tol` for 10 epochs (after about 85 epochs with the defaults), or at `max_iter`. |
 
 ### 4.3 Track 2: Closed-Loop RL & Physics-Informed Policy Agents
-While numerical optimization per step is powerful, iterative gradient solvers add execution latency ($\sim 15 - 30\text{ ms}$). In contrast, a direct continuous policy network executes in $< 0.5\text{ ms}$ ([Kain et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.124801)).
+While numerical optimization per step is powerful, iterative solvers add execution latency (about $27\text{ ms}$ per step for Baseline 1). In contrast, a direct policy executes in well under $0.1\text{ ms}$ ([Kain et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.124801)).
 
 #### Physics-Informed Residual Policy Architecture
 Rather than learning control from scratch with random initialization, high-performing accelerator RL agents combine a **physics prior** with a **learned residual**:
 
 $$\Delta \mathbf{I}(t) = \gamma(t) \cdot \Big[ \underbrace{- \alpha (\mathbf{R}^T)^\dagger \mathbf{Y}}_{\text{Analytical Physics Prior}} + \underbrace{\mathbf{W}_{\text{learned}} \mathbf{Y} + \mathbf{b}}_{\text{Learned Residual Offset}} \Big]$$
 
-In the reference agent `RLOrbitChallengeAgent`, $\mathbf{W}_{\text{learned}}$ and $\mathbf{b}$ start at zero and are not trained, so it behaves as a damped pseudo-inverse controller (590.559 points). Training or tuning the residual, or replacing the prior with a saturation-aware model inversion, is the Track 2 task.
+In the reference agent `RLOrbitChallengeAgent`, $\mathbf{W}_{\text{learned}}$ and $\mathbf{b}$ start at zero and are not trained, so it behaves as a damped pseudo-inverse controller (590.559 points). It scores below Baseline 0 (635.277) because, at the low gain of 0.45, the damping only slows it down. Training or tuning the residual, raising the gain, or replacing the prior with a saturation-aware model inversion is the Track 2 task.
 
 #### Dynamic Step Damping
-Near the convergence boundary ($0.030\text{ mm}$), noise fluctuations $\epsilon \sim 10\ \mu\text{m}$ can cause the linear pseudo-inverse to react aggressively to noise, triggering limit cycles. We introduce dynamic harmonic damping:
+Near the convergence boundary ($0.030\text{ mm}$), the measured orbit error is comparable to the sensor noise ($10\ \mu\text{m}$). A high-gain controller then reacts partly to noise and can jump back and forth across the target. Dynamic harmonic damping reduces the kick authority as the episode proceeds:
 $$\gamma(t) = \frac{1.0}{1.0 + \kappa \cdot t}, \quad \kappa \approx 0.03$$
-- **Step 1 ($t=0$):** Full kick authority ($\gamma = 1.0$) rapidly suppresses large millimeter-scale distortions.
-- **Step 5+ ($t \ge 4$):** Damped kick authority prevents sensor noise amplification and locks the trajectory below $0.030\text{ mm}$.
+- **Step 1 ($t=0$):** Full kick authority ($\gamma = 1.0$) for the large millimeter-scale distortion.
+- **Later steps:** $\gamma$ falls to 0.77 at $t = 10$ and 0.53 at $t = 30$, so late kicks respond less to noise.
+
+**Damping is a trade-off, not a free gain.** Measured on the 30 seeds with the plain pseudo-inverse:
+
+| Gain $\alpha$ | No damping | $\kappa = 0.03$ | $\kappa = 0.1$ |
+| :---: | :---: | :---: | :---: |
+| 0.45 | 635.3 (9.4 steps) | 590.6 (10.8 steps) | 503.8 (15.9 steps) |
+| 1.0 | 765.3 (4.3 steps) | **782.8** (4.7 steps) | 721.1 (5.3 steps) |
+| 1.2 | **822.1** (3.7 steps) | 808.9 (4.0 steps) | 746.4 (4.4 steps) |
+
+At low gain, damping only costs steps. At gain 1.0 a little damping improves the landing precision enough to pay for the extra step; at gain 1.2 it does not. In the benchmark an episode ends at the first reading below $0.030\text{ mm}$, so damping matters less here than in continuous feedback, where the orbit must be held near the noise floor indefinitely.
 
 #### Reinforcement Learning MDP Hyperparameters
 *(Items in **<span style="color:#C0392B;">Red</span>** with an asterisk ($\ast$) can be modified and tuned by participants in notebook `TODO 2`)*
@@ -628,28 +645,30 @@ $$\gamma(t) = \frac{1.0}{1.0 + \kappa \cdot t}, \quad \kappa \approx 0.03$$
 | <span style="color:#C0392B; font-weight:bold;">Policy Learning Rate ($\eta_\pi$)*</span> | $10^{-4} - 10^{-3}$ | Step size for policy parameter updates. Must remain small to avoid policy collapse under sensor noise. |
 | <span style="color:#C0392B; font-weight:bold;">Exploration Noise ($\sigma$)*</span> | $\mathcal{N}(0, 0.05^2)\text{ A}$ | Gaussian perturbation on delta currents to probe saturation limits during offline/online training. |
 | <span style="color:#C0392B; font-weight:bold;">Harmonic Damping ($\kappa$)*</span> | $\approx 0.03$ | Damping schedule $\gamma(t) = 1/(1+\kappa t)$ attenuating kick authority to eliminate noise limit cycles. |
-| <span style="color:#C0392B; font-weight:bold;">Feedback Gain ($\alpha$)*</span> | $0.45 \to 1.0$ | Scaling factor on optics pseudo-inverse prior; higher gains accelerate convergence. |
+| <span style="color:#C0392B; font-weight:bold;">Feedback Gain ($\alpha$)*</span> | $0.45 \to 1.2$ | Scaling factor on the pseudo-inverse prior; higher gains converge faster, and above about 1.2 the controller overshoots. |
 | <span style="color:#C0392B; font-weight:bold;">Reward Weights ($w_{\text{rms}}, w_{\text{act}}$)*</span> | $w_{\text{rms}}=10, w_{\text{act}}=0.01$ | Balances orbit minimization priority against coil resistive heating and power supply strain. |
 | <span style="color:#C0392B; font-weight:bold;">Step Penalty ($c_{\text{step}}$)*</span> | $0.5\text{ pts/step}$ | Time penalty encouraging minimum-step convergence to maximize benchmark speed score (up to 300 pts). |
 | <span style="color:#C0392B; font-weight:bold;">Success Bonus ($b_{\text{term}}$)*</span> | $50.0\text{ pts}$ | Large positive terminal reward upon reaching $\text{RMS} < 0.030\text{ mm}$. |
 
+The discount factor, policy learning rate and exploration noise apply only if you add your own RL training loop: the reference agent has no training step. The gain, the damping, and the reward settings (set in notebook Step 2) can be changed directly.
+
 ---
 
 ### 4.4 Track 3: Closed-Loop Bayesian Optimization with Gaussian Processes
-Bayesian Optimization (BO) provides sample-efficient optimization in high-dimensional non-linear accelerator systems by combining a probabilistic surrogate model with an acquisition function ([Roussel et al., 2023](https://doi.org/10.1103/PhysRevAccelBeams.26.094601), [Edelen et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.044601)).
+Bayesian Optimization (BO) provides sample-efficient optimization in high-dimensional non-linear accelerator systems by combining a probabilistic surrogate model with an acquisition function ([Roussel et al., 2021](https://doi.org/10.1038/s41467-021-25757-3), [Edelen et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.044601)).
 
-In our closed-loop architecture, a Gaussian Process (GP) regressor models the mapping from corrector kicks $\Delta \mathbf{I}$ to transverse orbit deviations:
-$$\hat{\mathbf{Y}}(\Delta \mathbf{I}) \sim \mathcal{GP}\left(\mathbf{m}(\Delta \mathbf{I}), \mathbf{K}(\Delta \mathbf{I}, \Delta \mathbf{I}')\right)$$
+In our closed-loop architecture, a Gaussian Process (GP) regressor models the mapping from the total corrector currents $\mathbf{I}$ to the orbit response:
+$$\hat{\mathbf{Y}}(\mathbf{I}) \sim \mathcal{GP}\left(\mathbf{m}(\mathbf{I}), \mathbf{K}(\mathbf{I}, \mathbf{I}')\right)$$
 
 To capture the smooth physics of magnetic core saturation while accounting for BPM diagnostic noise ($\sigma = 0.010\text{ mm}$), we employ a Matérn-5/2 kernel augmented with a white noise kernel:
 $$k(\mathbf{x}, \mathbf{x}') = \sigma_f^2 \left( 1 + \sqrt{5}\frac{r}{\ell} + \frac{5}{3}\frac{r^2}{\ell^2} \right) \exp\left( -\sqrt{5}\frac{r}{\ell} \right) + \sigma_n^2 \delta(\mathbf{x}, \mathbf{x}')$$
 
 #### Epistemic Uncertainty & Lower Confidence Bound (LCB) Acquisition
-Unlike deterministic point-prediction neural networks, the Gaussian Process yields both a posterior mean $\boldsymbol{\mu}(\Delta \mathbf{I})$ and a posterior standard deviation $\boldsymbol{\sigma}(\Delta \mathbf{I})$ quantifying epistemic uncertainty.
+Unlike deterministic point-prediction neural networks, the Gaussian Process yields both a posterior mean $\boldsymbol{\mu}(\mathbf{I})$ and a posterior standard deviation $\boldsymbol{\sigma}(\mathbf{I})$ quantifying epistemic uncertainty.
 We evaluate candidate corrective kicks using the Lower Confidence Bound (LCB) acquisition function:
-$$\alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y}_{\text{obs}} - \boldsymbol{\mu}(\mathbf{I}) + \boldsymbol{\mu}(\mathbf{I} + \Delta \mathbf{I}) \right) - \kappa \cdot \overline{\boldsymbol{\sigma}}(\Delta \mathbf{I}) + \lambda \|\Delta \mathbf{I}\|_2^2$$
+$$\alpha_{\text{LCB}}(\Delta \mathbf{I}) = \text{RMS}\left( \mathbf{Y}_{\text{obs}} - \boldsymbol{\mu}(\mathbf{I}) + \boldsymbol{\mu}(\mathbf{I} + \Delta \mathbf{I}) \right) - \kappa \cdot \overline{\boldsymbol{\sigma}}(\mathbf{I} + \Delta \mathbf{I}) + \lambda \|\Delta \mathbf{I}\|_2^2$$
 
-where $\kappa \ge 0$ balances exploitation (minimizing predicted orbit RMS) with exploration (reducing uncertainty in non-linear saturation regimes). When $\kappa = 0$, the controller performs pure exploitation of the well-calibrated posterior mean, converging in about **3.6 steps** on average across the benchmark suite (878.384 points).
+where $\mathbf{I}$ is the present total current, $\overline{\boldsymbol{\sigma}}$ is the posterior standard deviation averaged over the 12 BPMs, and $\kappa \ge 0$ balances exploitation (minimizing predicted orbit RMS) with exploration (reducing uncertainty in non-linear saturation regimes). When $\kappa = 0$, the controller performs pure exploitation of the posterior mean (holdout RMSE $0.028\text{ mm}$ from 300 shots, four times more accurate than the reference MLP trained on 1,200), converging in about **3.6 steps** on average across the benchmark suite (878.384 points).
 
 **Closed-loop control, offline model.** The controller is closed-loop: at every step it re-solves the acquisition problem from the latest BPM reading $\mathbf{Y}_{\text{obs}}$. Its model, however, is not updated online. The reference GP is fitted once on about 300 calibration shots and stays fixed for the whole benchmark, which makes it structurally close to Track 1 (an offline surrogate inverted at every step) with uncertainty available through $\kappa$. Classic Bayesian optimization adds each new (kick, observed orbit) pair to the GP and refits it; participants can do this from a `step_callback` registered in the notebook's `CALLBACKS`, turning Track 3 into true online Bayesian optimization.
 
@@ -700,7 +719,7 @@ obs, info = env.reset(seed=seed)
 obs, reward, terminated, truncated, info = env.step(action)
 ```
 
-- **Observation Vector:** $\mathbf{Y} \in \mathbb{R}^{12}$, bounded in $[-10.0, +10.0]\text{ mm}$.
+- **Observation Vector:** $\mathbf{Y} \in \mathbb{R}^{12}$; the declared range is $[-10.0, +10.0]\text{ mm}$, and readings reach about $6\text{ mm}$ on the evaluation seeds.
 - **Action Vector:** $\Delta \mathbf{I} \in \mathbb{R}^6$, per-step delta clipped to $[-0.8, +0.8]\text{ A}$.
 - **State Update:** $\mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \Delta \mathbf{I}, -5.0, 5.0)$.
 - **Reward Function:**
@@ -714,12 +733,12 @@ Participants solve the beam alignment challenge by competing in one or more para
 1. **Track 1 (Supervised Digital Twin Inversion, `TODO 1`):**  
    Train a non-linear Multi-Layer Perceptron ($f_{\boldsymbol{\theta}}$) on offline tracking data to model the cubic iron core saturation. In operations, solve a bounded optimization problem per step via SciPy `L-BFGS-B` to invert the digital twin.
 2. **Track 2 (Closed-Loop Reinforcement Learning Policy, `TODO 2`):**  
-   Design a fast continuous policy agent integrating an analytical Moore-Penrose pseudo-inverse physics prior with learned residual offsets and adaptive step damping $\gamma(t) = 1.0 / (1.0 + \kappa \cdot t)$. Customize environment reward weights to directly optimize convergence speed and current economy.
+   Design a fast closed-loop policy that combines an analytical pseudo-inverse physics prior with a learned or tuned residual and step damping $\gamma(t) = 1.0 / (1.0 + \kappa \cdot t)$. If you train a policy with RL, the environment's reward weights let you favor fast convergence.
 3. **Track 3 (Bayesian Optimization Controller, `TODO 3`):**  
    Fit a Gaussian Process surrogate with Matérn-5/2 kernel and diagnostic noise floor. Optimize a Lower Confidence Bound (LCB) acquisition function to balance epistemic uncertainty exploration against exploitation of predicted orbit corrections under non-linear saturation.
 
 ### 5.3 Standardized 30-Seed Evaluation Protocol
-To prevent evaluation bias or seed cherry-picking, all controllers are evaluated over **30 standardized evaluation seeds** (`seeds = range(1, 31)`), spanning a wide spectrum of initial misalignments ($0.4\text{ mm} \le \text{RMS}_0 \le 1.1\text{ mm}$).
+To prevent evaluation bias or seed cherry-picking, all controllers are evaluated over **30 standardized evaluation seeds** (`seeds = range(1, 31)`), spanning a wide range of initial distortions ($0.93\text{ mm} \le \text{RMS}_0 \le 3.59\text{ mm}$).
 
 ### 5.4 The Official Hackathon Scoring Formula
 Each of the 30 seeds is scored from 0 to 1000 points, and the official score is the mean:
@@ -741,7 +760,7 @@ $$s_k = \begin{cases}
 - **Current norm** $\overline{\|\mathbf{I}\|}$ is still reported but not scored: it is set mainly by the size of the initial distortion and varies by only a few percent between controllers.
 
 ### 5.5 Reference Benchmark Results
-Across the 30 standardized seeds, our four competitor implementations produce:
+Across the 30 standardized seeds, the four unmodified reference controllers score:
 
 | Rank | Controller / Agent Architecture | Success Rate | Mean Steps | Final RMS | Current Norm | Total Score |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -766,22 +785,23 @@ Across the 30 standardized seeds, our four competitor implementations produce:
 ## 6. Summary & Q&A
 
 ### Key Takeaways from Lecture 1:
-1. **Physics Guides the AI:** Without understanding betatron oscillations and the Orbit Response Matrix, training an agent from scratch requires hundreds of thousands of steps. By incorporating the Moore-Penrose pseudo-inverse as a **physics prior**, our agents converge robustly in under 10 steps.
-2. **Surrogates Enable Non-Linear Control:** When magnetic saturation invalidates linear models, a compact multi-layer perceptron accurately captures high-current behavior and empowers standard numerical optimizers to solve orbit corrections in about 4 steps, close to the limit set by the 0.8 A step size.
-3. **Uncertainty-Guided Optimization:** Bayesian optimization with Lower Confidence Bound (LCB) acquisition leverages epistemic uncertainty to navigate saturation while achieving optimal current economy and sub-$15\ \mu\text{m}$ precision in about 3.6 steps.
-4. **Damping Prevents Sensor Noise Amplification:** As orbit errors approach diagnostic noise floors ($10\ \mu\text{m}$), adaptive step damping is crucial to prevent feedback-induced limit cycles.
+1. **Physics Guides the AI:** The Orbit Response Matrix gives a controller that works from the first step. Even the plain pseudo-inverse reaches the target on all 30 seeds; learning only has to supply what the linear model lacks.
+2. **Total Current Matters:** Saturation depends on the total corrector current, not on the size of the last kick. Controllers that use `info["currents"]` and a model of the saturation gain about 100 points over the best plain pseudo-inverse (924 against 822).
+3. **Judge a Surrogate by its Holdout Error:** The reference MLP (0.109 mm) predicts worse than a linear model (0.082 mm); a smaller, well-trained network reaches 0.012 mm. Closed-loop feedback hides part of a model's error, but precision points are won only with an accurate model.
+4. **Uncertainty Is Information:** A Gaussian process fitted on 300 shots gives both a prediction and its uncertainty, and leads the reference controllers (878.4 points in about 3.6 steps).
+5. **Respect the Hardware Limits:** The 0.8 A step limit sets a floor of about 3 to 4 steps on most seeds, and the 10 µm sensor noise sets the floor on precision. Near the noise floor, damping trades speed for a steadier landing.
 
 ---
 
 ## 📖 Recommended References & Readings
 
-1. **Edelen, A., et al.** (2020). *Opportunities in machine learning for particle accelerators*. ICFA Beam Dynamics Newsletter, 84.
-2. **Edelen, A., Biedron, S., Chase, B., et al.** (2018). *Neural networks for modeling and control of particle accelerators*. IEEE Transactions on Nuclear Science, 63(2), 878–897.
-3. **Roussel, R., et al.** (2023). *Turn-key constrained parameter space exploration using Bayesian optimization for accelerator tuning*. Physical Review Accelerators and Beams, 26(9), 094601.
-4. **Edelen, A., et al.** (2020). *Machine learning for orders-of-magnitude speedup in multiobjective optimization of particle accelerator beamlines*. Physical Review Accelerators and Beams, 23(4), 044601.
-5. **Emma, C., et al.** (2021). *Virtual diagnostic for beam profile reconstruction using deep neural networks at LCLS*. Nature Communications, 12(1), 348.
-6. **Tennant, C., et al.** (2020). *Supervised machine learning for failure prediction in superconducting radio-frequency cavities at CEBAF*. Machine Learning: Science and Technology, 1(3), 035005.
-7. **Hellert, T., et al.** (2024). *Autonomous accelerator tuning using large language model agents and Osprey*. Physical Review Accelerators and Beams, 27(6), 064601.
+1. **Edelen, A., Mayes, C., et al.** (2018). *Opportunities in machine learning for particle accelerators*. arXiv:1811.03172.
+2. **Edelen, A. L., Biedron, S. G., Chase, B. E., et al.** (2016). *Neural networks for modeling and control of particle accelerators*. IEEE Transactions on Nuclear Science, 63(2), 878–897.
+3. **Roussel, R., et al.** (2021). *Turn-key constrained parameter space exploration for particle accelerators using Bayesian active learning*. Nature Communications, 12, 5612.
+4. **Edelen, A., et al.** (2020). *Machine learning for orders of magnitude speedup in multiobjective optimization of particle accelerator systems*. Physical Review Accelerators and Beams, 23(4), 044601.
+5. **Emma, C., Edelen, A., et al.** (2018). *Machine learning-based longitudinal phase space prediction of particle accelerators*. Physical Review Accelerators and Beams, 21(11), 112802.
+6. **Tennant, C., et al.** (2020). *Superconducting radio-frequency cavity fault classification using machine learning at Jefferson Laboratory*. Physical Review Accelerators and Beams, 23(11), 114601.
+7. **Hellert, T., Montenegro, J., & Sulc, A.** (2025). *Osprey: Production-ready agentic AI for safety-critical control systems*. arXiv:2508.15066.
 8. **Wiedemann, H.** (2015). *Particle Accelerator Physics* (4th ed.). Springer.
 9. **Minty, M. G., & Zimmermann, F.** (2003). *Measurement and Control of Charged Particle Beams*. Springer.
 10. **Kain, V., et al.** (2020). *Sample-efficient reinforcement learning for CERN accelerator control*. Physical Review Accelerators and Beams, 23(12), 124801.
