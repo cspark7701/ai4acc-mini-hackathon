@@ -1,0 +1,949 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{fontspec}
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+\usepackage{amsmath,amssymb,amsfonts,bm}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+\definecolor{navy}{HTML}{002060}
+\definecolor{primaryblue}{HTML}{184C78}
+\definecolor{accent}{HTML}{2980B9}
+\definecolor{darkgray}{HTML}{2C3E50}
+\definecolor{lightbg}{HTML}{F8FAFC}
+\definecolor{bordergray}{HTML}{CBD5E1}
+\definecolor{tunablered}{HTML}{C0392B}
+\definecolor{successgreen}{HTML}{27AE60}
+\definecolor{gold}{HTML}{B48C14}
+
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\fancyhead[L]{\small\bfseries\color{primaryblue}AI Applications in Accelerators \enspace$|$\enspace Lecture 1 Slide Narratives}
+\fancyhead[R]{\small\color{darkgray}Chong Shik Park, Ph.D.}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primaryblue,
+    urlcolor=accent,
+    pdftitle={Lecture 1 Slide Narratives (English)},
+    pdfauthor={Chong Shik Park, Ph.D.}
+}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+    {\Huge\bfseries\color{navy}AI Applications in Accelerators\\[0.3em]Tutorial \& Mini-Hackathon\par}
+    \vspace{1.0cm}
+    {\LARGE\bfseries\color{primaryblue}Lecture 1: AI/ML Foundations \& Closed-Loop Control\par}
+    \vspace{0.4cm}
+    {\Large\color{accent}Comprehensive Slide-by-Slide Presenter Script \& Technical Companion\par}
+    \vspace{1.5cm}
+
+    \begin{tcolorbox}[colback=white,colframe=accent,width=0.85\textwidth,arc=4pt]
+        \centering
+        \textbf{Author \& Instructor:}\\[0.2em]
+        {\large\bfseries Chong Shik Park, Ph.D.}\\[0.2em]
+        Department of Accelerator Science, Korea University, Sejong\\[0.2em]
+        \texttt{kuphy@korea.ac.kr} \enspace$|$\enspace November 19, 2026
+    \end{tcolorbox}
+
+    \vspace{1.5cm}
+    \begin{minipage}{0.85\textwidth}
+        \small\color{darkgray}
+        \textbf{Document Overview:}\\
+        This document provides the complete word-for-word spoken narrative, technical background notes, slide visual descriptions, pedagogical focus points, anticipated participant questions with model answers, and natural verbal transition cues for all 35 slides comprising Lecture 1. It serves as an authoritative speaker reference for delivering the lecture and as a self-contained study companion for hackathon participants.
+    \end{minipage}
+    \vfill
+    {\footnotesize\color{darkgray}Korea University Accelerator Physics Laboratory \enspace$\bullet$\enspace 2026}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\section{Slide 1: AI/ML Foundations \& Closed-Loop Control}
+
+\textbf{\color{accent}Category:} Title Slide \hfill \textbf{\color{primaryblue}Slide Index:} 1 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Title banner with Korea University logo, course title, lecturer credentials (Dr. Chong Shik Park), and hackathon theme.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Good morning, everyone, and welcome to Lecture 1 of our AI Applications in Accelerators Tutorial and Mini-Hackathon. My name is Chong Shik Park from Korea University, Sejong. Over the next eighty minutes, we will bridge the gap between classical accelerator beam physics and modern artificial intelligence. We will start from first principles—transverse beam dynamics, Hill's equation, and orbit response matrices—and progress systematically to cutting-edge closed-loop control: neural surrogate digital twins, reinforcement learning policies with physics priors, and Bayesian optimization. Our primary objective today is not just theoretical understanding, but empowering every one of you to design, train, and benchmark autonomous controllers during this afternoon's mini-hackathon.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Set an inspiring, hands-on, practical tone. Emphasize that physical physics principles and AI algorithms will be treated as partners.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Is prior deep learning experience mandatory? A: No, we build intuition from linear optics matrices up to deep networks.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{To motivate our journey, let us first examine why modern particle accelerators demand artificial intelligence.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 2: Why AI in Particle Accelerators?}
+
+\textbf{\color{accent}Category:} Operational Context \hfill \textbf{\color{primaryblue}Slide Index:} 2 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Card layout detailing high-intensity beam stability challenges, sub-micron tolerances, beam loss damage risks, and human operator cognitive saturation.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Modern particle accelerators—whether synchrotrons, free-electron lasers, or high-intensity spallation sources—are among the most complex engineering systems ever constructed. Machines like 4th-generation light sources demand transverse beam orbit stability down to sub-micron or even nanometer levels. Simultaneously, multi-megawatt beam power means that a fractional beam loss lasting a few microseconds can puncture a vacuum chamber or quench a superconducting radio-frequency cavity, causing weeks of unscheduled downtime. Traditional linear feedback controllers assume stationary, linear responses. However, real physical accelerators depart sharply from linearity due to magnet core saturation, hysteresis, ambient thermal drift, and coupling. Human operators cannot continuously optimize hundreds of coupled parameters in real time. This is where AI becomes a necessity: it delivers fast predictive digital twins, autonomous multi-objective optimization, and millisecond anomaly interlocks.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Stress the real-world operational stakes: hardware safety, beam brightness, and the failure modes of standard linear controllers.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can standard PID feedback handle non-linear drift? A: Only locally near the setpoint; large excursions cause oscillation or divergence.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Now let us review the master roadmap for today's workshop.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 3: Master Curriculum \& Program Schedule}
+
+\textbf{\color{accent}Category:} Workshop Curriculum \hfill \textbf{\color{primaryblue}Slide Index:} 3 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Three-part schedule: Lecture 1 (Physics \& ML Foundations), Lecture 2 (Agentic AI with Dr. Thorsten Hellert), and Afternoon Mini-Hackathon.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Here is our program for the day, carefully structured to move from rigorous foundations to hands-on competition. This morning, in Lecture 1, I will cover the accelerator physics principles and the machine learning foundations governing orbit control. Immediately following, Dr. Thorsten Hellert from Lawrence Berkeley National Laboratory will present Lecture 2, exploring cutting-edge Agentic AI—how LLM agents use Python API tools, orchestrate multi-physics simulations, and enforce operational guardrails. In the afternoon, starting at 1:30 PM, you will compete in the 3.5-hour Mini-Hackathon. You will deploy and tune controllers inside a realistic Gymnasium simulation environment of a 15-meter transport line, tracking your scores on our live Weights and Biases leaderboard across 30 standardized seeds.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Highlight the direct connection between Lecture 1 concepts and the afternoon challenge tasks (TODO 1, 2, 3).
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: How are teams evaluated in the hackathon? A: Using a standardized 30-seed benchmark scoring formula balancing success, speed, and precision.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Let us now survey the broader landscape of AI applications across modern accelerators.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 4: AI Pillars: Surrogates \& Optimization}
+
+\textbf{\color{accent}Category:} Domain Overview \hfill \textbf{\color{primaryblue}Slide Index:} 4 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Two major pillars: Pillar 1 (Fast Neural Surrogate Digital Twins) and Pillar 2 (Autonomous Multi-Objective Tuning via Bayesian Optimization).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Artificial intelligence in accelerators is typically organized into four foundational pillars. On this slide, we examine the first two. Pillar 1 is Neural Surrogate Digital Twins. Traditional particle tracking codes like ELEGANT, MAD-X, or OPAL model complete particle distributions and collective space-charge forces with high fidelity, but they require minutes to hours for a single simulation. By training deep neural networks on historical simulation or machine datasets, we construct surrogate models that predict beam parameters in sub-millisecond timescales—often faster than 0.2 milliseconds. This enables real-time model-predictive control and virtual diagnostics. Pillar 2 is Autonomous Multi-Objective Optimization. Real beam tuning requires balancing competing objectives—such as maximizing photon flux while minimizing beam emittance and halo. Bayesian optimization with Gaussian Processes models epistemic uncertainty, allowing algorithms to find Pareto-optimal operating points in dozens of machine shots rather than thousands of blind steps.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Contrast the execution speed of physical tracking codes (minutes/hours) against neural surrogates (< 0.2 ms).
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can neural surrogates extrapolate outside their training range? A: Pure MLPs fail to extrapolate; physics-informed architectures or regularization are required.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Now let us examine the remaining two pillars: anomaly detection and autonomous scientific agents.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 5: AI Pillars: Diagnostics, Protection \& Agents}
+
+\textbf{\color{accent}Category:} Domain Overview \hfill \textbf{\color{primaryblue}Slide Index:} 5 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Pillar 3 (Anomaly Detection, Fault Prediction \& Virtual Diagnostics) and Pillar 4 (Agentic AI \& Scientific LLM Assistants).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Pillar 3 encompasses Diagnostics, Anomaly Detection, and Machine Protection. Modern facilities deploy unsupervised autoencoders and recurrent networks to monitor thousands of telemetry streams simultaneously—detecting subtle precursor thermal drifts or RF breakdown patterns milliseconds before an actual trip occurs. This allows protective interlocks to abort the beam gracefully. Furthermore, virtual diagnostics use neural networks to infer longitudinal bunch profiles or emittance non-invasively at 100 Hz, where physical intercepting screens would destroy the beam. Pillar 4 represents the frontier: Agentic AI and Autonomous Scientific Assistants. By interfacing Large Language Models with domain-specific Python execution environments and EPICS control APIs, agents can read diagnostic alarms, reason over lattice physics, formulate multi-step mitigation strategies, and safely execute orbit corrections.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Mention Thorsten Hellert's upcoming Lecture 2 as the deep dive into Pillar 4.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: What is a virtual diagnostic? A: An ML model that predicts hard-to-measure destructive beam metrics from easy, non-destructive upstream sensors.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{With this landscape established, let us dive into the core physics of transverse beam dynamics.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 6: Hill's Equation \& Transverse Motion}
+
+\textbf{\color{accent}Category:} Physics Foundations \hfill \textbf{\color{primaryblue}Slide Index:} 6 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Lorentz force equation, linear magnetic expansion, quadrupole focusing gradient K(s), and Hill's differential equation.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Transverse beam dynamics begins with the Lorentz force: d p / d t = q ( E + v cross B ). In high-energy particle accelerators, magnetic deflection dominates electric deflection by a factor of the speed of light c, so magnetic fields are universally used for steering and focusing. Expanding the vertical magnetic field B\_y around the design orbit yields a dipole field B\_0, a quadrupole gradient G = d B\_y / d x, and higher-order multipoles. Normalizing the quadrupole gradient by the beam magnetic rigidity B-rho defines the focusing function K(s) = q G / p. Applying Newton's second law in curvilinear coordinates yields Hill's equation: x double-prime of s plus K(s) x of s equals zero. Hill's equation is structurally identical to a harmonic oscillator, but with a crucial difference: the spring constant K(s) is position-dependent and periodic along the beamline.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Emphasize the physical intuition: K(s) > 0 focuses horizontally, K(s) < 0 defocuses horizontally. Earnestine betatron oscillation.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Why is K position-dependent? A: Because the beam traverses distinct magnetic elements: focusing quads, defocusing quads, and field-free drifts.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{How do we solve Hill's equation analytically? That brings us to Courant-Snyder optics.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 7: Betatron Motion \& Courant-Snyder Optics}
+
+\textbf{\color{accent}Category:} Beam Optics \hfill \textbf{\color{primaryblue}Slide Index:} 7 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Floquet-form solution x(s) = sqrt(epsilon * beta(s)) * cos(psi(s) + phi\_0), beta function envelope, phase advance psi(s), and Courant-Snyder parameters.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Because the restoring coefficient K(s) varies with s, the solution to Hill's equation cannot be a simple sinusoid of constant amplitude. Using Floquet theory, Courant and Snyder proved in 1958 that the general trajectory is given by: x(s) = square root of epsilon times beta(s), multiplied by the cosine of psi(s) plus phi\_0. Here, beta(s) is the betatron amplitude function. It acts as a local envelope modifier: where beta(s) is large, the beam breathes outward; where beta(s) is small, the beam is tightly focused. The phase advance psi(s) is the integral of 1 / beta(w) d w from 0 to s, governing how rapidly betatron phase accumulates. The quantity epsilon is the beam emittance—the invariant phase-space area enclosed by the beam ellipse. Together with alpha(s) = - 1/2 beta-prime and gamma(s) = (1 + alpha\textasciicircum{}2)/beta, these form the Twiss parameters.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Draw the connection between beta(s) and beam envelope sigma = sqrt(epsilon * beta).
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Is emittance conserved under acceleration? A: Geometric emittance shrinks with momentum (adiabatic damping), but normalized emittance is conserved.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Now let us derive how steering magnets kick this betatron oscillation downstream: the Orbit Response Matrix.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 8: Orbit Response Matrix Derivation}
+
+\textbf{\color{accent}Category:} Analytical Optics \hfill \textbf{\color{primaryblue}Slide Index:} 8 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Transfer-line betatron Green's function, R\_ij equation with distance-decay denominator (1 + 0.05 Delta s), downstream causality (R\_ij = 0 for j <= i).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+When a dipole corrector magnet located at longitudinal position s\_i applies an angular kick theta\_i, it introduces a localized slope discontinuity delta x-prime = theta\_i. Downstream at BPM station s\_j, the perturbed trajectory is given by the single-pass transport-line Green's function. The orbit response element R\_ij is defined as the displacement at BPM j per unit kick at steerer i: R\_ij = square root of beta\_i times beta\_j times the sine of the phase advance difference psi\_j minus psi\_i. In our hackathon transport lattice, this response is modeled with simplified optics: a constant phase advance of 2 pi times 0.18 rad/m and a mild amplitude decay: R\_ij = 1.2 sin(2 pi * 0.18 * Delta s) / (1 + 0.05 * Delta s). Most importantly, notice the strict downstream causality: a corrector can only affect BPMs located downstream of it (s\_j > s\_i). If BPM j is upstream of steerer i, R\_ij is identically zero. This gives the 6 by 12 ORM its distinctive triangular causal structure.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Differentiate transport-line response (sine, strictly causal) from storage ring closed-orbit formula (2 sin(pi * nu) in denominator).
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can an upstream steerer correct downstream distortion? A: Yes, but downstream steerers cannot correct upstream distortion.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Let us examine the physical layout of the transport lattice designed for our hackathon challenge.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 9: 15-Meter Transport Lattice Architecture}
+
+\textbf{\color{accent}Category:} Hackathon Benchmark \hfill \textbf{\color{primaryblue}Slide Index:} 9 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Full lattice schematic showing 15.0 m length, 6 quadrupole magnets (alternating QF and QD), 6 dipole steerers (HCM1-3, VCM1-3), and 12 BPM stations.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Here is the physical layout of our hackathon challenge lattice. It represents a realistic 15.0-meter high-energy transport line. Along this beamline, we have three pairs of alternating quadrupole magnets: focusing quadrupoles QF1 through QF3 and defocusing quadrupoles QD1 through QD3, creating an alternating-gradient FODO-like structure. For orbit correction, we have six dipole steering magnets: three horizontal steerers HCM1, HCM2, HCM3 and three vertical steerers VCM1, VCM2, VCM3, located between s = 0.2 meters and s = 8.0 meters. Finally, twelve Beam Position Monitors, BPM 1 through BPM 12, are distributed from s = 1.0 meter to s = 15.0 meters. Notice that steerers are concentrated in the first half of the line, while BPMs extend all the way to the end. Your controller's goal is to observe the 12 BPM readings and command the 6 steerer currents to flatten the beam orbit.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Point out the dimensions: 12 BPM observations (inputs to controller), 6 corrector kicks (outputs of controller).
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Why are there 6 correctors but 12 BPMs? A: The system is over-determined, requiring pseudo-inverse or regression optimization.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{However, in real accelerators, power supplies and sensors have hard physical limitations.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 10: Hardware Limits \& Actuator Bounds}
+
+\textbf{\color{accent}Category:} Physical Limits \hfill \textbf{\color{primaryblue}Slide Index:} 10 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Hardware bounds card: Total current capacity [-5.0 A, +5.0 A], per-step slew rate limit [-0.8 A, +0.8 A], Gaussian measurement noise sigma = 10 um.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+A major reason toy simulation algorithms fail when deployed on real physical accelerators is the failure to respect hardware boundaries. In our benchmark environment, three strict physical constraints are enforced. First, Total Current Saturation: each corrector power supply is physically bounded to [-5.0 A, +5.0 A]. Exceeding this limit trips the over-current interlock. Second, Slew Rate and Inductive Limits: due to coil inductance L and power supply voltage limits d I / d t = V / L, the current can change by at most 0.8 Amperes per time step: delta I in [-0.8 A, +0.8 A]. Because the initial distortion requires total currents up to 2.84 Amperes to cancel, any controller physically requires at least 3 to 4 steps to converge—it is physically impossible to reach the sub-30 micron target in a single step! Third, Sensor Noise Floor: every BPM reading is corrupted by zero-mean Gaussian jitter with a standard deviation of 0.010 mm (10 microns). A controller that chases fluctuations below 10 microns is overfitting noise.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Emphasize the 3 to 4 step minimum! Explain why this is crucial for interpreting hackathon speed scores.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: What happens if an agent returns delta\_I = 2.0 A? A: The environment hard-clips it to 0.8 A, but well-behaved agents should constrain actions internally.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Beyond linear limits, magnetic cores exhibit non-linear physical saturation.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 11: Magnetic Core Non-Linear Saturation}
+
+\textbf{\color{accent}Category:} Non-Linear Physics \hfill \textbf{\color{primaryblue}Slide Index:} 11 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+B-H saturation curve, cubic saturation formula Y = I*R - 0.015*(I\textasciicircum{}3*R) + Y0 + epsilon, and comparison between linear vs saturated orbit responses.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+In introductory accelerator physics courses, magnetic field strength B is assumed to scale linearly with excitation current I: B equals mu-zero N I over g. However, real accelerator magnet cores are composed of ferromagnetic laminated silicon steel. At low currents, magnetic domains align easily. But above 1.5 to 2.0 Amperes, magnetic permeability mu-r drops precipitously as domain alignment saturates. In our simulation environment, this is modeled via a classic cubic soft-saturation term: Y = I times R minus 0.015 times ( I cubed times R ) plus Y\_0 plus epsilon. Notice what this means: when total current reaches 2.5 Amperes, the cubic term subtracts nearly 23 percent of the expected deflection! If a controller assumes linear optics, it will severely underestimate the required kick, undershoot the correction, and oscillate. Capturing and compensating this non-linear saturation is precisely why we need machine learning surrogates.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Point to the -0.015 * I\textasciicircum{}3 term. Show that the distortion correction requires up to 2.84 A, deep inside this non-linear regime.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can classical SVD converge under this cubic saturation? A: It can converge with a conservative low gain alpha=0.45, but it takes 9.4 steps instead of 3.6.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Now let us transition into Machine Learning: how do neural networks model complex non-linear functions?}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 12: Artificial Neurons \& Layer Composition}
+
+\textbf{\color{accent}Category:} ML Foundations \hfill \textbf{\color{primaryblue}Slide Index:} 12 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Anatomy of an artificial neuron: inputs x\_i, synaptic weights w\_i, bias b, linear combination z = w\textasciicircum{}T x + b, activation sigma(z), and Multi-Layer Perceptron stacking.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+The fundamental building block of deep learning is the artificial neuron, originally conceived by McCulloch and Pitts in 1943. A neuron receives an input vector x in R\textasciicircum{}n. Each input is scaled by a trainable synaptic weight w\_i, summed together, and shifted by a scalar bias b: z = w\textasciicircum{}T x + b. This pre-activation value z is then passed through a non-linear activation function sigma(z) to produce the scalar output a. Stacking these neurons in parallel creates a dense layer: h = sigma( W x + b ), where W is a weight matrix and b is a bias vector. Stacking multiple dense layers sequentially produces a Multi-Layer Perceptron (MLP). According to the Universal Approximation Theorem proven by Cybenko and Hornik, a feedforward network with non-linear activations can approximate any continuous non-linear physical function on a compact domain to arbitrary precision.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Clarify the distinction between linear transformation (W x + b) and non-linear mapping sigma(z).
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: What happens if sigma is linear? A: The entire network collapses to a single matrix multiplication, losing all non-linear power.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{This brings us to a critical question: how do different activation functions shape neural representations?}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 13: Activation Functions in Neural Networks}
+
+\textbf{\color{accent}Category:} ML Foundations \hfill \textbf{\color{primaryblue}Slide Index:} 13 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Four core operational roles of activations, mathematical catalog: ReLU, Leaky ReLU, Tanh, Sigmoid, GELU, Linear, and plot of f(z) vs f'(z).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Activation functions fulfill four essential operational roles in accelerator neural networks. First, Breaking Linearity: without them, deep architectures collapse to a single linear matrix. Second, Universal Approximation: non-linearities allow the network to model cubic core saturation and sextupole aberrations. Third, Gradient Gating: the derivative sigma-prime of z dictates how loss gradients propagate backward during training; non-saturating functions prevent vanishing gradients. Fourth, Output Coordinate Preservation: intermediate layers need non-linearities, but regression outputs predicting spatial coordinates in millimeters must use the linear identity function. In our catalog, ReLU is the default choice: f(z) = max(0, z), offering derivative 1 for positive z, which prevents vanishing gradients. Tanh squashes values to [-1, 1], useful for normalized priors but prone to saturation. GELU provides smooth probabilistic gating, popular in modern transformer and surrogate models.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Reiterate Role 4: Output layer MUST use Linear/Identity! Never apply Sigmoid or Tanh to unnormalized physical coordinates.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: What is the 'dying ReLU' problem? A: If a neuron's input is negative, its gradient is 0 and it can never recover; Leaky ReLU fixes this.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{To make this concrete, let us look at a worked example: surrogating an analytical particle transfer matrix.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 14: NN Surrogate Example: Particle Transfer Matrix}
+
+\textbf{\color{accent}Category:} ML Foundations \hfill \textbf{\color{primaryblue}Slide Index:} 14 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Surrogate formulation mapping (x\_0, x'\_0) to (x\_f, x'\_f), compact vector notation z\_f = f\_theta(z\_0), symplecticity $\det(M)$ = 1, and enlarged TikZ architecture diagram.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+To bridge machine learning directly with beam optics, let us construct a neural surrogate for a linear transfer matrix M. In linear optics, the transverse particle trajectory from initial position s\_0 to diagnostic station s\_f is governed by the 2 by 2 transfer matrix: [x\_f, x-prime\_f]\textasciicircum{}T = M [x\_0, x-prime\_0]\textasciicircum{}T, with $\det M$ = 1 ensuring phase-space area conservation by Liouville's theorem. Instead of analytical matrix multiplication, we train a neural surrogate f\_theta mapping R\textasciicircum{}2 to R\textasciicircum{}2: z\_hat\_f = W\textasciicircum{}(3) sigma( W\textasciicircum{}(2) sigma( W\textasciicircum{}(1) z\_0 + b\textasciicircum{}(1) ) + b\textasciicircum{}(2) ) + b\textasciicircum{}(3). We train this network over thousands of particle tracking pairs using Mean Squared Error loss. On the right, you see the network layout: 2 input nodes for initial coordinate and angle, two hidden layers with 4 units each, and 2 output nodes predicting final position and angle. Notice the critical label at the bottom: the output activation must be strictly linear to preserve unbounded phase-space coordinates.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Point out the compact vector notation z\_f = f\_theta(z\_0). Explain that Jacobian determinant $\det(J)$ measures area conservation.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can an MLP preserve $\det(M)$ = 1 exactly? A: Standard MLPs only approximate $\det(J)$ ≈ 1; Hamiltonian Neural Networks (HNNs) enforce it exactly.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{What happens if we choose different activation functions inside this surrogate? Let us look at Slide 15.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 15: NN Surrogate: Activation Functions in Beam Transport}
+
+\textbf{\color{accent}Category:} ML Foundations \hfill \textbf{\color{primaryblue}Slide Index:} 15 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Three-way comparison of Linear, ReLU, and Tanh activation impacts on phase-space ellipses, symplecticity preservation, and mathematical collapse.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+This slide reveals the profound geometric impact of activation function selection when surrogating beam transport. First, consider Linear Activation: stacking linear dense layers mathematically collapses into a single matrix product W\_eff x + b\_net. It is mathematically identical to a transfer matrix. It perfectly preserves smooth phase-space ellipses and symplecticity, but it possesses zero capacity to model non-linear saturation or sextupole kicks. Second, consider ReLU: because ReLU is piecewise linear, it partitions phase space into polyhedral facets separated by activation hyperplanes. It transforms smooth continuous beam ellipses into faceted polygons with sharp slope kinks! Furthermore, in regions where neurons die (z < 0), the Jacobian determinant collapses to zero, completely violating Liouville's theorem. Third, consider Tanh: near the origin, tanh(z) is approximately z, accurately reproducing linear betatron motion. However, at large amplitudes, hidden neurons saturate to plus or minus one, squashing the ellipse into an S-curve, artificially shrinking beam emittance, and producing unphysical boundary artifacts. This demonstrates why activation selection must be guided by beam physics.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Emphasize: Linear preserves ellipses but lacks non-linearity; ReLU facets ellipses; Tanh saturates emittance. Core physics intuition!
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Which activation is best for our hackathon MLP? A: ReLU or Leaky ReLU in hidden layers, but linear in output.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Once an architecture is defined, how do we optimize its millions of parameters? Let us examine modern optimization algorithms.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 16: Optimization Algorithms in Machine Learning}
+
+\textbf{\color{accent}Category:} ML Foundations \hfill \textbf{\color{primaryblue}Slide Index:} 16 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Comparison card of first-order and quasi-Newton optimizers: SGD, Momentum, Adam (first \& second moments), and SciPy L-BFGS-B with box constraints.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Training a neural network means finding parameter weights theta that minimize the loss function L(theta). On this slide, we compare four major optimization algorithms. First is Stochastic Gradient Descent (SGD): it steps in the direction of steepest descent: theta becomes theta minus eta times gradient L. While simple, SGD oscillates wildly across high-curvature ravines. Second is Momentum SGD: it adds an inertia term gamma v\_(t-1), dampening transverse oscillations and accelerating along consistent ravines. Third is the Adam Optimizer—Adaptive Moment Estimation. Adam computes both the first moment m\_t (the exponentially decaying gradient average) and the second raw moment v\_t (the uncentered variance). By dividing the step by square root of v\_t, Adam automatically scales down updates for parameters that receive noisy, high-magnitude gradients and scales up updates for subtle parameters. It is the gold standard for training accelerator surrogates. Fourth is L-BFGS-B: a second-order quasi-Newton method that approximates the inverse Hessian from gradient history. Unlike Adam, which is used for offline network training, L-BFGS-B is used in our hackathon for online model inversion under strict [-0.8 A, 0.8 A] bounds.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Highlight the role separation: Adam is used to TRAIN the surrogate offline; L-BFGS-B is used to INVERT the surrogate online at every step.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Why not use L-BFGS-B to train the MLP? A: L-BFGS-B requires full batch evaluation and struggles with stochastic mini-batch noise.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Are MLPs the only neural network used in accelerators? Absolutely not. Let us examine specialized neural architectures.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 17: Specialized Neural Architectures: Beyond Plain MLPs}
+
+\textbf{\color{accent}Category:} ML Foundations \hfill \textbf{\color{primaryblue}Slide Index:} 17 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Four-quadrant panel layout covering PINN (ODE/PDE loss residual), PRNN/RNN (recurrent dynamic memory), VAE (probabilistic latent manifold), and U-Net (multiscale skip connections).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+While plain MLPs excel at static black-box regression, physical accelerators present challenges that violate standard feedforward assumptions. Here we introduce four domain-adapted deep learning architectures. First, Physics-Informed Neural Networks (PINNs): they embed governing differential equations—such as Hill's equation or Poisson's space-charge equation—directly into the training loss via automatic differentiation: L\_PINN = L\_data + lambda || D[f](x) ||\textasciicircum{}2. This guarantees physical conservation laws like symplecticity even in data-sparse drift sections. Second, Physics-Guided Recurrent Neural Networks (PRNNs): sequential architectures with hidden memory h\_t = sigma( W\_h h\_(t-1) + W\_x x\_t + b ). Unlike static MLPs, PRNNs capture non-Markovian memory, temporal eddy current lags, and magnetic iron hysteresis loops during magnet cycling. Third, Variational Autoencoders (VAEs): probabilistic encoder-decoders that map observations to a continuous latent Gaussian distribution z ~ N(mu, Sigma), optimized via the Evidence Lower Bound (ELBO). VAEs compress 6D bunch phase-space distributions and detect precursor beam trip anomalies. Fourth, U-Net and CNNs: fully convolutional encoder-decoders with multiscale skip connections, preserving spatial translation equivariance for real-time beam profile screen imaging (YAG, OTR), halo segmentation, and 3D magnetic field interpolation.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Walk through each quadrant methodically. Emphasize why each overcomes specific limitations of plain MLPs in accelerator operations.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can PINNs be used for closed-loop orbit control? A: Yes, PINN surrogates provide superior generalization when operating far from design calibration orbits.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Now let us enter the core competitive tracks of our mini-hackathon, beginning with Paradigm 1: Supervised Learning.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 18: Supervised Learning: Digital Twins \& Hyperparameters}
+
+\textbf{\color{accent}Category:} Paradigm 1: Supervised Learning \hfill \textbf{\color{primaryblue}Slide Index:} 18 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Left column: Terminology (weights, loss, backprop, epoch, batch, early stopping). Right column: Hyperparameter taxonomy table with tunable rows highlighted in red (TODO 1).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Paradigm 1 represents the standard digital twin approach: supervised forward surrogate modeling. On the left, we define the core training mechanics. Weights W and biases b are updated iteratively by backpropagating loss gradients. An epoch represents one complete pass through all 1,500 training shots. A batch B is the subset of shots evaluated per gradient step. Early stopping halts training when validation loss plateaus, preventing the model from memorizing Gaussian sensor jitter. On the right, we present the hyperparameter taxonomy governing your model. The red rows indicate the exact parameters you can tune in notebook TODO 1: the learning rate eta (default 10\textasciicircum{}-3 with Adam), the batch size B (32 to 128), the hidden layer architecture (default 128, 64, 32), the activation function (ReLU or Leaky ReLU), the L2 weight regularization alpha (10\textasciicircum{}-4), and max epochs (400). Tuning these parameters directly governs the accuracy of your forward digital twin.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Call out the red asterisks: these match TODO 1 in the participant notebook. Highlighting gives attendees clear hackathon targets.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: What happens if batch size is too small? A: Training is slower on GPUs and gradient updates can be excessively noisy.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Let us examine the exact architecture of the MLP surrogate digital twin.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 19: The Neural Surrogate Digital Twin}
+
+\textbf{\color{accent}Category:} Paradigm 1: Supervised Learning \hfill \textbf{\color{primaryblue}Slide Index:} 19 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+High-resolution schematic showing 6 input currents, three hidden layers (128, 64, 32 units) with ReLU activations, and 12 output predicted BPM readings.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Here is the detailed topology of our neural surrogate digital twin. It maps the 6 dipole corrector currents directly to the 12 BPM orbit readings: f\_theta maps R\textasciicircum{}6 to R\textasciicircum{}12. The input layer ingests the current vector: HCM 1 to 3 and VCM 1 to 3. The signal propagates through three fully connected hidden layers: the first layer expands the 6 inputs into 128 abstract features; the second layer condenses them to 64 units; and the third layer refines them to 32 units. All hidden layers employ ReLU activations. The output layer projects the 32 units onto the 12 BPM predictions through a linear activation. In total, this network contains 11,596 trainable parameters. While a linear matrix has only 72 parameters, these 11,596 weights provide the mathematical capacity needed to capture the cubic non-linear core saturation across the entire operating domain.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Contrast 72 parameters (linear ORM) with 11,596 parameters (MLP). Emphasize why parameter capacity is required for non-linear saturation.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can we make the network smaller, say (32, 16)? A: Yes, in fact, a smaller tanh network can sometimes generalize better and evaluate faster.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{How well does this surrogate perform when tested on unseen validation data? Let us look at Slide 20.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 20: Surrogate Training \& Holdout Validation}
+
+\textbf{\color{accent}Category:} Paradigm 1: Supervised Learning \hfill \textbf{\color{primaryblue}Slide Index:} 20 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Empirical validation table: Linear Ridge (RMSE = 0.0960 mm) vs MLP Surrogate (RMSE = 0.0118 mm), approaching theoretical Gaussian noise floor (0.0100 mm).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+To prove that our neural surrogate has learned the true physics rather than memorizing noise, we perform holdout validation. We synthesize 1,500 offline shots sampled uniformly across [-3.0 A, +3.0 A]. We train on 1,200 shots and evaluate strictly on 300 isolated test shots. Look at the benchmark table. A regularized Linear Ridge model achieves a test RMSE of 0.0960 mm. It suffers from high bias: it cannot capture the cubic saturation falloff. In stark contrast, our MLP Neural Surrogate achieves an RMSE of 0.0118 mm! Remember from Slide 10 that our BPM sensors have an inherent Gaussian noise floor of 0.0100 mm (10 microns). The neural network has pushed the prediction error down to within 1.8 microns of the theoretical noise floor. It has learned the linear betatron response and the cubic non-linear core saturation without overfitting the sensor jitter.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Emphasize the theoretical noise floor: 0.0118 mm vs 0.0100 mm. You cannot physically do better than 0.0100 mm without overfitting noise!
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Why is Ridge RMSE 0.096 mm so much worse? A: At 2.5 A, cubic saturation causes a 23\% error that linear regression cannot resolve.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Now that we have an accurate forward digital twin, how do we use it for closed-loop orbit control?}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 21: Closed-Loop Control Architecture}
+
+\textbf{\color{accent}Category:} Paradigm 1: Supervised Learning \hfill \textbf{\color{primaryblue}Slide Index:} 21 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Closed-loop feedback schematic: Beamline Environment, BPM reading Y, Present current I, Digital Twin Inversion Optimizer, Action delta I, and closed-loop feedback.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Here is the architecture of closed-loop orbit control. Notice the information flow. At step t, the beamline produces an observation vector Y in R\textasciicircum{}12 from the BPMs. The controller also reads the present total current vector I\_t in R\textasciicircum{}6 from the environment metadata. This total current is vital: because saturation depends cubically on total current, you cannot calculate the correct incremental kick without knowing where you currently sit on the B-H curve! The controller passes Y and I\_t into an inversion optimizer. Using the trained neural digital twin f\_theta, the optimizer solves for the delta current action delta I in [-0.8 A, +0.8 A] that will cancel the residual orbit at step t+1. The action is applied to the power supplies, the magnets adjust, the beam deflects, and new BPM readings are measured. This cycle repeats until the orbit RMS drops below 0.030 mm.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Stress the importance of reading info['currents']! Without total current I\_t, compensating saturation is impossible.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: What if we don't track total current? A: The policy assumes it's always near 0 A, under-correcting severely at high currents.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Let us contrast this with the classical approach used in accelerators for decades: Baseline 0 SVD.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 22: Baseline 0: Classical Linear SVD}
+
+\textbf{\color{accent}Category:} Baseline 0: Classical Linear SVD \hfill \textbf{\color{primaryblue}Slide Index:} 22 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+SVD decomposition R\textasciicircum{}T = U Sigma V\textasciicircum{}T, Moore-Penrose pseudo-inverse (R\textasciicircum{}T)\textasciicircum{}dagger, feedback formula delta I = - alpha * (R\textasciicircum{}T)\textasciicircum{}dagger * Y, gain alpha tuning.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Baseline 0 represents classical accelerator orbit correction: Moore-Penrose pseudo-inverse control via Singular Value Decomposition (SVD). Under an idealized linear model, orbit shift is Y = Delta I times R. Transposing gives R\textasciicircum{}T Delta I = Y. Because R\textasciicircum{}T is a 12 by 6 matrix, it has more rows than columns. We decompose R\textasciicircum{}T using SVD: R\textasciicircum{}T = U Sigma V\textasciicircum{}T, and compute the pseudo-inverse: (R\textasciicircum{}T)\textasciicircum{}dagger = V Sigma\textasciicircum{}-1 U\textasciicircum{}T. The correction law is: delta I = - alpha times (R\textasciicircum{}T)\textasciicircum{}dagger times Y. With the conservative default gain alpha = 0.45, this controller converges robustly on all 30 seeds, achieving a 100\% success rate. However, because it has zero awareness of cubic saturation, it under-corrects at high currents and takes an average of 9.4 steps to converge, earning a benchmark score of 674.398 points. If you tune the gain alpha up to 1.2, it accelerates to about 3.7 steps, but higher gains cause severe overshoots and limit-cycle oscillations around the noise floor.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Explain the gain trade-off: alpha=0.45 is safe but slow (9.4 steps); alpha=1.2 is fast (3.7 steps) but risks instability.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Why is R transposed? A: Because our convention defines Y as row vector (1x12) and currents as (1x6): Y = I * R.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Now let us see what happens when we replace linear SVD with our non-linear neural surrogate: Baseline 1.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 23: Baseline 1 (Track 1): Supervised Neural Inversion}
+
+\textbf{\color{accent}Category:} Baseline 1 (Track 1) \hfill \textbf{\color{primaryblue}Slide Index:} 23 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Mathematical objective for model inversion: min\_{Delta I} || Y - f\_theta(I) + f\_theta(I + Delta I) ||\textasciicircum{}2 + lambda || Delta I ||\textasciicircum{}2, L-BFGS-B solver, and 4.0 step convergence.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Baseline 1 is the core controller for Track 1: model-based optimization via digital twin inversion. At each time step, instead of using a constant linear matrix, we formulate an online optimization problem using our trained MLP: minimize over delta I the norm of Y minus f\_theta(I) plus f\_theta(I + delta I) squared, plus lambda times the action norm squared. Notice the formulation: f\_theta(I + delta I) minus f\_theta(I) is the predicted orbit change. Adding it to the current BPM observation Y yields the exact predicted orbit at the next step. Because f\_theta captures the cubic saturation, the optimizer knows exactly how much extra current is required to overcome magnetic saturation. We solve this 6-dimensional optimization problem per step in about 15 milliseconds using SciPy's L-BFGS-B algorithm, enforcing the [-0.8 A, +0.8 A] delta bounds. Baseline 1 converges in an average of 4.0 steps on test seed 42 and across all 30 seeds, earning 779.169 points—more than 100 points higher than SVD!
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Point out the score leap: from 674.398 (SVD) to 779.169 (Baseline 1). The 100-point jump comes purely from anticipating cubic saturation.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can we score higher than 779 in Track 1? A: Yes! In TODO 1, training a more accurate surrogate (e.g. tanh with lbfgs) scores over 924 points!
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Now let us shift to Paradigm 2: Reinforcement Learning and adaptive closed-loop policies.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 24: Reinforcement Learning: MDP Formulation \& Hyperparameters}
+
+\textbf{\color{accent}Category:} Paradigm 2: Reinforcement Learning \hfill \textbf{\color{primaryblue}Slide Index:} 24 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Left column: Closed-loop MDP formulation (S, A, P, R, gamma), reward function formula, cumulative return J(theta). Right column: RL hyperparameter taxonomy table (TODO 2).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Reinforcement Learning treats orbit correction as a sequential decision-making problem formalized as a Markov Decision Process (MDP). On the left, the State Space S is the 12-dimensional BPM reading vector Y. The Action Space A is the 6-dimensional steerer delta kick vector in [-0.8 A, +0.8 A]\textasciicircum{}6. The Transition Dynamics P embody the accelerator transport physics, magnet core saturation, and sensor noise. The Reward Function R is engineered to reflect real operational priorities: r\_t = - w\_rms * RMS\_(t+1) - w\_act * ||a\_t||\textasciicircum{}2 - c\_step + b\_term. Notice the components: a penalty on orbit RMS, a penalty on coil heating, a step penalty c\_step incentivizing speed, and a terminal bonus for success. On the right, we highlight the hyperparameters you can tune in notebook TODO 2: the discount factor gamma (0.95 to 0.99), the policy learning rate, the harmonic damping parameter kappa, the reward weights w\_rms and w\_act, and the step penalty c\_step.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Explain the step penalty c\_step: it forces the agent to finish in as few steps as possible to maximize hackathon speed points.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Why is gamma < 1 needed in finite episodes? A: Gamma discounts distant rewards, ensuring temporal credit assignment focuses on immediate corrections.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{How do we structure an RL agent that learns quickly without destroying the beam? Track 2: Physics Priors.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 25: Track 2: Closed-Loop RL with Physics Priors}
+
+\textbf{\color{accent}Category:} Track 2 Challenge \hfill \textbf{\color{primaryblue}Slide Index:} 25 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Physics-informed residual policy architecture: Delta I = gamma(t) * [ - alpha * (R\textasciicircum{}T)\textasciicircum{}dagger * Y + W\_learned * Y + b ], analytical prior + learned residual.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Training an RL agent from pure scratch (tabula rasa) on an accelerator is dangerous and sample-inefficient: the agent would apply random kicks and lose the beam. Track 2 solves this by deploying a Physics-Informed Residual Policy Architecture. Look at the control equation: delta I(t) = gamma(t) times the sum of an Analytical Physics Prior and a Learned Residual Offset: delta I = gamma(t) [ - alpha (R\textasciicircum{}T)\textasciicircum{}dagger Y + W\_learned Y + b ]. The analytical prior is our trusted SVD pseudo-inverse: it immediately handles 80 percent of the correction using known beam optics. The learned residual—governed by weight matrix W\_learned and bias b—only needs to learn the missing non-linear physics: the cubic core saturation! In the unmodified baseline agent, W\_learned and b start at zero, so it acts purely as a damped SVD controller scoring 590.559 points. Your challenge in Track 2 is to train or tune this residual to anticipate saturation, enabling lightning-fast sub-millisecond policy execution.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Emphasize why residual learning is powerful: learning a delta around a good physical prior is 100x faster than learning from scratch.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can we replace the linear SVD prior with a non-linear inverse? A: Absolutely! In the solution notebook, an exact inverse prior scores 939.981 points!
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Notice the gamma(t) term in front of the policy. What is its mathematical role? Let us look at Slide 26.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 26: Dynamic Harmonic Step Damping}
+
+\textbf{\color{accent}Category:} Track 2 Challenge \hfill \textbf{\color{primaryblue}Slide Index:} 26 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Damping schedule formula gamma(t) = 1.0 / (1.0 + kappa * t), decay curve from 1.0 down to 0.4, and phase-space portrait showing suppression of limit-cycle oscillations.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+When high-gain closed-loop policies approach the target convergence boundary (RMS < 0.030 mm), a dangerous instability emerges: sensor noise amplification. Remember that our BPMs have a 10-micron Gaussian jitter. A controller with constant high feedback gain will interpret sensor noise as a real orbit error, apply sharp corrector kicks, and bounce back and forth across the 30-micron target boundary in an endless limit-cycle oscillation. To eliminate this terminal oscillation, Track 2 incorporates Dynamic Harmonic Step Damping: gamma(t) = 1.0 / ( 1.0 + kappa * t ), with default kappa = 0.03. At step 0, gamma is exactly 1.0, giving full control authority to make large multi-millimeter corrections. As step t increases, gamma decays smoothly—reaching about 0.7 by step 10 and 0.5 by step 30. This progressively dampens high-frequency jitter amplification, allowing the beam orbit to land softly and permanently below the 30-micron target.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Explain why constant gain fails near the boundary: high gain chases 10 um noise, exceeding 30 um threshold. Damping solves this.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: What happens if kappa is too large, say 0.2? A: Control authority decays too quickly, freezing the orbit before reaching 0.030 mm.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Now let us turn to our third paradigm: Bayesian Optimization and Gaussian Processes.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 27: Bayesian Optimization: Probabilistic GPs \& Hyperparameters}
+
+\textbf{\color{accent}Category:} Paradigm 3: Bayesian Optimization \hfill \textbf{\color{primaryblue}Slide Index:} 27 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Left column: 4-step BO workflow (Non-parametric prior, Gaussian conditioning, Acquisition optimization, Beamline evaluation). Right column: BO hyperparameter table (TODO 3).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Bayesian Optimization is the premier paradigm for sample-efficient black-box tuning. Unlike neural networks that require thousands of shots, Gaussian Processes model physical functions from dozens of shots while providing rigorous epistemic uncertainty. On the left, the four-step workflow unfolds: Step 1 establishes a non-parametric GP prior f(x) ~ GP( m(x), k(x, x') + sigma\_n\textasciicircum{}2 ). Step 2 performs analytical Gaussian conditioning on observed shots D\_t, yielding an exact posterior mean mu(x) and uncertainty sigma(x). Step 3 optimizes an acquisition function, such as Lower Confidence Bound (LCB), balancing exploitation (minimizing mu) against exploration (sampling high sigma). Step 4 queries the physical beamline and refits the model. On the right, we present the hyperparameter taxonomy for notebook TODO 3: the covariance kernel (Matérn-5/2), actuator lengthscales ell, signal variance sigma\_f\textasciicircum{}2, the fixed noise floor sigma\_n = 0.010 mm, the exploration trade-off kappa, and regularizer lambda.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Point out Noise Variance sigma\_n = 0.010 mm is FIXED! Emphasize that modifying this sensor noise breaks the benchmark boundary.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Why Matérn-5/2 instead of RBF? A: RBF assumes infinitely differentiable curves (too smooth); Matérn-5/2 matches realistic physical magnetic saturation.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{How does this GP model operate inside our closed-loop challenge? Let us examine Track 3 on Slide 28.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 28: Track 3: Closed-Loop Bayesian Optimization}
+
+\textbf{\color{accent}Category:} Track 3 Challenge \hfill \textbf{\color{primaryblue}Slide Index:} 28 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Track 3 controller architecture, calibration on 300 offline shots, step-by-step closed-loop execution, and opportunity for true online GP refitting via callbacks.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Here is how Track 3 operates. In the reference implementation, a GaussianProcessRegressor with a Matérn-5/2 kernel is fitted offline on 300 calibration shots across [-3.5 A, +3.5 A]. At each time step on the physical beamline, the controller reads the current BPM readings Y and present total current I\_t. It queries the GP surrogate to predict the mean orbit change and the epistemic uncertainty for candidate kicks delta I. It solves for the delta I that minimizes the Lower Confidence Bound acquisition function under [-0.8 A, +0.8 A] bounds. Notice a crucial operational insight: like Baseline 1, the reference Track 3 controller is closed-loop (it re-solves from the latest BPM reading), but its GP model is fitted once and kept fixed. Participants who register a step\_callback in the notebook can add each new (current, orbit) measurement to the GP dataset and refit it online, turning Track 3 into true active online Bayesian optimization!
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Clarify: closed-loop control vs online model updating. Emphasize the callback opportunity for participants seeking maximum scores.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Does online GP refitting slow down execution? A: Yes, GP fitting scales O(N\textasciicircum{}3) with sample size N, so keep the online buffer small (e.g., 50 shots).
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Let us examine the exact mathematical formulation of the Lower Confidence Bound acquisition function.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 29: Lower Confidence Bound Acquisition}
+
+\textbf{\color{accent}Category:} Track 3 Challenge \hfill \textbf{\color{primaryblue}Slide Index:} 29 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+LCB acquisition formula: alpha\_LCB(Delta I) = RMS( Y - mu(I) + mu(I + Delta I) ) - kappa * sigma\_bar(Delta I) + lambda * || Delta I ||\textasciicircum{}2, exploitation vs exploration.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+The decision engine of Track 3 is the Lower Confidence Bound (LCB) acquisition function: alpha\_LCB(delta I) = RMS of predicted next orbit, minus kappa times the mean predicted uncertainty sigma\_bar, plus lambda times ||delta I||\textasciicircum{}2. The first term represents exploitation: driving the predicted orbit error down to zero. The second term represents exploration: subtracting uncertainty encourages the algorithm to probe actuator current regions where the model is unconfident, such as deep non-linear saturation. The trade-off parameter kappa governs this balance. In our benchmark, because our GP surrogate was already well-calibrated on 300 offline shots, setting kappa = 0—pure exploitation of the accurate mean—converges in an extraordinary average of just 3.6 steps! It earns 878.384 points, making Track 3 the reigning Rank 1 controller on our official leaderboard.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Highlight the 3.6 step convergence: near the physical 3-step limit imposed by the 0.8 A slew rate! Rank 1 performance.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: When should kappa > 0 be used? A: When entering unmapped lattice regimes or when magnetic drift occurs online.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Now let us examine the formal Gymnasium software contract governing your code in this afternoon's challenge.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 30: Gymnasium Environment Contract}
+
+\textbf{\color{accent}Category:} Gymnasium Environment Contract \hfill \textbf{\color{primaryblue}Slide Index:} 30 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Standard Gym interface: env.reset(seed) -> (obs, info) and env.step(action) -> (obs, reward, terminated, truncated, info), BenchmarkController act() contract.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+To ensure scientific reproducibility, our simulation environment AcceleratorOrbitGymEnv adheres strictly to Farama Gymnasium standards. The environment provides two core methods. First, reset(seed): it resets all corrector currents to zero, applies random distortion kicks Y\_0 drawn from the seed, and returns the initial 12-element BPM observation vector obs and an info dictionary containing runtime metadata. Second, step(action): it accepts a 6-element delta current array, clips it to [-0.8 A, +0.8 A], updates total currents, and computes the new orbit. It returns five outputs: the new observation obs; the scalar training reward; terminated, which triggers when RMS drops below 0.030 mm (success!); truncated, which triggers if step count reaches 50 without success (failure!); and the updated info dictionary. Every competitor controller must inherit from BenchmarkController and implement the standard act(obs, info) method returning a 6-element action.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Reiterate: terminated = True means success (RMS < 0.03 mm); truncated = True means timeout failure at 50 steps.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can act() inspect info['currents']? A: Yes! Total currents are realistic diagnostic telemetry provided in info.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{How are controllers officially scored across the 30 seeds? Let us examine the official scoring formula on Slide 31.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 31: Standardized 30-Seed Scoring Formula}
+
+\textbf{\color{accent}Category:} Evaluation Protocol \hfill \textbf{\color{primaryblue}Slide Index:} 31 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Three-component scoring formula s\_k = 400 (Success) + 300 * max(0, (20 - n\_k)/19) (Speed) + 300 * clip(ln(0.030/RMS) / ln(0.030/0.010), 0, 1) (Precision).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+To establish a fair, mathematically rigorous benchmark, your controllers are evaluated across 30 standardized seeds: range(1, 31). On each seed k, the controller earns a score s\_k from 0 to 1,000 points based on three operational pillars. If a seed fails to reach RMS < 0.030 mm within 50 steps, it scores exactly ZERO points! Robustness is king: a single failure costs up to 1,000 points. For successful seeds, the score comprises three terms: First, Success Points (400 pts): awarded immediately for reaching the sub-30 micron threshold. Second, Speed Points (up to 300 pts): scaled linearly as 300 times (20 - n\_k) / 19. If you converge in 1 step, you earn 300 points; at 20 steps or more, you earn 0 speed points. Third, Precision Points (up to 300 pts): scaled logarithmically from 0 at the 0.030 mm target boundary to 300 at the 0.010 mm sensor noise floor: 300 times ln(0.030 / RMS) / ln(0.030 / 0.010). Every factor of improvement in residual orbit earns equal points! Your official benchmark score is the arithmetic mean across all 30 seeds.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Emphasize the scoring balance: 400 success + 300 speed + 300 precision. A single timeout to 50 steps gives 0 points and ruins the average!
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Why is current norm not scored? A: Total current is dictated by the seed's distortion kick and varies by only 2\% between controllers.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{How do our reference baselines and tracks perform under this official formula? Let us examine the live leaderboard.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 32: Tested Benchmark Leaderboard \& Trajectories}
+
+\textbf{\color{accent}Category:} Leaderboard \& Trajectories \hfill \textbf{\color{primaryblue}Slide Index:} 32 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Leaderboard table: Rank 1 BO (878.384 pts, 3.6 steps), Rank 2 Supervised MLP (779.169 pts, 4.0 steps), Rank 3 Classical SVD (674.398 pts, 9.4 steps), Rank 4 Reference RL (590.559 pts, 10.8 steps).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Here is the official baseline leaderboard across all 30 evaluation seeds. All four reference controllers achieve 100\% success rate, so their rankings are determined entirely by speed and precision. Rank 1 is Track 3: Bayesian Optimization with a calibrated GP and kappa = 0. It converges in an average of just 3.6 steps and lands at an incredible residual RMS of 0.0136 mm—earning 878.384 points! Rank 2 is Baseline 1: Supervised Neural Inversion with our MLP digital twin. Anticipating cubic saturation allows it to converge in 4.0 steps, earning 779.169 points. Rank 3 is Baseline 0: Classical Linear SVD with alpha = 0.45. It converges safely, but taking 9.4 steps limits its score to 674.398 points. Rank 4 is the reference Track 2 RL agent. Because its residual weights are untrained, it acts as a damped pseudo-inverse, taking 10.8 steps and scoring 590.559 points. On the right, the RMS trajectory plot illustrates the difference: BO and MLP plunge below the 30-micron target within 4 steps, while SVD and RL descend far more gradually.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Highlight the spread: from 590 points up to 878 points. Show that tuning moves agents up this live ladder.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can RL beat BO? A: Yes! A tuned residual policy or model-predictive RL agent in the solution scores 939.981 points!
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Let us summarize how all these controllers compare across methodology, latency, and sample efficiency.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 33: Method Comparison Summary}
+
+\textbf{\color{accent}Category:} Method Comparison Summary \hfill \textbf{\color{primaryblue}Slide Index:} 33 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Full structured comparison matrix: SVD vs MLP Inversion vs Adaptive RL vs Bayesian Optimization across mechanism, data requirements, latency, pros, cons, and reference/solution scores.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+This table presents a comprehensive trade-off matrix across all methods. Classical SVD requires zero training data and executes in less than 0.1 milliseconds, but it is blind to non-linear saturation. Supervised MLP Inversion captures non-linear saturation accurately from 1,500 offline shots, scoring 779 with reference settings and 924 with a tuned surrogate. However, solving an optimization problem online takes 15 to 30 milliseconds per step—the slowest policy. Track 2 RL combines analytical priors with learned residuals. Because it is a feedforward policy network, it executes in less than 0.5 milliseconds—thirty times faster than MLP inversion! While the reference agent scores 590, training the residual reaches 940 points. Track 3 Bayesian Optimization offers unmatched sample efficiency from just 300 calibration shots, scoring 878 offline and 910 with online refitting. Notice the trade-off: if you need maximum execution speed, RL wins; if you have limited experimental calibration shots, BO wins; if you have abundant offline simulation data, Supervised Inversion wins.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Walk through the trade-offs: speed vs data requirements vs algorithmic complexity. This synthesizes the whole lecture.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Which track is recommended for beginners? A: Track 1 (TODO 1) is the most intuitive starting point, followed by Track 3.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Now, what specific strategies can you execute this afternoon to climb the leaderboard? Let us look at Slide 34.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 34: Strategic Advice for Competitors}
+
+\textbf{\color{accent}Category:} Strategic Advice \hfill \textbf{\color{primaryblue}Slide Index:} 34 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Concrete engineering tactics for Track 1 (TODO 1: Tanh, L-BFGS, layer width), Track 2 (TODO 2: Gain, residual training, damping), and Track 3 (TODO 3: Online refitting, kappa schedules).
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+Here is your tactical playbook for this afternoon's mini-hackathon. For Track 1 competitors (TODO 1): do not settle for the default MLP! Experiment with Tanh activations or smooth GeLU; try training with solver='lbfgs' on the offline data; adjust the hidden layers to (64, 32) or (256, 128, 64); and tune the L2 penalty alpha. A surrogate that cuts validation RMSE from 0.0118 mm to 0.0105 mm will immediately boost your benchmark score over 920 points. For Track 2 competitors (TODO 2): first, optimize the feedback gain alpha in the physics prior (try alpha between 0.8 and 1.2); second, tune the harmonic damping factor kappa (try 0.02 to 0.05); third, train the residual weights W\_learned using supervised regression against the surrogate error or policy gradient reinforcement learning. For Track 3 competitors (TODO 3): test kappa values between 0.0 and 0.5; register a step\_callback to refit the GP online with every new step; and implement a dynamic kappa schedule that explores early and exploits late. Above all, remember our golden rule: robustness comes first! A policy that fails even one seed scores zero on that seed.
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} Reinforce: 'Do not modify env.R or evaluation seeds!' Abide by AGENTS.md rules. Encourage experimentation.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Can we combine methods, e.g. GP prior with RL? A: Absolutely! Novel hybrid architectures are welcome and often win hackathons.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Finally, let us summarize our morning journey and transition to Lecture 2 with Dr. Thorsten Hellert.}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\section{Slide 35: Summary \& Transition to Lecture 2}
+
+\textbf{\color{accent}Category:} Summary \& Transition \hfill \textbf{\color{primaryblue}Slide Index:} 35 / 35
+
+
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title=\textbf{Slide Visual Blueprint},fonttitle=\small\color{darkgray},arc=3pt]
+Summary takeaways card: Physics-guided ML is indispensable, non-linear saturation requires modern AI, and transition banner introducing Lecture 2: Agentic AI for Accelerators.
+
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title=\textbf{Spoken Presenter Script},fonttitle=\bfseries\color{white},arc=4pt]
+To conclude Lecture 1, let us review our core takeaways. First, accelerator physics and machine learning are complementary partners: pure black-box models fail to extrapolate, while pure linear optics stalls under non-linear magnetic saturation. By combining beam optics priors with deep surrogates, adaptive RL, or Gaussian Processes, we achieve robust, sub-millisecond, sub-micron orbit control. Second, our 30-seed benchmark scoring formula rewards controllers that balance robustness, speed, and precision down to the 10-micron noise floor. Now, we transition directly to Lecture 2. Dr. Thorsten Hellert from Lawrence Berkeley National Laboratory will present 'Agentic AI for Accelerator Research.' You will discover how autonomous LLM agents leverage Python execution environments, orchestrate multi-physics simulations, and implement operational safety guardrails. Thank you all for your attention. I look forward to an exciting and competitive hackathon this afternoon!
+
+\end{tcolorbox}
+
+
+\begin{itemize}
+    \item \textbf{\color{navy}Pedagogical Focus \& Emphasis:} End with strong enthusiasm. Welcome questions from the audience before handing over to Dr. Hellert.
+    \item \textbf{\color{successgreen}Anticipated Participant Q\&A:} Q: Where are the lecture slides and notes stored? A: In presentations/ and lecture\_notes/ inside the repository root.
+    \item \textbf{\color{accent}Verbal Transition to Next Slide:} \emph{Thank you, and enjoy Lecture 2 and the Afternoon Hackathon!}
+\end{itemize}
+\vspace{0.8em}\hrule\vspace{1.2em}
+
+
+\end{document}
