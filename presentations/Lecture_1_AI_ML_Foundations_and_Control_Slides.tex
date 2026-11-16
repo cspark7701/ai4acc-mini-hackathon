@@ -30,7 +30,7 @@
 \setlength{\parindent}{0pt}
 
 % Total Slides Count
-\newcommand{\totalslides}{29}
+\newcommand{\totalslides}{34}
 
 % Positioning helper
 \newcommand{\at}[4]{%
@@ -424,27 +424,32 @@
 % SLIDE 13: Activation Functions in Neural Networks (DEDICATED SLIDE)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.65}
-  \slideheader{ML Foundations}{Activation Functions in Neural Networks}{Comprehensive comparison of non-linear activations, gradients, and selection criteria}
+  \slidespread{1.45}
+  \slideheader{ML Foundations}{Activation Functions in Neural Networks}{Definitions, core operational roles, non-linear mappings, and selection criteria}
 
-  \drawcard{0.8}{1.4}{11.733}{5.3}{Core Activation Functions: Formula, Gradient \& Use Cases \hfill {\fs{11}{13}\mdseries\color{mutedgray}plots: $f(z)$ solid, $f'(z)$ dashed}}
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Activation Function Definition, Roles \& Core Comparison \hfill {\fs{11}{13}\mdseries\color{mutedgray}plots: $f(z)$ solid, $f'(z)$ dashed}}
   % Small plots of each activation f(z) (solid) and its gradient f'(z) (dashed), numbered as in the list
   \node[anchor=north east,inner sep=0pt]
     at ([xshift=12.30in,yshift=-1.95in]current page.north west)
     {\includegraphics[height=4.62in]{activation_functions.png}};
-  \at{1.1}{2.0}{7.15}{\fs{12.5}{16}\color{darkgray}%
+  \at{1.1}{2.0}{7.15}{\fs{11.5}{14.5}\color{darkgray}%
+    {\bfseries\color{navy}Definition \& Roles of Activation Functions:}\\[0.15em]
+    $\bullet$ \textbf{Definition:} Non-linear mapping $\sigma(z)$ applied element-wise to affine sums $z = \mathbf{w}^T \mathbf{x} + b$.\\
+    $\bullet$ \textbf{Role 1 (Break Linearity):} Prevents deep layers collapsing to single matrix multiplication.\\
+    $\bullet$ \textbf{Role 2 (Non-Linear Physics):} Enables MLPs to approximate saturation $B(I) \propto I - 0.015 I^3$.\\
+    $\bullet$ \textbf{Role 3 (Gradient Gating):} Derivative $\sigma'(z)$ scales error backprop; avoids gradient vanishing.\\[0.45em]
     {\bfseries\color{navy}1. ReLU:} \textbf{\color{primaryblue}$f(z) = \max(0, z)$}\\
-    $\bullet$ Gradient $= 1$ for $z > 0$; fast, no vanishing gradient. Default for surrogate hidden layers.\\[0.3em]
+    $\bullet$ Gradient $= 1$ for $z > 0$; fast, no vanishing gradient. Default for surrogate hidden layers.\\[0.25em]
     {\bfseries\color{navy}2. Leaky ReLU:} \textbf{\color{primaryblue}$f(z) = \max(\alpha z, z),\ \alpha \approx 0.01$}\\
-    $\bullet$ Small slope for $z < 0$ avoids ``dying'' neurons that stop learning.\\[0.3em]
+    $\bullet$ Small slope for $z < 0$ avoids ``dying'' neurons that stop learning.\\[0.25em]
     {\bfseries\color{navy}3. GELU:} \textbf{\color{primaryblue}$f(z) = z \cdot \Phi(z)$}\\
-    $\bullet$ Smooth gating by the normal CDF; standard in modern LLMs \& Transformers.\\[0.3em]
+    $\bullet$ Smooth gating by normal CDF; standard in modern Transformers.\\[0.25em]
     {\bfseries\color{navy}4. Sigmoid:} \textbf{\color{primaryblue}$\sigma(z) = 1/(1 + e^{-z})$}\\
-    $\bullet$ Output in $(0, 1)$ for probabilities; gradient vanishes when saturated.\\[0.3em]
+    $\bullet$ Bounded in $(0, 1)$ for probabilities; vanishes when saturated.\\[0.25em]
     {\bfseries\color{navy}5. Tanh:} \textbf{\color{primaryblue}$\tanh(z) = (e^z - e^{-z})/(e^z + e^{-z})$}\\
-    $\bullet$ Zero-centered in $(-1, 1)$; stronger gradients than Sigmoid, still saturates.\\[0.3em]
+    $\bullet$ Zero-centered in $(-1, 1)$; stronger gradients than Sigmoid, still saturates.\\[0.25em]
     {\bfseries\color{navy}6. Linear / Identity:} \textbf{\color{primaryblue}$f(z) = z$}\\
-    $\bullet$ No non-linearity; used in the output layer of regression surrogates (BPM readings $\mathbf{Y}$).
+    $\bullet$ Preserves unbounded physical units; required for output regression layer ($\mathbf{Y}$ in mm).
   }
 
   \slidefooter{13}
@@ -452,7 +457,119 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 14: Optimization Algorithms in Machine Learning (DEDICATED SLIDE)
+% SLIDE 14: NN Surrogate Example | Learning the Particle Transfer Matrix (NEW)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.18}
+  \slideheader{ML Foundations}{NN Surrogate Example: Particle Transfer Matrix}{Surrogating beam optics: mapping initial phase space $(x_0, x'_0)$ to final coordinates $(x_f, x'_f)$}
+
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Surrogate Modeling of Particle Transport Matrix $\mathbf{M}$}
+
+  % Left Column: Physics & Surrogate Equations (width 6.2 in)
+  \at{1.1}{2.05}{6.2}{\fs{12}{15.5}\color{darkgray}%
+    {\bfseries\color{navy}1. Classical Analytical Transfer Matrix:}\\[0.2em]
+    In linear beam optics, transverse particle trajectory through a beamline element is governed by the $2 \times 2$ transfer matrix $\mathbf{M}$:\\[0.3em]
+    \centering{\fs{13}{16}\bfseries\color{primaryblue}$\begin{pmatrix} x_f \\ x'_f \end{pmatrix} = \mathbf{M} \begin{pmatrix} x_0 \\ x'_0 \end{pmatrix} = \begin{pmatrix} C(s) & S(s) \\ C'(s) & S'(s) \end{pmatrix} \begin{pmatrix} x_0 \\ x'_0 \end{pmatrix}, \quad \det\mathbf{M} = 1$}\\[0.3em]
+    \raggedright
+    $\det\mathbf{M} = 1$ ensures phase-space area preservation (Liouville's theorem / symplecticity).\\[0.5em]
+    {\bfseries\color{navy}2. Neural Network Surrogate Formulation:}\\[0.2em]
+    Instead of analytical tracking, we train a neural network $f_{\boldsymbol{\theta}}: \mathbb{R}^2 \to \mathbb{R}^2$:\\[0.3em]
+    \centering{\fs{13}{16}\bfseries\color{primaryblue}$\begin{pmatrix} \hat{x}_f \\ \hat{x}'_f \end{pmatrix} = f_{\boldsymbol{\theta}}\!\left(\begin{pmatrix} x_0 \\ x'_0 \end{pmatrix}\right) = \mathbf{W}^{(L)} \sigma\left( \mathbf{W}^{(L-1)} \cdots \sigma\left(\mathbf{W}^{(1)}\begin{pmatrix}x_0\\x'_0\end{pmatrix} + \mathbf{b}^{(1)}\right)\right) + \mathbf{b}^{(L)}$}\\[0.4em]
+    \raggedright
+    {\bfseries\color{navy}3. Supervised Objective \& Conservation Target:}\\[0.2em]
+    $\bullet$ \textbf{MSE Loss:} $\mathcal{L}_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^N \left[ (x_f^{(i)} - \hat{x}_f^{(i)})^2 + (x_f'^{(i)} - \hat{x}_f'^{(i)})^2 \right]$\\
+    $\bullet$ \textbf{Jacobian Determinant:} For linear optics, $\det \mathbf{J}_{f_{\boldsymbol{\theta}}} = \frac{\partial \hat{x}_f}{\partial x_0}\frac{\partial \hat{x}'_f}{\partial x'_0} - \frac{\partial \hat{x}_f}{\partial x'_0}\frac{\partial \hat{x}'_f}{\partial x_0} \equiv 1$.
+  }
+
+  % Right Column: TikZ Network Architecture Diagram
+  \node[anchor=north west,inner sep=0pt] at ([xshift=7.65in,yshift=-2.05in]current page.north west) {%
+    \begin{tikzpicture}[scale=0.86,every node/.style={transform shape}]
+      % Card background for diagram
+      \draw[rounded corners=6pt,fill=white,draw=bordergray,line width=0.8pt] (-0.3,0.5) rectangle (5.3,-4.9);
+      \node[anchor=north,text=navy,font=\bfseries\small] at (2.5,0.3) {Neural Surrogate Architecture};
+
+      % Nodes
+      % Input Layer (2 nodes)
+      \node[circle,draw=primaryblue,fill=primaryblue!15,thick,minimum size=0.7cm] (I1) at (0.4,-1.5) {$x_0$};
+      \node[circle,draw=primaryblue,fill=primaryblue!15,thick,minimum size=0.7cm] (I2) at (0.4,-3.1) {$x'_0$};
+      \node[below=0.1cm of I2,font=\scriptsize\bfseries\color{primaryblue}] {Input $\mathbb{R}^2$};
+
+      % Hidden Layer 1 (4 nodes)
+      \foreach \y [count=\i] in {-0.8,-1.8,-2.8,-3.8} {
+        \node[circle,draw=accent,fill=accent!15,thick,minimum size=0.55cm] (H1\i) at (1.8,\y) {};
+      }
+      \node[below=0.1cm of H14,font=\scriptsize\bfseries\color{accent}] {Hidden 1};
+
+      % Hidden Layer 2 (4 nodes)
+      \foreach \y [count=\i] in {-0.8,-1.8,-2.8,-3.8} {
+        \node[circle,draw=accent,fill=accent!15,thick,minimum size=0.55cm] (H2\i) at (3.2,\y) {};
+      }
+      \node[below=0.1cm of H24,font=\scriptsize\bfseries\color{accent}] {Hidden 2};
+
+      % Output Layer (2 nodes)
+      \node[circle,draw=successgreen,fill=successgreen!15,thick,minimum size=0.7cm] (O1) at (4.6,-1.5) {$\hat{x}_f$};
+      \node[circle,draw=successgreen,fill=successgreen!15,thick,minimum size=0.7cm] (O2) at (4.6,-3.1) {$\hat{x}'_f$};
+      \node[below=0.1cm of O2,font=\scriptsize\bfseries\color{successgreen}] {Output $\mathbb{R}^2$};
+
+      % Connections
+      \foreach \i in {1,2} {
+        \foreach \j in {1,...,4} {
+          \draw[->,>=latex,draw=bordergray!80,line width=0.4pt] (I\i) -- (H1\j);
+        }
+      }
+      \foreach \i in {1,...,4} {
+        \foreach \j in {1,...,4} {
+          \draw[->,>=latex,draw=bordergray!80,line width=0.4pt] (H1\i) -- (H2\j);
+        }
+      }
+      \foreach \i in {1,...,4} {
+        \foreach \j in {1,2} {
+          \draw[->,>=latex,draw=bordergray!80,line width=0.4pt] (H2\i) -- (O\j);
+        }
+      }
+
+      % Labels
+      \node[anchor=north,font=\scriptsize\color{darkgray},align=center] at (2.5,-4.4) {%
+        $\mathbf{W}^{(1)},\mathbf{b}^{(1)},\sigma$ \ $\rightarrow$ \ $\mathbf{W}^{(2)},\mathbf{b}^{(2)},\sigma$ \ $\rightarrow$ \ $\mathbf{W}^{(3)},\mathbf{b}^{(3)}$\\
+        {\color{crimson}\bfseries Output activation must be Linear / Identity!}
+      };
+    \end{tikzpicture}
+  };
+
+  \slidefooter{14}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 15: NN Surrogate Example | Activation Functions in Beam Transport (NEW)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.18}
+  \slideheader{ML Foundations}{NN Surrogate: Activation Functions in Beam Transport}{How choice of activation function governs phase space distortion, symplecticity, and extrapolation}
+
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Behavior of Activation Functions on Phase Space $(x, x')$ and Transfer Matrix $\mathbf{M}$}
+  \at{1.1}{2.05}{11.1}{\fs{12.5}{16.5}\color{darkgray}%
+    {\fs{14}{17}\bfseries\color{navy}1. Linear / Identity Activation ($\sigma(z) = z$):}\\[0.15em]
+    $\bullet$ \textbf{Matrix Collapse:} Stacking linear layers collapses to $\mathbf{W}^{(L)} \cdots \mathbf{W}^{(1)} \mathbf{x} + \mathbf{b}_{\text{net}} \equiv \mathbf{M}_{\text{eff}} \mathbf{x} + \mathbf{b}_{\text{net}}$. The network is mathematically identical to a transfer matrix.\\
+    $\bullet$ \textbf{Beam Optics Impact:} Exactly preserves linear phase-space ellipses ($\gamma x^2 + 2\alpha x x' + \beta x'^2 = \epsilon$) and symplecticity ($\det\mathbf{M}=1$). Extrapolates perfectly to arbitrary beam sizes.\\
+    $\bullet$ \textbf{Limitation:} Fundamentally incapable of learning non-linear chromaticity, sextupole kicks ($x' \propto x^2$), or magnetic core saturation.\\[0.6em]
+    {\fs{14}{17}\bfseries\color{navy}2. Rectified Linear Unit (ReLU: $\sigma(z) = \max(0, z)$):}\\[0.15em]
+    $\bullet$ \textbf{Piecewise Linear Facets:} Partitions phase space $(x, x')$ into polyhedral regions bounded by hyperplanes $\mathbf{w}_j^T \mathbf{x} + b_j = 0$. Within each region, the mapping is affine.\\
+    $\bullet$ \textbf{Beam Optics Impact:} Deforms smooth phase-space ellipses into \textbf{faceted polygons with sharp slope discontinuities (``kinks'')}. Discontinuous second derivatives ($d^2 x / dz^2 = 0$ almost everywhere, undefined at kinks).\\
+    $\bullet$ \textbf{Dying Neurons Risk:} Particles entering inactive half-spaces ($z < 0$) have zero gradient and output 0, locally collapsing phase-space dimensions and violating Liouville area conservation.\\[0.6em]
+    {\fs{14}{17}\bfseries\color{navy}3. Hyperbolic Tangent (Tanh: $\sigma(z) = \tanh(z)$):}\\[0.15em]
+    $\bullet$ \textbf{Smooth Non-Linearity:} Continuously differentiable ($C^\infty$). Near the beam core ($|z| \ll 1$), $\tanh(z) \approx z$, so the surrogate behaves linearly and learns $\mathbf{M}$ accurately.\\
+    $\bullet$ \textbf{Beam Optics Impact:} At large amplitudes (beam halo, large steering errors), hidden neurons \textbf{saturate} ($\tanh(z) \to \pm 1$). Squashes phase-space ellipses into S-curves, artificially compressing emittance ($\det\mathbf{J} \to 0$) and violating symplecticity in the wings.\\[0.6em]
+    {\fs{14}{17}\bfseries\color{navy}4. Output Layer Architecture Requirement:}\\[0.15em]
+    $\bullet$ \textbf{Must be Linear (Identity):} Particle transverse coordinates $x_f$ and angles $x'_f$ are unbounded real values. Applying a bounded activation (Tanh/Sigmoid) to outputs imposes an unphysical hard aperture cap!
+  }
+
+  \slidefooter{15}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 16: Optimization Algorithms in Machine Learning (DEDICATED SLIDE)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.19}
@@ -476,12 +593,57 @@
     $\bullet$ Highly effective for bounded parameter inversion (Baseline 1 \& Track 3) with tight box bounds $[-0.8, +0.8]\text{ A}$.
   }
 
-  \slidefooter{14}
+  \slidefooter{16}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 15: Neural Surrogate Digital Twin (RESIZED - ZERO OVERLAP)
+% SLIDE 17: Paradigm 1: Supervised Learning | Digital Twin Surrogates & Hyperparameters (NEW)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.14}
+  \slideheader{Paradigm 1: Supervised Learning}{Supervised Learning: Digital Twins \& Hyperparameters}{Training data-driven accelerator forward surrogates to model complex non-linear optics}
+
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Supervised Learning Workflow, Optimization \& Hyperparameter Taxonomy}
+
+  % Left column: How it works + Diagram (width 5.3 in)
+  \at{1.1}{2.05}{5.3}{\fs{11.5}{14.5}\color{darkgray}%
+    {\bfseries\color{navy}1. Core Model Training Terminology \& Workflow:}\\[0.2em]
+    $\bullet$ \textbf{Weights $\mathbf{W}$ \& Biases $\mathbf{b}$:} Trainable synaptic multipliers and threshold offsets updated during learning.\\[0.15em]
+    $\bullet$ \textbf{Loss Function $\mathcal{L}(\boldsymbol{\theta})$:} Error metric (MSE) measuring discrepancy between predicted orbit $\hat{\mathbf{Y}}$ and true BPM vector $\mathbf{Y}$.\\[0.15em]
+    $\bullet$ \textbf{Gradient \& Backpropagation:} Multivariable chain rule propagating loss gradients $\nabla_{\boldsymbol{\theta}}\mathcal{L}$ backward to compute weight steps.\\[0.15em]
+    $\bullet$ \textbf{Epoch vs Batch vs Step / Iteration:}\\
+    -- \emph{Epoch:} One complete training pass through the full dataset ($N$ shots).\\
+    -- \emph{Batch ($B$):} Subset of training shots evaluated per gradient step.\\
+    -- \emph{Step / Iteration:} A single weight vector update $\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} - \Delta\boldsymbol{\theta}$.\\[0.15em]
+    $\bullet$ \textbf{Generalization \& Early Stopping:} Halts training when validation loss stops improving, avoiding memorizing sensor noise ($10\ \mu\text{m}$).
+  }
+
+  % Right column: Hyperparameters Taxonomy Table (width 6.0 in)
+  \node[anchor=north east,inner sep=0pt]
+    at ([xshift=12.25in,yshift=-2.05in]current page.north west) {%
+      \fs{10.5}{13.5}\color{darkgray}%
+      \renewcommand{\arraystretch}{1.28}
+      \begin{tabular}{@{}p{1.45in}p{1.45in}p{2.7in}@{}}
+        \toprule
+        \textbf{\color{primaryblue}Hyperparameter} & \textbf{\color{primaryblue}Typical Value} & \textbf{\color{primaryblue}Physical Meaning \& Effect on Model} \\
+        \midrule
+        \textbf{\color{navy}Learning Rate ($\eta$)} & $10^{-3}$ (Adam) & Step size along gradient. Too large diverges; too small stagnates in local plateaus. \\
+        \textbf{\color{navy}Batch Size ($B$)} & 32 to 128 & Samples per gradient step. Smaller batches provide stochastic regularization; larger give speed. \\
+        \textbf{\color{navy}Architecture} & (128, 64, 32) & Depth and width. Must have capacity to capture cubic saturation without memorizing noise. \\
+        \textbf{\color{navy}Activation ($\sigma$)} & ReLU / Leaky ReLU & Non-linearity in hidden layers. Linear activation strictly reserved for output layer. \\
+        \textbf{\color{navy}L2 Penalty ($\alpha$)} & $10^{-4}$ & Weight decay penalty $\frac{1}{2}\alpha\|\mathbf{w}\|^2$. Suppresses overfitting to BPM jitter ($10\ \mu\text{m}$). \\
+        \textbf{\color{navy}Max Epochs / Early Stop} & 400 epochs, tol=$10^{-4}$ & Halts optimization when validation loss stops improving, avoiding overtraining. \\
+        \bottomrule
+      \end{tabular}
+    };
+
+  \slidefooter{17}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 18: Neural Surrogate Digital Twin (RESIZED - ZERO OVERLAP)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
@@ -501,12 +663,12 @@
     $\bullet$ \textbf{Output Layer:} 12 predicted Beam Position Monitor readings [BPM1-12] in millimeters, evaluated in $< 0.2\text{ milliseconds}$.
   };
 
-  \slidefooter{15}
+  \slidefooter{18}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 16: Surrogate Training & Holdout Validation
+% SLIDE 19: Surrogate Training & Holdout Validation
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.38}
@@ -527,12 +689,12 @@
     $\bullet$ \textbf{Sub-Millisecond Execution:} Forward inference takes $< 0.2\text{ ms}$ per call, 10,000$\times$ faster than numerical tracking.
   }
 
-  \slidefooter{16}
+  \slidefooter{19}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 17: Closed-Loop Control Architecture (RESIZED - ZERO OVERLAP)
+% SLIDE 20: Closed-Loop Control Architecture (RESIZED - ZERO OVERLAP)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
@@ -552,12 +714,12 @@
     $\bullet$ \textbf{Bayesian Optimization (Track 3):} a GP models the response with uncertainty; each step minimizes the LCB.
   };
 
-  \slidefooter{17}
+  \slidefooter{20}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 18: Baseline 0: Classical Linear SVD
+% SLIDE 21: Baseline 0: Classical Linear SVD
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.55}
@@ -576,12 +738,12 @@
     {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 9.4 mean steps, 635.277 total score (Rank \#3).}
   }
 
-  \slidefooter{18}
+  \slidefooter{21}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 19: Baseline 1 (Track 1): Supervised Neural Inversion
+% SLIDE 22: Baseline 1 (Track 1): Supervised Neural Inversion
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.58}
@@ -601,12 +763,57 @@
     {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 4.0 mean steps, 779.169 total score (Rank \#2).}
   }
 
-  \slidefooter{19}
+  \slidefooter{22}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 20: Track 2: Closed-Loop RL with Physics Priors
+% SLIDE 23: Paradigm 2: Reinforcement Learning | MDP Formulation & Hyperparameters (NEW)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.14}
+  \slideheader{Paradigm 2: Reinforcement Learning}{Reinforcement Learning: MDP Formulation \& Hyperparameters}{Closed-loop sequential decision making: learning optimal control policies from interaction rewards}
+
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Markov Decision Process (MDP) Framework \& Policy Hyperparameter Taxonomy}
+
+  % Left column: MDP formulation & closed loop (width 5.3 in)
+  \at{1.1}{2.05}{5.3}{\fs{12}{15.5}\color{darkgray}%
+    {\bfseries\color{navy}1. Closed-Loop MDP Formulation $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$:}\\[0.2em]
+    $\bullet$ \textbf{State Space ($\mathcal{S}$):} Measured BPM displacements $\mathbf{s}_t = \mathbf{Y}_t \in \mathbb{R}^{12}$ (transverse beam orbit errors in mm).\\[0.15em]
+    $\bullet$ \textbf{Action Space ($\mathcal{A}$):} Steerer delta kicks $\mathbf{a}_t = \Delta\mathbf{I}_t \in [-0.8, +0.8]^6\text{ A}$.\\[0.15em]
+    $\bullet$ \textbf{Transition Dynamics ($\mathcal{P}$):} Non-linear beam transport, steerer integration, cubic saturation, and sensor jitter $\boldsymbol{\epsilon}$.\\[0.15em]
+    $\bullet$ \textbf{Reward Function ($\mathcal{R}$):} Real-time alignment performance:
+    $$r_t = - w_{\text{rms}}\,\text{RMS}_{t+1} - w_{\text{act}}\,\|\mathbf{a}_t\|_2^2 - c_{\text{step}} + b_{\text{term}}$$\\[-0.5em]
+    $\bullet$ \textbf{Policy Objective:} Maximize expected cumulative return:
+    $$J(\boldsymbol{\theta}) = \mathbb{E}_{\pi_{\boldsymbol{\theta}}}\left[ \sum_{t=0}^T \gamma^t r_t \right]$$\\[-0.5em]
+    $\bullet$ \textbf{Policy Architecture:} Physics prior $(\mathbf{R}^T)^\dagger + \text{residual } \mathbf{W}_{\text{learned}}$.
+  }
+
+  % Right column: Hyperparameters Taxonomy Table (width 6.0 in)
+  \node[anchor=north east,inner sep=0pt]
+    at ([xshift=12.25in,yshift=-2.05in]current page.north west) {%
+      \fs{10.5}{13.5}\color{darkgray}%
+      \renewcommand{\arraystretch}{1.28}
+      \begin{tabular}{@{}p{1.45in}p{1.45in}p{2.7in}@{}}
+        \toprule
+        \textbf{\color{primaryblue}Hyperparameter} & \textbf{\color{primaryblue}Typical Value} & \textbf{\color{primaryblue}Physical Meaning \& Role in Orbit Control} \\
+        \midrule
+        \textbf{\color{navy}Discount Factor ($\gamma$)} & $0.95 - 0.99$ & Temporal horizon weight. High $\gamma$ prioritizes final sub-$30\ \mu\text{m}$ landing over per-step penalty. \\
+        \textbf{\color{navy}Learning Rate ($\eta_\pi$)} & $10^{-4} - 10^{-3}$ & Step size for policy / actor updates. Must be stable against stochastic sensor noise. \\
+        \textbf{\color{navy}Exploration Noise ($\sigma$)} & $\mathcal{N}(0, 0.05^2)\text{ A}$ & Action perturbations during training to probe saturation; decays towards zero. \\
+        \textbf{\color{navy}Harmonic Damping ($\kappa$)} & $\kappa \approx 0.03$ & Temporal authority schedule $\gamma(t) = 1/(1+\kappa t)$ suppressing sensor jitter amplification. \\
+        \textbf{\color{navy}Reward Weights} & $w_{\text{rms}}=10, w_{\text{act}}=0.01$ & Balances orbit error penalty against coil resistive heating and power supply strain. \\
+        \textbf{\color{navy}Step Penalty ($c_{\text{step}}$)} & $0.5\text{ pts/step}$ & Incentivizes fastest convergence to maximize hackathon speed score (up to 300 pts). \\
+        \bottomrule
+      \end{tabular}
+    };
+
+  \slidefooter{23}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 24: Track 2: Closed-Loop RL with Physics Priors
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.30}
@@ -628,12 +835,12 @@
     \textbf{3. Execution Latency:} $< 0.4\text{ ms}$ (pure feedforward matrix multiply, 50$\times$ faster than iterative \texttt{L-BFGS-B}).
   }
 
-  \slidefooter{20}
+  \slidefooter{24}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 21: Dynamic Harmonic Step Damping
+% SLIDE 25: Dynamic Harmonic Step Damping
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.75}
@@ -652,12 +859,56 @@
     $\bullet$ \textbf{Step 5+ ($t \ge 4, \gamma < 0.88$):} Attenuated feedback prevents sensor jitter amplification, locking the orbit cleanly below $0.030\text{ mm}$.
   }
 
-  \slidefooter{21}
+  \slidefooter{25}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 22: Track 3: Closed-Loop Bayesian Optimization
+% SLIDE 26: Paradigm 3: Bayesian Optimization | Probabilistic GPs & Hyperparameters (NEW)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.14}
+  \slideheader{Paradigm 3: Bayesian Optimization}{Bayesian Optimization: Probabilistic GPs \& Hyperparameters}{Sample-efficient black-box tuning: modeling response uncertainty to guide global exploration}
+
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Gaussian Process Surrogate Modeling, Acquisition Decisions \& Hyperparameter Taxonomy}
+
+  % Left column: How BO Works (width 5.3 in)
+  \at{1.1}{2.05}{5.3}{\fs{12}{15.5}\color{darkgray}%
+    {\bfseries\color{navy}1. How Bayesian Optimization Works:}\\[0.2em]
+    $\bullet$ \textbf{Step 1: Non-Parametric GP Prior:} Assumes unknown orbit response is drawn from a Gaussian Process:
+    $$f(\mathbf{x}) \sim \mathcal{GP}\left( m(\mathbf{x}), \, k(\mathbf{x}, \mathbf{x}') + \sigma_n^2 \delta(\mathbf{x},\mathbf{x}') \right)$$\\[-0.5em]
+    $\bullet$ \textbf{Step 2: Posterior Conditioning:} Given $t$ measured shots $\mathcal{D}_t$, analytical Gaussian conditioning yields predicted mean $\mu(\mathbf{x})$ and epistemic uncertainty $\sigma(\mathbf{x})$.\\[0.15em]
+    $\bullet$ \textbf{Step 3: Acquisition Function Optimization:}
+    $$\mathbf{x}_{t+1} = \arg\min_{\mathbf{x}} \alpha_{\text{LCB}}(\mathbf{x}) = \mu(\mathbf{x}) - \kappa \cdot \sigma(\mathbf{x}) + \lambda \|\mathbf{x}\|^2$$\\[-0.5em]
+    Balances exploitation (low $\mu$) vs exploration (high $\sigma$).\\[0.15em]
+    $\bullet$ \textbf{Step 4: Machine Evaluation \& Iteration:} Query real beamline at $\mathbf{x}_{t+1}$, update $\mathcal{D}_{t+1}$, and refit hyperparameters.
+  }
+
+  % Right column: Hyperparameters Taxonomy Table (width 6.0 in)
+  \node[anchor=north east,inner sep=0pt]
+    at ([xshift=12.25in,yshift=-2.05in]current page.north west) {%
+      \fs{10.5}{13.5}\color{darkgray}%
+      \renewcommand{\arraystretch}{1.28}
+      \begin{tabular}{@{}p{1.45in}p{1.45in}p{2.7in}@{}}
+        \toprule
+        \textbf{\color{primaryblue}Hyperparameter} & \textbf{\color{primaryblue}Typical Value} & \textbf{\color{primaryblue}Role in Gaussian Process \& Beam Alignment} \\
+        \midrule
+        \textbf{\color{navy}Kernel Function ($k$)} & Mat\'ern-5/2 & Models twice-differentiable magnetic saturation without unrealistic $C^\infty$ stiffness of RBF. \\
+        \textbf{\color{navy}Lengthscale ($\ell_k$)} & $\ell \sim 1.0 - 2.5\text{ A}$ & Actuator correlation length per magnet. Dictates how rapidly the orbit response decorrelates in current space. \\
+        \textbf{\color{navy}Signal Variance ($\sigma_f^2$)} & $\sigma_f \sim 1.5\text{ mm}$ & Overall vertical variance scale of beam trajectory deviations across typical operating kicks. \\
+        \textbf{\color{navy}Noise Variance ($\sigma_n^2$)} & $\sigma_n = 0.010\text{ mm}$ & Diagnostic sensor jitter nugget floor ($10\ \mu\text{m}$). Prevents GP interpolation from overfitting noise. \\
+        \textbf{\color{navy}Exploration ($\kappa$)} & $\kappa = 0.0 \to 1.5$ & Trade-off parameter in LCB. $\kappa > 0$ probes unmapped saturation; $\kappa = 0$ exploits calibrated mean. \\
+        \textbf{\color{navy}Regularizer ($\lambda$)} & $\lambda = 10^{-4}$ & Actuator norm penalty $\|\Delta\mathbf{I}\|^2$ protecting power supplies and preventing coil heating. \\
+        \bottomrule
+      \end{tabular}
+    };
+
+  \slidefooter{26}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 27: Track 3: Closed-Loop Bayesian Optimization
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.08}
@@ -680,12 +931,12 @@
     Each step re-solves the acquisition from the latest BPM reading, but the reference GP is fitted once on $\sim$300 calibration shots and stays fixed. Refitting it with every new step (e.g.\ from a \texttt{step\_callback}) turns Track 3 into true online Bayesian optimization.
   }
 
-  \slidefooter{22}
+  \slidefooter{27}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 23: Lower Confidence Bound Acquisition
+% SLIDE 28: Lower Confidence Bound Acquisition
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.40}
@@ -705,12 +956,12 @@
     {\bfseries\color{navy}$\bullet$ Exceptional Convergence Speed:} \textbf{\color{successgreen}When calibrated, Track 3 reaches the convergence threshold in about 3.6 steps on average (878.384 points).}
   }
 
-  \slidefooter{23}
+  \slidefooter{28}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 24: Gymnasium Environment Contract
+% SLIDE 29: Gymnasium Environment Contract
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.50}
@@ -731,12 +982,12 @@
     $\bullet$ \textbf{Termination Criteria:} \texttt{terminated = True} when $\text{RMS} < 0.030\text{ mm}$ (success); \texttt{truncated = True} when $\text{step} \ge 50$ (budget exhausted).
   }
 
-  \slidefooter{24}
+  \slidefooter{29}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 25: Standardized 30-Seed Scoring Formula
+% SLIDE 30: Standardized 30-Seed Scoring Formula
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
@@ -770,12 +1021,12 @@
     \textbf{Current norm:} Reported on the leaderboard but not scored; it varies by only a few percent between controllers.
   }
 
-  \slidefooter{25}
+  \slidefooter{30}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 26: Tested Benchmark Leaderboard & Trajectories (TABLE FORMAT - NO WRAPPING)
+% SLIDE 31: Tested Benchmark Leaderboard & Trajectories (TABLE FORMAT - NO WRAPPING)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
@@ -802,12 +1053,12 @@
       \end{tabular}
     };
 
-  \slidefooter{26}
+  \slidefooter{31}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 27: Method Comparison Summary (Baselines & Tracks)
+% SLIDE 32: Method Comparison Summary (Baselines & Tracks)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
@@ -833,12 +1084,12 @@
     Reference: unmodified notebook controllers (per-seed 0--1000 scoring, mean over 30 seeds). Solution: the organizers' worked solution, which inverts the model on the total current. Baseline 0 is a fixed reference and is not tuned by participants.
   }
 
-  \slidefooter{27}
+  \slidefooter{32}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 28: Strategic Advice for Competitors
+% SLIDE 33: Strategic Advice for Competitors
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.39}
@@ -857,12 +1108,12 @@
     $\bullet$ Connect your notebook runs to Weights \& Biases (\texttt{wandb.ai}) to visualize step-by-step RMS decay against reference baselines on the live leaderboard.
   }
 
-  \slidefooter{28}
+  \slidefooter{33}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 29: Summary & Transition to Lecture 2
+% SLIDE 34: Summary & Transition to Lecture 2
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.18}
@@ -882,7 +1133,7 @@
     {\fs{16}{20}\bfseries\color{accent}Q \& A Discussion}
   }
 
-  \slidefooter{29}
+  \slidefooter{34}
 \end{tikzpicture}
 
 \end{document}

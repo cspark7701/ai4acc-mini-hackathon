@@ -102,7 +102,7 @@
 \vspace{0.5em}
 
 \begin{abstract}
-Modern particle accelerator facilities operate with thousands of tightly coupled magnet actuators and diagnostics under sub-micron beam stability tolerances. Classical linear feedback systems face fundamental bottlenecks in non-linear regimes where magnetic core saturation and power supply limits degrade control fidelity. This lecture provides the theoretical and computational foundation bridging transverse beam dynamics, Hill's equation, and the Orbit Response Matrix (ORM) with cutting-edge supervised machine learning and reinforcement learning. We explore the design and training of neural surrogate digital twins to model cubic saturation, compare classical singular value decomposition (SVD) with model-based bounded optimization (\texttt{L-BFGS-B}), and investigate physics-informed closed-loop policy agents with adaptive damping for the afternoon Beam Orbit Alignment Mini-Hackathon.
+Modern particle accelerator facilities operate with thousands of tightly coupled magnet actuators and diagnostics under sub-micron beam stability tolerances. Classical linear feedback systems face fundamental bottlenecks in non-linear regimes where magnetic core saturation and power supply limits degrade control fidelity. This lecture provides the theoretical and computational foundation bridging transverse beam dynamics, Hill's equation, and the Orbit Response Matrix (ORM) with cutting-edge supervised machine learning, reinforcement learning, and Bayesian optimization. We explore the design and training of neural surrogate digital twins to model cubic saturation, compare classical singular value decomposition (SVD) with model-based bounded optimization (\texttt{L-BFGS-B}), investigate physics-informed closed-loop reinforcement learning policy agents with adaptive harmonic damping, and examine sample-efficient Bayesian optimization using Gaussian processes and Lower Confidence Bound (LCB) acquisition for the afternoon Beam Orbit Alignment Mini-Hackathon.
 \end{abstract}
 
 \clearpage
@@ -279,46 +279,57 @@ Table~\ref{tab:sl_vs_rl} summarizes the fundamental operational differences betw
 \label{tab:sl_vs_rl}
 \end{table}
 
-\subsection{The Artificial Neuron: Mathematical Formulation}
-The fundamental atom of a neural network is the \textbf{artificial neuron} (perceptron):
+\subsection{Model Training Terminology \& Operational Definitions}
+To systematically design, train, and diagnose neural network models in accelerator physics, engineers must master the standard mathematical and operational terminology of model training:
+
 \begin{enumerate}
-    \item \textbf{Linear Combination (Pre-Activation):}
+    \item \textbf{Weights ($\mathbf{W}$) \& Biases ($\mathbf{b}$):}
+    \begin{itemize}
+        \item \textbf{Weights ($\mathbf{W} \in \mathbb{R}^{m \times n}$):} Trainable synaptic scaling multipliers that weight the contribution of input features or upstream activations. In beam physics surrogates, weights encode the effective transport coupling between magnetic fields and trajectory deflections.
+        \item \textbf{Biases ($\mathbf{b} \in \mathbb{R}^m$):} Trainable affine translation vectors that shift the activation threshold of a neuron independently of the inputs, allowing the network to represent non-zero baselines (e.g., unsteered closed-orbit distortion offsets $\mathbf{Y}_0$).
+    \end{itemize}
+
+    \item \textbf{Activation Functions ($\sigma(z)$) and their Four Essential Operational Roles:}
+    An activation function $\sigma: \mathbb{R} \to \mathbb{R}$ is a non-linear operator applied element-wise to pre-activation affine sums $z = \mathbf{w}^T \mathbf{x} + b$. In accelerator surrogate modeling, activation functions fulfill four critical roles:
+    \begin{itemize}
+        \item \textbf{Role 1: Breaking Linearity (Preventing Model Collapse):} Without non-linear activations, stacking $L$ sequential dense layers mathematically collapses into a single matrix product $\mathbf{W}_{\text{eff}} = \mathbf{W}^{(L)} \cdots \mathbf{W}^{(1)}$, rendering a deep network no more expressive than a linear Orbit Response Matrix (ORM).
+        \item \textbf{Role 2: Universal Approximation of Non-Linear Physical Dynamics:} By introducing non-linearities, neural networks become universal function approximators (Hornik et al., 1989), allowing them to capture non-linear accelerator phenomena such as iron-core saturation $B(I) \propto I - 0.015 I^3$, sextupole fields, and chromatic aberrations.
+        \item \textbf{Role 3: Gating Backpropagation Gradients:} The derivative $\sigma'(z)$ acts as a transmission gate for error gradients during backpropagation. Non-saturating activations (such as ReLU with $\sigma'(z) = 1$ for $z > 0$) prevent gradients from vanishing across deep layers, ensuring stable gradient descent.
+        \item \textbf{Role 4: Enforcing Physical Output Bounds:} Selecting the appropriate activation function ensures output values conform to physical reality. While intermediate hidden layers require non-linearities, output regression layers predicting unconstrained spatial coordinates ($mm$) must strictly use linear identity activations to avoid artificial truncation.
+    \end{itemize}
+
+    \item \textbf{Loss Functions ($\mathcal{L}$) and Loss Rates:}
+    A scalar objective measuring discrepancy between model predictions $\hat{\mathbf{Y}} = f_{\boldsymbol{\theta}}(\mathbf{X})$ and physical ground truth $\mathbf{Y}$. In regression surrogates, Mean Squared Error (MSE) is standard:
     \begin{equation}
-        z = \sum_{i=1}^n w_i x_i + b = \mathbf{w}^T \mathbf{x} + b
+        \mathcal{L}_{\text{MSE}}(\boldsymbol{\theta}) = \frac{1}{N \cdot M} \sum_{i=1}^N \sum_{j=1}^M \left( Y_{i,j} - \hat{Y}_{i,j}(\boldsymbol{\theta}) \right)^2
     \end{equation}
-    where $\mathbf{w} \in \mathbb{R}^n$ denotes the trainable synaptic weights, $\mathbf{x} \in \mathbb{R}^n$ is the input feature vector, and $b \in \mathbb{R}$ is the scalar bias shifting the firing threshold.
-    
-    \item \textbf{Non-Linear Mapping (Post-Activation):}
-    \begin{equation}
-        a = \sigma(z) = \sigma(\mathbf{w}^T \mathbf{x} + b)
-    \end{equation}
-    where $\sigma(\cdot)$ is the activation function.
+    The loss rate ($\Delta \mathcal{L} / \Delta \text{epoch}$) is steep initially as linear optics components are fitted, then flattens as subtle non-linearities are resolved down to the sensor noise floor ($\sigma = 10\ \mu\text{m}$).
+
+    \item \textbf{Gradients ($\nabla_{\boldsymbol{\theta}}\mathcal{L}$) and Backpropagation:}
+    The gradient vector $\nabla_{\boldsymbol{\theta}}\mathcal{L}$ points in the direction of steepest loss ascent. Backpropagation applies the multivariable chain rule recursively from output to input, evaluating exact parameter gradients in $O(|\boldsymbol{\theta}|)$ time rather than costly finite differences.
+
+    \item \textbf{Epoch, Batch Size ($B$), and Step / Iteration:}
+    \begin{itemize}
+        \item \textbf{Epoch:} Exactly one complete pass through the entire training dataset ($N$ shots).
+        \item \textbf{Batch Size ($B$):} The number of training samples processed in parallel before performing a parameter update. Mini-batching ($B \in [32, 128]$) provides stochastic regularization against sensor jitter.
+        \item \textbf{Step / Iteration:} A single parameter update $\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} - \Delta \boldsymbol{\theta}$. An epoch contains $\lceil N / B \rceil$ steps.
+    \end{itemize}
+
+    \item \textbf{Learning Rate ($\eta$) \& Optimization Schedules:}
+    The scalar hyperparameter scaling parameter updates: $\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \cdot \mathbf{g}_t$. Excessively large $\eta$ causes numerical divergence; excessively small $\eta$ causes glacial convergence. Schedulers dynamically reduce $\eta$ as the model approaches optimal convergence.
+
+    \item \textbf{Regularization ($L_2$ Weight Decay, Early Stopping):}
+    \begin{itemize}
+        \item \textbf{$L_2$ Regularization ($\alpha$):} Adds penalty $\frac{1}{2}\alpha \|\mathbf{W}\|_2^2$ to the loss, suppressing overfitting to Gaussian diagnostic jitter ($\boldsymbol{\epsilon} \sim 10\ \mu\text{m}$).
+        \item \textbf{Early Stopping:} Monitors validation loss on a separate holdout split; terminates training when validation loss stops improving to preserve optimal generalization.
+    \end{itemize}
+
+    \item \textbf{Generalization, Overfitting vs.\ Underfitting:}
+    Underfitting (high bias) occurs when the model is too simple to represent physical non-linearities (e.g. linear ORM on saturated magnets). Overfitting (high variance) occurs when excess capacity memorizes measurement noise. Generalization reflects accurate trajectory prediction on unseen machine states.
 \end{enumerate}
 
-\subsection{Why Non-Linear Activation Functions are Essential}
-\begin{infobox}[The Collapse of Deep Linear Networks]
-If all activation functions were linear identities ($\sigma(z) = z$), stacking $L$ sequential layers would yield:
-\begin{equation}
-    \hat{\mathbf{Y}} = \mathbf{W}_3 (\mathbf{W}_2 (\mathbf{W}_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2) + \mathbf{b}_3 = (\mathbf{W}_3 \mathbf{W}_2 \mathbf{W}_1) \mathbf{x} + \mathbf{b}_{\text{net}} = \mathbf{W}_{\text{eff}} \mathbf{x} + \mathbf{b}_{\text{net}}
-\end{equation}
-A multi-layer linear network collapses mathematically into a \textbf{single linear matrix} $\mathbf{W}_{\text{eff}}$, offering no more expressive capacity than the classical linear Orbit Response Matrix $\mathbf{R}$.
-\end{infobox}
-
-Non-linear activation functions enable neural networks to act as Universal Function Approximators:
-\begin{itemize}
-    \item \textbf{Sigmoid:} $\sigma(z) = \frac{1}{1 + e^{-z}} \in (0, 1)$. Suffers from vanishing gradients when $|z| \gg 0$, halting weight updates during backpropagation.
-    \item \textbf{Hyperbolic Tangent ($\tanh$):} $\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}} \in (-1, 1)$. Zero-centered, but still prone to gradient saturation.
-    \item \textbf{Rectified Linear Unit (ReLU):}
-    \begin{equation}
-        \text{ReLU}(z) = \max(0, z) = \begin{cases} z & \text{if } z > 0 \\ 0 & \text{if } z \le 0 \end{cases}
-    \end{equation}
-    \textbf{Why ReLU is standard in accelerator surrogates:}
-    \begin{itemize}
-        \item Constant unit derivative $\frac{d}{dz}\text{ReLU}(z) = 1.0$ for $z > 0$, completely preventing gradient vanishing.
-        \item Extremely fast forward and backward passes without exponential function evaluation.
-        \item Induces sparse representations by zeroing negative activations.
-    \end{itemize}
-\end{itemize}
+\subsection{Activation Functions Catalog: Mathematics, Gradients, and Selection}
+The choice of activation function directly determines the non-linear expressive capacity and training stability of accelerator neural networks (Figure~\ref{fig:activations}):
 
 \begin{figure}[h!]
 \centering
@@ -326,6 +337,67 @@ Non-linear activation functions enable neural networks to act as Universal Funct
 \caption{Six common activation functions $f(z)$ (solid) and their gradients $f'(z)$ (dashed). Sigmoid and Tanh gradients vanish for large $|z|$, while ReLU keeps a constant gradient for $z > 0$.}
 \label{fig:activations}
 \end{figure}
+
+\begin{enumerate}
+    \item \textbf{Rectified Linear Unit (ReLU):}
+    \begin{equation}
+        f(z) = \max(0, z), \qquad f'(z) = \begin{cases} 1 & \text{if } z > 0 \\ 0 & \text{if } z < 0 \end{cases}
+    \end{equation}
+    Gradient is strictly 1.0 for positive activations, eliminating vanishing gradients. Evaluated via a single conditional instruction.
+    \item \textbf{Leaky ReLU:}
+    \begin{equation}
+        f(z) = \max(\alpha z, z), \quad \alpha \approx 0.01, \qquad f'(z) = \begin{cases} 1 & \text{if } z > 0 \\ \alpha & \text{if } z \le 0 \end{cases}
+    \end{equation}
+    Provides a small slope $\alpha$ for negative arguments, preventing ``dying'' neurons from permanently deactivating.
+    \item \textbf{Gaussian Error Linear Unit (GELU):}
+    \begin{equation}
+        f(z) = z \cdot \Phi(z) = z \cdot \frac{1}{2}\left[1 + \text{erf}\left(\frac{z}{\sqrt{2}}\right)\right]
+    \end{equation}
+    Smooth probabilistic gating based on the standard normal CDF, standard in modern Transformers.
+    \item \textbf{Sigmoid:}
+    \begin{equation}
+        \sigma(z) = \frac{1}{1 + e^{-z}}, \qquad \sigma'(z) = \sigma(z)(1 - \sigma(z))
+    \end{equation}
+    Smoothly bounds outputs to $(0, 1)$, but gradients vanish severely for $|z| > 4$.
+    \item \textbf{Hyperbolic Tangent ($\tanh$):}
+    \begin{equation}
+        \tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}, \qquad \tanh'(z) = 1 - \tanh^2(z)
+    \end{equation}
+    Zero-centered in $(-1, 1)$. Near the origin, $\tanh(z) \approx z$, effective for modeling smooth linear perturbations with gentle saturation.
+    \item \textbf{Linear / Identity:} $f(z) = z$, $f'(z) = 1$. Strictly required for the output regression layer to avoid unphysical coordinate clipping.
+\end{enumerate}
+
+\subsection{Worked Example: Neural Surrogate for a Particle Transfer Matrix}
+To bridge deep learning directly with accelerator beam physics, consider surrogating a linear beamline section characterized by a particle transfer matrix.
+
+\subsubsection{Classical Analytical Transfer Matrix Formulation}
+In linear beam optics, the transverse phase-space trajectory of a particle from initial position $s_0$ to final diagnostic station $s_f$ is governed by the $2 \times 2$ transfer matrix $\mathbf{M}$:
+\begin{equation}
+    \begin{pmatrix} x_f \\ x'_f \end{pmatrix} = \mathbf{M} \begin{pmatrix} x_0 \\ x'_0 \end{pmatrix} = \begin{pmatrix} C(s) & S(s) \\ C'(s) & S'(s) \end{pmatrix} \begin{pmatrix} x_0 \\ x'_0 \end{pmatrix}
+\end{equation}
+where $x$ is the transverse offset ($mm$), $x' = dx/ds$ is the angle ($mrad$), and the determinant satisfies the symplectic condition (Liouville's theorem / phase-space area conservation):
+\begin{equation}
+    \det \mathbf{M} = C(s)S'(s) - S(s)C'(s) \equiv 1
+\end{equation}
+Under unperturbed transport, a matched beam ellipse $\gamma x^2 + 2\alpha x x' + \beta x'^2 = \epsilon$ maps into another ellipse of identical invariant area $\pi \epsilon$.
+
+\subsubsection{Neural Network Surrogate Architecture}
+We construct a neural surrogate $f_{\boldsymbol{\theta}}: \mathbb{R}^2 \to \mathbb{R}^2$ that ingests initial coordinates $(x_0, x'_0)$ and predicts final coordinates $(\hat{x}_f, \hat{x}'_f)$:
+\begin{equation}
+    \begin{pmatrix} \hat{x}_f \\ \hat{x}'_f \end{pmatrix} = f_{\boldsymbol{\theta}}\begin{pmatrix} x_0 \\ x'_0 \end{pmatrix} = \mathbf{W}^{(3)} \sigma\left( \mathbf{W}^{(2)} \sigma\left( \mathbf{W}^{(1)} \begin{pmatrix} x_0 \\ x'_0 \end{pmatrix} + \mathbf{b}^{(1)} \right) + \mathbf{b}^{(2)} \right) + \mathbf{b}^{(3)}
+\end{equation}
+Trained over $N$ tracking pairs $\mathcal{D} = \{((x_{0,i}, x'_{0,i}), (x_{f,i}, x'_{f,i}))\}_{i=1}^N$ using Mean Squared Error loss:
+\begin{equation}
+    \mathcal{L}_{\text{MSE}}(\boldsymbol{\theta}) = \frac{1}{N} \sum_{i=1}^N \left[ \left( x_{f,i} - \hat{x}_{f,i} \right)^2 + \left( x'_{f,i} - \hat{x}'_{f,i} \right)^2 \right]
+\end{equation}
+
+\subsubsection{How Different Activation Functions Act on the Transfer Matrix Surrogate}
+\begin{itemize}
+    \item \textbf{Linear / Identity Activation ($\sigma(z) = z$):} Stacking linear layers collapses to $\mathbf{W}^{(3)}\mathbf{W}^{(2)}\mathbf{W}^{(1)}\mathbf{x} + \mathbf{b}_{\text{net}} \equiv \mathbf{M}_{\text{eff}}\mathbf{x} + \mathbf{b}_{\text{net}}$. The surrogate is mathematically identical to a linear matrix. It preserves smooth phase-space ellipses and symplecticity ($\det \mathbf{M}_{\text{eff}} \approx 1$), but cannot represent non-linear phenomena (e.g. sextupole kicks $\Delta x' = \frac{1}{2} k_2 L x^2$ or magnetic saturation).
+    \item \textbf{Rectified Linear Unit (ReLU: $\sigma(z) = \max(0, z)$):} Partitions phase space $(x_0, x'_0)$ into a patchwork of polyhedral facets separated by activation hyperplanes. Transforms smooth continuous phase-space ellipses into \textbf{faceted polygons with sharp slope kinks}. Inactive half-spaces ($z < 0$) cause dying neurons where output collapses to constants and $\det \mathbf{J} = 0$, violating Liouville's theorem.
+    \item \textbf{Hyperbolic Tangent ($\tanh: \sigma(z) = \tanh(z)$):} A smooth $C^\infty$ mapping. Near the core ($|x_0|, |x'_0| \ll 1$), $\tanh(z) \approx z$, so the network accurately reproduces linear optics $\mathbf{M}$. At large amplitudes (beam halo or large steering errors), hidden neurons saturate ($\tanh(z) \to \pm 1$), squashing the ellipse into S-curves, shrinking emittance ($\det \mathbf{J} \to 0$), and violating symplecticity.
+    \item \textbf{Output Layer Requirement:} The output layer must strictly use the \textbf{Linear / Identity} activation. Transverse particle offsets $x_f$ and angles $x'_f$ are continuous and unbounded. Imposing a bounded activation on the final layer clamps particle positions to an artificial aperture window, corrupting trajectory predictions.
+\end{itemize}
 
 \subsection{Multi-Layer Perceptron (MLP) Topology: Layers \& Information Flow}
 A Multi-Layer Perceptron (MLP) organizes interconnected neurons into sequential layers (Figure~\ref{fig:mlp_schematic}):
@@ -362,10 +434,12 @@ Network parameters are trained by minimizing an objective loss function:
     \textbf{Why RMSE is the preferred metric in beam physics:} It preserves the original physical measurement units (\textbf{millimeters}) and directly reflects accelerator beam orbit distortion standards.
 \end{enumerate}
 
-\subsection{Optimization Algorithms: Gradient Descent \& The Adam Optimizer}
+\subsection{Optimization Algorithms: From Gradient Descent to Adam and L-BFGS-B}
 During backpropagation, loss gradients $\nabla_{\boldsymbol{\theta}} \mathcal{L}$ are propagated backward to update weights:
 \begin{enumerate}
-    \item \textbf{Stochastic Gradient Descent (SGD):} $\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \nabla_{\boldsymbol{\theta}} \mathcal{L}$, where $\eta$ is the \textbf{learning rate}. High learning rates risk divergence; low learning rates cause stagnation.
+    \item \textbf{Stochastic Gradient Descent (SGD):} $\boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \eta \nabla_{\boldsymbol{\theta}} \mathcal{L}$, where $\eta$ is the learning rate.
+    \item \textbf{Momentum SGD:} $\mathbf{v}_t = \gamma \mathbf{v}_{t-1} + \eta \mathbf{g}_t, \ \boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \mathbf{v}_t$. Suppresses oscillations in high-curvature ravines.
+    \item \textbf{AdaGrad \& RMSprop:} Adapts parameter learning rates based on historical squared gradient accumulation.
     \item \textbf{The Adam Optimizer (Adaptive Moment Estimation):} Combines Momentum (first moment $\mathbf{m}_t$) and RMSprop (second moment $\mathbf{v}_t$):
     \begin{equation}
         \mathbf{m}_t = \beta_1 \mathbf{m}_{t-1} + (1-\beta_1) \mathbf{g}_t, \quad \mathbf{v}_t = \beta_2 \mathbf{v}_{t-1} + (1-\beta_2) \mathbf{g}_t^2
@@ -374,6 +448,7 @@ During backpropagation, loss gradients $\nabla_{\boldsymbol{\theta}} \mathcal{L}
         \hat{\mathbf{m}}_t = \frac{\mathbf{m}_t}{1-\beta_1^t}, \quad \hat{\mathbf{v}}_t = \frac{\mathbf{v}_t}{1-\beta_2^t} \implies \boldsymbol{\theta}_{t+1} = \boldsymbol{\theta}_t - \frac{\eta}{\sqrt{\hat{\mathbf{v}}_t} + \epsilon} \hat{\mathbf{m}}_t
     \end{equation}
     Adam automatically scales individual parameter updates, ensuring stable convergence across coupled magnet channels.
+    \item \textbf{L-BFGS-B (Quasi-Newton with Box Constraints):} Approximates the inverse Hessian $\mathbf{H}^{-1}$ from gradient history. Used for bounded parameter inversion in Baseline~1 and Track~3.
 \end{enumerate}
 
 \subsection{Dataset Partitioning \& The Bias-Variance Tradeoff}
@@ -469,6 +544,28 @@ class SupervisedMLPController:
 \end{lstlisting}
 When the surrogate accurately anticipates non-linear saturation falloff, Baseline 1 converges in about 4 iterations (4 steps on test seed 42, against 9 for classical SVD). Here $\mathbf{I}$ is the present total corrector current from \texttt{info["currents"]}, so the objective uses the predicted next orbit at every step. With the reference MLP settings (test RMSE about $0.11\text{ mm}$) it succeeds on all 30 seeds and scores 779.169; a more accurate surrogate (e.g.\ a small \texttt{tanh} network trained with \texttt{lbfgs}, test RMSE about $0.011\text{ mm}$) lands closer to the noise floor and scores over 920.
 
+\subsubsection{Supervised Learning Hyperparameter Taxonomy}
+Table~\ref{tab:sl_hyperparams} outlines the primary hyperparameters governing surrogate training.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{p{3.8cm} p{2.8cm} p{8.2cm}}
+\toprule
+\textbf{Hyperparameter} & \textbf{Typical Value} & \textbf{Physical Meaning \& Role in Accelerator Surrogate} \\
+\midrule
+Learning Rate ($\eta$) & $10^{-3}$ (Adam) & Step size along gradient. Too large diverges; too small stagnates in flat loss ravines. \\
+Batch Size ($B$) & $32 - 128$ & Samples per gradient step. Mini-batching provides regularization against sensor jitter. \\
+Layer Architecture & $(128, 64, 32)$ & Hidden depth and width. Sufficient capacity to represent cubic saturation without memorizing noise. \\
+Activation Function ($\sigma$) & ReLU / Leaky ReLU & Non-linearity in hidden layers. Linear identity strictly required for output layer ($\mathbf{Y}$ in mm). \\
+$L_2$ Regularization ($\alpha$) & $10^{-4}$ & Weight decay penalty $\frac{1}{2}\alpha\|\mathbf{W}\|_2^2$ suppressing overfitting to diagnostic noise ($\sigma = 10\ \mu\text{m}$). \\
+Max Epochs / Early Stopping & 400 epochs, tol=$10^{-4}$ & Terminates training when validation loss plateaus, guaranteeing model generalization. \\
+\bottomrule
+\end{tabular}
+\caption{Hyperparameter taxonomy for supervised neural surrogate modeling.}
+\label{tab:sl_hyperparams}
+\end{table}
+
 \subsection{Track 2: Closed-Loop RL Policy with Physics Prior and Adaptive Damping}
 Model-based iterative optimization requires $15$--$30\text{ ms}$ per step. In contrast, a closed-loop policy network executes in $< 0.5\text{ ms}$~\cite{kain2020sample}.
 High-performing accelerator policy agents integrate an analytical \textbf{physics prior} with a learned parameter residual and dynamic step damping:
@@ -479,6 +576,29 @@ High-performing accelerator policy agents integrate an analytical \textbf{physic
     \gamma(t) = \frac{1.0}{1.0 + 0.03 \cdot t}
 \end{equation}
 The dynamic damping factor $\gamma(t)$ decays control authority as the beam approaches the $0.030\text{ mm}$ boundary, preventing sensor noise amplification from destabilizing the closed orbit. In the reference agent, $\mathbf{W}_{\text{learned}}$ and $\mathbf{b}$ start at zero and are not trained, so it behaves as a damped pseudo-inverse controller (590.559 points); training or tuning the residual, or replacing the prior with a saturation-aware model inversion, is the Track~2 task.
+
+\subsubsection{Reinforcement Learning MDP Hyperparameter Taxonomy}
+Table~\ref{tab:rl_hyperparams} outlines the primary hyperparameters in the closed-loop MDP orbit alignment formulation.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{p{3.8cm} p{2.8cm} p{8.2cm}}
+\toprule
+\textbf{Hyperparameter} & \textbf{Typical Value} & \textbf{Physical Meaning \& Role in Orbit Control} \\
+\midrule
+Discount Factor ($\gamma$) & $0.95 - 0.99$ & Temporal horizon weight. High $\gamma$ prioritizes terminal alignment ($< 0.030\text{ mm}$) over step cost. \\
+Policy Learning Rate ($\eta_\pi$) & $10^{-4} - 10^{-3}$ & Step size for policy parameter updates. Must remain small to avoid policy collapse under sensor noise. \\
+Exploration Noise ($\sigma$) & $\mathcal{N}(0, 0.05^2)\text{ A}$ & Action perturbations during training to probe saturation limits without damaging hardware. \\
+Harmonic Damping ($\kappa$) & $\approx 0.03$ & Authority schedule $\gamma(t) = 1/(1+\kappa t)$ suppressing sensor jitter amplification and limit cycles. \\
+Reward Weights ($w_{\text{rms}}, w_{\text{act}}$) & $w_{\text{rms}}=10, w_{\text{act}}=0.01$ & Balances orbit minimization priority against coil resistive heating and power supply strain. \\
+Step Penalty ($c_{\text{step}}$) & $0.5\text{ pts/step}$ & Time penalty encouraging minimum-step convergence to maximize benchmark speed score (up to 300 pts). \\
+Success Bonus ($b_{\text{term}}$) & $50.0\text{ pts}$ & Large positive terminal reward upon reaching $\text{RMS} < 0.030\text{ mm}$. \\
+\bottomrule
+\end{tabular}
+\caption{Hyperparameter taxonomy for closed-loop reinforcement learning orbit control.}
+\label{tab:rl_hyperparams}
+\end{table}
 
 \subsection{Track 3: Closed-Loop Bayesian Optimization with Gaussian Processes}
 Bayesian Optimization (BO) provides sample-efficient optimization in high-dimensional non-linear systems by combining a probabilistic surrogate model with an acquisition function~\cite{roussel2023turnkey, edelen2020machine}. In our closed-loop architecture, a Gaussian Process (GP) regressor models the mapping from corrector kicks $\Delta \mathbf{I}$ to transverse orbit deviations:
@@ -521,6 +641,29 @@ class BayesianOptimizationController:
         res = opt.minimize(acquisition_lcb, np.zeros(6), bounds=[(-5.0, 5.0)]*6, method='L-BFGS-B')
         return np.clip(res.x, -0.8, 0.8)
 \end{lstlisting}
+
+\subsubsection{Bayesian Optimization \& Gaussian Process Hyperparameter Taxonomy}
+Table~\ref{tab:bo_hyperparams} summarizes the key hyperparameters defining the Gaussian Process surrogate and acquisition policy.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{p{3.8cm} p{2.8cm} p{8.2cm}}
+\toprule
+\textbf{Hyperparameter} & \textbf{Typical Value} & \textbf{Role in Gaussian Process \& Beam Alignment} \\
+\midrule
+Kernel Function ($k$) & Mat\'ern-5/2 & Twice-differentiable covariance modeling physical saturation without excessive RBF stiffness. \\
+Lengthscales ($\ell_k$) & $\ell \sim 1.0 - 2.5\text{ A}$ & Input correlation distance per magnet actuator. Sets how rapidly orbit effects decorrelate in current space. \\
+Signal Variance ($\sigma_f^2$) & $\sigma_f \sim 1.5\text{ mm}$ & Expected vertical amplitude variation of transverse orbit distortions across the operating domain. \\
+Noise Variance Floor ($\sigma_n^2$) & $\sigma_n = 0.010\text{ mm}$ & Sensor noise floor ($10\ \mu\text{m}$). Prevents GP interpolation from overfitting diagnostic jitter. \\
+Exploration Weight ($\kappa$) & $\kappa = 0.0 \to 1.5$ & Trade-off parameter in LCB. $\kappa > 0$ probes unmapped saturation; $\kappa = 0$ exploits calibrated mean. \\
+Action Penalty ($\lambda$) & $10^{-4}$ & Regularizes delta kick effort to avoid unnecessary high-current excursions. \\
+Model Updating & Offline / Online Refit & Fixed 300-shot calibration GP (offline baseline) or online recursive GP updating from \texttt{step\_callback}. \\
+\bottomrule
+\end{tabular}
+\caption{Hyperparameter taxonomy for Bayesian optimization with Gaussian process surrogates.}
+\label{tab:bo_hyperparams}
+\end{table}
 
 
 \section{Mini-Hackathon Problem Formulation \& Gymnasium Contract}
