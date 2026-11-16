@@ -635,7 +635,10 @@ def create_presentation():
 
     p_eq2 = tf14_l.add_paragraph()
     p_eq2.alignment = PP_ALIGN.CENTER
-    add_text_run(p_eq2, "[x̂_f, x̂'_f]ᵀ = f_θ([x₀, x'₀]ᵀ) = W⁽ᴸ⁾ σ( W⁽ᴸ⁻¹⁾ ... σ( W⁽¹⁾ x + b⁽¹⁾ ) ) + b⁽ᴸ⁾\n", bold=True, size=Pt(13), color=PRIMARY)
+    add_text_run(p_eq2, "ẑ_f = f_θ(z₀) = W⁽³⁾ σ( W⁽²⁾ σ( W⁽¹⁾ z₀ + b⁽¹⁾ ) + b⁽²⁾ ) + b⁽³⁾\n", bold=True, size=Pt(12.5), color=PRIMARY)
+    p_eq2_sub = tf14_l.add_paragraph()
+    p_eq2_sub.alignment = PP_ALIGN.CENTER
+    add_text_run(p_eq2_sub, "where z₀ = [x₀, x'₀]ᵀ and ẑ_f = [x̂_f, x̂'_f]ᵀ\n", size=Pt(10.5), color=MUTED)
 
     p3 = tf14_l.add_paragraph()
     p3.space_before = Pt(4)
@@ -761,23 +764,23 @@ def create_presentation():
     add_card(s17, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Supervised Learning Workflow, Optimization & Hyperparameter Taxonomy")
 
     # Left Box: Model Training Terminology
-    tb17_l = s17.shapes.add_textbox(Inches(1.05), Inches(2.00), Inches(4.85), Inches(4.5))
+    tb17_l = s17.shapes.add_textbox(Inches(1.05), Inches(1.95), Inches(4.95), Inches(4.5))
     tf17_l = tb17_l.text_frame
     tf17_l.word_wrap = True
 
     p_17 = tf17_l.paragraphs[0]
     add_text_run(p_17, "1. Core Model Training Terminology:\n", bold=True, size=Pt(13.5), color=NAVY)
-    add_text_run(p_17, "• Weights W & Biases b: Trainable synaptic multipliers and threshold offsets updated during learning.\n"
-                       "• Loss Function ℒ(θ): Error metric (MSE) measuring discrepancy between predicted orbit Ŷ and true BPM vector Y.\n"
-                       "• Gradient & Backpropagation: Multivariable chain rule propagating loss gradients ∇_θ ℒ backward to compute weight steps.\n"
+    add_text_run(p_17, "• Weights W & Biases b: Trainable synaptic multipliers and threshold offsets updated during learning.\n\n"
+                       "• Loss Function ℒ(θ): Error metric (MSE) measuring discrepancy between predicted orbit Ŷ and true BPM vector Y.\n\n"
+                       "• Gradient & Backpropagation: Multivariable chain rule propagating loss gradients ∇_θ ℒ backward to compute weight steps.\n\n"
                        "• Epoch vs Batch vs Step / Iteration:\n"
                        "  -- Epoch: One complete training pass through the full dataset (N shots).\n"
                        "  -- Batch (B): Subset of training shots evaluated per gradient step.\n"
-                       "  -- Step / Iteration: A single weight vector update θ ← θ - Δθ.\n"
+                       "  -- Step / Iteration: A single weight vector update θ ← θ - Δθ.\n\n"
                        "• Generalization & Early Stopping: Halts training when validation loss stops improving, avoiding memorizing sensor noise (10 μm).", size=Pt(11.5), color=DARK_GRAY)
 
-    # Right Box: Hyperparameter Table (starts at 6.45 in, 0.55 in gutter)
-    sl_table_shape = s17.shapes.add_table(7, 3, Inches(6.45), Inches(2.00), Inches(5.7), Inches(4.1))
+    # Right Box: Hyperparameter Table (starts at 6.40 in, 0.55 in gutter)
+    sl_table_shape = s17.shapes.add_table(7, 3, Inches(6.40), Inches(1.95), Inches(5.75), Inches(4.2))
     sl_tbl = sl_table_shape.table
     for idx, w in enumerate([Inches(1.45), Inches(1.35), Inches(2.9)]):
         sl_tbl.columns[idx].width = w
@@ -978,23 +981,23 @@ def create_presentation():
     add_card(s23, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Markov Decision Process (MDP) Framework & Policy Hyperparameter Taxonomy")
 
     # Left Box: MDP formulation
-    tb23_l = s23.shapes.add_textbox(Inches(1.05), Inches(2.00), Inches(4.85), Inches(4.5))
+    tb23_l = s23.shapes.add_textbox(Inches(1.05), Inches(1.95), Inches(4.95), Inches(4.5))
     tf23_l = tb23_l.text_frame
     tf23_l.word_wrap = True
 
     p_23 = tf23_l.paragraphs[0]
     add_text_run(p_23, "1. Closed-Loop MDP Formulation (𝒮, 𝒜, 𝒫, ℛ, γ):\n", bold=True, size=Pt(13.5), color=NAVY)
-    add_text_run(p_23, "• State Space (𝒮): Measured BPM displacements s_t = Y_t ∈ ℝ¹² (transverse beam orbit errors in mm).\n"
-                       "• Action Space (𝒜): Steerer delta kicks a_t = ΔI_t ∈ [-0.8, +0.8]⁶ A.\n"
-                       "• Transition Dynamics (𝒫): Non-linear beam transport, steerer integration, cubic saturation, and sensor jitter ε.\n"
+    add_text_run(p_23, "• State Space (𝒮): Measured BPM displacements s_t = Y_t ∈ ℝ¹² (transverse beam orbit errors in mm).\n\n"
+                       "• Action Space (𝒜): Steerer delta kicks a_t = ΔI_t ∈ [-0.8, +0.8]⁶ A.\n\n"
+                       "• Transition Dynamics (𝒫): Non-linear beam transport, steerer integration, cubic saturation, and sensor jitter ε.\n\n"
                        "• Reward Function (ℛ): Real-time alignment performance:\n"
-                       "  r_t = - w_rms·RMS_{t+1} - w_act·||a_t||² - c_step + b_term\n"
+                       "  r_t = - w_rms·RMS_{t+1} - w_act·||a_t||² - c_step + b_term\n\n"
                        "• Policy Objective: Maximize expected cumulative return:\n"
-                       "  J(θ) = 𝔼_{π_θ} [ ∑ γᵗ r_t ]\n"
+                       "  J(θ) = 𝔼_{π_θ} [ ∑ γᵗ r_t ]\n\n"
                        "• Policy Architecture: Physics prior (Rᵀ)⁺ + learned residual W_learned.", size=Pt(11.5), color=DARK_GRAY)
 
-    # Right Box: Hyperparameter Table (starts at 6.45 in, 0.55 in gutter)
-    rl_table_shape = s23.shapes.add_table(7, 3, Inches(6.45), Inches(2.00), Inches(5.7), Inches(4.1))
+    # Right Box: Hyperparameter Table (starts at 6.40 in, 0.55 in gutter)
+    rl_table_shape = s23.shapes.add_table(7, 3, Inches(6.40), Inches(1.95), Inches(5.75), Inches(4.2))
     rl_tbl = rl_table_shape.table
     for idx, w in enumerate([Inches(1.45), Inches(1.35), Inches(2.9)]):
         rl_tbl.columns[idx].width = w
@@ -1108,22 +1111,24 @@ def create_presentation():
     add_card(s26, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Gaussian Process Surrogate Modeling, Acquisition Decisions & Hyperparameter Taxonomy")
 
     # Left Box: How BO Works
-    tb26_l = s26.shapes.add_textbox(Inches(1.05), Inches(2.00), Inches(4.85), Inches(4.5))
+    tb26_l = s26.shapes.add_textbox(Inches(1.05), Inches(1.95), Inches(4.95), Inches(4.5))
     tf26_l = tb26_l.text_frame
     tf26_l.word_wrap = True
 
     p_26 = tf26_l.paragraphs[0]
     add_text_run(p_26, "1. How Bayesian Optimization Works:\n", bold=True, size=Pt(13.5), color=NAVY)
     add_text_run(p_26, "• Step 1: Non-Parametric GP Prior: Assumes unknown orbit response is drawn from a Gaussian Process:\n"
-                       "  f(x) ~ 𝒢𝒫( m(x), k(x, x') + σ_n² δ(x, x') )\n"
-                       "• Step 2: Posterior Conditioning: Given t measured shots 𝒟_t, analytical Gaussian conditioning yields predicted mean μ(x) and epistemic uncertainty σ(x).\n"
+                       "  f(x) ~ 𝒢𝒫( m(x), k(x, x') + σ_n² δ(x, x') )\n\n"
+                       "• Step 2: Posterior Conditioning: Given t measured shots 𝒟_t, analytical Gaussian conditioning yields predicted mean and uncertainty:\n"
+                       "  -- Mean μ(x): Best estimate of residual orbit error at current x.\n"
+                       "  -- Variance σ²(x): Epistemic uncertainty in unvisited current regions.\n\n"
                        "• Step 3: Acquisition Function Optimization:\n"
                        "  x_{t+1} = argmin_x α_LCB(x) = μ(x) - κ · σ(x) + λ ||x||²\n"
-                       "  Balances exploitation (low μ) vs exploration (high σ).\n"
+                       "  Balances exploitation (low μ) vs exploration (high σ).\n\n"
                        "• Step 4: Machine Evaluation & Iteration: Query real beamline at x_{t+1}, update 𝒟_{t+1}, and refit hyperparameters.", size=Pt(11.5), color=DARK_GRAY)
 
-    # Right Box: Hyperparameter Table (starts at 6.45 in, 0.55 in gutter)
-    bo_table_shape = s26.shapes.add_table(7, 3, Inches(6.45), Inches(2.00), Inches(5.7), Inches(4.1))
+    # Right Box: Hyperparameter Table (starts at 6.40 in, 0.55 in gutter)
+    bo_table_shape = s26.shapes.add_table(7, 3, Inches(6.40), Inches(1.95), Inches(5.75), Inches(4.2))
     bo_tbl = bo_table_shape.table
     for idx, w in enumerate([Inches(1.45), Inches(1.35), Inches(2.9)]):
         bo_tbl.columns[idx].width = w

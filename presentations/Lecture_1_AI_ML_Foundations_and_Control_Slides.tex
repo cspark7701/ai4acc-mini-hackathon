@@ -468,23 +468,25 @@
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Surrogate Modeling of Particle Transport Matrix $\mathbf{M}$}
 
-  % Left Column: Physics & Surrogate Equations (width 5.35 in, ends at x = 6.40 in)
-  \at{1.05}{1.95}{5.35}{\fs{12}{16}\color{darkgray}%
-    {\fs{13}{16}\bfseries\color{navy}1. Classical Analytical Transfer Matrix:}\\[0.3em]
-    In linear beam optics, transverse particle trajectory through a beamline element is governed by the $2 \times 2$ transfer matrix $\mathbf{M}$:\\[0.4em]
-    \centering{\fs{12.5}{16}\bfseries\color{primaryblue}$\begin{pmatrix} x_f \\ x'_f \end{pmatrix} = \mathbf{M} \begin{pmatrix} x_0 \\ x'_0 \end{pmatrix} = \begin{pmatrix} C(s) & S(s) \\ C'(s) & S'(s) \end{pmatrix} \begin{pmatrix} x_0 \\ x'_0 \end{pmatrix}, \quad \det\mathbf{M} = 1$}\\[0.4em]
+  % Left Column: Physics & Surrogate Equations (width 5.25 in, strictly confined to x <= 6.30 in)
+  \at{1.05}{1.95}{5.25}{\fs{12}{16}\color{darkgray}%
+    {\fs{13}{16}\bfseries\color{navy}1. Classical Analytical Transfer Matrix:}\\[0.25em]
+    In linear beam optics, transverse particle trajectory through a beamline element is governed by the $2 \times 2$ transfer matrix $\mathbf{M}$:\\[0.3em]
+    \centering{\fs{12}{15}\bfseries\color{primaryblue}$\begin{pmatrix} x_f \\ x'_f \end{pmatrix} = \mathbf{M} \begin{pmatrix} x_0 \\ x'_0 \end{pmatrix} = \begin{pmatrix} C(s) & S(s) \\ C'(s) & S'(s) \end{pmatrix} \begin{pmatrix} x_0 \\ x'_0 \end{pmatrix}, \quad \det\mathbf{M} = 1$}\\[0.3em]
     \raggedright
-    $\det\mathbf{M} = 1$ ensures phase-space area preservation (Liouville's theorem / symplecticity).\\[1.1em]
-    {\fs{13}{16}\bfseries\color{navy}2. Neural Network Surrogate Formulation:}\\[0.3em]
-    Instead of analytical tracking, we train a neural network $f_{\boldsymbol{\theta}}: \mathbb{R}^2 \to \mathbb{R}^2$:\\[0.4em]
-    \centering{\fs{12.5}{16}\bfseries\color{primaryblue}$\begin{pmatrix} \hat{x}_f \\ \hat{x}'_f \end{pmatrix} = f_{\boldsymbol{\theta}}\!\left(\begin{pmatrix} x_0 \\ x'_0 \end{pmatrix}\right) = \mathbf{W}^{(L)} \sigma\left( \mathbf{W}^{(L-1)} \cdots \sigma\left(\mathbf{W}^{(1)}\begin{pmatrix}x_0\\x'_0\end{pmatrix} + \mathbf{b}^{(1)}\right)\right) + \mathbf{b}^{(L)}$}\\[0.5em]
+    $\det\mathbf{M} = 1$ ensures phase-space area preservation (Liouville's theorem / symplecticity).\\[0.8em]
+    {\fs{13}{16}\bfseries\color{navy}2. Neural Network Surrogate Formulation:}\\[0.25em]
+    Instead of analytical tracking, we train a neural network $f_{\boldsymbol{\theta}}: \mathbb{R}^2 \to \mathbb{R}^2$:\\[0.3em]
+    \centering{\fs{11.5}{15}\bfseries\color{primaryblue}$\hat{\mathbf{z}}_f = f_{\boldsymbol{\theta}}(\mathbf{z}_0) = \mathbf{W}^{(3)}\,\sigma\Big(\mathbf{W}^{(2)}\,\sigma\big(\mathbf{W}^{(1)}\mathbf{z}_0 + \mathbf{b}^{(1)}\big) + \mathbf{b}^{(2)}\Big) + \mathbf{b}^{(3)}$}\\[0.2em]
+    \centering{\fs{11}{14}\color{mutedgray}where $\mathbf{z}_0 = (x_0, x'_0)^T$ and $\hat{\mathbf{z}}_f = (\hat{x}_f, \hat{x}'_f)^T$}\\[0.7em]
     \raggedright
-    {\fs{13}{16}\bfseries\color{navy}3. Supervised Objective \& Conservation Target:}\\[0.3em]
-    $\bullet$ \textbf{MSE Loss:} $\mathcal{L}_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^N \left[ (x_f^{(i)} - \hat{x}_f^{(i)})^2 + (x_f'^{(i)} - \hat{x}_f'^{(i)})^2 \right]$\\[0.25em]
-    $\bullet$ \textbf{Jacobian Determinant:} For linear optics, $\det \mathbf{J}_{f_{\boldsymbol{\theta}}} = \frac{\partial \hat{x}_f}{\partial x_0}\frac{\partial \hat{x}'_f}{\partial x'_0} - \frac{\partial \hat{x}_f}{\partial x'_0}\frac{\partial \hat{x}'_f}{\partial x_0} \equiv 1$.
+    {\fs{13}{16}\bfseries\color{navy}3. Supervised Objective \& Conservation Target:}\\[0.25em]
+    $\bullet$ \textbf{MSE Loss:} $\mathcal{L}_{\text{MSE}} = \frac{1}{N}\sum_{i=1}^N \| \mathbf{z}_{f,i} - \hat{\mathbf{z}}_{f,i} \|_2^2$\\[0.2em]
+    $\bullet$ \textbf{Jacobian Determinant (Area Conservation):}\\
+    \centering{\fs{11.5}{15}\color{primaryblue}$\det \mathbf{J}_{f_{\boldsymbol{\theta}}} = \frac{\partial \hat{x}_f}{\partial x_0}\frac{\partial \hat{x}'_f}{\partial x'_0} - \frac{\partial \hat{x}_f}{\partial x'_0}\frac{\partial \hat{x}'_f}{\partial x_0} \equiv 1$}
   }
 
-  % Right Column: TikZ Network Architecture Diagram (ENLARGED to 5.4 in x 4.4 in)
+  % Right Column: TikZ Network Architecture Diagram (ENLARGED to 5.4 in x 4.4 in, starts at x = 6.75 in)
   \node[anchor=north west,inner sep=0pt] at ([xshift=6.75in,yshift=-1.95in]current page.north west) {%
     \begin{tikzpicture}[x=1in,y=1in]
       % Card background for diagram (width 5.4 in, height 4.4 in)
@@ -493,26 +495,26 @@
 
       % Nodes
       % Input Layer (2 nodes at x = 0.75 in)
-      \node[circle,draw=primaryblue,fill=primaryblue!15,very thick,minimum size=1.1cm] (I1) at (0.75,-1.35) {\bfseries\large $x_0$};
-      \node[circle,draw=primaryblue,fill=primaryblue!15,very thick,minimum size=1.1cm] (I2) at (0.75,-2.75) {\bfseries\large $x'_0$};
-      \node[below=0.15cm of I2,font=\small\bfseries\color{primaryblue}] {Input $\mathbb{R}^2$};
+      \node[circle,draw=primaryblue,fill=primaryblue!15,very thick,minimum size=1.05cm] (I1) at (0.75,-1.15) {\bfseries\large $x_0$};
+      \node[circle,draw=primaryblue,fill=primaryblue!15,very thick,minimum size=1.05cm] (I2) at (0.75,-2.35) {\bfseries\large $x'_0$};
+      \node[below=0.10cm of I2,font=\small\bfseries\color{primaryblue}] {Input $\mathbb{R}^2$};
 
       % Hidden Layer 1 (4 nodes at x = 2.05 in)
-      \foreach \y [count=\i] in {-0.90,-1.70,-2.50,-3.30} {
-        \node[circle,draw=accent,fill=accent!15,thick,minimum size=0.80cm] (H1\i) at (2.05,\y) {};
+      \foreach \y [count=\i] in {-0.75,-1.45,-2.15,-2.85} {
+        \node[circle,draw=accent,fill=accent!15,thick,minimum size=0.75cm] (H1\i) at (2.05,\y) {};
       }
-      \node[below=0.15cm of H14,font=\small\bfseries\color{accent}] {Hidden 1 (4)};
+      \node[below=0.08cm of H14,font=\scriptsize\bfseries\color{accent}] {Hidden 1 (4)};
 
       % Hidden Layer 2 (4 nodes at x = 3.35 in)
-      \foreach \y [count=\i] in {-0.90,-1.70,-2.50,-3.30} {
-        \node[circle,draw=accent,fill=accent!15,thick,minimum size=0.80cm] (H2\i) at (3.35,\y) {};
+      \foreach \y [count=\i] in {-0.75,-1.45,-2.15,-2.85} {
+        \node[circle,draw=accent,fill=accent!15,thick,minimum size=0.75cm] (H2\i) at (3.35,\y) {};
       }
-      \node[below=0.15cm of H24,font=\small\bfseries\color{accent}] {Hidden 2 (4)};
+      \node[below=0.08cm of H24,font=\scriptsize\bfseries\color{accent}] {Hidden 2 (4)};
 
       % Output Layer (2 nodes at x = 4.65 in)
-      \node[circle,draw=successgreen,fill=successgreen!15,very thick,minimum size=1.1cm] (O1) at (4.65,-1.35) {\bfseries\large $\hat{x}_f$};
-      \node[circle,draw=successgreen,fill=successgreen!15,very thick,minimum size=1.1cm] (O2) at (4.65,-2.75) {\bfseries\large $\hat{x}'_f$};
-      \node[below=0.15cm of O2,font=\small\bfseries\color{successgreen}] {Output $\mathbb{R}^2$};
+      \node[circle,draw=successgreen,fill=successgreen!15,very thick,minimum size=1.05cm] (O1) at (4.65,-1.15) {\bfseries\large $\hat{x}_f$};
+      \node[circle,draw=successgreen,fill=successgreen!15,very thick,minimum size=1.05cm] (O2) at (4.65,-2.35) {\bfseries\large $\hat{x}'_f$};
+      \node[below=0.10cm of O2,font=\small\bfseries\color{successgreen}] {Output $\mathbb{R}^2$};
 
       % Connections
       \foreach \i in {1,2} {
@@ -531,8 +533,8 @@
         }
       }
 
-      % Labels
-      \node[anchor=north,font=\small\color{darkgray},align=center] at (2.7,-3.72) {%
+      % Labels (clean vertical margin below layer titles)
+      \node[anchor=north,font=\small\color{darkgray},align=center] at (2.7,-3.50) {%
         $\mathbf{W}^{(1)},\mathbf{b}^{(1)},\sigma \;\rightarrow\; \mathbf{W}^{(2)},\mathbf{b}^{(2)},\sigma \;\rightarrow\; \mathbf{W}^{(3)},\mathbf{b}^{(3)}$\\[0.25em]
         {\color{crimson}\bfseries Output activation must be Linear / Identity!}
       };
@@ -626,31 +628,31 @@
 % SLIDE 17: Paradigm 1: Supervised Learning | Digital Twin Surrogates & Hyperparameters (NEW)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.14}
+  \slidespread{1.18}
   \slideheader{Paradigm 1: Supervised Learning}{Supervised Learning: Digital Twins \& Hyperparameters}{Training data-driven accelerator forward surrogates to model complex non-linear optics}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Supervised Learning Workflow, Optimization \& Hyperparameter Taxonomy}
 
-  % Left column: How it works + Diagram (width 4.85 in, ends at x = 5.90 in)
-  \at{1.05}{2.00}{4.85}{\fs{11.5}{15}\color{darkgray}%
-    {\bfseries\color{navy}1. Core Model Training Terminology \& Workflow:}\\[0.25em]
-    $\bullet$ \textbf{Weights $\mathbf{W}$ \& Biases $\mathbf{b}$:} Trainable synaptic multipliers and threshold offsets updated during learning.\\[0.18em]
-    $\bullet$ \textbf{Loss Function $\mathcal{L}(\boldsymbol{\theta})$:} Error metric (MSE) measuring discrepancy between predicted orbit $\hat{\mathbf{Y}}$ and true BPM vector $\mathbf{Y}$.\\[0.18em]
-    $\bullet$ \textbf{Gradient \& Backpropagation:} Multivariable chain rule propagating loss gradients $\nabla_{\boldsymbol{\theta}}\mathcal{L}$ backward to compute weight steps.\\[0.18em]
-    $\bullet$ \textbf{Epoch vs Batch vs Step / Iteration:}\\
-    -- \emph{Epoch:} One complete training pass through the full dataset ($N$ shots).\\
-    -- \emph{Batch ($B$):} Subset of training shots evaluated per gradient step.\\
-    -- \emph{Step / Iteration:} A single weight vector update $\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} - \Delta\boldsymbol{\theta}$.\\[0.18em]
+  % Left column: How it works + Terminology (width 4.95 in, starts at x = 1.05 in, y = 1.95 in)
+  \at{1.05}{1.95}{4.95}{\fs{11.5}{16}\color{darkgray}%
+    {\bfseries\color{navy}1. Core Model Training Terminology \& Workflow:}\\[0.55em]
+    $\bullet$ \textbf{Weights $\mathbf{W}$ \& Biases $\mathbf{b}$:} Trainable synaptic multipliers and threshold offsets updated during learning.\\[0.65em]
+    $\bullet$ \textbf{Loss Function $\mathcal{L}(\boldsymbol{\theta})$:} Error metric (MSE) measuring discrepancy between predicted orbit $\hat{\mathbf{Y}}$ and true BPM vector $\mathbf{Y}$.\\[0.65em]
+    $\bullet$ \textbf{Gradient \& Backpropagation:} Multivariable chain rule propagating loss gradients $\nabla_{\boldsymbol{\theta}}\mathcal{L}$ backward to compute weight steps.\\[0.65em]
+    $\bullet$ \textbf{Epoch vs Batch vs Step / Iteration:}\\[0.28em]
+    \hspace*{0.8em}-- \emph{Epoch:} One complete training pass through the full dataset ($N$ shots).\\[0.25em]
+    \hspace*{0.8em}-- \emph{Batch ($B$):} Subset of training shots evaluated per gradient step.\\[0.25em]
+    \hspace*{0.8em}-- \emph{Step / Iteration:} A single weight vector update $\boldsymbol{\theta} \leftarrow \boldsymbol{\theta} - \Delta\boldsymbol{\theta}$.\\[0.65em]
     $\bullet$ \textbf{Generalization \& Early Stopping:} Halts training when validation loss stops improving, avoiding memorizing sensor noise ($10\ \mu\text{m}$).
   }
 
-  % Right column: Hyperparameters Taxonomy Table (width 5.7 in, starts at x = 6.45 in; 0.55 in gutter!)
+  % Right column: Hyperparameters Taxonomy Table (width 5.75 in, starts at x = 6.40 in, y = 1.95 in)
   \node[anchor=north west,inner sep=0pt]
-    at ([xshift=6.45in,yshift=-2.00in]current page.north west) {%
-      \fs{10}{13}\color{darkgray}%
-      \renewcommand{\arraystretch}{1.22}
+    at ([xshift=6.40in,yshift=-1.95in]current page.north west) {%
+      \fs{10.5}{13.5}\color{darkgray}%
+      \renewcommand{\arraystretch}{1.34}
       \setlength{\tabcolsep}{5pt}
-      \begin{tabular}{@{}p{1.35in}p{1.30in}p{2.80in}@{}}
+      \begin{tabular}{@{}p{1.35in}p{1.30in}p{2.85in}@{}}
         \toprule
         \textbf{\color{primaryblue}Hyperparameter} & \textbf{\color{primaryblue}Typical Value} & \textbf{\color{primaryblue}Physical Meaning \& Effect on Model} \\
         \midrule
@@ -661,7 +663,7 @@
         \textbf{\color{tunablered}L2 Penalty ($\alpha$)$^*$} & $10^{-4}$ & Weight decay penalty $\frac{1}{2}\alpha\|\mathbf{w}\|^2$. Suppresses overfitting to BPM jitter ($10\ \mu\text{m}$). \\
         \textbf{\color{tunablered}Max Epochs / Tol$^*$} & 400 epochs, tol=$10^{-4}$ & Halts optimization when validation loss stops improving, avoiding overtraining. \\
         \bottomrule
-        \multicolumn{3}{@{}l@{}}{\fs{9}{11.5}\color{tunablered}\bfseries * Red text: Hyperparameters participants can modify in notebook TODO 1}\\[-0.3em]
+        \multicolumn{3}{@{}l@{}}{\fs{9}{12}\color{tunablered}\bfseries * Red text: Hyperparameters participants can modify in notebook TODO 1}\\[-0.2em]
       \end{tabular}
     };
 
@@ -798,31 +800,31 @@
 % SLIDE 23: Paradigm 2: Reinforcement Learning | MDP Formulation & Hyperparameters (NEW)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.14}
+  \slidespread{1.18}
   \slideheader{Paradigm 2: Reinforcement Learning}{Reinforcement Learning: MDP Formulation \& Hyperparameters}{Closed-loop sequential decision making: learning optimal control policies from interaction rewards}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Markov Decision Process (MDP) Framework \& Policy Hyperparameter Taxonomy}
 
-  % Left column: MDP formulation & closed loop (width 4.85 in, ends at x = 5.90 in)
-  \at{1.05}{2.00}{4.85}{\fs{11.5}{15}\color{darkgray}%
-    {\bfseries\color{navy}1. Closed-Loop MDP Formulation $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$:}\\[0.25em]
-    $\bullet$ \textbf{State Space ($\mathcal{S}$):} Measured BPM displacements $\mathbf{s}_t = \mathbf{Y}_t \in \mathbb{R}^{12}$ (transverse beam orbit errors in mm).\\[0.18em]
-    $\bullet$ \textbf{Action Space ($\mathcal{A}$):} Steerer delta kicks $\mathbf{a}_t = \Delta\mathbf{I}_t \in [-0.8, +0.8]^6\text{ A}$.\\[0.18em]
-    $\bullet$ \textbf{Transition Dynamics ($\mathcal{P}$):} Non-linear beam transport, steerer integration, cubic saturation, and sensor jitter $\boldsymbol{\epsilon}$.\\[0.18em]
+  % Left column: MDP formulation & closed loop (width 4.95 in, starts at x = 1.05 in, y = 1.95 in)
+  \at{1.05}{1.95}{4.95}{\fs{11.5}{16}\color{darkgray}%
+    {\bfseries\color{navy}1. Closed-Loop MDP Formulation $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$:}\\[0.65em]
+    $\bullet$ \textbf{State Space ($\mathcal{S}$):} Measured BPM displacements $\mathbf{s}_t = \mathbf{Y}_t \in \mathbb{R}^{12}$ (transverse beam orbit errors in mm).\\[0.85em]
+    $\bullet$ \textbf{Action Space ($\mathcal{A}$):} Steerer delta kicks $\mathbf{a}_t = \Delta\mathbf{I}_t \in [-0.8, +0.8]^6\text{ A}$.\\[0.85em]
+    $\bullet$ \textbf{Transition Dynamics ($\mathcal{P}$):} Non-linear beam transport, steerer integration, cubic saturation, and sensor jitter $\boldsymbol{\epsilon}$.\\[0.85em]
     $\bullet$ \textbf{Reward Function ($\mathcal{R}$):} Real-time alignment performance:
-    $$r_t = - w_{\text{rms}}\,\text{RMS}_{t+1} - w_{\text{act}}\,\|\mathbf{a}_t\|_2^2 - c_{\text{step}} + b_{\text{term}}$$\\[-0.5em]
+    $$r_t = - w_{\text{rms}}\,\text{RMS}_{t+1} - w_{\text{act}}\,\|\mathbf{a}_t\|_2^2 - c_{\text{step}} + b_{\text{term}}$$\\[0.20em]
     $\bullet$ \textbf{Policy Objective:} Maximize expected cumulative return:
-    $$J(\boldsymbol{\theta}) = \mathbb{E}_{\pi_{\boldsymbol{\theta}}}\left[ \sum_{t=0}^T \gamma^t r_t \right]$$\\[-0.5em]
+    $$J(\boldsymbol{\theta}) = \mathbb{E}_{\pi_{\boldsymbol{\theta}}}\left[ \sum_{t=0}^T \gamma^t r_t \right]$$\\[0.20em]
     $\bullet$ \textbf{Policy Architecture:} Physics prior $(\mathbf{R}^T)^\dagger + \text{residual } \mathbf{W}_{\text{learned}}$.
   }
 
-  % Right column: Hyperparameters Taxonomy Table (width 5.7 in, starts at x = 6.45 in; 0.55 in gutter!)
+  % Right column: Hyperparameters Taxonomy Table (width 5.75 in, starts at x = 6.40 in, y = 1.95 in)
   \node[anchor=north west,inner sep=0pt]
-    at ([xshift=6.45in,yshift=-2.00in]current page.north west) {%
-      \fs{10}{13}\color{darkgray}%
-      \renewcommand{\arraystretch}{1.22}
+    at ([xshift=6.40in,yshift=-1.95in]current page.north west) {%
+      \fs{10.5}{13.5}\color{darkgray}%
+      \renewcommand{\arraystretch}{1.42}
       \setlength{\tabcolsep}{5pt}
-      \begin{tabular}{@{}p{1.35in}p{1.30in}p{2.80in}@{}}
+      \begin{tabular}{@{}p{1.35in}p{1.30in}p{2.85in}@{}}
         \toprule
         \textbf{\color{primaryblue}Hyperparameter} & \textbf{\color{primaryblue}Typical Value} & \textbf{\color{primaryblue}Physical Meaning \& Role in Orbit Control} \\
         \midrule
@@ -833,7 +835,7 @@
         \textbf{\color{tunablered}Reward Weights$^*$} & $w_{\text{rms}}=10, w_{\text{act}}=0.01$ & Balances orbit error penalty against coil resistive heating and power supply strain. \\
         \textbf{\color{tunablered}Step Penalty ($c_{\text{step}}$)$^*$} & $0.5\text{ pts/step}$ & Incentivizes fastest convergence to maximize hackathon speed score (up to 300 pts). \\
         \bottomrule
-        \multicolumn{3}{@{}l@{}}{\fs{9}{11.5}\color{tunablered}\bfseries * Red text: Hyperparameters participants can modify in notebook TODO 2}\\[-0.3em]
+        \multicolumn{3}{@{}l@{}}{\fs{9}{12}\color{tunablered}\bfseries * Red text: Hyperparameters participants can modify in notebook TODO 2}\\[-0.2em]
       \end{tabular}
     };
 
@@ -896,30 +898,32 @@
 % SLIDE 26: Paradigm 3: Bayesian Optimization | Probabilistic GPs & Hyperparameters (NEW)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.06}
+  \slidespread{1.18}
   \slideheader{Paradigm 3: Bayesian Optimization}{Bayesian Optimization: Probabilistic GPs \& Hyperparameters}{Sample-efficient black-box tuning: modeling response uncertainty to guide global exploration}
 
   \drawcard{0.8}{1.4}{11.733}{5.3}{Gaussian Process Surrogate Modeling, Acquisition Decisions \& Hyperparameter Taxonomy}
 
-  % Left column: How BO Works (width 4.85 in, ends at x = 5.90 in)
-  \at{1.05}{2.00}{4.85}{\fs{11.5}{15}\color{darkgray}%
-    {\bfseries\color{navy}1. How Bayesian Optimization Works:}\\[0.25em]
+  % Left column: How BO Works (width 4.95 in, starts at x = 1.05 in, y = 1.95 in)
+  \at{1.05}{1.95}{4.95}{\fs{11.5}{16}\color{darkgray}%
+    {\bfseries\color{navy}1. How Bayesian Optimization Works:}\\[0.45em]
     $\bullet$ \textbf{Step 1: Non-Parametric GP Prior:} Assumes unknown orbit response is drawn from a Gaussian Process:
-    $$f(\mathbf{x}) \sim \mathcal{GP}\left( m(\mathbf{x}), \, k(\mathbf{x}, \mathbf{x}') + \sigma_n^2 \delta(\mathbf{x},\mathbf{x}') \right)$$\\[-0.5em]
-    $\bullet$ \textbf{Step 2: Posterior Conditioning:} Given $t$ measured shots $\mathcal{D}_t$, analytical Gaussian conditioning yields predicted mean $\mu(\mathbf{x})$ and epistemic uncertainty $\sigma(\mathbf{x})$.\\[0.18em]
+    $$f(\mathbf{x}) \sim \mathcal{GP}\left( m(\mathbf{x}), \, k(\mathbf{x}, \mathbf{x}') + \sigma_n^2 \delta(\mathbf{x},\mathbf{x}') \right)$$\\[0.05em]
+    $\bullet$ \textbf{Step 2: Posterior Conditioning:} Given $t$ measured shots $\mathcal{D}_t = \{(\mathbf{I}_i, \mathbf{Y}_i)\}_{i=1}^t$, analytical Gaussian conditioning computes updated posterior mean and uncertainty:\\[0.18em]
+    \hspace*{0.8em}-- \emph{Mean $\mu(\mathbf{x})$:} Best estimate of residual orbit error at current $\mathbf{x}$.\\[0.15em]
+    \hspace*{0.8em}-- \emph{Variance $\sigma^2(\mathbf{x})$:} Epistemic uncertainty in unvisited current regions.\\[0.45em]
     $\bullet$ \textbf{Step 3: Acquisition Function Optimization:}
-    $$\mathbf{x}_{t+1} = \arg\min_{\mathbf{x}} \alpha_{\text{LCB}}(\mathbf{x}) = \mu(\mathbf{x}) - \kappa \cdot \sigma(\mathbf{x}) + \lambda \|\mathbf{x}\|^2$$\\[-0.5em]
-    Balances exploitation (low $\mu$) vs exploration (high $\sigma$).\\[0.18em]
+    $$\mathbf{x}_{t+1} = \arg\min_{\mathbf{x}} \alpha_{\text{LCB}}(\mathbf{x}) = \mu(\mathbf{x}) - \kappa \cdot \sigma(\mathbf{x}) + \lambda \|\mathbf{x}\|^2$$\\[0.05em]
+    Balances exploitation (low $\mu$) vs exploration (high $\sigma$).\\[0.45em]
     $\bullet$ \textbf{Step 4: Machine Evaluation \& Iteration:} Query real beamline at $\mathbf{x}_{t+1}$, update $\mathcal{D}_{t+1}$, and refit hyperparameters.
   }
 
-  % Right column: Hyperparameters Taxonomy Table (width 5.7 in, starts at x = 6.45 in; 0.55 in gutter!)
+  % Right column: Hyperparameters Taxonomy Table (width 5.75 in, starts at x = 6.40 in, y = 1.95 in)
   \node[anchor=north west,inner sep=0pt]
-    at ([xshift=6.45in,yshift=-2.00in]current page.north west) {%
-      \fs{10}{13}\color{darkgray}%
-      \renewcommand{\arraystretch}{1.20}
+    at ([xshift=6.40in,yshift=-1.95in]current page.north west) {%
+      \fs{10.5}{13.5}\color{darkgray}%
+      \renewcommand{\arraystretch}{1.26}
       \setlength{\tabcolsep}{5pt}
-      \begin{tabular}{@{}p{1.35in}p{1.30in}p{2.80in}@{}}
+      \begin{tabular}{@{}p{1.35in}p{1.30in}p{2.85in}@{}}
         \toprule
         \textbf{\color{primaryblue}Hyperparameter} & \textbf{\color{primaryblue}Typical Value} & \textbf{\color{primaryblue}Role in Gaussian Process \& Beam Alignment} \\
         \midrule
@@ -930,7 +934,7 @@
         \textbf{\color{tunablered}Exploration ($\kappa$)$^*$} & $\kappa = 0.0 \to 1.5$ & Trade-off parameter in LCB. $\kappa > 0$ probes unmapped saturation; $\kappa = 0$ exploits calibrated mean. \\
         \textbf{\color{tunablered}Regularizer ($\lambda$)$^*$} & $\lambda = 10^{-4}$ & Actuator norm penalty $\|\Delta\mathbf{I}\|^2$ protecting power supplies and preventing coil heating. \\
         \bottomrule
-        \multicolumn{3}{@{}l@{}}{\fs{9}{11.5}\color{tunablered}\bfseries * Red text: Hyperparameters participants can modify in notebook TODO 3}\\[-0.3em]
+        \multicolumn{3}{@{}l@{}}{\fs{9}{12}\color{tunablered}\bfseries * Red text: Hyperparameters participants can modify in notebook TODO 3}\\[-0.2em]
       \end{tabular}
     };
 
