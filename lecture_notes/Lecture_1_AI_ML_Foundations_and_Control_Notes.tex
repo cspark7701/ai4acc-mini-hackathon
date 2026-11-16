@@ -701,7 +701,7 @@ Table~\ref{tab:rl_hyperparams} outlines the primary hyperparameters in the close
 \textbf{\color{tunablered}Discount Factor ($\gamma$)$^*$} & $0.95 - 0.99$ & Temporal horizon weight. High $\gamma$ prioritizes terminal alignment ($< 0.030\text{ mm}$) over step cost. \\
 \textbf{\color{tunablered}Policy LR ($\eta_\pi$)$^*$} & $10^{-4} - 10^{-3}$ & Step size for policy parameter updates. Must remain small to avoid policy collapse under sensor noise. \\
 \textbf{\color{tunablered}Exploration Noise ($\sigma$)$^*$} & $\mathcal{N}(0, 0.05^2)\text{ A}$ & Action perturbations during training to probe saturation limits without damaging hardware. \\
-\textbf{\color{tunablered}Harmonic Damping ($\kappa$)$^*$} & $\approx 0.03$ & Authority schedule $\gamma(t) = 1/(1+\kappa t)$ suppressing sensor jitter amplification and limit cycles. \\
+\textbf{\color{tunablered}Harmonic Damping ($\kappa$)$^*$} & $\approx 0.03$ & Authority schedule $\gamma(t) = 1/(1+\kappa t)$ reducing late kick authority; a trade-off between steps and landing precision. \\
 \textbf{\color{tunablered}Feedback Gain ($\alpha$)$^*$} & $0.45 \to 1.2$ & Feedback scaling factor; higher gains converge faster, and above about 1.2 the controller overshoots. \\
 \textbf{\color{tunablered}Reward Weights ($w_{\text{rms}}, w_{\text{act}}$)$^*$} & $w_{\text{rms}}=10, w_{\text{act}}=0.01$ & Balances orbit minimization priority against coil resistive heating and power supply strain. \\
 \textbf{\color{tunablered}Step Penalty ($c_{\text{step}}$)$^*$} & $0.5\text{ pts/step}$ & Time penalty encouraging minimum-step convergence to maximize benchmark speed score (up to 300 pts). \\

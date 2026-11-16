@@ -20,7 +20,7 @@ The objective for AI agents operating in this workspace is:
 ### 1. Lattice Geometry & Diagnostics
 - **Transport Section Length:** 15.0 meters.
 - **Beam Position Monitors (BPMs):** 12 diagnostic stations measuring transverse displacement in millimeters ($mm$).
-  - Observation Vector: $\mathbf{Y} \in \mathbb{R}^{12}$; the declared observation space is $[-10.0, +10.0]\text{ mm}$, but values are not clipped (in practice they stay below $1\text{ mm}$).
+  - Observation Vector: $\mathbf{Y} \in \mathbb{R}^{12}$; the declared observation space is $[-10.0, +10.0]\text{ mm}$, but values are not clipped (on the evaluation seeds they reach about $6\text{ mm}$).
 - **Dipole Steering Correctors:** 6 magnet actuators (3 Horizontal `HCM1-3`, 3 Vertical `VCM1-3`).
   - Total Current State: $\mathbf{I} \in \mathbb{R}^6$, hardware bounds $[-5.0\text{ A}, +5.0\text{ A}]$.
   - Control Action: $\Delta \mathbf{I} \in \mathbb{R}^6$, per-step delta bound $[-0.8\text{ A}, +0.8\text{ A}]$.
@@ -89,7 +89,7 @@ class BenchmarkController:
 3. **Track 2 — Closed-Loop RL / Adaptive Policy Agent:**
    - Combines a physics-informed prior with learned parameter residual and adaptive damping:
      $$\Delta \mathbf{I} = \text{damping}(t) \cdot \left[ - \alpha \cdot (\mathbf{R}^T)^{\dagger} \mathbf{Y} + \mathbf{W}_{\text{learned}} \mathbf{Y} + \mathbf{b} \right]$$
-   - Uses dynamic decay (e.g., $1.0 / (1.0 + 0.03 \cdot t)$) to prevent terminal limit-cycle oscillations around the sub-$0.03\text{ mm}$ target boundary.
+   - Uses dynamic decay (e.g., $1.0 / (1.0 + 0.03 \cdot t)$) so that late kicks respond less to sensor noise near the $0.03\text{ mm}$ target. This is a trade-off: with the plain pseudo-inverse it gains 18 points at gain 1.0 and loses 45 at gain 0.45 and 13 at gain 1.2.
    - In the reference `RLOrbitChallengeAgent`, $\mathbf{W}_{\text{learned}}$ and $\mathbf{b}$ start at zero and are never trained, so it is a damped pseudo-inverse controller; nothing is learned unless the participant trains or tunes the residual.
 
 4. **Track 3 — Closed-Loop Bayesian Optimization Controller:**

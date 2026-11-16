@@ -239,7 +239,7 @@ def create_presentation():
 
     p3 = tf2.add_paragraph()
     add_text_run(p3, "• Limitations of Purely Classical Linear Control:\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "  -- Analytical linear response matrices (ORM) ignore magnetic core saturation at high currents, inducing overshoot and limit cycles.\n"
+    add_text_run(p3, "  -- Analytical linear response matrices (ORM) ignore magnetic core saturation at high currents, so linear feedback under-corrects and converges slowly.\n"
                      "  -- Physical diagnostics carry 10 μm noise floors; naive feedback amplifies measurement noise into erratic actuator jitter.\n"
                      "  -- Multi-parameter coupling requires fast non-linear digital twins and adaptive closed-loop policies.", size=Pt(13.5), color=DARK_GRAY)
 

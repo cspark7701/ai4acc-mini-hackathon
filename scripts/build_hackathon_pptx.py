@@ -273,9 +273,9 @@ def create_presentation():
     tf_s3lb = tb_s3lb.text_frame
     tf_s3lb.word_wrap = True
     items_s3l = [
-        ("• Zero-Dependency Execution: ", "Operates completely offline without internet or Wi-Fi dependencies during the workshop."),
+        ("• No Downloads Needed: ", "The image loads from the bundle. Internet is needed only for the live leaderboard; without it, scores are reported locally."),
         ("• Pre-Configured Telemetry: ", "The launcher automatically injects wandb.apikey as WANDB_API_KEY for live leaderboard sync."),
-        ("• Pre-Loaded Environment: ", "Contains Python 3.12, Gymnasium, PyTorch, scikit-learn, JupyterLab, and the simulation harness."),
+        ("• Pre-Loaded Environment: ", "Contains Python 3.12, NumPy, SciPy, scikit-learn, Gymnasium, JupyterLab, and the simulation harness."),
     ]
     for i, (hd, body) in enumerate(items_s3l):
         p = tf_s3lb.paragraphs[0] if i == 0 else tf_s3lb.add_paragraph()
@@ -307,7 +307,7 @@ def create_presentation():
     tf_s3rb.word_wrap = True
     items_s3r = [
         ("• Step 2: Instant Browser Access: ", "JupyterLab opens automatically in your browser. Token authentication is disabled for instant entry."),
-        ("• Step 3: Open Participant Notebook: ", "In the Jupyter tree, open notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb."),
+        ("• Step 3: Open Participant Notebook: ", "In the JupyterLab file browser, open Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb."),
         ("★ Step 4: Configure Team Name: ", "Set your team name in Step 0: TEAM_NAME = 'Team_Alpha' before running Baseline 0!"),
     ]
     for i, (hd, body) in enumerate(items_s3r):
@@ -347,7 +347,7 @@ def create_presentation():
         ("Baseline 0\nClassical Linear SVD", "ΔI = -α (Rᵀ)⁺ Y", "Moore-Penrose pseudo-inverse with fixed gain α=0.45. Ignores saturation; oscillates at high gains.", "635.277 pts\n(9.4 steps, 100% succ)"),
         ("Baseline 1 / Track 1\nSupervised Surrogate", "min_ΔI ||Y - f_θ(I) + f_θ(I+ΔI)||²", "Trains MLP digital twin Ŷ = f_θ(I) on offline shots; per-step SciPy L-BFGS-B bounded inversion.", "779.169 pts\n(Tuned: 924.192 pts)"),
         ("Track 2\nClosed-Loop Policy RL", "ΔI = d(t)[-α (Rᵀ)⁺ Y + WY + b]", "Physics-informed prior + learned residual with dynamic damping schedule d(t) = 1/(1+γt).", "590.559 pts\n(Tuned: 939.981 pts)"),
-        ("Track 3\nBayesian Optimization", "min_ΔI μ_GP(ΔI) - κ σ_GP + λ ||ΔI||²", "GaussianProcessRegressor (Matérn-5/2) with Lower Confidence Bound (LCB) under epistemic uncertainty.", "878.384 pts\n(Tuned: 909.942 pts)"),
+        ("Track 3\nBayesian Optimization", "min_ΔI RMS(Y − μ(I) + μ(I+ΔI)) − κ σ̄ + λ ||ΔI||²", "GaussianProcessRegressor (Matérn-5/2) with Lower Confidence Bound (LCB) under epistemic uncertainty.", "878.384 pts\n(Tuned: 909.942 pts)"),
     ]
     for i, (col0, col1, col2, col3) in enumerate(ctrl_data):
         row_idx = i + 1
@@ -367,7 +367,7 @@ def create_presentation():
     # SLIDE 5: Official Scoring Formula
     # ==========================================
     s5 = prs.slides.add_slide(blank_layout)
-    add_header(s5, "Evaluation & Scoring", "Official Hackathon Scoring Formula (0 to 1000 Points)", "Balancing robust convergence, rapid iteration speed, and sub-micron landing precision")
+    add_header(s5, "Evaluation & Scoring", "Official Hackathon Scoring Formula (0 to 1000 Points)", "Balancing robust convergence, rapid iteration speed, and landing precision")
     add_footer(s5, 5)
 
     add_card(s5, Inches(0.8), Inches(1.4), Inches(5.7), Inches(5.3), "Mathematical Scoring Formulation")
@@ -389,7 +389,7 @@ def create_presentation():
     items_s5r = [
         ("1. Success Foundation (400 pts):\n", "Robustness is paramount. A single divergence sets seed score to 0 and costs 33.3 total benchmark points."),
         ("2. Speed Component (up to 300 pts):\n", "Full 300 pts earned at 1 step; decays linearly to 0 at 20 steps. Each saved step earns ~15.8 points."),
-        ("3. Precision Component (up to 300 pts):\n", "Logarithmic bonus rewarding sub-micron alignment. Earns 0 at 0.030 mm boundary, up to 300 pts at 0.010 mm sensor noise floor (0.017 mm earns ~150 pts)."),
+        ("3. Precision Component (up to 300 pts):\n", "Logarithmic bonus for landing closer to the noise floor. Earns 0 at 0.030 mm boundary, up to 300 pts at 0.010 mm sensor noise floor (0.017 mm earns ~150 pts)."),
         ("Current Norm:\n", "Reported in telemetry but not scored."),
     ]
     for i, (hd, body) in enumerate(items_s5r):
@@ -619,7 +619,7 @@ def create_presentation():
     tf_s10.word_wrap = True
     roadmap = [
         ("Phase 1: Environment Launch & Baseline Check (Step 0–2)\n", "Double-click launcher → open http://localhost:8888 → run Steps 0–2 → verify Baseline 0 reference (~635 pts)."),
-        ("Phase 2: Simultaneous Controller Tuning (Step 3 & 4: Work on any or all tracks concurrently)\n", "• Track 1: Train MLP surrogate in TODO 1 (n=2500, layers (128, 64, 32)), lower holdout RMSE → verify B1 scores >850 pts.\n• Track 2: In TODO 2, increase initial gain (α ≈ 1.0), compensate cubic saturation on I_t, apply step damping → verify >900 pts.\n• Track 3: In TODO 3, tune GP Matérn kernel, acquisition exploration κ, and regularizer λ → verify BO controller.\n• Step 4 Callbacks: Register near-target braking (RMS < 0.040 mm) to glide into noise floor and maximize precision score."),
+        ("Phase 2: Simultaneous Controller Tuning (Step 3 & 4: Work on any or all tracks concurrently)\n", "• Track 1: Improve the MLP surrogate in TODO 1 (try activation='tanh', solver='lbfgs'); holdout RMSE near 0.012 mm → B1 scores about 900 pts.\n• Track 2: In TODO 2, increase initial gain (α ≈ 1.0), compensate cubic saturation on I_t, apply step damping → verify >900 pts.\n• Track 3: In TODO 3, tune GP Matérn kernel, acquisition exploration κ, and regularizer λ → verify BO controller.\n• Step 4 Callbacks: Register near-target braking (RMS < 0.040 mm) to glide into noise floor and maximize precision score."),
         ("Phase 3: Unified Benchmark & Iteration (Step 5)\n", "Run locked Step 5 benchmark to evaluate all 4 controllers in parallel across 30 seeds; compare leaderboard ranks and iterate."),
         ("Phase 4: Trajectory Alignment Visualization (Step 6 & 7)\n", "Generate img/benchmark_trajectories.png showing all controllers side-by-side; inspect convergence curves for your team showcase."),
         ("Phase 5: Official Submission & Showcase Presentation (16:15 – 17:00)\n", "Verify submission on live W&B dashboard; connect to room projector for 3-minute lightning talk!"),

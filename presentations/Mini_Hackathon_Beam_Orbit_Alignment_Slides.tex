@@ -190,9 +190,9 @@
     \ \ \mbox{}`-- README.txt\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \# Offline instructions
   }
   \at{1.05}{4.40}{5.2}{\fs{11}{15}\color{darkgray}%
-    {\bfseries\color{navy}$\bullet$ Zero-Dependency Execution:}\enspace Operates completely offline without internet or Wi-Fi dependencies during the workshop.\\[0.35em]
+    {\bfseries\color{navy}$\bullet$ No Downloads Needed:}\enspace The image loads from the bundle. Internet is needed only for the live leaderboard; without it, scores are reported locally.\\[0.35em]
     {\bfseries\color{navy}$\bullet$ Pre-Configured Telemetry:}\enspace The launcher automatically injects \texttt{wandb.apikey} as \texttt{WANDB\_API\_KEY} for live leaderboard sync.\\[0.35em]
-    {\bfseries\color{navy}$\bullet$ Pre-Loaded Environment:}\enspace Contains Python 3.12, Gymnasium, PyTorch, scikit-learn, JupyterLab, and the simulation harness.
+    {\bfseries\color{navy}$\bullet$ Pre-Loaded Environment:}\enspace Contains Python 3.12, NumPy, SciPy, scikit-learn, Gymnasium, JupyterLab, and the simulation harness.
   }
 
   % Right Card: How to Run Docker
@@ -211,7 +211,7 @@
   }
   \at{7.05}{4.40}{5.2}{\fs{11}{15}\color{darkgray}%
     {\bfseries\color{navy}$\bullet$ Step 2: Instant Browser Access:}\enspace JupyterLab opens automatically in your browser. Token authentication is disabled for instant entry.\\[0.35em]
-    {\bfseries\color{navy}$\bullet$ Step 3: Open Participant Notebook:}\enspace In the Jupyter tree, open \texttt{notebooks/Single\_Notebook\_Beam\_Orbit\_Predictor\_Participant.ipynb}.\\[0.35em]
+    {\bfseries\color{navy}$\bullet$ Step 3: Open Participant Notebook:}\enspace In the JupyterLab file browser, open \texttt{Single\_Notebook\_Beam\_Orbit\_Predictor\_Participant.ipynb}.\\[0.35em]
     {\bfseries\color{primaryblue}$\bigstar$ Step 4: Configure Team Name:}\enspace Set your team name in Step 0: \texttt{TEAM\_NAME = "Team\_Alpha"} before running Baseline 0!
   }
 
@@ -237,7 +237,7 @@
       \addlinespace[0.5em]
       {\bfseries Track 2}\newline Closed-Loop Policy RL & $\Delta\mathbf{I} = d(t)\,[-\alpha (\mathbf{R}^T)^\dagger \mathbf{Y} + \mathbf{W}\mathbf{Y} + \mathbf{b}]$ & Physics-informed prior + learned residual with dynamic damping schedule $d(t) = 1/(1+\gamma t)$. & \textbf{590.559 pts}\newline(Tuned: \textbf{939.981 pts}) \\
       \addlinespace[0.5em]
-      {\bfseries Track 3}\newline Bayesian Optimization & $\min_{\Delta\mathbf{I}} \mu_{\text{GP}}(\Delta\mathbf{I}) - \kappa \sigma_{\text{GP}} + \lambda \|\Delta\mathbf{I}\|^2$ & GaussianProcessRegressor (Mat\'{e}rn-5/2) with Lower Confidence Bound (LCB) under epistemic uncertainty. & \textbf{878.384 pts}\newline(Tuned: \textbf{909.942 pts}) \\
+      {\bfseries Track 3}\newline Bayesian Optimization & $\min_{\Delta\mathbf{I}} \text{RMS}(\mathbf{Y} - \mu(\mathbf{I}) + \mu(\mathbf{I}+\Delta\mathbf{I})) - \kappa \bar{\sigma} + \lambda \|\Delta\mathbf{I}\|^2$ & GaussianProcessRegressor (Mat\'{e}rn-5/2) with Lower Confidence Bound (LCB) under epistemic uncertainty. & \textbf{878.384 pts}\newline(Tuned: \textbf{909.942 pts}) \\
       \bottomrule
     \end{tabular}
   }
@@ -250,7 +250,7 @@
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.26}
-  \slideheader{Evaluation \& Scoring}{Official Hackathon Scoring Formula (0 to 1000 Points)}{Balancing robust convergence, rapid iteration speed, and sub-micron landing precision}
+  \slideheader{Evaluation \& Scoring}{Official Hackathon Scoring Formula (0 to 1000 Points)}{Balancing robust convergence, rapid iteration speed, and landing precision}
 
   \drawcard{0.8}{1.4}{5.7}{5.3}{Mathematical Scoring Formulation}
   \at{1.05}{2.1}{5.2}{\fs{13}{18}\color{darkgray}%
@@ -271,7 +271,7 @@
     {\bfseries\color{navy}2. Speed Component (up to 300 pts):}\\[0.2em]
     Full 300 pts earned at 1 step; decays linearly to 0 at 20 steps. Each saved step earns $\approx 15.8$ points.\\[0.6em]
     {\bfseries\color{navy}3. Precision Component (up to 300 pts):}\\[0.2em]
-    Logarithmic bonus rewarding sub-micron alignment. Earns 0 at $0.030\text{ mm}$ boundary, up to 300 pts at $0.010\text{ mm}$ sensor floor ($0.017\text{ mm}$ earns $\approx 150$ pts).\\[0.6em]
+    Logarithmic bonus for landing closer to the noise floor. Earns 0 at $0.030\text{ mm}$ boundary, up to 300 pts at $0.010\text{ mm}$ sensor floor ($0.017\text{ mm}$ earns $\approx 150$ pts).\\[0.6em]
     {\bfseries\color{mutedgray}Current Norm:}\enspace Reported but not scored.
   }
 
@@ -442,7 +442,7 @@
     {\bfseries\color{primaryblue}Phase 1: Environment Launch \& Baseline Check (Step 0--2)}\\[0.2em]
     Double-click launcher $\to$ open \texttt{http://localhost:8888} $\to$ run Steps 0--2 $\to$ verify Baseline 0 reference ($\approx 635$ pts).\\[0.5em]
     {\bfseries\color{primaryblue}Phase 2: Simultaneous Controller Tuning (Step 3 \& 4: Work on any or all tracks concurrently)}\\[0.2em]
-    $\bullet$ {\bfseries Track 1:} Train MLP surrogate in TODO 1 ($n=2500$, layers \texttt{(128, 64, 32)}), lower holdout RMSE $\to$ verify B1 scores $>850$ pts.\newline
+    $\bullet$ {\bfseries Track 1:} Improve the MLP surrogate in TODO 1 (try \texttt{activation='tanh'}, \texttt{solver='lbfgs'}); holdout RMSE near 0.012 mm $\to$ B1 scores about 900 pts.\newline
     $\bullet$ {\bfseries Track 2:} In TODO 2, increase initial gain ($\alpha \approx 1.0$), compensate cubic saturation on $\mathbf{I}_t$, apply step damping $\to$ verify $>900$ pts.\newline
     $\bullet$ {\bfseries Track 3:} In TODO 3, tune GP Mat\'{e}rn kernel, acquisition exploration $\kappa$, and regularizer $\lambda \to$ verify BO controller.\newline
     $\bullet$ {\bfseries Step 4 Callbacks:} Register near-target braking ($\text{RMS} < 0.040\text{ mm}$) to glide into noise floor and maximize precision score.\\[0.5em]
