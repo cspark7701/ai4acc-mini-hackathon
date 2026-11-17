@@ -91,4 +91,5 @@ docs/*
 !docs/pdf/
 docs/pdf/*
 !docs/pdf/PARTICIPANT_MODIFICATION_GUIDE.pdf
+!docs/pdf/CALLBACK_EXAMPLES.pdf
 tests/

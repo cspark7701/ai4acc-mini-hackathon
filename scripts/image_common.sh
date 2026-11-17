@@ -27,6 +27,7 @@ IMAGE_CHECK_FILES=(
     "presentations/Mini_Hackathon_Beam_Orbit_Alignment_Slides.pdf:/workspace/Mini_Hackathon_Beam_Orbit_Alignment_Slides.pdf"
     "lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf:/workspace/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf"
     "docs/pdf/PARTICIPANT_MODIFICATION_GUIDE.pdf:/workspace/PARTICIPANT_MODIFICATION_GUIDE.pdf"
+    "docs/pdf/CALLBACK_EXAMPLES.pdf:/workspace/CALLBACK_EXAMPLES.pdf"
     "notebooks/Transfer_Matrix_Surrogate_Phase_Space.ipynb:/workspace/Transfer_Matrix_Surrogate_Phase_Space.ipynb"
     "img/beamline.png:/workspace/img/beamline.png"
 )

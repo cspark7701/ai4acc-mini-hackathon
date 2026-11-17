@@ -46,7 +46,7 @@ Callbacks let a controller adapt online while the benchmark runs.
   `final_rms`, `is_success`, `current_norm`, `elapsed_ms` and `info`.
 - **Disclosure:** a callback that carries information from earlier evaluation seeds into later ones
   (for example a prior learned across seeds) is allowed, but say so in your team presentation.
-- **Detailed Examples & Schemas:** see [`CALLBACK_EXAMPLES.md`](CALLBACK_EXAMPLES.md) for the full data schemas and tested examples (state reset, near-target damping, online GP refit, cross-seed tuning, telemetry), each with its measured effect on the score.
+- **Detailed Examples & Schemas:** see [`CALLBACK_EXAMPLES.md`](CALLBACK_EXAMPLES.md) (`CALLBACK_EXAMPLES.pdf` in the container workspace) for the full data schemas and tested examples (state reset, near-target damping, online GP refit, cross-seed tuning, telemetry), each with its measured effect on the score.
 - **Reset what you change:** the same controller object is used for all 30 seeds. A step callback that lowers `agent.gain` without an `episode_callback` restoring it makes the gain shrink from seed to seed; in testing, Example 1 of the callback guide run without a reset dropped a 747-point controller to 241 points with 40% success.
 
 ---

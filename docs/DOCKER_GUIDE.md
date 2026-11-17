@@ -103,7 +103,7 @@ docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:late
 ```
 
 > [!NOTE]
-> The pre-compiled image contains all dependencies, simulation models, the participant challenge notebook (`Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`), the lecture PDFs and the Lecture 1 companion notebook (`Transfer_Matrix_Surrogate_Phase_Space.ipynb`). The reference solution notebook is completely excluded to protect competition integrity.
+> The pre-compiled image contains all dependencies, simulation models, the participant challenge notebook (`Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`), the lecture PDFs, the participant guides (modification rules and callback examples) and the Lecture 1 companion notebook (`Transfer_Matrix_Surrogate_Phase_Space.ipynb`). The reference solution notebook is completely excluded to protect competition integrity.
 >
 > *(Participants can save their notebook inside JupyterLab and download a local copy at any time via **File → Download**).*
 

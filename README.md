@@ -151,7 +151,7 @@ The launcher checks Docker, loads the image, passes the leaderboard key to the c
 docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:latest
 ```
 
-The container includes Python, all required packages (`gymnasium`, `scikit-learn`, `wandb`, `jupyterlab`), the participant notebook, the lecture PDFs, and the companion notebook `Transfer_Matrix_Surrogate_Phase_Space.ipynb` for Lecture 1 (slides 14-15). Download your notebook with **File → Download** before stopping the container; its files are deleted when it stops.
+The container includes Python, all required packages (`gymnasium`, `scikit-learn`, `wandb`, `jupyterlab`), the participant notebook, the lecture PDFs, the participant guides (`PARTICIPANT_MODIFICATION_GUIDE.pdf`, `CALLBACK_EXAMPLES.pdf`), and the companion notebook `Transfer_Matrix_Surrogate_Phase_Space.ipynb` for Lecture 1 (slides 14-15). Download your notebook with **File → Download** before stopping the container; its files are deleted when it stops.
 
 ### For Instructors & Organizers: Local Development
 
