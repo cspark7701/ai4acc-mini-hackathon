@@ -452,7 +452,7 @@ B-H 자기 포화 곡선, 3차 비선형 수식 Y = I·R - 0.015·(I$^3$·R) + Y
 \vspace{0.2em}
 \begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
 \small
-\noindent\textbf{\color{navy}교수학적 강조점 (Focus Point):}\enspace 선형은 비선형을 못 배우고, ReLU는 타원을 각지게 만들며, Tanh는 에미턴스를 왜곡시킨다는 물리적 직관을 명확히 대조합니다.\par\vspace{0.3em}
+\noindent\textbf{\color{navy}교수학적 강조점 (Focus Point):}\enspace 선형은 비선형을 못 배우고, ReLU는 타원을 각지게 만들며, Tanh는 에미턴스를 왜곡시킨다는 물리적 직관을 명확히 대조합니다. 컨테이너에 포함된 보조 노트북 Transfer\_Matrix\_Surrogate\_Phase\_Space.ipynb에서 각 효과를 위상공간 그림으로 확인할 수 있음을 안내합니다.\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}예상 질문 및 모범 답변 (Q\&A):}\enspace Q: 이번 해커톤 MLP에는 어떤 활성화 함수가 가장 적합한가요? A: 기본값인 relu에서 시작하되 tanh를 꼭 시도해 보십시오. 이 응답은 매끄러운 함수이므로, lbfgs로 학습한 작은 tanh 신경망은 0.012 mm에 도달하는 반면 기본 설정은 0.109 mm에서 멈춥니다. MLPRegressor의 출력층은 항상 선형입니다.\par\vspace{0.3em}
 \noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 신경망 구조를 정의한 후, 수만 개의 파라미터를 어떻게 최적화하는지 최신 최적화 알고리즘들을 살펴보겠습니다.
 \end{tcolorbox}

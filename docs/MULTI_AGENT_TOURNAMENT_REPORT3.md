@@ -1,5 +1,8 @@
 # 📊 Multi-Agent Tournament Report 3: 6-Kick Non-Linear Orbit Alignment Benchmark
 
+> [!NOTE]
+> **Two corrections (2026-11-17).** The scores in this report match later independent measurements on the current benchmark. Two statements in the analysis do not: (1) the default MLP's holdout RMSE is about $0.109\text{ mm}$, not $0.015\text{ mm}$; it is less accurate than the linear Ridge model ($0.082\text{ mm}$), and a `tanh` network trained with `lbfgs` reaches about $0.012\text{ mm}$ and lifts Baseline 1 to about 900 points. (2) Cross-seed gain tuning is not a general recipe: the example tuner in [`CALLBACK_EXAMPLES.md`](CALLBACK_EXAMPLES.md) leaves the notebook agent's score unchanged. See that guide for tested callbacks.
+
 **Document Location:** [docs/MULTI_AGENT_TOURNAMENT_REPORT3.md](MULTI_AGENT_TOURNAMENT_REPORT3.md)  
 **Experiment Date:** November 15, 2026  
 **Benchmark Configuration:** Hardened 6-Kick Initial Distortion ($\mathbf{Y}_0 = \mathbf{a} \cdot \mathbf{R}$, $a_k \sim \mathcal{U}(-2.5, 2.5)\text{ A}$, initial RMS $0.93$–$3.59\text{ mm}$), evaluated on 30 standardized seeds (`range(1, 31)`).  

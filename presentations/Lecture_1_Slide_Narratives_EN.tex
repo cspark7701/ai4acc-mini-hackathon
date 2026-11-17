@@ -452,7 +452,7 @@ This slide reveals the profound geometric impact of activation function selectio
 \vspace{0.2em}
 \begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
 \small
-\noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Emphasize: Linear preserves ellipses but lacks non-linearity; ReLU facets ellipses; Tanh saturates emittance. Core physics intuition!\par\vspace{0.3em}
+\noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Emphasize: Linear preserves ellipses but lacks non-linearity; ReLU facets ellipses; Tanh saturates emittance. Core physics intuition! Point to the companion notebook Transfer\_Matrix\_Surrogate\_Phase\_Space.ipynb in the container, which shows each effect in phase space.\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Which activation is best for our hackathon MLP? A: Start from the default, relu, but try tanh: this response is smooth, and a small tanh network trained with lbfgs reaches 0.012 mm where the default stops at 0.109 mm. The output layer of MLPRegressor is always linear.\par\vspace{0.3em}
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Once an architecture is defined, how do we optimize its thousands of parameters? Let us examine modern optimization algorithms.}
 \end{tcolorbox}

@@ -85,51 +85,74 @@ The same schedule appears in the workshop announcement, available in Korean ([`d
 .
 ├── README.md                                         # Main workshop & challenge guide (this file)
 ├── AGENTS.md                                         # Operational instructions for AI assistants & agents
-├── setup.sh                                          # Dynamic virtual environment setup & activation script
-├── pyproject.toml                                    # Standard Python package & build metadata (PEP 517/621)
-├── .gitignore                                        # Standard Git ignore rules (LaTeX, Python, W&B)
+├── setup.sh                                          # Virtual environment setup & activation script
+├── pyproject.toml                                    # Python package & build metadata (PEP 517/621)
+├── Dockerfile                                        # Participant container image (JupyterLab + challenge)
+├── docker-compose.yml                                # Local build-and-run configuration for organizers
+├── .dockerignore                                     # Keeps the solution notebook, sources and secrets out of the image
 │
 ├── docs/                                             # Supporting workshop documentation & setup guides
+│   ├── Announcement_KR.md / Announcement_EN.md       # Workshop announcement (Korean / English)
+│   ├── Announcement.docx                             # Announcement (Word, built by scripts/build_announcement_docx.py)
 │   ├── DOCKER_INSTALL_GUIDE.md                       # Docker installation steps for Linux, macOS & Windows
-│   ├── DOCKER_GUIDE.md                               # Complete Docker, Docker Compose & Docker Hub user guide
+│   ├── DOCKER_GUIDE.md                               # Docker, Docker Compose & Docker Hub user guide
 │   ├── PARTICIPANT_MODIFICATION_GUIDE.md             # What participants may change for each controller, and callback rules
-│   ├── CALLBACK_EXAMPLES.md                          # Callback reference schemas, adaptive strategies & integration guide
+│   ├── CALLBACK_EXAMPLES.md                          # Callback schemas and tested examples with their measured effect
 │   ├── WANDB_LEADERBOARD_GUIDE.md                    # W&B leaderboard guide for the organizer and participants
 │   ├── MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md         # Protocol for the 10-agent benchmark with live W&B submission
 │   ├── MULTI_AGENT_TOURNAMENT_REPORT1.md             # Superseded earlier tournament report (scores not confirmed on W&B)
-│   ├── MULTI_AGENT_TOURNAMENT_REPORT2.md             # Report of the 10-agent W&B submission test (2026-11-14)
-│   ├── MULTI_AGENT_TOURNAMENT_REPORT3.md             # Tournament 3 report on the hardened 6-kick benchmark (2026-11-15)
-│   ├── experiments/                                  # Multi-agent results log and each agent's executed notebook
-│   ├── Technical Preparation.docx                    # Comprehensive tutorial readiness and curriculum guide
-│   ├── Hackathon Project Guide.docx                  # Full challenge rules, physics spec, and scoring breakdown
+│   ├── MULTI_AGENT_TOURNAMENT_REPORT2.md             # 10-agent W&B submission test (2026-11-14, earlier 2-kick benchmark)
+│   ├── MULTI_AGENT_TOURNAMENT_REPORT3.md             # Tournament 3 on the current 6-kick benchmark (2026-11-15)
+│   ├── experiments/                                  # Multi-agent results logs and each agent's executed notebook
+│   ├── pdf/                                          # PDF builds of the Markdown guides (scripts/build_docs_pdf.py)
+│   ├── Technical Preparation.docx                    # Tutorial readiness and curriculum guide
+│   ├── Hackathon Project Guide.docx                  # Challenge rules, physics spec, and scoring breakdown
 │   └── Mini-Hackathon Participant Instructions.docx   # Quick-reference participant milestone checklist
 │
-├── lecture_notes/                                    # Master lecture notes for Session 1 (Dr. Chong Shik Park)
-│   ├── Lecture_1_AI_ML_Foundations_and_Control_Notes.md   # Session 1 master notes (Markdown)
-│   ├── Lecture_1_AI_ML_Foundations_and_Control_Notes.tex  # Session 1 LaTeX source
-│   └── Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf  # Compiled lecture monograph (PDF, 17 pages)
+├── lecture_notes/                                    # Lecture 1 notes (Dr. Chong Shik Park)
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Notes.md   # Notes (Markdown)
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Notes.tex  # Notes (LaTeX source)
+│   └── Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf  # Compiled notes (PDF, 24 pages)
 │
-├── presentations/                                    # Presentation slides for Sessions 1 & 2
-│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.tex  # Session 1 Beamer LaTeX slide source
-│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.pptx # Session 1 PowerPoint slide deck (34 slides)
-│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf  # Session 1 compiled slide deck (PDF, 34 slides)
-│   ├── Mini_Hackathon_Beam_Orbit_Alignment_Slides.tex      # Session 2 LaTeX slide source
-│   ├── Mini_Hackathon_Beam_Orbit_Alignment_Slides.pptx     # Session 2 PowerPoint slide deck (10 slides)
-│   └── Mini_Hackathon_Beam_Orbit_Alignment_Slides.pdf      # Session 2 compiled slide deck (PDF, 10 slides)
+├── presentations/                                    # Slide decks and speaker narratives
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.tex  # Lecture 1 LaTeX slide source
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.pptx # Lecture 1 PowerPoint deck (35 slides)
+│   ├── Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf  # Lecture 1 compiled deck (PDF, 35 slides)
+│   ├── Lecture_1_Slide_Narratives_EN.tex / .pdf            # Lecture 1 speaker narratives, English (one page per slide)
+│   ├── Lecture_1_Slide_Narratives_KR.tex / .pdf            # Lecture 1 speaker narratives, Korean
+│   ├── Mini_Hackathon_Beam_Orbit_Alignment_Slides.tex      # Mini-hackathon LaTeX slide source
+│   ├── Mini_Hackathon_Beam_Orbit_Alignment_Slides.pptx     # Mini-hackathon PowerPoint deck (10 slides)
+│   └── Mini_Hackathon_Beam_Orbit_Alignment_Slides.pdf      # Mini-hackathon compiled deck (PDF, 10 slides)
 │
-├── notebooks/                                        # Interactive Jupyter challenge notebooks
-│   ├── Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb  # Primary challenge notebook for participants (with TODOs)
-│   ├── Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb     # Reference solutions and benchmark code
+├── notebooks/                                        # Jupyter notebooks
+│   ├── Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb  # Challenge notebook for participants (with TODOs)
+│   ├── Single_Notebook_Beam_Orbit_Predictor_Solution.ipynb     # Worked solution with saved outputs (organizers only)
 │   └── Transfer_Matrix_Surrogate_Phase_Space.ipynb             # Lecture 1, slides 14-15: NN surrogate of a FODO transfer matrix in phase space
 │
-├── src/                                              # Reusable Python simulation & controller package
+├── src/                                              # Python simulation & controller package
 │   ├── __init__.py                                   # Package exports
-│   ├── environment.py                                # Standardized AcceleratorOrbitGymEnv simulation
-│   ├── controllers.py                                # SVD, Supervised MLP, and RL policy controllers
-│   └── benchmark.py                                  # 30-seed evaluation harness & W&B telemetry
+│   ├── environment.py                                # AcceleratorOrbitGymEnv simulation and offline dataset generator
+│   ├── controllers.py                                # Reference controllers: SVD, MLP inversion, RL agent, Bayesian optimization
+│   ├── benchmark.py                                  # 30-seed evaluation harness, scoring & W&B telemetry
+│   └── visualization.py                              # Beamline schematic and trajectory plots
 │
-└── img/                                              # Visual diagrams and schematics
-    └── beamline.png                                  # 2D accelerator transport lattice schematic
+├── tests/                                            # Unit tests (pytest) for the environment, controllers, benchmark and plots
+│
+├── scripts/                                          # Build and release scripts (organizers)
+│   ├── create_bundle.sh / docker_publish.sh / image_common.sh   # Build, verify and publish the image and the offline bundle
+│   ├── build_lecture_1_pptx.py / build_hackathon_pptx.py        # Build the two PowerPoint decks
+│   ├── build_slide_narratives.py                     # Build the English and Korean narrative documents
+│   ├── build_transfer_matrix_notebook.py             # Generate (and execute) the transfer-matrix notebook
+│   ├── update_notebooks.py                           # Regenerate the shared cells of the challenge notebooks
+│   ├── build_docs_pdf.py / build_announcement_docx.py           # Build docs/pdf/*.pdf and the announcement Word file
+│   ├── generate_sl_rl_schematic.py                   # Draw the three-paradigm schematic used in the slides
+│   └── cleanup_wandb.py                              # Remove test runs from the W&B project
+│
+└── img/                                              # Figures used by the slides, notes and notebooks
+    ├── beamline.png                                  # Transport lattice schematic
+    ├── benchmark_trajectories.png                    # Reference-controller trajectories (slide 32)
+    ├── activation_functions.png, mlp_schematic.png, forward_sl_and_rl_schematic.png   # Lecture figures
+    └── ku_logo.png                                   # Logo used on the slides
 ```
 
 ---
@@ -225,7 +248,7 @@ Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](n
 2. **Step 2:** Instantiate the `AcceleratorOrbitGymEnv` simulation environment.
 3. **Step 3 (TODO 1):** Train the forward surrogate models (Linear Ridge and Multi-Layer Perceptron) on offline beam data and inspect holdout RMSE.
 4. **Step 4 (Baseline 0 & Baseline 1 / Track 1):** Baseline 0, the classical SVD controller, is a fixed reference. Baseline 1 inverts your TODO 1 surrogate with SciPy `L-BFGS-B`, so a more accurate surrogate improves its score.
-5. **Step 4 (TODO 2 / Track 2):** Implement and tune your custom closed-loop policy agent: gain (up to about 1.0), saturation compensation on the total current from `info["currents"]`, damping schedules and reward shaping.
+5. **Step 4 (TODO 2 / Track 2):** Implement and tune your custom closed-loop policy agent: gain (up to about 1.2), saturation compensation on the total current from `info["currents"]`, damping schedules and reward shaping.
 6. **Step 4 (TODO 3 / Track 3):** Implement and tune your sample-efficient Bayesian Optimization controller with GaussianProcessRegressor and Lower Confidence Bound (LCB) acquisition.
 7. **Step 4 (optional callbacks):** Register `step_callback` / `episode_callback` functions for Baseline 1, Track 2 and Track 3 in the `CALLBACKS` dictionary at the end of Step 4 (see [`docs/CALLBACK_EXAMPLES.md`](docs/CALLBACK_EXAMPLES.md)). Baseline 0 always runs without callbacks.
 8. **Step 5:** Run the locked benchmark cell, which evaluates all four controllers on the 30 seeds, passes your `CALLBACKS`, and logs each run to W&B with its URL and score.
@@ -237,8 +260,10 @@ Follow these steps in [Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb](n
 
 For detailed guidelines, refer to the included guides:
 - [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (Markdown)](lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.md) — Master curriculum notes for Morning Session 1.
-- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf) — Formatted, compiled 17-page PDF monograph.
-- [Lecture 1 Slides: AI/ML Foundations & Closed-Loop Control (PDF Deck)](presentations/Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf) — Formatted 34-slide presentation deck.
+- [Lecture 1 Notes: AI/ML Foundations & Closed-Loop Control (PDF Monograph)](lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.pdf) — Compiled 24-page PDF.
+- [Lecture 1 Slides: AI/ML Foundations & Closed-Loop Control (PDF Deck)](presentations/Lecture_1_AI_ML_Foundations_and_Control_Slides.pdf) — 35-slide presentation deck.
+- Lecture 1 Slide Narratives: [English](presentations/Lecture_1_Slide_Narratives_EN.pdf) and [Korean](presentations/Lecture_1_Slide_Narratives_KR.pdf) — Speaker script, teaching focus, expected Q&A and transition for each slide.
+- [Transfer-Matrix Surrogate Notebook](notebooks/Transfer_Matrix_Surrogate_Phase_Space.ipynb) — Companion to Lecture 1, slides 14-15: a neural surrogate of a FODO transfer matrix compared with the matrix in phase space (22 figures).
 - [Mini-Hackathon Slides: Beam Orbit Alignment Benchmark (PDF Deck)](presentations/Mini_Hackathon_Beam_Orbit_Alignment_Slides.pdf) — Comprehensive 10-slide orientation deck for the afternoon hackathon session.
 - [Lecture 1 LaTeX Source](lecture_notes/Lecture_1_AI_ML_Foundations_and_Control_Notes.tex) — LaTeX document source code.
 - [Hackathon Project Guide (Word Document)](<docs/Hackathon Project Guide.docx>) — Complete rules, physics derivations, and scoring breakdown.
@@ -246,7 +271,8 @@ For detailed guidelines, refer to the included guides:
 - [Mini-Hackathon Participant Instructions (Word Document)](<docs/Mini-Hackathon Participant Instructions.docx>) — Quick participant checklist.
 - [W&B Leaderboard Guide](docs/WANDB_LEADERBOARD_GUIDE.md) — Leaderboard setup for the organizer and submission steps for participants.
 - [Participant Modification Guide](docs/PARTICIPANT_MODIFICATION_GUIDE.md) — What participants may change for each controller, and the callback rules.
-- [Callback Examples & Integration Guide](docs/CALLBACK_EXAMPLES.md) — Reference schemas, adaptive gain strategies, watchdogs, and step/episode callback recipes.
+- [Callback Examples & Integration Guide](docs/CALLBACK_EXAMPLES.md) — Callback schemas and tested examples, each with its measured effect on the score.
 - [Docker Installation Guide](docs/DOCKER_INSTALL_GUIDE.md) and [Docker Environment Guide](docs/DOCKER_GUIDE.md) — Pre-workshop Docker installation, image download and test.
-- [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md), [Tournament 2 Report](docs/MULTI_AGENT_TOURNAMENT_REPORT2.md), and [Tournament 3 Report](docs/MULTI_AGENT_TOURNAMENT_REPORT3.md) — Multi-agent benchmark protocols and verified W&B tournament results on the 6-kick benchmark.
+- Workshop Announcement: [Korean](docs/Announcement_KR.md) and [English](docs/Announcement_EN.md).
+- [Multi-Agent Benchmark Protocol](docs/MULTI_AGENT_BENCHMARK_INSTRUCTIONS.md), [Tournament 2 Report](docs/MULTI_AGENT_TOURNAMENT_REPORT2.md), and [Tournament 3 Report](docs/MULTI_AGENT_TOURNAMENT_REPORT3.md) — Multi-agent benchmark protocol and W&B-verified tournament results. Tournament 2 ran on the earlier 2-kick benchmark; Tournament 3 uses the current 6-kick benchmark.
 - [AGENTS.md](AGENTS.md) — Operational instructions for AI coding assistants and autonomous agents.

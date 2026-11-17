@@ -114,7 +114,7 @@ docker run -it --rm -p 127.0.0.1:8888:8888 cspark7701/ai4acc-hackathon-2026:late
 1. Open your browser and navigate to:
    - **`http://localhost:8888`** (or `http://localhost:8889` if using port 8889)
 2. Token authentication is disabled by default in the container configuration (`--ServerApp.token=''`) for a friction-free hackathon setup.
-3. Open [`notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb`](../notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb) to begin the challenge.
+3. In the JupyterLab file browser, open `Single_Notebook_Beam_Orbit_Predictor_Participant.ipynb` to begin the challenge. It sits in the workspace root, next to the lecture PDFs, the two participant guides and the companion notebook `Transfer_Matrix_Surrogate_Phase_Space.ipynb`.
 
 ---
 

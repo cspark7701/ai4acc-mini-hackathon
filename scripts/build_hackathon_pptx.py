@@ -275,7 +275,7 @@ def create_presentation():
     items_s3l = [
         ("• No Downloads Needed: ", "The image loads from the bundle. Internet is needed only for the live leaderboard; without it, scores are reported locally."),
         ("• Pre-Configured Telemetry: ", "The launcher automatically injects wandb.apikey as WANDB_API_KEY for live leaderboard sync."),
-        ("• Pre-Loaded Environment: ", "Contains Python 3.12, NumPy, SciPy, scikit-learn, Gymnasium, JupyterLab, and the simulation harness."),
+        ("• Pre-Loaded Environment: ", "Python 3.12, scikit-learn, Gymnasium, JupyterLab and the simulation, plus the lecture PDFs, the modification and callback guides, and a transfer-matrix companion notebook."),
     ]
     for i, (hd, body) in enumerate(items_s3l):
         p = tf_s3lb.paragraphs[0] if i == 0 else tf_s3lb.add_paragraph()
