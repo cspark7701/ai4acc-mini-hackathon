@@ -84,14 +84,14 @@
 {\footnotesize
 \begin{multicols}{2}
 \noindent\hyperlink{slide.1}{\textbf{\color{primaryblue}Slide 1:}\enspace AI/ML Foundations \& Closed-Loop Control\enspace\dotfill\enspace\textbf{1}} \\[0.22em]
-\noindent\hyperlink{slide.2}{\textbf{\color{primaryblue}Slide 2:}\enspace Why AI in Particle Accelerators?\enspace\dotfill\enspace\textbf{2}} \\[0.22em]
-\noindent\hyperlink{slide.3}{\textbf{\color{primaryblue}Slide 3:}\enspace Master Curriculum \& Program Schedule\enspace\dotfill\enspace\textbf{3}} \\[0.22em]
+\noindent\hyperlink{slide.2}{\textbf{\color{primaryblue}Slide 2:}\enspace Master Curriculum \& Program Schedule\enspace\dotfill\enspace\textbf{2}} \\[0.22em]
+\noindent\hyperlink{slide.3}{\textbf{\color{primaryblue}Slide 3:}\enspace Why AI in Particle Accelerators?\enspace\dotfill\enspace\textbf{3}} \\[0.22em]
 \noindent\hyperlink{slide.4}{\textbf{\color{primaryblue}Slide 4:}\enspace AI Pillars: Surrogates \& Optimization\enspace\dotfill\enspace\textbf{4}} \\[0.22em]
 \noindent\hyperlink{slide.5}{\textbf{\color{primaryblue}Slide 5:}\enspace AI Pillars: Diagnostics, Protection \& Agents\enspace\dotfill\enspace\textbf{5}} \\[0.22em]
 \noindent\hyperlink{slide.6}{\textbf{\color{primaryblue}Slide 6:}\enspace Hill's Equation \& Transverse Motion\enspace\dotfill\enspace\textbf{6}} \\[0.22em]
 \noindent\hyperlink{slide.7}{\textbf{\color{primaryblue}Slide 7:}\enspace Betatron Motion \& Courant-Snyder Optics\enspace\dotfill\enspace\textbf{7}} \\[0.22em]
-\noindent\hyperlink{slide.8}{\textbf{\color{primaryblue}Slide 8:}\enspace Orbit Response Matrix Derivation\enspace\dotfill\enspace\textbf{8}} \\[0.22em]
-\noindent\hyperlink{slide.9}{\textbf{\color{primaryblue}Slide 9:}\enspace 15-Meter Transport Lattice Architecture\enspace\dotfill\enspace\textbf{9}} \\[0.22em]
+\noindent\hyperlink{slide.8}{\textbf{\color{primaryblue}Slide 8:}\enspace 15-Meter Transport Lattice Architecture\enspace\dotfill\enspace\textbf{8}} \\[0.22em]
+\noindent\hyperlink{slide.9}{\textbf{\color{primaryblue}Slide 9:}\enspace Orbit Response Matrix Derivation\enspace\dotfill\enspace\textbf{9}} \\[0.22em]
 \noindent\hyperlink{slide.10}{\textbf{\color{primaryblue}Slide 10:}\enspace Hardware Limits \& Actuator Bounds\enspace\dotfill\enspace\textbf{10}} \\[0.22em]
 \noindent\hyperlink{slide.11}{\textbf{\color{primaryblue}Slide 11:}\enspace Magnetic Core Non-Linear Saturation\enspace\dotfill\enspace\textbf{11}} \\[0.22em]
 \noindent\hyperlink{slide.12}{\textbf{\color{primaryblue}Slide 12:}\enspace Artificial Neurons \& Layer Composition\enspace\dotfill\enspace\textbf{12}} \\[0.22em]
@@ -146,36 +146,14 @@ Good morning, everyone, and welcome to Lecture 1 of our AI Applications in Accel
 \small
 \noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Set an inspiring, hands-on, practical tone. Emphasize that physics principles and AI algorithms will be treated as partners.\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Is prior deep learning experience mandatory? A: No, we build intuition from linear optics matrices up to deep networks.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{To motivate our journey, let us first examine why modern particle accelerators demand artificial intelligence.}
+\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Let us start with the program for today.}
 \end{tcolorbox}
 \clearpage
 \hypertarget{slide.2}{}
 \phantomsection
-\addcontentsline{toc}{section}{Slide 2: Why AI in Particle Accelerators?}
+\addcontentsline{toc}{section}{Slide 2: Master Curriculum \& Program Schedule}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}Slide 2:\enspace Why AI in Particle Accelerators?}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Operational Context \enspace$|$\enspace Slide 2 of 35}
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
-Card layout detailing high-intensity beam stability challenges, sub-micron tolerances, beam loss damage risks, and human operator cognitive saturation.
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}Spoken Presenter Script},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
-Modern particle accelerators—whether synchrotrons, free-electron lasers, or high-intensity spallation sources—are among the most complex engineering systems ever constructed. Machines like 4th-generation light sources demand transverse beam orbit stability down to sub-micron or even nanometer levels. Simultaneously, multi-megawatt beam power means that a fractional beam loss lasting a few microseconds can puncture a vacuum chamber or quench a superconducting radio-frequency cavity, causing weeks of unscheduled downtime. Traditional linear feedback controllers assume stationary, linear responses. However, real physical accelerators depart sharply from linearity due to magnet core saturation, hysteresis, ambient thermal drift, and coupling. Human operators cannot continuously optimize hundreds of coupled parameters in real time. This is where AI becomes a necessity: it delivers fast predictive digital twins, autonomous multi-objective optimization, and millisecond anomaly interlocks.
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
-\small
-\noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Stress the real-world operational stakes: hardware safety, beam brightness, and the failure modes of standard linear controllers.\par\vspace{0.3em}
-\noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Can standard PID feedback handle non-linear drift? A: Only locally near the setpoint; large excursions cause oscillation or divergence.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us review the master roadmap for today's workshop.}
-\end{tcolorbox}
-\clearpage
-\hypertarget{slide.3}{}
-\phantomsection
-\addcontentsline{toc}{section}{Slide 3: Master Curriculum \& Program Schedule}
-\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}Slide 3:\enspace Master Curriculum \& Program Schedule}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Workshop Curriculum \enspace$|$\enspace Slide 3 of 35}
+{\large\bfseries\color{white}Slide 2:\enspace Master Curriculum \& Program Schedule}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Workshop Curriculum \enspace$|$\enspace Slide 2 of 35}
 \end{tcolorbox}
 \vspace{0.2em}
 \begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
@@ -190,6 +168,28 @@ Here is our program for the day, carefully structured to move from rigorous foun
 \small
 \noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Highlight the direct connection between Lecture 1 concepts and the afternoon challenge tasks (TODO 1, 2, 3).\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: How are teams evaluated in the hackathon? A: Using a standardized 30-seed benchmark scoring formula balancing success, speed, and precision.\par\vspace{0.3em}
+\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Before the technical content, let us look at why modern particle accelerators need artificial intelligence at all.}
+\end{tcolorbox}
+\clearpage
+\hypertarget{slide.3}{}
+\phantomsection
+\addcontentsline{toc}{section}{Slide 3: Why AI in Particle Accelerators?}
+\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
+{\large\bfseries\color{white}Slide 3:\enspace Why AI in Particle Accelerators?}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Operational Context \enspace$|$\enspace Slide 3 of 35}
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
+Card layout detailing high-intensity beam stability challenges, sub-micron tolerances, beam loss damage risks, and human operator cognitive saturation.
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}Spoken Presenter Script},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
+Modern particle accelerators—whether synchrotrons, free-electron lasers, or high-intensity spallation sources—are among the most complex engineering systems ever constructed. Machines like 4th-generation light sources demand transverse beam orbit stability down to sub-micron or even nanometer levels. Simultaneously, multi-megawatt beam power means that a fractional beam loss lasting a few microseconds can puncture a vacuum chamber or quench a superconducting radio-frequency cavity, causing weeks of unscheduled downtime. Traditional linear feedback controllers assume stationary, linear responses. However, real physical accelerators depart sharply from linearity due to magnet core saturation, hysteresis, ambient thermal drift, and coupling. Human operators cannot continuously optimize hundreds of coupled parameters in real time. This is where AI becomes a necessity: it delivers fast predictive digital twins, autonomous multi-objective optimization, and millisecond anomaly interlocks.
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
+\small
+\noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Stress the real-world operational stakes: hardware safety, beam brightness, and the failure modes of standard linear controllers.\par\vspace{0.3em}
+\noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Can standard PID feedback handle non-linear drift? A: Only locally near the setpoint; large excursions cause oscillation or divergence.\par\vspace{0.3em}
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Let us now survey the broader landscape of AI applications across modern accelerators.}
 \end{tcolorbox}
 \clearpage
@@ -278,36 +278,14 @@ Because the restoring coefficient K(s) varies with s, the solution to Hill's equ
 \small
 \noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Draw the connection between beta(s) and beam envelope sigma = sqrt(epsilon * beta).\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Is emittance conserved under acceleration? A: Geometric emittance shrinks with momentum (adiabatic damping), but normalized emittance is conserved.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us derive how steering magnets kick this betatron oscillation downstream: the Orbit Response Matrix.}
+\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Before deriving how steering magnets act on this oscillation, let us look at the beamline we will control this afternoon.}
 \end{tcolorbox}
 \clearpage
 \hypertarget{slide.8}{}
 \phantomsection
-\addcontentsline{toc}{section}{Slide 8: Orbit Response Matrix Derivation}
+\addcontentsline{toc}{section}{Slide 8: 15-Meter Transport Lattice Architecture}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}Slide 8:\enspace Orbit Response Matrix Derivation}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Analytical Optics \enspace$|$\enspace Slide 8 of 35}
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
-Transfer-line betatron Green's function, R\_ij equation with distance-decay denominator (1 + 0.05 Delta s), downstream causality (R\_ij = 0 when BPM j is upstream of corrector i).
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}Spoken Presenter Script},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
-When a dipole corrector magnet located at longitudinal position s\_i applies an angular kick theta\_i, it introduces a localized slope discontinuity delta x-prime = theta\_i. Downstream at BPM station s\_j, the perturbed trajectory is given by the single-pass transport-line Green's function. The orbit response element R\_ij is defined as the displacement at BPM j per unit kick at steerer i: R\_ij = square root of beta\_i times beta\_j times the sine of the phase advance difference psi\_j minus psi\_i. In our hackathon transport lattice, this response is modeled with simplified optics: a constant phase advance of 2 pi times 0.18 rad/m and a mild amplitude decay: R\_ij = 1.2 sin(2 pi * 0.18 * Delta s) / (1 + 0.05 * Delta s). Most importantly, notice the strict downstream causality: a corrector can only affect BPMs located downstream of it (s\_j > s\_i). If BPM j is upstream of steerer i, R\_ij is identically zero. This gives the 6 by 12 ORM a staircase of zeros: each later corrector acts on fewer BPMs.
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
-\small
-\noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Differentiate transport-line response (sine, strictly causal) from storage ring closed-orbit formula (2 sin(pi * nu) in denominator).\par\vspace{0.3em}
-\noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Can an upstream steerer correct downstream distortion? A: Yes, but downstream steerers cannot correct upstream distortion.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Let us examine the physical layout of the transport lattice designed for our hackathon challenge.}
-\end{tcolorbox}
-\clearpage
-\hypertarget{slide.9}{}
-\phantomsection
-\addcontentsline{toc}{section}{Slide 9: 15-Meter Transport Lattice Architecture}
-\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}Slide 9:\enspace 15-Meter Transport Lattice Architecture}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Hackathon Benchmark \enspace$|$\enspace Slide 9 of 35}
+{\large\bfseries\color{white}Slide 8:\enspace 15-Meter Transport Lattice Architecture}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Hackathon Benchmark \enspace$|$\enspace Slide 8 of 35}
 \end{tcolorbox}
 \vspace{0.2em}
 \begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
@@ -322,6 +300,28 @@ Here is the physical layout of our hackathon challenge lattice. It represents a 
 \small
 \noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Point out the dimensions: 12 BPM observations (inputs to controller), 6 corrector kicks (outputs of controller).\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Why are there 6 correctors but 12 BPMs? A: The system is over-determined, requiring pseudo-inverse or regression optimization.\par\vspace{0.3em}
+\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{With this layout in mind, let us derive how each steering magnet moves the orbit at each BPM: the Orbit Response Matrix.}
+\end{tcolorbox}
+\clearpage
+\hypertarget{slide.9}{}
+\phantomsection
+\addcontentsline{toc}{section}{Slide 9: Orbit Response Matrix Derivation}
+\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
+{\large\bfseries\color{white}Slide 9:\enspace Orbit Response Matrix Derivation}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Analytical Optics \enspace$|$\enspace Slide 9 of 35}
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
+Transfer-line betatron Green's function, R\_ij equation with distance-decay denominator (1 + 0.05 Delta s), downstream causality (R\_ij = 0 when BPM j is upstream of corrector i).
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}Spoken Presenter Script},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
+When a dipole corrector magnet located at longitudinal position s\_i applies an angular kick theta\_i, it introduces a localized slope discontinuity delta x-prime = theta\_i. Downstream at BPM station s\_j, the perturbed trajectory is given by the single-pass transport-line Green's function. The orbit response element R\_ij is defined as the displacement at BPM j per unit kick at steerer i: R\_ij = square root of beta\_i times beta\_j times the sine of the phase advance difference psi\_j minus psi\_i. In our hackathon transport lattice, this response is modeled with simplified optics: a constant phase advance of 2 pi times 0.18 rad/m and a mild amplitude decay: R\_ij = 1.2 sin(2 pi * 0.18 * Delta s) / (1 + 0.05 * Delta s). Most importantly, notice the strict downstream causality: a corrector can only affect BPMs located downstream of it (s\_j > s\_i). If BPM j is upstream of steerer i, R\_ij is identically zero. This gives the 6 by 12 ORM a staircase of zeros: each later corrector acts on fewer BPMs.
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
+\small
+\noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Differentiate transport-line response (sine, strictly causal) from storage ring closed-orbit formula (2 sin(pi * nu) in denominator).\par\vspace{0.3em}
+\noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Can an upstream steerer correct downstream distortion? A: Yes, but downstream steerers cannot correct upstream distortion.\par\vspace{0.3em}
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{However, in real accelerators, power supplies and sensors have hard physical limitations.}
 \end{tcolorbox}
 \clearpage

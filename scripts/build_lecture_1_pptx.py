@@ -47,12 +47,7 @@ TOTAL_SLIDES = 35
 
 # Line spacing (multiple of single spacing) for the body text of each slide, matching the
 # per-slide \slidespread values of the LaTeX deck so that text fills each content card.
-LINE_SPACING = {
-    1: 1.22, 2: 1.22, 3: 1.35, 4: 1.80, 5: 1.27, 6: 1.14, 7: 1.14, 8: 1.11, 9: 1.22, 10: 1.50,
-    11: 1.12, 12: 1.38, 13: 1.25, 14: 1.18, 15: 1.18, 16: 1.25, 17: 1.14, 18: 1.22, 19: 1.38,
-    20: 1.22, 21: 1.55, 22: 1.58, 23: 1.14, 24: 1.30, 25: 1.75, 26: 1.14, 27: 1.08, 28: 1.40,
-    29: 1.50, 30: 1.22, 31: 1.22, 32: 1.22, 33: 1.39, 34: 1.18
-}
+LINE_SPACING = {1: 1.22, 2: 1.35, 3: 1.22, 4: 1.80, 5: 1.27, 6: 1.14, 7: 1.14, 8: 1.22, 9: 1.11, 10: 1.50, 11: 1.12, 12: 1.38, 13: 1.25, 14: 1.18, 15: 1.18, 16: 1.25, 17: 1.14, 18: 1.22, 19: 1.38, 20: 1.22, 21: 1.55, 22: 1.58, 23: 1.14, 24: 1.30, 25: 1.75, 26: 1.14, 27: 1.08, 28: 1.40, 29: 1.50, 30: 1.22, 31: 1.22, 32: 1.22, 33: 1.39, 34: 1.18}
 
 
 def add_text_run(paragraph, text, bold=False, size=None, color=None):
@@ -217,36 +212,7 @@ def create_presentation():
     add_footer(s1, 1)
 
     # ==========================================
-    # SLIDE 2: Operational Context
-    # ==========================================
-    s2 = prs.slides.add_slide(blank_layout)
-    add_header(s2, "Operational Context", "Why AI in Particle Accelerators?", 
-               "Meeting stringent sub-micron stability tolerances while managing non-linear actuator dynamics")
-
-    add_card(s2, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "The Operational Challenge: High-Precision Orbit Stabilization")
-    tb2 = s2.shapes.add_textbox(Inches(1.1), Inches(2.1), Inches(11.1), Inches(4.4))
-    tf2 = tb2.text_frame
-    tf2.word_wrap = True
-
-    p = tf2.paragraphs[0]
-    add_text_run(p, "• Extreme Beam Stability Demands:\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p, "  -- Modern synchrotron light sources, colliders, and FELs require transverse orbit stabilization to within < 10% of beam size (sub-micron RMS tolerances).\n\n", size=Pt(13.5), color=DARK_GRAY)
-
-    p2 = tf2.add_paragraph()
-    add_text_run(p2, "• High-Intensity Hadron Linacs (e.g., SNS, ESS):\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p2, "  -- Uncorrected trajectory offsets through RF cavities and quadrupoles induce non-linear space-charge forces and beam halo.\n"
-                     "  -- Fractional beam loss exceeding 1 W/m (~10⁻⁵ of total beam power) causes severe structural radioactivation, prohibiting hands-on maintenance.\n\n", size=Pt(13.5), color=DARK_GRAY)
-
-    p3 = tf2.add_paragraph()
-    add_text_run(p3, "• Limitations of Purely Classical Linear Control:\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3, "  -- Analytical linear response matrices (ORM) ignore magnetic core saturation at high currents, so linear feedback under-corrects and converges slowly.\n"
-                     "  -- Physical diagnostics carry 10 μm noise floors; naive feedback amplifies measurement noise into erratic actuator jitter.\n"
-                     "  -- Multi-parameter coupling requires fast non-linear digital twins and adaptive closed-loop policies.", size=Pt(13.5), color=DARK_GRAY)
-
-    add_footer(s2, 2)
-
-    # ==========================================
-    # SLIDE 3: Master Curriculum & Schedule
+    # SLIDE 2: Master Curriculum & Schedule
     # ==========================================
     s3 = prs.slides.add_slide(blank_layout)
     add_header(s3, "Workshop Curriculum", "Master Curriculum & Program Schedule",
@@ -272,7 +238,36 @@ def create_presentation():
     add_text_run(p3, "   • 15-meter transport lattice, 12 BPMs, 6 steerers, 3 parallel challenge tracks (MLP, RL, BO).\n"
                     "   • Real-time experiment tracking with Weights & Biases (W&B) and live global leaderboard.", size=Pt(13.5), color=DARK_GRAY)
 
-    add_footer(s3, 3)
+    add_footer(s3, 2)
+
+    # ==========================================
+    # SLIDE 3: Operational Context
+    # ==========================================
+    s2 = prs.slides.add_slide(blank_layout)
+    add_header(s2, "Operational Context", "Why AI in Particle Accelerators?", 
+               "Meeting stringent sub-micron stability tolerances while managing non-linear actuator dynamics")
+
+    add_card(s2, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "The Operational Challenge: High-Precision Orbit Stabilization")
+    tb2 = s2.shapes.add_textbox(Inches(1.1), Inches(2.1), Inches(11.1), Inches(4.4))
+    tf2 = tb2.text_frame
+    tf2.word_wrap = True
+
+    p = tf2.paragraphs[0]
+    add_text_run(p, "• Extreme Beam Stability Demands:\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p, "  -- Modern synchrotron light sources, colliders, and FELs require transverse orbit stabilization to within < 10% of beam size (sub-micron RMS tolerances).\n\n", size=Pt(13.5), color=DARK_GRAY)
+
+    p2 = tf2.add_paragraph()
+    add_text_run(p2, "• High-Intensity Hadron Linacs (e.g., SNS, ESS):\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p2, "  -- Uncorrected trajectory offsets through RF cavities and quadrupoles induce non-linear space-charge forces and beam halo.\n"
+                     "  -- Fractional beam loss exceeding 1 W/m (~10⁻⁵ of total beam power) causes severe structural radioactivation, prohibiting hands-on maintenance.\n\n", size=Pt(13.5), color=DARK_GRAY)
+
+    p3 = tf2.add_paragraph()
+    add_text_run(p3, "• Limitations of Purely Classical Linear Control:\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p3, "  -- Analytical linear response matrices (ORM) ignore magnetic core saturation at high currents, so linear feedback under-corrects and converges slowly.\n"
+                     "  -- Physical diagnostics carry 10 μm noise floors; naive feedback amplifies measurement noise into erratic actuator jitter.\n"
+                     "  -- Multi-parameter coupling requires fast non-linear digital twins and adaptive closed-loop policies.", size=Pt(13.5), color=DARK_GRAY)
+
+    add_footer(s2, 3)
 
     # ==========================================
     # SLIDE 4: AI Pillars: Surrogates & Optimization
@@ -397,7 +392,41 @@ def create_presentation():
     add_footer(s7, 7)
 
     # ==========================================
-    # SLIDE 8: Orbit Response Matrix Derivation
+    # SLIDE 8: 15-Meter Transport Lattice Architecture (ZERO OVERLAP)
+    # ==========================================
+    s9 = prs.slides.add_slide(blank_layout)
+    add_header(s9, "Hackathon Benchmark", "15-Meter Transport Lattice Architecture",
+               "Physical arrangement of quadrupole doublets, dipole correctors, and beam position monitors")
+
+    # Proportional image: Width = 10.0 in, Height = 2.5 in (Top: 1.45 to 3.95in)
+    beamline_img = IMG_DIR / "beamline.png"
+    if beamline_img.exists():
+        s9.shapes.add_picture(str(beamline_img), Inches(1.66), Inches(1.45), width=Inches(10.0), height=Inches(2.5))
+
+    # Card below at Top = 4.25in (0.3in margin, Zero Overlap!)
+    add_card(s9, Inches(0.8), Inches(4.25), Inches(11.733), Inches(2.45), "Transport Line Specifications & Component Placement", bg_color=LIGHT_BG)
+    tb9 = s9.shapes.add_textbox(Inches(1.1), Inches(4.8), Inches(11.1), Inches(1.8))
+    tf9 = tb9.text_frame
+    tf9.word_wrap = True
+
+    p = tf9.paragraphs[0]
+    add_text_run(p, "• 12 Beam Position Monitors (BPMs): ", bold=True, size=Pt(13.5), color=NAVY)
+    add_text_run(p, "Evenly distributed from s = 1.0 m to s = 15.0 m, measuring transverse displacement Y in millimeters.\n", size=Pt(13), color=DARK_GRAY)
+
+    p2 = tf9.add_paragraph()
+    p2.space_before = Pt(4)
+    add_text_run(p2, "• 6 Dipole Steering Magnets: ", bold=True, size=Pt(13.5), color=NAVY)
+    add_text_run(p2, "3 Horizontal (HCM1-3) and 3 Vertical (VCM1-3) steerers positioned between s = 0.2 m and s = 8.0 m.\n", size=Pt(13), color=DARK_GRAY)
+
+    p3 = tf9.add_paragraph()
+    p3.space_before = Pt(4)
+    add_text_run(p3, "• Alternating Quadrupole Doublets: ", bold=True, size=Pt(13.5), color=NAVY)
+    add_text_run(p3, "Pairs of QF and QD focusing magnets shaping the betatron phase advance and maintaining envelope stability.", size=Pt(13), color=DARK_GRAY)
+
+    add_footer(s9, 8)
+
+    # ==========================================
+    # SLIDE 9: Orbit Response Matrix Derivation
     # ==========================================
     s8 = prs.slides.add_slide(blank_layout)
     add_header(s8, "Analytical Optics", "Orbit Response Matrix Derivation",
@@ -432,41 +461,7 @@ def create_presentation():
                      "  -- Y ∈ ℝ¹²: Transverse displacements measured at all 12 downstream BPM stations.\n"
                      "  -- Cross-plane coupling: Any single corrector deflection alters the entire beam trajectory downstream.", size=Pt(13), color=DARK_GRAY)
 
-    add_footer(s8, 8)
-
-    # ==========================================
-    # SLIDE 9: 15-Meter Transport Lattice Architecture (ZERO OVERLAP)
-    # ==========================================
-    s9 = prs.slides.add_slide(blank_layout)
-    add_header(s9, "Hackathon Benchmark", "15-Meter Transport Lattice Architecture",
-               "Physical arrangement of quadrupole doublets, dipole correctors, and beam position monitors")
-
-    # Proportional image: Width = 10.0 in, Height = 2.5 in (Top: 1.45 to 3.95in)
-    beamline_img = IMG_DIR / "beamline.png"
-    if beamline_img.exists():
-        s9.shapes.add_picture(str(beamline_img), Inches(1.66), Inches(1.45), width=Inches(10.0), height=Inches(2.5))
-
-    # Card below at Top = 4.25in (0.3in margin, Zero Overlap!)
-    add_card(s9, Inches(0.8), Inches(4.25), Inches(11.733), Inches(2.45), "Transport Line Specifications & Component Placement", bg_color=LIGHT_BG)
-    tb9 = s9.shapes.add_textbox(Inches(1.1), Inches(4.8), Inches(11.1), Inches(1.8))
-    tf9 = tb9.text_frame
-    tf9.word_wrap = True
-
-    p = tf9.paragraphs[0]
-    add_text_run(p, "• 12 Beam Position Monitors (BPMs): ", bold=True, size=Pt(13.5), color=NAVY)
-    add_text_run(p, "Evenly distributed from s = 1.0 m to s = 15.0 m, measuring transverse displacement Y in millimeters.\n", size=Pt(13), color=DARK_GRAY)
-
-    p2 = tf9.add_paragraph()
-    p2.space_before = Pt(4)
-    add_text_run(p2, "• 6 Dipole Steering Magnets: ", bold=True, size=Pt(13.5), color=NAVY)
-    add_text_run(p2, "3 Horizontal (HCM1-3) and 3 Vertical (VCM1-3) steerers positioned between s = 0.2 m and s = 8.0 m.\n", size=Pt(13), color=DARK_GRAY)
-
-    p3 = tf9.add_paragraph()
-    p3.space_before = Pt(4)
-    add_text_run(p3, "• Alternating Quadrupole Doublets: ", bold=True, size=Pt(13.5), color=NAVY)
-    add_text_run(p3, "Pairs of QF and QD focusing magnets shaping the betatron phase advance and maintaining envelope stability.", size=Pt(13), color=DARK_GRAY)
-
-    add_footer(s9, 9)
+    add_footer(s8, 9)
 
     # ==========================================
     # SLIDE 10: Hardware Limits & Actuator Bounds

@@ -148,31 +148,7 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 2: Operational Context
-% ==============================================================================
-\begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.19}
-  \slideheader{Operational Context}{Why AI in Particle Accelerators?}{Meeting stringent sub-micron stability tolerances while managing non-linear actuator dynamics}
-
-  \drawcard{0.8}{1.4}{11.733}{5.3}{The Operational Challenge: High-Precision Orbit Stabilization}
-  \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
-    {\bfseries\color{navy}$\bullet$ Extreme Beam Stability Tolerances:}\\[0.3em]
-    Modern synchrotron light sources, colliders, and free-electron lasers (FELs) require transverse orbit stabilization to within $< 10\%$ of beam size (sub-micron RMS tolerances).\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ High-Intensity Hadron Linacs (e.g., SNS, ESS):}\\[0.3em]
-    -- Uncorrected trajectory offsets through RF accelerating cavities and focusing quadrupoles induce space-charge forces, emittance growth, and beam halo.\\
-    -- Fractional beam losses exceeding $1\text{ W/m}$ ($\sim 10^{-5}$ of total beam power) cause severe structural radioactivation, prohibiting hands-on maintenance.\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Limitations of Purely Classical Linear Control:}\\[0.3em]
-    -- Analytical linear response matrices (ORM) ignore magnetic core saturation at high currents, so linear feedback under-corrects and converges slowly.\\
-    -- Physical diagnostics carry $10\ \mu\text{m}$ sensor noise floors; naive feedback amplifies measurement jitter into erratic actuator ripple.\\
-    -- Multi-parameter coupling requires fast non-linear digital twins and adaptive closed-loop policies.
-  }
-
-  \slidefooter{2}
-\end{tikzpicture}
-\clearpage
-
-% ==============================================================================
-% SLIDE 3: Master Curriculum & Schedule
+% SLIDE 2: Master Curriculum & Schedule
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.38}
@@ -189,6 +165,30 @@
     {\fs{15}{18}\bfseries\color{primaryblue}3. Afternoon Mini-Hackathon: Beam Orbit Alignment Benchmark (13:30 -- 17:00)}\\[0.3em]
     $\bullet$ 15-meter transport lattice, 12 BPMs, 6 steerers, 3 parallel challenge tracks (MLP, RL, BO).\\
     $\bullet$ Real-time experiment tracking with Weights \& Biases (W\&B) and live global leaderboard.
+  }
+
+  \slidefooter{2}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 3: Operational Context
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.19}
+  \slideheader{Operational Context}{Why AI in Particle Accelerators?}{Meeting stringent sub-micron stability tolerances while managing non-linear actuator dynamics}
+
+  \drawcard{0.8}{1.4}{11.733}{5.3}{The Operational Challenge: High-Precision Orbit Stabilization}
+  \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
+    {\bfseries\color{navy}$\bullet$ Extreme Beam Stability Tolerances:}\\[0.3em]
+    Modern synchrotron light sources, colliders, and free-electron lasers (FELs) require transverse orbit stabilization to within $< 10\%$ of beam size (sub-micron RMS tolerances).\\[0.8em]
+    {\bfseries\color{navy}$\bullet$ High-Intensity Hadron Linacs (e.g., SNS, ESS):}\\[0.3em]
+    -- Uncorrected trajectory offsets through RF accelerating cavities and focusing quadrupoles induce space-charge forces, emittance growth, and beam halo.\\
+    -- Fractional beam losses exceeding $1\text{ W/m}$ ($\sim 10^{-5}$ of total beam power) cause severe structural radioactivation, prohibiting hands-on maintenance.\\[0.8em]
+    {\bfseries\color{navy}$\bullet$ Limitations of Purely Classical Linear Control:}\\[0.3em]
+    -- Analytical linear response matrices (ORM) ignore magnetic core saturation at high currents, so linear feedback under-corrects and converges slowly.\\
+    -- Physical diagnostics carry $10\ \mu\text{m}$ sensor noise floors; naive feedback amplifies measurement jitter into erratic actuator ripple.\\
+    -- Multi-parameter coupling requires fast non-linear digital twins and adaptive closed-loop policies.
   }
 
   \slidefooter{3}
@@ -294,7 +294,31 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 8: Orbit Response Matrix Derivation
+% SLIDE 8: 15-Meter Transport Lattice Architecture (ZERO OVERLAP)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.22}
+  \slideheader{Hackathon Benchmark}{15-Meter Transport Lattice Architecture}{Physical arrangement of quadrupole doublets, dipole correctors, and beam position monitors}
+
+  % Sized Image: Width = 10.0 in, Height = 2.5 in
+  \node[anchor=north,inner sep=0pt]
+    at ([yshift=-1.45in]current page.north)
+    {\includegraphics[width=10.0in,height=2.5in]{beamline.png}};
+
+  % Card below at Top = 4.25in (Zero Overlap!)
+  \drawcard{0.8}{4.25}{11.733}{2.45}{Transport Line Specifications \& Component Placement}
+  \at{1.1}{4.8}{11.1}{\fs{13}{18}\color{darkgray}%
+    $\bullet$ \textbf{12 Beam Position Monitors (BPMs):} Evenly distributed from $s = 1.0\text{ m}$ to $s = 15.0\text{ m}$, measuring transverse displacement $\mathbf{Y}$ in millimeters.\\[0.35em]
+    $\bullet$ \textbf{6 Dipole Steering Magnets:} 3 Horizontal (HCM1-3) and 3 Vertical (VCM1-3) steerers positioned between $s = 0.2\text{ m}$ and $s = 8.0\text{ m}$.\\[0.35em]
+    $\bullet$ \textbf{Alternating Quadrupole Doublets:} Pairs of QF and QD focusing magnets shaping the betatron phase advance and maintaining envelope stability.
+  }
+
+  \slidefooter{8}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 9: Orbit Response Matrix Derivation
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.39}
@@ -316,30 +340,6 @@
     -- $\mathbf{R} \in \mathbb{R}^{6 \times 12}$: The linear Orbit Response Matrix (ORM); rows are correctors, columns are BPMs.\\
     -- $\mathbf{Y} \in \mathbb{R}^{12}$: Transverse displacements measured at all 12 downstream BPM stations.\\
     -- Cross-plane coupling: Any single corrector deflection alters the entire beam trajectory downstream.
-  }
-
-  \slidefooter{8}
-\end{tikzpicture}
-\clearpage
-
-% ==============================================================================
-% SLIDE 9: 15-Meter Transport Lattice Architecture (ZERO OVERLAP)
-% ==============================================================================
-\begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.22}
-  \slideheader{Hackathon Benchmark}{15-Meter Transport Lattice Architecture}{Physical arrangement of quadrupole doublets, dipole correctors, and beam position monitors}
-
-  % Sized Image: Width = 10.0 in, Height = 2.5 in
-  \node[anchor=north,inner sep=0pt]
-    at ([yshift=-1.45in]current page.north)
-    {\includegraphics[width=10.0in,height=2.5in]{beamline.png}};
-
-  % Card below at Top = 4.25in (Zero Overlap!)
-  \drawcard{0.8}{4.25}{11.733}{2.45}{Transport Line Specifications \& Component Placement}
-  \at{1.1}{4.8}{11.1}{\fs{13}{18}\color{darkgray}%
-    $\bullet$ \textbf{12 Beam Position Monitors (BPMs):} Evenly distributed from $s = 1.0\text{ m}$ to $s = 15.0\text{ m}$, measuring transverse displacement $\mathbf{Y}$ in millimeters.\\[0.35em]
-    $\bullet$ \textbf{6 Dipole Steering Magnets:} 3 Horizontal (HCM1-3) and 3 Vertical (VCM1-3) steerers positioned between $s = 0.2\text{ m}$ and $s = 8.0\text{ m}$.\\[0.35em]
-    $\bullet$ \textbf{Alternating Quadrupole Doublets:} Pairs of QF and QD focusing magnets shaping the betatron phase advance and maintaining envelope stability.
   }
 
   \slidefooter{9}
