@@ -59,6 +59,7 @@ RUN mv /workspace/notebooks/Single_Notebook_Beam_Orbit_Predictor_Participant.ipy
            /workspace/src \
            /workspace/build \
            /workspace/ai4acc_mini_hackathon.egg-info \
+           /workspace/tmp \
            /workspace/README.md \
            /workspace/AGENTS.md \
            /workspace/Dockerfile \

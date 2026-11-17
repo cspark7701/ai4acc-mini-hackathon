@@ -80,6 +80,11 @@ image_verify() {
         exit 1
     fi
     echo "    [OK] no solution notebook in the image"
+    if docker run --rm --entrypoint sh "${image}" -c '[ -d /workspace/tmp ]'; then
+        echo "❌ Error: /workspace/tmp found inside the image."
+        exit 1
+    fi
+    echo "    [OK] no /workspace/tmp in the image"
     src_dir="$(docker run --rm --entrypoint python "${image}" -c 'import os, src.benchmark as b; print(os.path.dirname(b.__file__))')"
     for pair in "${IMAGE_CHECK_FILES[@]}"; do
         repo_path="${pair%%:*}"

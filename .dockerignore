@@ -77,6 +77,11 @@ scripts/
 *.vrb
 **/*.vrb
 
+# Temporary files and directories
+tmp/
+**/tmp/
+*.tmp
+
 # OS metadata
 .DS_Store
 Thumbs.db
