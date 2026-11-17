@@ -536,7 +536,7 @@ Measured on the 300 holdout shots of the notebook dataset (1,500 shots over $\pm
 
 ## 4. Closed-Loop Control Paradigms
 
-Having established the forward mapping, we examine the four controllers evaluated in the benchmark: two baselines and two further challenge tracks.
+Having established the forward mapping, we examine the closed-loop control architecture and the benchmark controllers evaluated across the challenge tracks.
 
 ```mermaid
 graph TD
@@ -552,7 +552,24 @@ graph TD
     M3 -->|"min LCB of GP-predicted next orbit"| Env
 ```
 
-### 4.1 Baseline 0: Classical Linear SVD Pseudo-Inverse Control
+### 4.1 Closed-Loop Control Architecture & Feedback Loop
+In particle accelerators, closed-loop orbit correction iteratively stabilizes the beam position against external ground vibrations, power-supply ripple, and thermal drifts. At each discrete iteration step $t \in [0, 50]$, the closed-loop orbit correction system operates over transverse beam position monitor measurements and steerer magnet currents:
+
+1. **Diagnostic Observation:** The 12 Beam Position Monitors (BPMs) record the current orbit distortion vector $\mathbf{Y}_t \in \mathbb{R}^{12}$ (in millimeters), which includes unperturbed trajectory, corrector deflections, non-linear saturation, and Gaussian sensor noise $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I})$ with $\sigma = 0.010\text{ mm}$.
+2. **Controller Policy Calculation:** The controller receives the observation $\mathbf{Y}_t$ (and optional runtime metadata such as current steerer magnet settings $\mathbf{I}_t$) and computes an incremental adjustment action $\Delta\mathbf{I}_t \in [-0.8, +0.8]^6\text{ A}$.
+3. **Actuator Execution & State Update:** The 6 dipole correctors update their total current settings:
+   $$\mathbf{I}_{t+1} = \text{clip}\left(\mathbf{I}_t + \Delta\mathbf{I}_t, \,-5.0,\,+5.0\right)\text{ A}$$
+4. **Convergence Evaluation:** The updated beam trajectory $\mathbf{Y}_{t+1}$ is measured. The correction terminates successfully if the transverse root-mean-square orbit distortion satisfies:
+   $$\text{RMS}_{t+1} = \sqrt{\frac{1}{12}\sum_{j=1}^{12} Y_{t+1, j}^2} < 0.030\text{ mm}$$
+   If the threshold is not reached within $t = 50$ steps, the episode truncates as a failure.
+
+The benchmark compares three AI learning paradigms against the classical analytical baseline:
+- **Baseline 0 (Classical SVD):** Directly inverts the linear Orbit Response Matrix (ORM) using the Moore-Penrose pseudo-inverse.
+- **Track 1 (Supervised Neural Inversion):** Learns an offline forward digital twin $f_{\boldsymbol{\theta}}(\mathbf{I})$ from calibration data and numerically inverts it via bounded optimization at each step.
+- **Track 2 (Reinforcement Learning Policy):** Learns an end-to-end feedback policy mapping measured orbit errors directly to corrective kicks, combining an analytical physics prior with learned residuals and adaptive damping.
+- **Track 3 (Bayesian Optimization):** Employs a Gaussian Process surrogate to quantify epistemic uncertainty and balances exploration versus exploitation via Lower Confidence Bound (LCB) minimization.
+
+### 4.2 Baseline 0: Classical Linear SVD Pseudo-Inverse Control
 In classical accelerator operations, Singular Value Decomposition (SVD) of the response matrix $\mathbf{R}^T = \mathbf{U} \boldsymbol{\Sigma} \mathbf{V}^T$ provides the Moore-Penrose pseudo-inverse:
 $$(\mathbf{R}^T)^\dagger = \mathbf{V} \boldsymbol{\Sigma}^{-1} \mathbf{U}^T$$
 The corrective kick vector is calculated by:
@@ -563,7 +580,7 @@ where $\alpha \in (0, 1]$ is the feedback loop gain (typically $\alpha \approx 0
 - ✅ **Pros:** Instantaneous computation ($< 0.1\text{ ms}$); mathematically guaranteed convergence in purely linear regimes.
 - ❌ **Cons:** Ignores non-linear saturation. Gains up to about $1.2$ converge fastest (about 3.7 steps at $\alpha = 1.2$ versus 9.4 at $0.45$); above that the controller overshoots.
 
-### 4.2 Baseline 1 (Track 1): Supervised Surrogate + SciPy Bounded Inversion
+### 4.3 Baseline 1 (Track 1): Supervised Surrogate + SciPy Bounded Inversion
 Instead of inverting an analytical matrix, Baseline 1 uses the trained neural digital twin $\hat{\mathbf{Y}} = f_{\boldsymbol{\theta}}(\mathbf{I})$, which maps the total corrector current to the orbit, inside an optimization loop:
 
 $$\min_{\Delta \mathbf{I}} \mathcal{L}(\Delta \mathbf{I}) = \left\| \mathbf{Y}_{\text{obs}} - f_{\boldsymbol{\theta}}(\mathbf{I}) + f_{\boldsymbol{\theta}}(\mathbf{I} + \Delta \mathbf{I}) \right\|_2^2 + \lambda \|\Delta \mathbf{I}\|_2^2$$
@@ -609,7 +626,7 @@ class SupervisedMLPController:
 | <span style="color:#C0392B; font-weight:bold;">$L_2$ Regularization ($\alpha$)*</span> | $10^{-4}$ | Weight decay penalty $\frac{1}{2}\alpha\|\mathbf{W}\|_2^2$ suppressing overfitting to diagnostic noise ($\sigma = 10\ \mu\text{m}$). |
 | <span style="color:#C0392B; font-weight:bold;">Max Epochs / Early Stopping*</span> | 400 epochs, tol=$10^{-4}$ | Training stops when the loss improves by less than `tol` for 10 epochs (after about 85 epochs with the defaults), or at `max_iter`. |
 
-### 4.3 Track 2: Closed-Loop RL & Physics-Informed Policy Agents
+### 4.4 Track 2: Closed-Loop RL & Physics-Informed Policy Agents
 While numerical optimization per step is powerful, iterative solvers add execution latency (about $27\text{ ms}$ per step for Baseline 1). In contrast, a direct policy executes in well under $0.1\text{ ms}$ ([Kain et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.124801)).
 
 #### Physics-Informed Residual Policy Architecture
@@ -653,7 +670,7 @@ The discount factor, policy learning rate and exploration noise apply only if yo
 
 ---
 
-### 4.4 Track 3: Closed-Loop Bayesian Optimization with Gaussian Processes
+### 4.5 Track 3: Closed-Loop Bayesian Optimization with Gaussian Processes
 Bayesian Optimization (BO) provides sample-efficient optimization in high-dimensional non-linear accelerator systems by combining a probabilistic surrogate model with an acquisition function ([Roussel et al., 2021](https://doi.org/10.1038/s41467-021-25757-3), [Edelen et al., 2020](https://doi.org/10.1103/PhysRevAccelBeams.23.044601)).
 
 In our closed-loop architecture, a Gaussian Process (GP) regressor models the mapping from the total corrector currents $\mathbf{I}$ to the orbit response:

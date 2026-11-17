@@ -809,22 +809,83 @@ def create_presentation():
 
     add_footer(s17, 17)
 
-    # SLIDE 18: Paradigm 1: Supervised Learning (Terminology & Hyperparameters)
+    # ==========================================
+    # SLIDE 18: Closed-Loop Control Architecture (RESIZED IMAGE - ZERO OVERLAP)
     # ==========================================
     s18 = prs.slides.add_slide(blank_layout)
-    add_header(s18, "Paradigm 1", "Supervised Learning: Digital Twins & Hyperparameters",
+    add_header(s18, "Closed-Loop Control", "Closed-Loop Control Architecture",
+               "Three learning paradigms behind the challenge tracks; all three act on the measured orbit at every step")
+
+    # Image scaled: Height = 3.85 in, aspect ratio preserved and centered
+    ctrl_img = IMG_DIR / "forward_sl_and_rl_schematic.png"
+    if ctrl_img.exists():
+        pic = s18.shapes.add_picture(str(ctrl_img), Inches(0), Inches(1.38), height=Inches(3.85))
+        pic.left = int((SLIDE_WIDTH - pic.width) / 2)
+
+    # Card below the image
+    add_card(s18, Inches(0.8), Inches(5.38), Inches(11.733), Inches(1.22), bg_color=LIGHT_BG)
+    tb18 = s18.shapes.add_textbox(Inches(1.0), Inches(5.42), Inches(11.3), Inches(1.14))
+    tf18 = tb18.text_frame
+    tf18.word_wrap = True
+    tf18.vertical_anchor = MSO_ANCHOR.MIDDLE
+    add_text_run(tf18.paragraphs[0],
+                 "• Supervised (Track 1): trains an MLP surrogate offline, then inverts it at each step for the kick ΔI.\n"
+                 "• Reinforcement (Track 2): a policy acts on the measured orbit Y and improves from the reward it receives.\n"
+                 "• Bayesian Optimization (Track 3): a GP models the response with uncertainty; each step minimizes the LCB.",
+                 size=Pt(12.5), color=DARK_GRAY)
+
+    add_footer(s18, 18)
+
+    # ==========================================
+    # SLIDE 19: Baseline 0: Classical Linear SVD
+    # ==========================================
+    s19 = prs.slides.add_slide(blank_layout)
+    add_header(s19, "Benchmark Baselines", "Baseline 0: Classical Linear SVD",
+               "Inverting the linear Orbit Response Matrix via Moore-Penrose pseudo-inverse")
+
+    add_card(s19, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Mathematical Formulation & Operational Vulnerabilities")
+    tb19 = s19.shapes.add_textbox(Inches(1.1), Inches(2.1), Inches(11.1), Inches(4.4))
+    tf19 = tb19.text_frame
+    tf19.word_wrap = True
+
+    p_19 = tf19.paragraphs[0]
+    add_text_run(p_19, "Singular Value Decomposition (SVD) Pseudo-Inverse Formulation:\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p_19, "Computes corrective kick vector ΔI directly by inverting the transpose of the linear ORM:\n\n", size=Pt(13.5), color=DARK_GRAY)
+
+    p_eq_19 = tf19.add_paragraph()
+    p_eq_19.alignment = PP_ALIGN.CENTER
+    add_text_run(p_eq_19, "ΔI = - α · ( Rᵀ )⁺ · Y_obs,       with ( Rᵀ )⁺ = V Σ⁺ Uᵀ\n", bold=True, size=Pt(17), color=PRIMARY)
+
+    p2_19 = tf19.add_paragraph()
+    p2_19.space_before = Pt(8)
+    add_text_run(p2_19, "• Operational Profile & Limitations:\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p2_19, "  -- Static feedback gain: Typically α ≈ 0.45, with kicks hard clipped to [-0.8, +0.8] A.\n"
+                        "  -- Execution latency: < 0.1 ms (instantaneous analytical matrix-vector product).\n"
+                        "  -- Vulnerability in Non-Linear Regimes: It ignores the cubic iron core saturation. At high currents the true response is weaker than the linear R predicts, so each kick under-corrects and convergence is slow (9.4 mean steps at α = 0.45).\n\n", size=Pt(13.5), color=DARK_GRAY)
+
+    p3_19 = tf19.add_paragraph()
+    add_text_run(p3_19, "• Tested Benchmark Performance: ", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p3_19, "100.0% success rate, 9.4 mean steps, 635.277 total score (Rank #3).", bold=True, size=Pt(14), color=PRIMARY)
+
+    add_footer(s19, 19)
+
+    # ==========================================
+    # SLIDE 20: Paradigm 1: Supervised Learning (Terminology & Hyperparameters)
+    # ==========================================
+    s20 = prs.slides.add_slide(blank_layout)
+    add_header(s20, "Paradigm 1", "Supervised Learning: Digital Twins & Hyperparameters",
                "Training data-driven accelerator forward surrogates to model complex non-linear optics")
 
-    add_card(s18, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Supervised Learning Workflow, Optimization & Hyperparameter Taxonomy")
+    add_card(s20, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Supervised Learning Workflow, Optimization & Hyperparameter Taxonomy")
 
     # Left Box: Model Training Terminology
-    tb17_l = s18.shapes.add_textbox(Inches(1.05), Inches(1.95), Inches(4.95), Inches(4.5))
-    tf17_l = tb17_l.text_frame
-    tf17_l.word_wrap = True
+    tb20_l = s20.shapes.add_textbox(Inches(1.05), Inches(1.95), Inches(4.95), Inches(4.5))
+    tf20_l = tb20_l.text_frame
+    tf20_l.word_wrap = True
 
-    p_18 = tf17_l.paragraphs[0]
-    add_text_run(p_18, "1. Core Model Training Terminology:\n", bold=True, size=Pt(13.5), color=NAVY)
-    add_text_run(p_18, "• Weights W & Biases b: Trainable synaptic multipliers and threshold offsets updated during learning.\n\n"
+    p_20 = tf20_l.paragraphs[0]
+    add_text_run(p_20, "1. Core Model Training Terminology:\n", bold=True, size=Pt(13.5), color=NAVY)
+    add_text_run(p_20, "• Weights W & Biases b: Trainable synaptic multipliers and threshold offsets updated during learning.\n\n"
                        "• Loss Function ℒ(θ): Error metric (MSE) measuring discrepancy between predicted orbit Ŷ and true BPM vector Y.\n\n"
                        "• Gradient & Backpropagation: Multivariable chain rule propagating loss gradients ∇_θ ℒ backward to compute weight steps.\n\n"
                        "• Epoch vs Batch vs Step / Iteration:\n"
@@ -834,7 +895,7 @@ def create_presentation():
                        "• Generalization & Early Stopping: Halts training when validation loss stops improving, avoiding memorizing sensor noise (10 μm).", size=Pt(11.5), color=DARK_GRAY)
 
     # Right Box: Hyperparameter Table (starts at 6.40 in, 0.55 in gutter)
-    sl_table_shape = s18.shapes.add_table(7, 3, Inches(6.40), Inches(1.95), Inches(5.75), Inches(4.2))
+    sl_table_shape = s20.shapes.add_table(7, 3, Inches(6.40), Inches(1.95), Inches(5.75), Inches(4.2))
     sl_tbl = sl_table_shape.table
     for idx, w in enumerate([Inches(1.45), Inches(1.35), Inches(2.9)]):
         sl_tbl.columns[idx].width = w
@@ -866,82 +927,24 @@ def create_presentation():
             add_text_run(p_cell, text_val, bold=(c_idx == 0), size=Pt(9.5), color=TUNABLE_RED if c_idx == 0 else DARK_GRAY)
 
     # Footnote on modifiable hyperparameters
-    tb17_fn = s18.shapes.add_textbox(Inches(6.45), Inches(6.18), Inches(5.7), Inches(0.4))
-    tb17_fn.text_frame.word_wrap = True
-    p_fn17 = tb17_fn.text_frame.paragraphs[0]
-    add_text_run(p_fn17, "* Red text: Hyperparameters participants can modify in notebook TODO 1", bold=True, size=Pt(9.5), color=TUNABLE_RED)
+    tb20_fn = s20.shapes.add_textbox(Inches(6.45), Inches(6.18), Inches(5.7), Inches(0.4))
+    tb20_fn.text_frame.word_wrap = True
+    p_fn20 = tb20_fn.text_frame.paragraphs[0]
+    add_text_run(p_fn20, "* Red text: Hyperparameters participants can modify in notebook TODO 1", bold=True, size=Pt(9.5), color=TUNABLE_RED)
 
-    add_footer(s18, 18)
+    add_footer(s20, 20)
 
     # ==========================================
-    # SLIDE 19: Neural Surrogate Digital Twin (RESIZED IMAGE - ZERO OVERLAP)
+    # SLIDE 21: Neural Surrogate Digital Twin (RESIZED IMAGE - ZERO OVERLAP)
     # ==========================================
-    s19 = prs.slides.add_slide(blank_layout)
-    add_header(s19, "Surrogate Modeling", "Neural Surrogate Digital Twin",
+    s21 = prs.slides.add_slide(blank_layout)
+    add_header(s21, "Surrogate Modeling", "Neural Surrogate Digital Twin",
                "Deep Multi-Layer Perceptron (128-64-32) capturing non-linear cubic saturation")
 
     # Image scaled: Height = 3.85 in, aspect ratio preserved and centered
     mlp_img = IMG_DIR / "mlp_schematic.png"
     if mlp_img.exists():
-        pic = s19.shapes.add_picture(str(mlp_img), Inches(0), Inches(1.38), height=Inches(3.85))
-        pic.left = int((SLIDE_WIDTH - pic.width) / 2)
-
-    # Card below the image
-    add_card(s19, Inches(0.8), Inches(5.38), Inches(11.733), Inches(1.22), bg_color=LIGHT_BG)
-    tb19 = s19.shapes.add_textbox(Inches(1.0), Inches(5.42), Inches(11.3), Inches(1.14))
-    tf19 = tb19.text_frame
-    tf19.word_wrap = True
-    tf19.vertical_anchor = MSO_ANCHOR.MIDDLE
-    add_text_run(tf19.paragraphs[0], 
-                 "• Input Layer: 6 Corrector Magnet Currents [HCM1-3, VCM1-3] in Amperes.\n"
-                 "• Hidden Layers: Dense layers (128 → 64 → 32) with ReLU non-linear activations capturing cubic iron-core saturation.\n"
-                 "• Output Layer: 12 predicted Beam Position Monitor readings [BPM1-12] in millimeters, evaluated in < 0.2 milliseconds.", 
-                 size=Pt(12.5), color=DARK_GRAY)
-
-    add_footer(s19, 19)
-
-    # ==========================================
-    # SLIDE 20: Surrogate Training & Holdout Validation
-    # ==========================================
-    s20 = prs.slides.add_slide(blank_layout)
-    add_header(s20, "Digital Twin Validation", "Surrogate Training & Validation",
-               "Ensuring digital twin fidelity across linear and saturated magnetic operating regimes")
-
-    add_card(s20, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Offline Dataset Generation and Model Verification")
-    tb20 = s20.shapes.add_textbox(Inches(1.1), Inches(2.1), Inches(11.1), Inches(4.4))
-    tf20 = tb20.text_frame
-    tf20.word_wrap = True
-
-    p_20 = tf20.paragraphs[0]
-    add_text_run(p_20, "1. Offline Dataset (notebook Step 3):\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p_20, "   • 1,500 simulated shots with corrector currents sampled uniformly in I ∈ [-3.0, +3.0]⁶ A (the correction needs up to 2.84 A).\n"
-                       "   • Full non-linear response including the cubic term -0.015 · (I³ · R) and 10 μm sensor noise.\n"
-                       "   • Split into 80% training (1,200 shots) and 20% holdout test (300 shots), never used for training.\n\n", size=Pt(13.5), color=DARK_GRAY)
-
-    p2_19 = tf20.add_paragraph()
-    add_text_run(p2_19, "2. Holdout Test RMSE (sensor noise floor: 0.010 mm):\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p2_19, "   • Linear Ridge (84 parameters): 0.082 mm. Misses the saturation.\n"
-                        "   • Reference MLP (ReLU, Adam, 128-64-32; 11,628 parameters): 0.109 mm. Adam stops after about 85 epochs, and the network predicts worse than the linear model.\n"
-                        "   • Tuned MLP (tanh, lbfgs, 64-64; 5,388 parameters): 0.012 mm, close to the noise floor.\n\n", size=Pt(13.5), color=DARK_GRAY)
-
-    p3_19 = tf20.add_paragraph()
-    add_text_run(p3_19, "3. Lessons:\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3_19, "   • A larger network is not automatically a better surrogate: always check the holdout RMSE (TODO 1).\n"
-                        "   • No model can beat the 0.010 mm noise floor on noisy test data. Inference takes about 0.1 ms per call.", bold=True, size=Pt(13.5), color=PRIMARY)
-
-    add_footer(s20, 20)
-
-    # ==========================================
-    # SLIDE 21: Closed-Loop Control Architecture (RESIZED IMAGE - ZERO OVERLAP)
-    # ==========================================
-    s21 = prs.slides.add_slide(blank_layout)
-    add_header(s21, "Closed-Loop Control", "Closed-Loop Control Architecture",
-               "Three learning paradigms behind the challenge tracks; all three act on the measured orbit at every step")
-
-    # Image scaled: Height = 3.85 in, aspect ratio preserved and centered
-    ctrl_img = IMG_DIR / "forward_sl_and_rl_schematic.png"
-    if ctrl_img.exists():
-        pic = s21.shapes.add_picture(str(ctrl_img), Inches(0), Inches(1.38), height=Inches(3.85))
+        pic = s21.shapes.add_picture(str(mlp_img), Inches(0), Inches(1.38), height=Inches(3.85))
         pic.left = int((SLIDE_WIDTH - pic.width) / 2)
 
     # Card below the image
@@ -950,44 +953,42 @@ def create_presentation():
     tf21 = tb21.text_frame
     tf21.word_wrap = True
     tf21.vertical_anchor = MSO_ANCHOR.MIDDLE
-    add_text_run(tf21.paragraphs[0],
-                 "• Supervised (Track 1): trains an MLP surrogate offline, then inverts it at each step for the kick ΔI.\n"
-                 "• Reinforcement (Track 2): a policy acts on the measured orbit Y and improves from the reward it receives.\n"
-                 "• Bayesian Optimization (Track 3): a GP models the response with uncertainty; each step minimizes the LCB.",
+    add_text_run(tf21.paragraphs[0], 
+                 "• Input Layer: 6 Corrector Magnet Currents [HCM1-3, VCM1-3] in Amperes.\n"
+                 "• Hidden Layers: Dense layers (128 → 64 → 32) with ReLU non-linear activations capturing cubic iron-core saturation.\n"
+                 "• Output Layer: 12 predicted Beam Position Monitor readings [BPM1-12] in millimeters, evaluated in < 0.2 milliseconds.", 
                  size=Pt(12.5), color=DARK_GRAY)
 
     add_footer(s21, 21)
 
     # ==========================================
-    # SLIDE 22: Baseline 0: Classical Linear SVD
+    # SLIDE 22: Surrogate Training & Holdout Validation
     # ==========================================
     s22 = prs.slides.add_slide(blank_layout)
-    add_header(s22, "Benchmark Baselines", "Baseline 0: Classical Linear SVD",
-               "Inverting the linear Orbit Response Matrix via Moore-Penrose pseudo-inverse")
+    add_header(s22, "Digital Twin Validation", "Surrogate Training & Validation",
+               "Ensuring digital twin fidelity across linear and saturated magnetic operating regimes")
 
-    add_card(s22, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Mathematical Formulation & Operational Vulnerabilities")
+    add_card(s22, Inches(0.8), Inches(1.4), Inches(11.733), Inches(5.3), "Offline Dataset Generation and Model Verification")
     tb22 = s22.shapes.add_textbox(Inches(1.1), Inches(2.1), Inches(11.1), Inches(4.4))
     tf22 = tb22.text_frame
     tf22.word_wrap = True
 
     p_22 = tf22.paragraphs[0]
-    add_text_run(p_22, "Singular Value Decomposition (SVD) Pseudo-Inverse Formulation:\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p_22, "Computes corrective kick vector ΔI directly by inverting the transpose of the linear ORM:\n\n", size=Pt(13.5), color=DARK_GRAY)
+    add_text_run(p_22, "1. Offline Dataset (notebook Step 3):\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p_22, "   • 1,500 simulated shots with corrector currents sampled uniformly in I ∈ [-3.0, +3.0]⁶ A (the correction needs up to 2.84 A).\n"
+                       "   • Full non-linear response including the cubic term -0.015 · (I³ · R) and 10 μm sensor noise.\n"
+                       "   • Split into 80% training (1,200 shots) and 20% holdout test (300 shots), never used for training.\n\n", size=Pt(13.5), color=DARK_GRAY)
 
-    p_eq_21 = tf22.add_paragraph()
-    p_eq_21.alignment = PP_ALIGN.CENTER
-    add_text_run(p_eq_21, "ΔI = - α · ( Rᵀ )⁺ · Y_obs,       with ( Rᵀ )⁺ = V Σ⁺ Uᵀ\n", bold=True, size=Pt(17), color=PRIMARY)
+    p2_22 = tf22.add_paragraph()
+    add_text_run(p2_22, "2. Holdout Test RMSE (sensor noise floor: 0.010 mm):\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p2_22, "   • Linear Ridge (84 parameters): 0.082 mm. Misses the saturation.\n"
+                        "   • Reference MLP (ReLU, Adam, 128-64-32; 11,628 parameters): 0.109 mm. Adam stops after about 85 epochs, and the network predicts worse than the linear model.\n"
+                        "   • Tuned MLP (tanh, lbfgs, 64-64; 5,388 parameters): 0.012 mm, close to the noise floor.\n\n", size=Pt(13.5), color=DARK_GRAY)
 
-    p2_21 = tf22.add_paragraph()
-    p2_21.space_before = Pt(8)
-    add_text_run(p2_21, "• Operational Profile & Limitations:\n", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p2_21, "  -- Static feedback gain: Typically α ≈ 0.45, with kicks hard clipped to [-0.8, +0.8] A.\n"
-                        "  -- Execution latency: < 0.1 ms (instantaneous analytical matrix-vector product).\n"
-                        "  -- Vulnerability in Non-Linear Regimes: It ignores the cubic iron core saturation. At high currents the true response is weaker than the linear R predicts, so each kick under-corrects and convergence is slow (9.4 mean steps at α = 0.45).\n\n", size=Pt(13.5), color=DARK_GRAY)
-
-    p3_21 = tf22.add_paragraph()
-    add_text_run(p3_21, "• Tested Benchmark Performance: ", bold=True, size=Pt(15), color=NAVY)
-    add_text_run(p3_21, "100.0% success rate, 9.4 mean steps, 635.277 total score (Rank #3).", bold=True, size=Pt(14), color=PRIMARY)
+    p3_22 = tf22.add_paragraph()
+    add_text_run(p3_22, "3. Lessons:\n", bold=True, size=Pt(15), color=NAVY)
+    add_text_run(p3_22, "   • A larger network is not automatically a better surrogate: always check the holdout RMSE (TODO 1).\n"
+                        "   • No model can beat the 0.010 mm noise floor on noisy test data. Inference takes about 0.1 ms per call.", bold=True, size=Pt(13.5), color=PRIMARY)
 
     add_footer(s22, 22)
 

@@ -100,11 +100,11 @@
 \noindent\hyperlink{slide.15}{\textbf{\color{primaryblue}슬라이드 15:}\enspace 빔 전송 대리 모델에서 활성화 함수별 위상 공간 변형\enspace\dotfill\enspace\textbf{15}} \\[0.22em]
 \noindent\hyperlink{slide.16}{\textbf{\color{primaryblue}슬라이드 16:}\enspace 머신러닝 최적화 알고리즘: 경사하강법부터 Adam 및 L-BFGS-B까지\enspace\dotfill\enspace\textbf{16}} \\[0.22em]
 \noindent\hyperlink{slide.17}{\textbf{\color{primaryblue}슬라이드 17:}\enspace MLP를 넘어선 가속기 특화 신경망 구조: PINN, PRNN, VAE, U-Net\enspace\dotfill\enspace\textbf{17}} \\[0.22em]
-\noindent\hyperlink{slide.18}{\textbf{\color{primaryblue}슬라이드 18:}\enspace 지도학습: 디지털 트윈 대리 모델링 및 하이퍼파라미터\enspace\dotfill\enspace\textbf{18}} \\[0.22em]
-\noindent\hyperlink{slide.19}{\textbf{\color{primaryblue}슬라이드 19:}\enspace 신경망 대리 모델 디지털 트윈 구조\enspace\dotfill\enspace\textbf{19}} \\[0.22em]
-\noindent\hyperlink{slide.20}{\textbf{\color{primaryblue}슬라이드 20:}\enspace 대리 모델 훈련 및 독립 홀드아웃(Holdout) 검증 결과\enspace\dotfill\enspace\textbf{20}} \\[0.22em]
-\noindent\hyperlink{slide.21}{\textbf{\color{primaryblue}슬라이드 21:}\enspace 폐루프 제어 아키텍처 및 대리 모델 역산 흐름\enspace\dotfill\enspace\textbf{21}} \\[0.22em]
-\noindent\hyperlink{slide.22}{\textbf{\color{primaryblue}슬라이드 22:}\enspace 베이스라인 0: 고전적 선형 SVD 의사역행렬 제어기\enspace\dotfill\enspace\textbf{22}} \\[0.22em]
+\noindent\hyperlink{slide.18}{\textbf{\color{primaryblue}슬라이드 18:}\enspace 폐루프 제어 아키텍처 및 3대 학습 패러다임\enspace\dotfill\enspace\textbf{18}} \\[0.22em]
+\noindent\hyperlink{slide.19}{\textbf{\color{primaryblue}슬라이드 19:}\enspace 베이스라인 0: 고전적 선형 SVD 의사역행렬 제어기\enspace\dotfill\enspace\textbf{19}} \\[0.22em]
+\noindent\hyperlink{slide.20}{\textbf{\color{primaryblue}슬라이드 20:}\enspace 지도학습: 디지털 트윈 대리 모델링 및 하이퍼파라미터\enspace\dotfill\enspace\textbf{20}} \\[0.22em]
+\noindent\hyperlink{slide.21}{\textbf{\color{primaryblue}슬라이드 21:}\enspace 신경망 대리 모델 디지털 트윈 구조\enspace\dotfill\enspace\textbf{21}} \\[0.22em]
+\noindent\hyperlink{slide.22}{\textbf{\color{primaryblue}슬라이드 22:}\enspace 대리 모델 훈련 및 독립 홀드아웃(Holdout) 검증 결과\enspace\dotfill\enspace\textbf{22}} \\[0.22em]
 \noindent\hyperlink{slide.23}{\textbf{\color{primaryblue}슬라이드 23:}\enspace 베이스라인 1 (트랙 1): 딥러닝 대리 모델 역산 최적화\enspace\dotfill\enspace\textbf{23}} \\[0.22em]
 \noindent\hyperlink{slide.24}{\textbf{\color{primaryblue}슬라이드 24:}\enspace 강화학습: 마르코프 결정 과정(MDP) 정식화 및 하이퍼파라미터\enspace\dotfill\enspace\textbf{24}} \\[0.22em]
 \noindent\hyperlink{slide.25}{\textbf{\color{primaryblue}슬라이드 25:}\enspace 트랙 2: 물리 사전 지식 결합 폐루프 강화학습 정책\enspace\dotfill\enspace\textbf{25}} \\[0.22em]
@@ -498,14 +498,58 @@ B-H 자기 포화 곡선, 3차 비선형 수식 Y = I·R - 0.015·(I$^3$·R) + Y
 \small
 \noindent\textbf{\color{navy}교수학적 강조점 (Focus Point):}\enspace 각 사분면을 시계 방향으로 짚어가며, 각 구조가 단순 MLP의 어떤 물리적 한계점을 극복했는지 명확히 설명합니다.\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}예상 질문 및 모범 답변 (Q\&A):}\enspace Q: 폐루프 궤도 제어에 PINN을 대리 모델로 쓸 수 있나요? A: 가능합니다. 보정 킥이 매우 커서 훈련 데이터 범위를 벗어날 때 PINN이 훨씬 물리적으로 신뢰할 수 있는 예측을 제공합니다.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 이제 오늘 미니 해커톤의 첫 번째 핵심 트랙인 지도학습 대리 모델 역산 제어로 들어가 보겠습니다.
+\noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 가속기 물리의 기초를 다졌으니, 이제 핵심 과제인 폐루프 궤도 제어 시스템 아키텍처로 넘어가겠습니다.
 \end{tcolorbox}
 \clearpage
 \hypertarget{slide.18}{}
 \phantomsection
-\addcontentsline{toc}{section}{슬라이드 18: 지도학습: 디지털 트윈 대리 모델링 및 하이퍼파라미터}
+\addcontentsline{toc}{section}{슬라이드 18: 폐루프 제어 아키텍처 및 3대 학습 패러다임}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}슬라이드 18:\enspace 지도학습: 디지털 트윈 대리 모델링 및 하이퍼파라미터}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace 슬라이드 18 / 35}
+{\large\bfseries\color{white}슬라이드 18:\enspace 폐루프 제어 아키텍처 및 3대 학습 패러다임}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Closed-Loop Control \enspace$|$\enspace 슬라이드 18 / 35}
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}슬라이드 시각 구성 요약},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
+폐루프 피드백 블록도: 가속기 전송선 환경, BPM 측정값 Y, 현재 누적 전류 I, 제어기, 제어 킥 ΔI 순환 구조 및 지도학습, 강화학습, 베이지안 최적화 비교.
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}발표자 구두 대본 (Spoken Script)},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
+가속기 폐루프 궤도 제어 시스템의 전체 아키텍처와 이번 해커톤의 3대 학습 패러다임을 한눈에 보여주는 슬라이드입니다. 실제 가속기 운전에서 BPM 진단 센서는 12차원 궤도 변위 Y를 측정하고, 제어기는 50스텝 이내에 RMS 0.030 mm 이하 안착을 목표로 6차원 증분 킥 ΔI를 계산하여 전원 장치에 인가합니다. 이번 미니 해커톤에서는 매 스텝 측정된 궤도를 바탕으로 동작하는 3가지 인공지능 패러다임을 다룹니다. 첫째는 '지도학습(트랙 1)'입니다: 캘리브레이션 데이터로 신경망 대리 모델을 사전 학습한 뒤, 매 스텝 수치적 역산 최적화를 수행합니다. 둘째는 '강화학습(트랙 2)'입니다: 측정된 궤도 오차를 액추에이터 킥으로 직접 매핑하는 정책을 수립하고 환경의 보상 피드백을 통해 적응적으로 개선합니다. 셋째는 '베이지안 최적화(트랙 3)'입니다: 가우시안 프로세스로 불확실성을 모델링하며 LCB를 통해 탐색과 활용의 균형을 맞춥니다. 그러나 인공지능을 적용하기에 앞서, 수십 년간 가속기 제어실에서 표준으로 사용되어 온 고전 선형 SVD 제어기(베이스라인 0)를 먼저 기준점으로 살펴보겠습니다.
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
+\small
+\noindent\textbf{\color{navy}교수학적 강조점 (Focus Point):}\enspace 폐루프 피드백 제어 루프의 기본 흐름을 설명하고, 3대 AI 트랙(지도학습, 강화학습, 베이지안 최적화)을 개괄한 뒤 베이스라인 0으로 연결합니다.\par\vspace{0.3em}
+\noindent\textbf{\color{successgreen}예상 질문 및 모범 답변 (Q\&A):}\enspace Q: 왜 세 가지 패러다임 모두 매 스텝 측정된 궤도를 바탕으로 동작하나요? A: 가속기에는 항상 외란과 노이즈가 존재하므로, 진정한 폐루프 피드백 제어는 매 스텝 새로운 측정값을 기반으로 모델 오차를 상쇄해야 하기 때문입니다.\par\vspace{0.3em}
+\noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 기계학습 기법을 적용하기에 앞서, 수십 년간 가속기 제어의 표준으로 사용되어 온 고전 기준점인 베이스라인 0 SVD를 살펴보겠습니다.
+\end{tcolorbox}
+\clearpage
+\hypertarget{slide.19}{}
+\phantomsection
+\addcontentsline{toc}{section}{슬라이드 19: 베이스라인 0: 고전적 선형 SVD 의사역행렬 제어기}
+\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
+{\large\bfseries\color{white}슬라이드 19:\enspace 베이스라인 0: 고전적 선형 SVD 의사역행렬 제어기}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Benchmark Baselines \enspace$|$\enspace 슬라이드 19 / 35}
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}슬라이드 시각 구성 요약},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
+응답행렬 특이값 분해 R$^T$ = UΣV$^T$, 무어-펜로즈 의사역행렬 (R$^T$)†, 피드백 수식 ΔI = -α·(R$^T$)†·Y, 피드백 게인 α에 따른 수렴 속도 비교.
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}발표자 구두 대본 (Spoken Script)},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
+베이스라인 0은 전통적인 가속기 궤도 보정의 표준인 '특이값 분해(SVD) 기반 무어-펜로즈 의사역행렬 제어기'입니다. 이상적인 선형 모델에서 궤도 변위는 Y = ΔI · R로 표현되며, 전치하면 R$^T$·ΔI = Y가 됩니다. R$^T$은 12×6 행렬이므로 행이 열보다 많은 과결정 시스템입니다. SVD 분해 R$^T$ = UΣV$^T$를 통해 의사역행렬 (R$^T$)† = VΣ$^{-1}$U$^T$를 계산하고, 비례 게인 α를 곱해 제어 킥을 인가합니다: ΔI = -α · (R$^T$)† · Y. 기본 보수적 게인 α = 0.45를 적용하면 30개 시드 전체에서 안정적으로 100\% 성공률을 달성합니다. 하지만 이 제어기는 3차 자기 포화를 전혀 알지 못하므로, 고전류 영역에서 킥을 계속 과소평가하여 수렴까지 평균 9.4스텝이나 소요되며 공식 벤치마크 점수는 635.277점에 머무릅니다. 게인을 α = 1.2로 높이면 약 3.7스텝 만에 수렴하여 822점을 얻지만, 그보다 크면 오버슈트가 발생하여 점수가 다시 떨어집니다.
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
+\small
+\noindent\textbf{\color{navy}교수학적 강조점 (Focus Point):}\enspace 게인 트레이드오프를 설명합니다: α=0.45는 안전하지만 9.4스텝으로 느리고, α=1.2는 3.7스텝(822점)으로 빠르지만, 그 이상에서는 오버슈트가 발생합니다.\par\vspace{0.3em}
+\noindent\textbf{\color{successgreen}예상 질문 및 모범 답변 (Q\&A):}\enspace Q: 왜 R을 전치(transpose)하여 역행렬을 구하나요? A: 수식 정의상 Y가 (1×12) 행 벡터이고 전류 I가 (1×6) 행 벡터이므로(Y = I·R), 전치해야 올바른 차원이 맞습니다.\par\vspace{0.3em}
+\noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 기계학습을 활용해 이러한 비선형 포화를 극복할 수 있을까요? 첫 번째 경쟁 패러다임인 지도학습 대리 모델링으로 넘어가겠습니다.
+\end{tcolorbox}
+\clearpage
+\hypertarget{slide.20}{}
+\phantomsection
+\addcontentsline{toc}{section}{슬라이드 20: 지도학습: 디지털 트윈 대리 모델링 및 하이퍼파라미터}
+\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
+{\large\bfseries\color{white}슬라이드 20:\enspace 지도학습: 디지털 트윈 대리 모델링 및 하이퍼파라미터}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace 슬라이드 20 / 35}
 \end{tcolorbox}
 \vspace{0.2em}
 \begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}슬라이드 시각 구성 요약},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
@@ -523,11 +567,11 @@ B-H 자기 포화 곡선, 3차 비선형 수식 Y = I·R - 0.015·(I$^3$·R) + Y
 \noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 그렇다면 이 디지털 트윈 신경망의 입출력 구조와 계층 배치는 어떻게 이루어져 있는지 확인해보겠습니다.
 \end{tcolorbox}
 \clearpage
-\hypertarget{slide.19}{}
+\hypertarget{slide.21}{}
 \phantomsection
-\addcontentsline{toc}{section}{슬라이드 19: 신경망 대리 모델 디지털 트윈 구조}
+\addcontentsline{toc}{section}{슬라이드 21: 신경망 대리 모델 디지털 트윈 구조}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}슬라이드 19:\enspace 신경망 대리 모델 디지털 트윈 구조}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace 슬라이드 19 / 35}
+{\large\bfseries\color{white}슬라이드 21:\enspace 신경망 대리 모델 디지털 트윈 구조}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace 슬라이드 21 / 35}
 \end{tcolorbox}
 \vspace{0.2em}
 \begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}슬라이드 시각 구성 요약},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
@@ -542,14 +586,14 @@ B-H 자기 포화 곡선, 3차 비선형 수식 Y = I·R - 0.015·(I$^3$·R) + Y
 \small
 \noindent\textbf{\color{navy}교수학적 강조점 (Focus Point):}\enspace 선형 ORM의 72개 파라미터와 MLP의 11,628개 파라미터 용량을 대조하여 비선형성 포착 능력을 설명합니다.\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}예상 질문 및 모범 답변 (Q\&A):}\enspace Q: 은닉층을 (32, 16)처럼 더 작게 줄여도 되나요? A: 좋은 질문입니다. 실제로 적절히 설계된 작은 Tanh 신경망이 과적합 없이 더 빠르고 우수한 성능을 내기도 합니다.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 그렇다면 이 신경망 대리 모델을 한 번도 본 적 없는 독립 검증 데이터에 평가했을 때 오차는 어느 정도일까요?
+\noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 그렇다면 이 신경망 대리 모델을 한 번도 본 적 없는 독립 검증 데이터에 평가했을 때 오차는 어느 정도일까요? 슬라이드 22를 확인해보겠습니다.
 \end{tcolorbox}
 \clearpage
-\hypertarget{slide.20}{}
+\hypertarget{slide.22}{}
 \phantomsection
-\addcontentsline{toc}{section}{슬라이드 20: 대리 모델 훈련 및 독립 홀드아웃(Holdout) 검증 결과}
+\addcontentsline{toc}{section}{슬라이드 22: 대리 모델 훈련 및 독립 홀드아웃(Holdout) 검증 결과}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}슬라이드 20:\enspace 대리 모델 훈련 및 독립 홀드아웃(Holdout) 검증 결과}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace 슬라이드 20 / 35}
+{\large\bfseries\color{white}슬라이드 22:\enspace 대리 모델 훈련 및 독립 홀드아웃(Holdout) 검증 결과}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace 슬라이드 22 / 35}
 \end{tcolorbox}
 \vspace{0.2em}
 \begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}슬라이드 시각 구성 요약},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
@@ -564,51 +608,7 @@ B-H 자기 포화 곡선, 3차 비선형 수식 Y = I·R - 0.015·(I$^3$·R) + Y
 \small
 \noindent\textbf{\color{navy}교수학적 강조점 (Focus Point):}\enspace 기본 신경망이 선형 모델보다 나쁘다는 의외의 결과에서 잠시 멈추고 강조합니다. 이어서 0.012 mm가 어떤 모델도 넘을 수 없는 한계인 0.010 mm 노이즈 바닥에 가깝다는 점을 보여줍니다.\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}예상 질문 및 모범 답변 (Q\&A):}\enspace Q: 기준 MLP가 이렇게 부정확한데 베이스라인 1은 어떻게 779점을 얻나요? A: 제어 루프가 닫혀 있기 때문입니다. 매 스텝 새로운 측정값에서 출발하므로 모델 오차가 단계적으로 보정됩니다. 정확한 모델은 주로 안착 정밀도를 높여 줍니다.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 순방향 디지털 트윈이 준비되었다면, 이를 폐루프 궤도 제어에 어떻게 활용하는지 살펴보겠습니다.
-\end{tcolorbox}
-\clearpage
-\hypertarget{slide.21}{}
-\phantomsection
-\addcontentsline{toc}{section}{슬라이드 21: 폐루프 제어 아키텍처 및 대리 모델 역산 흐름}
-\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}슬라이드 21:\enspace 폐루프 제어 아키텍처 및 대리 모델 역산 흐름}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace 슬라이드 21 / 35}
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}슬라이드 시각 구성 요약},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
-폐루프 피드백 블록도: 가속기 전송선 환경, BPM 측정값 Y, 현재 누적 전류 I, 디지털 트윈 역산 최적화기, 제어 킥 ΔI, 폐루프 피드백 순환 구조.
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}발표자 구두 대본 (Spoken Script)},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
-이 다이어그램은 폐루프 궤도 제어 시스템의 전체 정보 흐름을 보여줍니다. 스텝 t에서 빔라인 BPM 센서로부터 12차원 관측 궤도 Y가 측정됩니다. 이때 제어기는 환경 메타데이터로부터 현재 전자석들에 인가되어 있는 누적 전류 벡터 I\_t(R$^6$)를 함께 읽어옵니다. 이 현재 전류 정보는 대단히 중요합니다! 자기 포화는 누적 전류의 3승에 비례하므로, 현재 자신이 B-H 곡선의 어느 지점에 위치해 있는지를 알지 못하면 올바른 증분 킥(ΔI)을 계산할 수 없습니다. 제어기는 관측 궤도 Y와 현재 전류 I\_t를 모델 역산 최적화기에 입력합니다. 학습된 신경망 디지털 트윈 f\_θ를 활용하여, 다음 스텝 t+1에서 잔여 궤도를 0으로 상쇄시킬 수 있는 최적의 델타 전류 ΔI ∈ [-0.8A, 0.8A]를 계산합니다. 이 킥이 전원 장치에 인가되면 자장이 변경되고, 빔이 편향되어 새로운 BPM 측정값이 관측됩니다. 이 폐루프 루틴은 궤도 RMS 오차가 목표치인 0.030 mm 이하로 떨어질 때까지 반복됩니다.
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
-\small
-\noindent\textbf{\color{navy}교수학적 강조점 (Focus Point):}\enspace 환경의 info['currents']로부터 현재 누적 전류를 읽어오는 것이 포화 보상의 핵심 열쇠임을 힘주어 설명합니다.\par\vspace{0.3em}
-\noindent\textbf{\color{successgreen}예상 질문 및 모범 답변 (Q\&A):}\enspace Q: 현재 전류를 추적하지 않으면 어떻게 되나요? A: 항상 0A 부근의 선형 영역에 있다고 착각하여, 고전류 포화 영역에서 킥을 크게 과소평가하게 됩니다.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 이제 수십 년간 가속기 제어의 표준으로 군림해 온 고전 선형 SVD 제어 방식(Baseline 0)과 비교해보겠습니다.
-\end{tcolorbox}
-\clearpage
-\hypertarget{slide.22}{}
-\phantomsection
-\addcontentsline{toc}{section}{슬라이드 22: 베이스라인 0: 고전적 선형 SVD 의사역행렬 제어기}
-\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}슬라이드 22:\enspace 베이스라인 0: 고전적 선형 SVD 의사역행렬 제어기}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Baseline 0: Classical Linear SVD \enspace$|$\enspace 슬라이드 22 / 35}
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}슬라이드 시각 구성 요약},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
-응답행렬 특이값 분해 R$^T$ = UΣV$^T$, 무어-펜로즈 의사역행렬 (R$^T$)†, 피드백 수식 ΔI = -α·(R$^T$)†·Y, 피드백 게인 α에 따른 수렴 속도 비교.
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}발표자 구두 대본 (Spoken Script)},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
-베이스라인 0은 전통적인 가속기 궤도 보정의 표준인 '특이값 분해(SVD) 기반 무어-펜로즈 의사역행렬 제어기'입니다. 이상적인 선형 모델에서 궤도 변위는 Y = ΔI · R로 표현되며, 전치하면 R$^T$·ΔI = Y가 됩니다. R$^T$은 12×6 행렬이므로 행이 열보다 많은 과결정 시스템입니다. SVD 분해 R$^T$ = UΣV$^T$를 통해 의사역행렬 (R$^T$)† = VΣ$^{-1}$U$^T$를 계산하고, 비례 게인 α를 곱해 제어 킥을 인가합니다: ΔI = -α · (R$^T$)† · Y. 기본 보수적 게인 α = 0.45를 적용하면 30개 시드 전체에서 안정적으로 100\% 성공률을 달성합니다. 하지만 이 제어기는 3차 자기 포화를 전혀 알지 못하므로, 고전류 영역에서 킥을 계속 과소평가하여 수렴까지 평균 9.4스텝이나 소요되며 공식 벤치마크 점수는 635.277점에 머무릅니다. 게인을 α = 1.2로 높이면 약 3.7스텝 만에 수렴하여 822점을 얻지만, 그보다 크면 오버슈트가 발생하여 점수가 다시 떨어집니다.
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
-\small
-\noindent\textbf{\color{navy}교수학적 강조점 (Focus Point):}\enspace 게인 트레이드오프를 설명합니다: α=0.45는 안전하지만 9.4스텝으로 느리고, α=1.2는 3.7스텝(822점)으로 빠르지만, 그 이상에서는 오버슈트가 발생합니다.\par\vspace{0.3em}
-\noindent\textbf{\color{successgreen}예상 질문 및 모범 답변 (Q\&A):}\enspace Q: 왜 R을 전치(transpose)하여 역행렬을 구하나요? A: 수식 정의상 Y가 (1×12) 행 벡터이고 전류 I가 (1×6) 행 벡터이므로(Y = I·R), 전치해야 올바른 차원이 맞습니다.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 그렇다면 선형 SVD 대신 우리가 학습시킨 비선형 신경망 대리 모델을 역산에 적용하면 어떤 결과가 나올까요? 베이스라인 1을 살펴보겠습니다.
+\noindent\textbf{\color{accent}다음 슬라이드 연결 멘트 (Transition):}\enspace 이제 정확한 순방향 대리 모델을 확보했으니, 이를 역산하여 폐루프 궤도 제어에 어떻게 적용하는지 베이스라인 1을 살펴보겠습니다.
 \end{tcolorbox}
 \clearpage
 \hypertarget{slide.23}{}

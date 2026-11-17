@@ -600,6 +600,30 @@ A larger network is not automatically a better surrogate. The reference MLP has 
 
 \section{Closed-Loop Control Paradigms}
 
+\subsection{Closed-Loop Control Architecture \& Feedback Loop}
+In particle accelerators, closed-loop orbit correction iteratively stabilizes the beam position against external ground vibrations, power-supply ripple, and thermal drifts. At each discrete iteration step $t \in [0, 50]$, the closed-loop orbit correction system operates over transverse beam position monitor measurements and steerer magnet currents:
+\begin{enumerate}
+    \item \textbf{Diagnostic Observation:} The Beam Position Monitors (BPMs) record the current orbit distortion vector $\mathbf{Y}_t \in \mathbb{R}^{12}$ (in millimeters), which includes unperturbed trajectory, corrector deflections, non-linear saturation, and Gaussian sensor noise $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I})$ with $\sigma = 0.010\text{ mm}$.
+    \item \textbf{Controller Policy Calculation:} The controller receives the observation $\mathbf{Y}_t$ (and optional runtime metadata such as current steerer magnet settings $\mathbf{I}_t$) and computes an incremental adjustment action $\Delta\mathbf{I}_t \in [-0.8, +0.8]^6\text{ A}$.
+    \item \textbf{Actuator Execution \& State Update:} The dipole correctors update their total current settings:
+    \begin{equation}
+        \mathbf{I}_{t+1} = \text{clip}\left(\mathbf{I}_t + \Delta\mathbf{I}_t, \ -5.0, \ +5.0\right)\text{ A}
+    \end{equation}
+    \item \textbf{Convergence Evaluation:} The updated beam trajectory $\mathbf{Y}_{t+1}$ is measured. The correction terminates successfully if the transverse root-mean-square orbit distortion satisfies:
+    \begin{equation}
+        \text{RMS}_{t+1} = \sqrt{\frac{1}{12}\sum_{j=1}^{12} Y_{t+1, j}^2} < 0.030\text{ mm}
+    \end{equation}
+    If the threshold is not reached within $t = 50$ steps, the episode truncates as a failure.
+\end{enumerate}
+
+To solve this closed-loop alignment task, the benchmark evaluates three distinct learning paradigms alongside the classical analytical baseline:
+\begin{itemize}
+    \item \textbf{Baseline 0 (Classical SVD):} Directly inverts the linear Orbit Response Matrix (ORM) using the Moore-Penrose pseudo-inverse.
+    \item \textbf{Track 1 (Supervised Neural Inversion):} Learns an offline forward digital twin $f_{\boldsymbol{\theta}}(\mathbf{I})$ from calibration data and numerically inverts it via bounded optimization at each step.
+    \item \textbf{Track 2 (Reinforcement Learning Policy):} Learns an end-to-end feedback policy mapping measured orbit errors directly to corrective kicks, leveraging a physics prior with learned residuals and adaptive damping.
+    \item \textbf{Track 3 (Bayesian Optimization):} Employs a Gaussian Process surrogate to quantify predictive uncertainty and balances exploration versus exploitation via Lower Confidence Bound (LCB) minimization.
+\end{itemize}
+
 \subsection{Baseline 0: Classical SVD Pseudo-Inverse Controller}
 In standard accelerator control rooms, Singular Value Decomposition (SVD) of the transpose response matrix $\mathbf{R}^T = \mathbf{U} \boldsymbol{\Sigma} \mathbf{V}^T$ provides the Moore-Penrose pseudo-inverse:
 \begin{equation}

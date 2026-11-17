@@ -100,11 +100,11 @@
 \noindent\hyperlink{slide.15}{\textbf{\color{primaryblue}Slide 15:}\enspace NN Surrogate: Activation Functions in Beam Transport\enspace\dotfill\enspace\textbf{15}} \\[0.22em]
 \noindent\hyperlink{slide.16}{\textbf{\color{primaryblue}Slide 16:}\enspace Optimization Algorithms in Machine Learning\enspace\dotfill\enspace\textbf{16}} \\[0.22em]
 \noindent\hyperlink{slide.17}{\textbf{\color{primaryblue}Slide 17:}\enspace Specialized Neural Architectures: Beyond Plain MLPs\enspace\dotfill\enspace\textbf{17}} \\[0.22em]
-\noindent\hyperlink{slide.18}{\textbf{\color{primaryblue}Slide 18:}\enspace Supervised Learning: Digital Twins \& Hyperparameters\enspace\dotfill\enspace\textbf{18}} \\[0.22em]
-\noindent\hyperlink{slide.19}{\textbf{\color{primaryblue}Slide 19:}\enspace The Neural Surrogate Digital Twin\enspace\dotfill\enspace\textbf{19}} \\[0.22em]
-\noindent\hyperlink{slide.20}{\textbf{\color{primaryblue}Slide 20:}\enspace Surrogate Training \& Holdout Validation\enspace\dotfill\enspace\textbf{20}} \\[0.22em]
-\noindent\hyperlink{slide.21}{\textbf{\color{primaryblue}Slide 21:}\enspace Closed-Loop Control Architecture\enspace\dotfill\enspace\textbf{21}} \\[0.22em]
-\noindent\hyperlink{slide.22}{\textbf{\color{primaryblue}Slide 22:}\enspace Baseline 0: Classical Linear SVD\enspace\dotfill\enspace\textbf{22}} \\[0.22em]
+\noindent\hyperlink{slide.18}{\textbf{\color{primaryblue}Slide 18:}\enspace Closed-Loop Control Architecture\enspace\dotfill\enspace\textbf{18}} \\[0.22em]
+\noindent\hyperlink{slide.19}{\textbf{\color{primaryblue}Slide 19:}\enspace Baseline 0: Classical Linear SVD\enspace\dotfill\enspace\textbf{19}} \\[0.22em]
+\noindent\hyperlink{slide.20}{\textbf{\color{primaryblue}Slide 20:}\enspace Supervised Learning: Digital Twins \& Hyperparameters\enspace\dotfill\enspace\textbf{20}} \\[0.22em]
+\noindent\hyperlink{slide.21}{\textbf{\color{primaryblue}Slide 21:}\enspace The Neural Surrogate Digital Twin\enspace\dotfill\enspace\textbf{21}} \\[0.22em]
+\noindent\hyperlink{slide.22}{\textbf{\color{primaryblue}Slide 22:}\enspace Surrogate Training \& Holdout Validation\enspace\dotfill\enspace\textbf{22}} \\[0.22em]
 \noindent\hyperlink{slide.23}{\textbf{\color{primaryblue}Slide 23:}\enspace Baseline 1 (Track 1): Supervised Neural Inversion\enspace\dotfill\enspace\textbf{23}} \\[0.22em]
 \noindent\hyperlink{slide.24}{\textbf{\color{primaryblue}Slide 24:}\enspace Reinforcement Learning: MDP Formulation \& Hyperparameters\enspace\dotfill\enspace\textbf{24}} \\[0.22em]
 \noindent\hyperlink{slide.25}{\textbf{\color{primaryblue}Slide 25:}\enspace Track 2: Closed-Loop RL with Physics Priors\enspace\dotfill\enspace\textbf{25}} \\[0.22em]
@@ -498,14 +498,58 @@ While plain MLPs excel at static black-box regression, physical accelerators pre
 \small
 \noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Walk through each quadrant methodically. Emphasize why each overcomes specific limitations of plain MLPs in accelerator operations.\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Can PINNs be used for closed-loop orbit control? A: Yes, PINN surrogates provide superior generalization when operating far from design calibration orbits.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us enter the core competitive tracks of our mini-hackathon, beginning with Paradigm 1: Supervised Learning.}
+\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{With our accelerator physics foundations established, let us enter the core challenge: closed-loop orbit control.}
 \end{tcolorbox}
 \clearpage
 \hypertarget{slide.18}{}
 \phantomsection
-\addcontentsline{toc}{section}{Slide 18: Supervised Learning: Digital Twins \& Hyperparameters}
+\addcontentsline{toc}{section}{Slide 18: Closed-Loop Control Architecture}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}Slide 18:\enspace Supervised Learning: Digital Twins \& Hyperparameters}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace Slide 18 of 35}
+{\large\bfseries\color{white}Slide 18:\enspace Closed-Loop Control Architecture}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Closed-Loop Control \enspace$|$\enspace Slide 18 of 35}
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
+Closed-loop feedback schematic: Plant (Beamline), Sensors (BPMs), Controller, and Actuators (Correctors), comparing Supervised (Track 1), RL (Track 2), and Bayesian Optimization (Track 3).
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}Spoken Presenter Script},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
+Here is the overarching architecture of closed-loop accelerator orbit control. In standard operation, diagnostic Beam Position Monitors measure the transverse orbit distortion Y in R\textasciicircum{}12, and the controller computes incremental kicks delta I in R\textasciicircum{}6 to steer the beam back to center, aiming for RMS < 0.030 mm within 50 steps. In this hackathon, we explore three distinct learning paradigms that each close the feedback loop on every step. First, Supervised Learning (Track 1): we train a neural surrogate offline from calibration data, then numerically invert it at each step using bounded optimization. Second, Reinforcement Learning (Track 2): an adaptive policy directly maps measured orbit distortions to corrective actions, refining its strategy from environmental reward feedback. Third, Bayesian Optimization (Track 3): a Gaussian Process models the response surface with epistemic uncertainty, balancing exploration against exploitation via Lower Confidence Bound minimization. But before deploying machine learning, we must benchmark against the classical analytical baseline that accelerators have relied on for decades: Baseline 0 SVD.
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
+\small
+\noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Introduce the closed-loop feedback structure and outline the three learning paradigms (Supervised, RL, BO) before transitioning to Baseline 0.\par\vspace{0.3em}
+\noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Why do all three paradigms act on the measured orbit at every step? A: Because accelerators experience disturbances and noise, true closed-loop feedback requires fresh measurements at each step.\par\vspace{0.3em}
+\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Before introducing machine learning, let us examine the classical baseline used in accelerators for decades: Baseline 0 SVD.}
+\end{tcolorbox}
+\clearpage
+\hypertarget{slide.19}{}
+\phantomsection
+\addcontentsline{toc}{section}{Slide 19: Baseline 0: Classical Linear SVD}
+\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
+{\large\bfseries\color{white}Slide 19:\enspace Baseline 0: Classical Linear SVD}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Benchmark Baselines \enspace$|$\enspace Slide 19 of 35}
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
+SVD decomposition R\textasciicircum{}T = U Sigma V\textasciicircum{}T, Moore-Penrose pseudo-inverse (R\textasciicircum{}T)\textasciicircum{}dagger, feedback formula delta I = - alpha * (R\textasciicircum{}T)\textasciicircum{}dagger * Y, gain alpha tuning.
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}Spoken Presenter Script},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
+Baseline 0 represents classical accelerator orbit correction: Moore-Penrose pseudo-inverse control via Singular Value Decomposition (SVD). Under an idealized linear model, orbit shift is Y = Delta I times R. Transposing gives R\textasciicircum{}T Delta I = Y. Because R\textasciicircum{}T is a 12 by 6 matrix, it has more rows than columns. We decompose R\textasciicircum{}T using SVD: R\textasciicircum{}T = U Sigma V\textasciicircum{}T, and compute the pseudo-inverse: (R\textasciicircum{}T)\textasciicircum{}dagger = V Sigma\textasciicircum{}-1 U\textasciicircum{}T. The correction law is: delta I = - alpha times (R\textasciicircum{}T)\textasciicircum{}dagger times Y. With the conservative default gain alpha = 0.45, this controller converges robustly on all 30 seeds, achieving a 100\% success rate. However, because it has zero awareness of cubic saturation, it under-corrects at high currents and takes an average of 9.4 steps to converge, earning a benchmark score of 635.277 points. If you raise the gain alpha to 1.2, it converges in about 3.7 steps and scores 822; above that the controller overshoots and the score falls again.
+\end{tcolorbox}
+\vspace{0.2em}
+\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
+\small
+\noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Explain the gain trade-off: alpha=0.45 is safe but slow (9.4 steps); alpha=1.2 is fast (3.7 steps, 822 points); beyond it the controller overshoots.\par\vspace{0.3em}
+\noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Why is R transposed? A: Because our convention defines Y as row vector (1x12) and currents as (1x6): Y = I * R.\par\vspace{0.3em}
+\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Can machine learning overcome this non-linear saturation? Let us explore our first competitive paradigm: Supervised Learning.}
+\end{tcolorbox}
+\clearpage
+\hypertarget{slide.20}{}
+\phantomsection
+\addcontentsline{toc}{section}{Slide 20: Supervised Learning: Digital Twins \& Hyperparameters}
+\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
+{\large\bfseries\color{white}Slide 20:\enspace Supervised Learning: Digital Twins \& Hyperparameters}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace Slide 20 of 35}
 \end{tcolorbox}
 \vspace{0.2em}
 \begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
@@ -523,11 +567,11 @@ Paradigm 1 represents the standard digital twin approach: supervised forward sur
 \noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Let us examine the exact architecture of the MLP surrogate digital twin.}
 \end{tcolorbox}
 \clearpage
-\hypertarget{slide.19}{}
+\hypertarget{slide.21}{}
 \phantomsection
-\addcontentsline{toc}{section}{Slide 19: The Neural Surrogate Digital Twin}
+\addcontentsline{toc}{section}{Slide 21: The Neural Surrogate Digital Twin}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}Slide 19:\enspace The Neural Surrogate Digital Twin}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace Slide 19 of 35}
+{\large\bfseries\color{white}Slide 21:\enspace The Neural Surrogate Digital Twin}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace Slide 21 of 35}
 \end{tcolorbox}
 \vspace{0.2em}
 \begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
@@ -542,14 +586,14 @@ Here is the detailed topology of our neural surrogate digital twin. It maps the 
 \small
 \noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Contrast 72 parameters (linear ORM) with 11,628 parameters (MLP). Emphasize why parameter capacity is required for non-linear saturation.\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Can we make the network smaller, say (32, 16)? A: Yes, in fact, a smaller tanh network can sometimes generalize better and evaluate faster.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{How well does this surrogate perform when tested on unseen validation data? Let us look at Slide 20.}
+\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{How well does this surrogate perform when tested on unseen validation data? Let us look at Slide 22.}
 \end{tcolorbox}
 \clearpage
-\hypertarget{slide.20}{}
+\hypertarget{slide.22}{}
 \phantomsection
-\addcontentsline{toc}{section}{Slide 20: Surrogate Training \& Holdout Validation}
+\addcontentsline{toc}{section}{Slide 22: Surrogate Training \& Holdout Validation}
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}Slide 20:\enspace Surrogate Training \& Holdout Validation}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace Slide 20 of 35}
+{\large\bfseries\color{white}Slide 22:\enspace Surrogate Training \& Holdout Validation}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace Slide 22 of 35}
 \end{tcolorbox}
 \vspace{0.2em}
 \begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
@@ -564,51 +608,7 @@ How do we know whether a surrogate has learned the physics? We test it on data i
 \small
 \noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Pause on the surprise: the default network is worse than the linear model. Then show that 0.012 mm is close to the 0.010 mm noise floor, which is the limit for any model.\par\vspace{0.3em}
 \noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: If the reference MLP is this inaccurate, why does Baseline 1 still score 779? A: Because the control loop is closed. Every step starts from a new measurement, so model errors are corrected step by step. An accurate model mainly improves the landing precision.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Given a forward digital twin, how do we use it for closed-loop orbit control?}
-\end{tcolorbox}
-\clearpage
-\hypertarget{slide.21}{}
-\phantomsection
-\addcontentsline{toc}{section}{Slide 21: Closed-Loop Control Architecture}
-\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}Slide 21:\enspace Closed-Loop Control Architecture}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Paradigm 1: Supervised Learning \enspace$|$\enspace Slide 21 of 35}
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
-Closed-loop feedback schematic: Beamline Environment, BPM reading Y, Present current I, Digital Twin Inversion Optimizer, Action delta I, and closed-loop feedback.
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}Spoken Presenter Script},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
-Here is the architecture of closed-loop orbit control. Notice the information flow. At step t, the beamline produces an observation vector Y in R\textasciicircum{}12 from the BPMs. The controller also reads the present total current vector I\_t in R\textasciicircum{}6 from the environment metadata. This total current is vital: because saturation depends cubically on total current, you cannot calculate the correct incremental kick without knowing where you currently sit on the B-H curve! The controller passes Y and I\_t into an inversion optimizer. Using the trained neural digital twin f\_theta, the optimizer solves for the delta current action delta I in [-0.8 A, +0.8 A] that will cancel the residual orbit at step t+1. The action is applied to the power supplies, the magnets adjust, the beam deflects, and new BPM readings are measured. This cycle repeats until the orbit RMS drops below 0.030 mm.
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
-\small
-\noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Stress the importance of reading info['currents']! Without total current I\_t, compensating saturation is impossible.\par\vspace{0.3em}
-\noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: What if we don't track total current? A: The policy assumes it's always near 0 A, under-correcting severely at high currents.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Let us contrast this with the classical approach used in accelerators for decades: Baseline 0 SVD.}
-\end{tcolorbox}
-\clearpage
-\hypertarget{slide.22}{}
-\phantomsection
-\addcontentsline{toc}{section}{Slide 22: Baseline 0: Classical Linear SVD}
-\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}Slide 22:\enspace Baseline 0: Classical Linear SVD}\hfill{\footnotesize\bfseries\color{white!85!lightbg}Baseline 0: Classical Linear SVD \enspace$|$\enspace Slide 22 of 35}
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,title={\footnotesize\bfseries\color{darkgray}Slide Visual Blueprint},fontupper=\small,left=6pt,right=6pt,top=2.5pt,bottom=2.5pt,boxrule=0.6pt,arc=2.5pt]
-SVD decomposition R\textasciicircum{}T = U Sigma V\textasciicircum{}T, Moore-Penrose pseudo-inverse (R\textasciicircum{}T)\textasciicircum{}dagger, feedback formula delta I = - alpha * (R\textasciicircum{}T)\textasciicircum{}dagger * Y, gain alpha tuning.
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=white,colframe=primaryblue,title={\footnotesize\bfseries\color{white}Spoken Presenter Script},fontupper=\small,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.8pt,arc=2.5pt]
-Baseline 0 represents classical accelerator orbit correction: Moore-Penrose pseudo-inverse control via Singular Value Decomposition (SVD). Under an idealized linear model, orbit shift is Y = Delta I times R. Transposing gives R\textasciicircum{}T Delta I = Y. Because R\textasciicircum{}T is a 12 by 6 matrix, it has more rows than columns. We decompose R\textasciicircum{}T using SVD: R\textasciicircum{}T = U Sigma V\textasciicircum{}T, and compute the pseudo-inverse: (R\textasciicircum{}T)\textasciicircum{}dagger = V Sigma\textasciicircum{}-1 U\textasciicircum{}T. The correction law is: delta I = - alpha times (R\textasciicircum{}T)\textasciicircum{}dagger times Y. With the conservative default gain alpha = 0.45, this controller converges robustly on all 30 seeds, achieving a 100\% success rate. However, because it has zero awareness of cubic saturation, it under-corrects at high currents and takes an average of 9.4 steps to converge, earning a benchmark score of 635.277 points. If you raise the gain alpha to 1.2, it converges in about 3.7 steps and scores 822; above that the controller overshoots and the score falls again.
-\end{tcolorbox}
-\vspace{0.2em}
-\begin{tcolorbox}[colback=lightbg,colframe=bordergray,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0.6pt,arc=2.5pt]
-\small
-\noindent\textbf{\color{navy}Pedagogical Focus \& Emphasis:}\enspace Explain the gain trade-off: alpha=0.45 is safe but slow (9.4 steps); alpha=1.2 is fast (3.7 steps, 822 points); beyond it the controller overshoots.\par\vspace{0.3em}
-\noindent\textbf{\color{successgreen}Anticipated Participant Q\&A:}\enspace Q: Why is R transposed? A: Because our convention defines Y as row vector (1x12) and currents as (1x6): Y = I * R.\par\vspace{0.3em}
-\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now let us see what happens when we replace linear SVD with our non-linear neural surrogate: Baseline 1.}
+\noindent\textbf{\color{accent}Verbal Transition to Next Slide:}\enspace \emph{Now that we have trained an accurate forward surrogate, how do we invert it for closed-loop control? Let us examine Baseline 1.}
 \end{tcolorbox}
 \clearpage
 \hypertarget{slide.23}{}

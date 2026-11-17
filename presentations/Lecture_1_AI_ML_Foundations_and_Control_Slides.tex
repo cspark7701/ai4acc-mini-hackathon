@@ -683,7 +683,56 @@
 \end{tikzpicture}
 \clearpage
 
-% SLIDE 18: Paradigm 1: Supervised Learning | Digital Twin Surrogates & Hyperparameters (NEW)
+% SLIDE 18: Closed-Loop Control Architecture (RESIZED - ZERO OVERLAP)
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.15}
+  \slideheader{Closed-Loop Control}{Closed-Loop Control Architecture}{Three learning paradigms behind the challenge tracks; all three act on the measured orbit at every step}
+
+  % Sized Image: Height = 3.85 in (aspect ratio preserved)
+  \node[anchor=north,inner sep=0pt]
+    at ([yshift=-1.40in]current page.north)
+    {\includegraphics[height=3.85in]{forward_sl_and_rl_schematic.png}};
+
+  % Card below the image
+  \drawcard{0.8}{5.38}{11.733}{1.22}{}
+  \node[anchor=west,inner sep=0pt,text width=11.3in,align=left]
+    at ([xshift=1.0in,yshift=-5.99in]current page.north west) {\fs{12}{15}\color{darkgray}%
+    $\bullet$ \textbf{Supervised (Track 1):} trains an MLP surrogate offline, then inverts it at each step for the kick $\Delta\mathbf{I}$.\\[0.1em]
+    $\bullet$ \textbf{Reinforcement (Track 2):} a policy acts on the measured orbit $\mathbf{Y}$ and improves from the reward it receives.\\[0.1em]
+    $\bullet$ \textbf{Bayesian Optimization (Track 3):} a GP models the response with uncertainty; each step minimizes the LCB.
+  };
+
+  \slidefooter{18}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 19: Baseline 0: Classical Linear SVD
+% ==============================================================================
+\begin{tikzpicture}[remember picture,overlay]
+  \slidespread{1.75}
+  \slideheader{Benchmark Baselines}{Baseline 0: Classical Linear SVD}{Inverting the linear Orbit Response Matrix via Moore-Penrose pseudo-inverse}
+
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Mathematical Formulation \& Operational Vulnerabilities}
+  \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
+    {\bfseries\color{navy}Singular Value Decomposition (SVD) Pseudo-Inverse Formulation:}\\[0.3em]
+    Computes corrective kick vector $\Delta\mathbf{I}$ directly by inverting the transpose of the linear ORM:\\[0.5em]
+    \centering{\fs{17}{21}\bfseries\color{primaryblue}$\Delta\mathbf{I} = - \alpha \cdot (\mathbf{R}^T)^\dagger \cdot \mathbf{Y}_{\text{obs}}, \qquad \text{with } (\mathbf{R}^T)^\dagger = \mathbf{V} \mathbf{\Sigma}^\dagger \mathbf{U}^T$}\\[0.7em]
+    \raggedright
+    {\bfseries\color{navy}$\bullet$ Operational Profile \& Limitations:}\\[0.3em]
+    -- Static feedback gain: Typically $\alpha \approx 0.45$, with kicks hard clipped to $[-0.8, +0.8]\text{ A}$.\\
+    -- Execution latency: $< 0.1\text{ ms}$ (instantaneous analytical matrix-vector product).\\
+    -- \textbf{Vulnerability in Non-Linear Regimes:} It ignores the cubic iron core saturation. At high currents the true response is weaker than the linear $\mathbf{R}$ predicts, so each kick under-corrects and convergence is slow (9.4 mean steps at $\alpha = 0.45$).\\[0.8em]
+    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 9.4 mean steps, 635.277 total score (Rank \#3).}
+  }
+
+  \slidefooter{19}
+\end{tikzpicture}
+\clearpage
+
+% ==============================================================================
+% SLIDE 20: Paradigm 1: Supervised Learning | Digital Twin Surrogates & Hyperparameters (NEW)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.18}
@@ -726,12 +775,12 @@
       \end{tabular}
     };
 
-  \slidefooter{18}
+  \slidefooter{20}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 19: Neural Surrogate Digital Twin (RESIZED - ZERO OVERLAP)
+% SLIDE 21: Neural Surrogate Digital Twin (RESIZED - ZERO OVERLAP)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.15}
@@ -751,12 +800,12 @@
     $\bullet$ \textbf{Output Layer:} 12 predicted Beam Position Monitor readings [BPM1-12] in millimeters, evaluated in $< 0.2\text{ milliseconds}$.
   };
 
-  \slidefooter{19}
+  \slidefooter{21}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 20: Surrogate Training & Holdout Validation
+% SLIDE 22: Surrogate Training & Holdout Validation
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.27}
@@ -776,55 +825,6 @@
     $\bullet$ A larger network is not automatically a better surrogate: always check the holdout RMSE (\textbf{TODO 1}).\\
     $\bullet$ No model can beat the $0.010\text{ mm}$ noise floor on noisy test data. Inference takes about $0.1\text{ ms}$ per call.
   }
-  \slidefooter{20}
-\end{tikzpicture}
-\clearpage
-
-% ==============================================================================
-% SLIDE 21: Closed-Loop Control Architecture (RESIZED - ZERO OVERLAP)
-% ==============================================================================
-\begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.15}
-  \slideheader{Closed-Loop Control}{Closed-Loop Control Architecture}{Three learning paradigms behind the challenge tracks; all three act on the measured orbit at every step}
-
-  % Sized Image: Height = 3.85 in (aspect ratio preserved)
-  \node[anchor=north,inner sep=0pt]
-    at ([yshift=-1.40in]current page.north)
-    {\includegraphics[height=3.85in]{forward_sl_and_rl_schematic.png}};
-
-  % Card below the image
-  \drawcard{0.8}{5.38}{11.733}{1.22}{}
-  \node[anchor=west,inner sep=0pt,text width=11.3in,align=left]
-    at ([xshift=1.0in,yshift=-5.99in]current page.north west) {\fs{12}{15}\color{darkgray}%
-    $\bullet$ \textbf{Supervised (Track 1):} trains an MLP surrogate offline, then inverts it at each step for the kick $\Delta\mathbf{I}$.\\[0.1em]
-    $\bullet$ \textbf{Reinforcement (Track 2):} a policy acts on the measured orbit $\mathbf{Y}$ and improves from the reward it receives.\\[0.1em]
-    $\bullet$ \textbf{Bayesian Optimization (Track 3):} a GP models the response with uncertainty; each step minimizes the LCB.
-  };
-
-  \slidefooter{21}
-\end{tikzpicture}
-\clearpage
-
-% ==============================================================================
-% SLIDE 22: Baseline 0: Classical Linear SVD
-% ==============================================================================
-\begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.75}
-  \slideheader{Benchmark Baselines}{Baseline 0: Classical Linear SVD}{Inverting the linear Orbit Response Matrix via Moore-Penrose pseudo-inverse}
-
-  \drawcard{0.8}{1.4}{11.733}{5.3}{Mathematical Formulation \& Operational Vulnerabilities}
-  \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
-    {\bfseries\color{navy}Singular Value Decomposition (SVD) Pseudo-Inverse Formulation:}\\[0.3em]
-    Computes corrective kick vector $\Delta\mathbf{I}$ directly by inverting the transpose of the linear ORM:\\[0.5em]
-    \centering{\fs{17}{21}\bfseries\color{primaryblue}$\Delta\mathbf{I} = - \alpha \cdot (\mathbf{R}^T)^\dagger \cdot \mathbf{Y}_{\text{obs}}, \qquad \text{with } (\mathbf{R}^T)^\dagger = \mathbf{V} \mathbf{\Sigma}^\dagger \mathbf{U}^T$}\\[0.7em]
-    \raggedright
-    {\bfseries\color{navy}$\bullet$ Operational Profile \& Limitations:}\\[0.3em]
-    -- Static feedback gain: Typically $\alpha \approx 0.45$, with kicks hard clipped to $[-0.8, +0.8]\text{ A}$.\\
-    -- Execution latency: $< 0.1\text{ ms}$ (instantaneous analytical matrix-vector product).\\
-    -- \textbf{Vulnerability in Non-Linear Regimes:} It ignores the cubic iron core saturation. At high currents the true response is weaker than the linear $\mathbf{R}$ predicts, so each kick under-corrects and convergence is slow (9.4 mean steps at $\alpha = 0.45$).\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Tested Benchmark Performance:} \textbf{\color{primaryblue}100.0\% success rate, 9.4 mean steps, 635.277 total score (Rank \#3).}
-  }
-
   \slidefooter{22}
 \end{tikzpicture}
 \clearpage
