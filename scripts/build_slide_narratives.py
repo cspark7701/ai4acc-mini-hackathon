@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PRESENTATIONS_DIR = ROOT / "presentations"
 
-# Slide Data Dictionary (1 to 35)
+# Slide Data Dictionary (1 to 34)
 SLIDES = [
     {
         "num": 1,
@@ -449,58 +449,42 @@ SLIDES = [
         "qa_en": "Q: Why Matérn-5/2 instead of RBF? A: RBF assumes infinitely differentiable curves (too smooth); Matérn-5/2 matches realistic physical magnetic saturation.",
         "qa_kr": "Q: 왜 RBF 커널 대신 Matérn-5/2를 쓰나요? A: RBF는 무한 번 미분 가능한 비현실적인 매끄러움을 가정하지만, Matérn-5/2는 2회 미분 가능하여 실제 전자석 포화 특성에 완벽히 부합합니다.",
         "trans_en": "How does this GP model operate inside our closed-loop challenge? Let us examine Track 3 on Slide 28.",
-        "trans_kr": "이 가우시안 프로세스 모델이 해커톤 트랙 3 폐루프 제어기 내부에서 어떻게 구동되는지 살펴보겠습니다.",
+        "trans_kr": "이 가우시안 프로세스 모델이 해커톤 트랙 3 폐루프 제어기 내부에서 어떻게 구동되고 LCB로 의사결정을 내리는지 슬라이드 28에서 살펴보겠습니다.",
     },
     {
         "num": 28,
         "category": "Track 3 Challenge",
-        "title_en": "Track 3: Closed-Loop Bayesian Optimization",
-        "title_kr": "트랙 3: 가우시안 프로세스 기반 폐루프 베이지안 최적화",
-        "visual_en": "Track 3 controller architecture, calibration on 300 offline shots, step-by-step closed-loop execution, and opportunity for true online GP refitting via callbacks.",
-        "visual_kr": "트랙 3 제어기 아키텍처, 300회 오프라인 샷 기반 GP 캘리브레이션, 폐루프 스텝별 LCB 최적화, 콜백을 활용한 실시간 온라인 GP 갱신 확장성.",
-        "script_en": "Here is how Track 3 operates. In the reference implementation, a GaussianProcessRegressor with a Matérn-5/2 kernel is fitted offline on 300 calibration shots across [-3.0 A, +3.0 A]. At each time step on the physical beamline, the controller reads the current BPM readings Y and present total current I_t. It queries the GP surrogate to predict the mean orbit change and the epistemic uncertainty for candidate kicks delta I. It solves for the delta I that minimizes the Lower Confidence Bound acquisition function, and the kick is clipped to the [-0.8 A, +0.8 A] step limit. Notice a crucial operational insight: like Baseline 1, the reference Track 3 controller is closed-loop (it re-solves from the latest BPM reading), but its GP model is fitted once and kept fixed. Participants who register a step_callback in the notebook can add each new (current, orbit) measurement to the GP dataset and refit it online, turning Track 3 into true active online Bayesian optimization!",
-        "script_kr": "트랙 3 제어기의 구동 원리입니다. 기준 코드에서는 [-3.0A, +3.0A] 범위에서 수집된 300개의 캘리브레이션 샷으로 Matérn-5/2 커널 GP를 사전 학습시킵니다. 매 스텝마다 제어기는 최신 BPM 관측값 Y와 현재 누적 전류 I_t를 전달받습니다. 대리 모델을 통해 후보 킥 ΔI에 대한 예측 평균 궤도와 불확실성을 계산하고, LCB 획득 함수를 최소화하는 최적의 델타 전류를 도출합니다. 여기서 매우 중요한 실무적 포인트를 짚어드립니다: 기준 코드의 트랙 3 제어기는 매 스텝 최신 측정값으로부터 최적화를 다시 풀기 때문에 '폐루프(closed-loop)' 제어기이지만, GP 모델 자체는 사전에 고정된 오프라인 모델입니다. 참가자 여러분께서 노트북의 CALLBACKS 딕셔너리에 step_callback을 등록하여 매 스텝 획득한 새로운 측정값을 GP에 실시간 추가하고 재학습(refit)시킨다면, 진정한 '온라인 실시간 베이지안 최적화'로 업그레이드할 수 있습니다!",
-        "cues_en": "Clarify: closed-loop control vs online model updating. Emphasize the callback opportunity for participants seeking maximum scores.",
-        "cues_kr": "폐루프 제어와 온라인 모델 갱신의 차이를 명확히 구분해주고, 콜백을 활용한 온라인 GP 갱신이 고득점의 비결임을 귀띔합니다.",
-        "qa_en": "Q: Does online GP refitting slow down execution? A: Yes, GP fitting scales O(N^3) with sample size N, so keep the online buffer small (e.g., 50 shots).",
-        "qa_kr": "Q: 실시간으로 GP를 재학습하면 속도가 너무 느려지지 않나요? A: 맞습니다. GP 연산량은 데이터 수의 3승(O(N³))에 비례하므로, 최근 50개 정도의 슬라이딩 윈도우 버퍼만 유지하는 것이 좋습니다.",
-        "trans_en": "Let us examine the exact mathematical formulation of the Lower Confidence Bound acquisition function.",
-        "trans_kr": "그렇다면 트랙 3의 핵심 의사결정 수식인 하한 신뢰 구간(LCB) 획득 함수를 자세히 살펴보겠습니다.",
-    },
-    {
-        "num": 29,
-        "category": "Track 3 Challenge",
-        "title_en": "Lower Confidence Bound Acquisition",
-        "title_kr": "하한 신뢰 구간(Lower Confidence Bound, LCB) 획득 함수",
-        "visual_en": "LCB acquisition formula: alpha_LCB(Delta I) = RMS( Y - mu(I) + mu(I + Delta I) ) - kappa * sigma_bar(Delta I) + lambda * || Delta I ||^2, exploitation vs exploration.",
-        "visual_kr": "LCB 획득 함수 수식: 예측 RMS 잔여 오차(활용) - κ·불확실성(탐색) + λ·액션 페널티, 탐색 계수 κ = 0일 때의 3.6스텝 초고속 수렴 성과.",
-        "script_en": "The decision engine of Track 3 is the Lower Confidence Bound (LCB) acquisition function: alpha_LCB(delta I) = RMS of predicted next orbit, minus kappa times the mean predicted uncertainty sigma_bar, plus lambda times ||delta I||^2. The first term represents exploitation: driving the predicted orbit error down to zero. The second term represents exploration: subtracting uncertainty encourages the algorithm to probe actuator current regions where the model is unconfident, such as deep non-linear saturation. The trade-off parameter kappa governs this balance. In our benchmark, because our GP surrogate was already well-calibrated on 300 offline shots, setting kappa = 0—pure exploitation of the accurate mean—converges in an extraordinary average of just 3.6 steps! It earns 878.384 points, making Track 3 the reigning Rank 1 controller on our official leaderboard.",
-        "script_kr": "트랙 3의 핵심 의사결정 수식인 하한 신뢰 구간(LCB) 획득 함수입니다: α_LCB(ΔI) = RMS(예측 다음 궤도) - κ · σ̄(불확실성) + λ · ||ΔI||². 첫 번째 항은 '활용(exploitation)'으로, 예측 잔여 궤도 오차를 0으로 줄이는 역할을 합니다. 두 번째 항은 '탐색(exploration)'으로, 불확실성이 높은 미지의 자장 영역을 탐색하도록 장려합니다. 탐색 가중치 κ가 이 둘의 균형을 결정합니다. 주목할 점은, 우리 해커톤 환경에서는 사전 300회 샷을 통해 GP 모델이 이미 매우 정밀하게 보정되어 있다는 사실입니다. 따라서 κ = 0으로 설정하여 사후 평균만을 순수하게 활용(pure exploitation)했을 때, 전체 30개 시드에서 평균 단 3.6스텝 만에 목표치에 안착하는 놀라운 속도를 기록했습니다! 공식 점수 878.384점을 획득하며 현재 벤치마크 랭킹 1위를 차지하고 있습니다.",
-        "cues_en": "Highlight the 3.6 step convergence: at the floor of about 3.7 steps set by the 0.8 A step limit. Rank 1 among the reference controllers.",
-        "cues_kr": "0.8A 스텝 한계가 정하는 하한(평균 약 3.7스텝)에 도달한 3.6스텝의 수렴 속도를 강조합니다. 기준 제어기 중 1위입니다.",
-        "qa_en": "Q: When should kappa > 0 be used? A: When entering unmapped lattice regimes or when magnetic drift occurs online.",
-        "qa_kr": "Q: κ > 0 탐색이 필요한 경우는 언제인가요? A: 사전에 캘리브레이션되지 않은 낯선 자장 영역으로 진입하거나 미지의 드리프트가 발생했을 때 필수적입니다.",
+        "title_en": "Track 3: Closed-Loop Bayesian Optimization & LCB Acquisition",
+        "title_kr": "트랙 3: 가우시안 프로세스 기반 폐루프 베이지안 최적화 및 LCB 획득",
+        "visual_en": "Dual-column layout: Left column covers GP surrogate modeling, Matérn-5/2 kernel, and epistemic uncertainty. Right column covers LCB acquisition formula, kappa exploration vs exploitation, and 3.6-step benchmark-leading performance (878.384 pts).",
+        "visual_kr": "2열 분할 레이아웃: 좌측 열은 GP 대리 모델링, Matérn-5/2 커널 및 백색 잡음, 불확실성 추정. 우측 열은 LCB 획득 함수 수식, κ 탐색-활용 균형, 3.6스텝 최고 벤치마크 성과(878.384점).",
+        "script_en": "Here is how Track 3 operates, combining Gaussian Process surrogate modeling with Lower Confidence Bound acquisition. In the reference implementation, a GaussianProcessRegressor with a Matérn-5/2 kernel and white noise floor (0.010 mm) is calibrated offline on 300 shots across [-3.0 A, +3.0 A]. At each time step on the physical beamline, the controller reads the current BPM readings Y and present total current I_t. It queries the GP surrogate to predict the mean orbit change and the epistemic uncertainty sigma_bar for candidate kicks delta I. The decision engine minimizes the Lower Confidence Bound criterion: alpha_LCB(delta I) equals the RMS of the predicted next orbit, minus kappa times predicted uncertainty, plus lambda times kick penalty. The first term exploits the predicted correction; the second term explores high-uncertainty regions. Because our 300-shot GP model is already highly accurate, setting kappa = 0—pure exploitation—converges in an extraordinary average of just 3.6 steps and lands at 0.0136 mm residual RMS! With 878.384 points, Track 3 holds Rank 1 on our leaderboard.",
+        "script_kr": "트랙 3 제어기의 구동 원리로, 가우시안 프로세스 대리 모델링과 하한 신뢰 구간(LCB) 획득 전략의 결합입니다. 기준 코드에서는 [-3.0A, +3.0A] 범위에서 수집된 300개의 오프라인 샷으로 Matérn-5/2 커널 및 10 ㎛ 백색 잡음 바닥을 갖는 GP를 사전 학습합니다. 매 스텝마다 제어기는 최신 BPM 관측값 Y와 현재 누적 전류 I_t를 전달받아, LCB 획득 함수를 최소화하는 최적의 델타 킥 ΔI를 도출합니다: α_LCB(ΔI) = RMS(예측 다음 궤도) - κ·σ̄(불확실성) + λ·||ΔI||². 첫 번째 항은 예측 궤도 오차를 줄이는 '활용'이며, 두 번째 항은 미지의 포화 영역을 탐색하는 '탐색'입니다. 우리 환경에서는 사전 300회 샷으로 GP가 이미 정밀하게 보정되어 있으므로, κ = 0으로 설정하여 사후 평균만을 순수하게 활용했을 때 전체 30개 시드에서 평균 단 3.6스텝 만에 0.0136 mm 잔여 RMS로 안착했습니다! 878.384점을 획득하며 현재 벤치마크 리더보드 1위를 기록하고 있습니다.",
+        "cues_en": "Walk through the two columns: GP modeling with Matérn kernel on the left, LCB acquisition formula with kappa=0 achieving 3.6 steps on the right.",
+        "cues_kr": "좌측의 Matérn 커널 기반 GP 불확실성 모델링과 우측의 LCB 수식을 차례로 설명하고, κ=0 설정이 3.6스텝 최고 점수(878점)를 낸 비결을 강조합니다.",
+        "qa_en": "Q: Can we refit the GP online during the episode? A: Yes! Registering a step_callback in the notebook allows online GP updates, turning Track 3 into active online BO.",
+        "qa_kr": "Q: 에피소드 진행 중에 GP를 온라인으로 재학습할 수 있나요? A: 가능합니다! 노트북의 CALLBACKS에 step_callback을 등록하여 매 스텝 관측 데이터를 실시간 추가하면 액티브 온라인 BO로 확장됩니다.",
         "trans_en": "Now let us examine the formal Gymnasium software contract governing your code in this afternoon's challenge.",
         "trans_kr": "이제 오늘 오후 여러분이 직접 코딩하게 될 Gymnasium 표준 시뮬레이션 환경 규격을 살펴보겠습니다.",
     },
     {
-        "num": 30,
+        "num": 29,
         "category": "Gymnasium Environment Contract",
         "title_en": "Gymnasium Environment Contract",
         "title_kr": "체육관(Gymnasium) 환경 API 표준 규격",
-        "visual_en": "Standard Gym interface: env.reset(seed) -> (obs, info) and env.step(action) -> (obs, reward, terminated, truncated, info), BenchmarkController act() contract.",
-        "visual_kr": "표준 Gymnasium API 인터페이스: reset(seed) 및 step(action) 입출력 명세, BenchmarkController.act(obs, info) 표준 클래스 규약.",
-        "script_en": "To ensure scientific reproducibility, our simulation environment AcceleratorOrbitGymEnv adheres strictly to Farama Gymnasium standards. The environment provides two core methods. First, reset(seed): it resets all corrector currents to zero, applies random distortion kicks Y_0 drawn from the seed, and returns the initial 12-element BPM observation vector obs and an info dictionary containing runtime metadata. Second, step(action): it accepts a 6-element delta current array, clips it to [-0.8 A, +0.8 A], updates total currents, and computes the new orbit. It returns five outputs: the new observation obs; the scalar training reward; terminated, which triggers when RMS drops below 0.030 mm (success!); truncated, which triggers if step count reaches 50 without success (failure!); and the updated info dictionary. Every controller only has to provide the standard act(obs, info) method returning a 6-element action; no base class is required.",
-        "script_kr": "벤치마크의 학술적 엄밀성과 재현성을 위해, 시뮬레이션 환경 AcceleratorOrbitGymEnv는 글로벌 표준인 Farama Gymnasium API를 엄격히 준수합니다. 환경은 두 가지 핵심 메서드를 제공합니다. 첫째, reset(seed): 모든 스티어러 전류를 0으로 리셋하고 해당 시드의 초기 왜곡 Y₀를 인가한 뒤, 초기 12차원 BPM 관측값(obs)과 런타임 메타데이터가 담긴 info 딕셔너리를 반환합니다. 둘째, step(action): 6차원 델타 전류 액션을 받아 [-0.8A, 0.8A]로 클리핑한 후 환경을 전진시킵니다. 반환값은 5가지입니다: 새로운 관측값 obs, 보상 r, 성공 종료 여부 terminated(RMS < 0.030 mm 도달 시 True), 최대 스텝 초과 중단 여부 truncated(50스텝 도달 시 True), 그리고 최신 info 딕셔너리입니다. 여러분이 작성할 제어기는 6차원 액션을 반환하는 표준 act(obs, info) 메서드만 구현하면 되며, 특정 클래스를 상속할 필요는 없습니다.",
-        "cues_en": "Reiterate: terminated = True means success (RMS < 0.03 mm); truncated = True means timeout failure at 50 steps.",
-        "cues_kr": "terminated=True는 0.03 mm 도달 성공을, truncated=True는 50스텝 타임아웃 실패를 의미함을 명확히 구분 짓습니다.",
-        "qa_en": "Q: Can act() inspect info['currents']? A: Yes! Total currents are realistic diagnostic telemetry provided in info.",
-        "qa_kr": "Q: act() 메서드 안에서 info['currents']를 사용해도 되나요? A: 네, 적극 권장합니다! 실제 가속기 전원 공급 장치에서도 현재 전류는 실시간 텔레메트리로 제공됩니다.",
-        "trans_en": "How are controllers officially scored across the 30 seeds? Let us examine the official scoring formula on Slide 31.",
-        "trans_kr": "그렇다면 30개 시드에 대해 제어기 성능은 어떤 공식으로 채점될까요? 슬라이드 31의 공식 채점 수식을 확인해보겠습니다.",
+        "visual_en": "Clean structured contract: Top banner with reset() and step() call signatures; Bottom left with action/obs shapes and info['currents']; Bottom right with terminated (<0.030 mm) vs truncated (50 steps) and RL reward vs official score.",
+        "visual_kr": "직관적인 표준 규약 구성: 상단 reset() 및 step() 2대 핵심 메서드 호출 흐름; 좌측 하단 액션/관측 공간 규격 및 info['currents']; 우측 하단 종료 조건(성공 0.030 mm / 타임아웃 50스텝) 및 강화학습 보상과 공식 점수의 명확한 구분.",
+        "script_en": "To ensure scientific reproducibility, our simulation environment AcceleratorOrbitGymEnv adheres strictly to Farama Gymnasium standards. The interface centers on two core methods shown at the top. First, reset(seed): it resets all currents to zero, draws unknown initial distortions from the seed, and returns the initial 12 BPM readings and metadata. Second, step(action): it applies 6 delta kicks, clips them to [-0.8 A, +0.8 A], updates the total current state, and measures the new orbit. At the bottom left, note the data shapes: actions are 6 delta kicks in [-0.8, +0.8] A; observations are 12 BPM readings in mm with 10-micron noise; and info['currents'] provides total currents in [-5.0, +5.0] A, which is essential to compensate cubic saturation. At the bottom right, understand the termination rules: terminated is True when RMS drops below 0.030 mm (success!); truncated is True if you hit 50 steps without converging (failure!). Crucially, the step reward r_t guides RL policy training only—your official leaderboard ranking is computed independently over 30 test seeds on the next slide.",
+        "script_kr": "벤치마크의 학술적 엄밀성과 재현성을 위해, 시뮬레이션 환경 AcceleratorOrbitGymEnv는 글로벌 표준인 Farama Gymnasium API를 엄격히 준수합니다. 상단에 보시듯 핵심 메서드는 단 두 가지입니다. 첫째, reset(seed): 모든 스티어러 전류를 0으로 리셋하고 해당 시드의 초기 왜곡을 인가한 뒤, 초기 12차원 BPM 관측값과 메타데이터를 반환합니다. 둘째, step(action): 6차원 델타 전류 킥을 받아 인가하고, 누적 전류 상태를 갱신하며 새로운 궤도를 측정합니다. 좌측 하단의 데이터 규격을 확인하십시오: 액션은 [-0.8A, 0.8A] 범위의 6개 델타 전류이고, 관측값은 10 ㎛ 노이즈를 포함한 12개 BPM 변위(mm)입니다. 특히 info['currents']는 현재 누적 전류(-5A~+5A)를 제공하므로 자기 포화 보상에 반드시 사용해야 합니다. 우측 하단의 종료 규칙을 보면, RMS가 0.030 mm 미만으로 내려가면 terminated=True로 성공 종료되고, 50스텝에 도달하면 truncated=True로 타임아웃 처리됩니다. 중요한 점은 스텝 보상 r_t는 강화학습 에이전트의 훈련 손실을 유도하는 용도일 뿐이며, 공식 순위는 다음 슬라이드에서 설명할 30개 시드 평가 점수로 완전히 독립적으로 결정됩니다.",
+        "cues_en": "Guide attendees through the 3 visual zones: top call flow, bottom-left I/O spaces, and bottom-right termination conditions plus reward vs official score.",
+        "cues_kr": "상단의 메서드 호출 흐름, 좌측 하단의 입출력 규격, 우측 하단의 종료 조건 및 보상-점수 구분의 3개 영역을 차례로 명쾌하게 짚어줍니다.",
+        "qa_en": "Q: Does the step reward r_t affect the benchmark score? A: Not at all! Reward r_t is only used during model.learn() for RL. The benchmark evaluates orbit RMS and step counts directly.",
+        "qa_kr": "Q: step에서 반환되는 보상 r_t가 벤치마크 점수에 영향을 주나요? A: 전혀 영향을 주지 않습니다! 보상은 강화학습 훈련용 손실 계산에만 쓰이며, 공식 점수는 30개 시드의 최종 RMS와 수렴 스텝 수로만 매겨집니다.",
+        "trans_en": "How are controllers officially scored across the 30 seeds? Let us examine the official scoring formula on Slide 30.",
+        "trans_kr": "그렇다면 30개 시드에 대해 제어기 성능은 어떤 공식으로 채점될까요? 슬라이드 30의 공식 채점 수식을 확인해보겠습니다.",
     },
     {
-        "num": 31,
+        "num": 30,
         "category": "Evaluation Protocol",
         "title_en": "Standardized 30-Seed Scoring Formula",
         "title_kr": "공식 30개 시드 평가 프로토콜 및 채점 공식",
@@ -512,11 +496,11 @@ SLIDES = [
         "cues_kr": "성공 400점, 속도 300점, 정밀도 300점의 균형을 강조하며, 단 1개 시드의 실패(0점)가 전체 순위에 치명적임을 경고합니다.",
         "qa_en": "Q: Why is current norm not scored? A: Total current is dictated by the seed's distortion kick and varies by only 2% between controllers.",
         "qa_kr": "Q: 전류 크기(current norm)는 왜 점수에 반영되지 않나요? A: 보정에 필요한 누적 전류는 시드의 초기 왜곡 크기에 의해 대부분 결정되며, 제어기간 편차가 2% 미만으로 미미하기 때문입니다.",
-        "trans_en": "How do our reference baselines and tracks perform under this official formula? Let us examine the live leaderboard.",
-        "trans_kr": "이 공식 채점 기준에 따라 기존 베이스라인과 챌린지 트랙 제어기들의 성능을 직접 비교해보겠습니다.",
+        "trans_en": "How do our reference baselines and tracks perform under this official formula? Let us examine the live leaderboard on Slide 31.",
+        "trans_kr": "이 공식 채점 기준에 따라 기존 베이스라인과 챌린지 트랙 제어기들의 성능을 슬라이드 31에서 비교해보겠습니다.",
     },
     {
-        "num": 32,
+        "num": 31,
         "category": "Leaderboard & Trajectories",
         "title_en": "Tested Benchmark Leaderboard & Trajectories",
         "title_kr": "공식 벤치마크 리더보드 및 수렴 궤적 비교",
@@ -528,11 +512,11 @@ SLIDES = [
         "cues_kr": "590점에서 878점에 이르는 점수 격차를 짚어주며, 참가자들의 튜닝에 따라 순위가 실시간으로 뒤바뀔 수 있음을 강조합니다.",
         "qa_en": "Q: Can RL beat BO? A: Yes! A tuned residual policy or model-predictive RL agent in the solution scores 939.981 points!",
         "qa_kr": "Q: RL(트랙 2)이 BO(트랙 3)를 이길 수 있나요? A: 당연히 가능합니다! 주최 측 솔루션에서 잔차를 제대로 학습시킨 RL 에이전트는 무려 939.981점으로 전체 1위를 차지했습니다.",
-        "trans_en": "Let us summarize how all these controllers compare across methodology, latency, and sample efficiency.",
-        "trans_kr": "각 제어 기법들의 장단점, 연산 지연시간, 샘플 효율성을 종합 비교 분석해보겠습니다.",
+        "trans_en": "Let us summarize how all these controllers compare across methodology, latency, and sample efficiency on Slide 32.",
+        "trans_kr": "각 제어 기법들의 장단점, 연산 지연시간, 샘플 효율성을 슬라이드 32에서 종합 비교 분석해보겠습니다.",
     },
     {
-        "num": 33,
+        "num": 32,
         "category": "Method Comparison Summary",
         "title_en": "Method Comparison Summary",
         "title_kr": "제어 방식별 종합 비교 요약 (기법, 연산 지연 및 성능)",
@@ -544,11 +528,11 @@ SLIDES = [
         "cues_kr": "연산 속도, 필요 데이터량, 알고리즘 복잡도 간의 삼각 트레이드오프를 짚어주며 강의 전체를 유기적으로 정리합니다.",
         "qa_en": "Q: Which track is recommended for beginners? A: Track 1 (TODO 1) is the most intuitive starting point, followed by Track 3.",
         "qa_kr": "Q: 초심자에게는 어떤 트랙을 가장 추천하시나요? A: 딥러닝 입문자에게는 직관적인 트랙 1(TODO 1)을 먼저 권장하며, 이후 트랙 3이나 트랙 2로 확장하는 것이 좋습니다.",
-        "trans_en": "Now, what specific strategies can you execute this afternoon to climb the leaderboard? Let us look at Slide 34.",
-        "trans_kr": "그렇다면 오늘 오후 해커톤에서 리더보드 상위권에 오르기 위한 구체적인 실전 공략 전략을 공유해 드리겠습니다.",
+        "trans_en": "Now, what specific strategies can you execute this afternoon to climb the leaderboard? Let us look at Slide 33.",
+        "trans_kr": "그렇다면 오늘 오후 해커톤에서 리더보드 상위권에 오르기 위한 구체적인 실전 공략 전략을 슬라이드 33에서 공유해 드리겠습니다.",
     },
     {
-        "num": 34,
+        "num": 33,
         "category": "Strategic Advice",
         "title_en": "Strategic Advice for Competitors",
         "title_kr": "해커톤 참가자를 위한 실전 공략 전략 (TODO 1, 2, 3)",
@@ -560,11 +544,11 @@ SLIDES = [
         "cues_kr": "환경의 물리 상수나 평가 시드를 조작하지 않고 정정당당하게 알고리즘 자체를 개선해야 한다는 규칙을 환기하며 도전 의식을 북돋웁니다.",
         "qa_en": "Q: Can we combine methods, e.g. GP prior with RL? A: Absolutely! Novel hybrid architectures are welcome and often win hackathons.",
         "qa_kr": "Q: 두 가지 방식을 융합해도 되나요? A: 물론입니다! GP 예측을 사전 지식으로 활용하는 하이브리드 제어기는 실제 연구에서도 매우 강력한 접근법입니다.",
-        "trans_en": "Finally, let us summarize our morning journey and transition to Lecture 2 with Dr. Thorsten Hellert.",
-        "trans_kr": "이제 오늘 강의를 마무리하며 핵심 교훈을 정리하고, Thorsten Hellert 박사님의 제2강으로 넘어가겠습니다.",
+        "trans_en": "Finally, let us summarize our morning journey and transition to Lecture 2 with Dr. Thorsten Hellert on Slide 34.",
+        "trans_kr": "이제 오늘 강의를 마무리하며 핵심 교훈을 정리하고, Thorsten Hellert 박사님의 제2강으로 슬라이드 34에서 넘어가겠습니다.",
     },
     {
-        "num": 35,
+        "num": 34,
         "category": "Summary & Transition",
         "title_en": "Summary & Transition to Lecture 2",
         "title_kr": "강의 요약, 핵심 교훈 및 제2강 연계 안내",
@@ -640,7 +624,7 @@ def build_english_tex():
 \fancyhf{}
 \fancyhead[L]{\small\bfseries\color{primaryblue}AI Applications in Accelerators \enspace$|$\enspace Lecture 1 Slide Narratives}
 \fancyhead[R]{\small\color{darkgray}Chong Shik Park, Ph.D.}
-\fancyfoot[C]{\small\bfseries\color{primaryblue}Slide \thepage\ of 35}
+\fancyfoot[C]{\small\bfseries\color{primaryblue}Slide \thepage\ of 34}
 \fancyfoot[R]{\footnotesize\color{darkgray}AI4ACC Tutorial 2026}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
@@ -678,9 +662,9 @@ def build_english_tex():
     \begin{minipage}{0.88\textwidth}
         \small\color{darkgray}
         \textbf{Document Overview \& Pedagogical Structure:}\\
-        This authoritative companion provides the complete word-for-word spoken narrative, technical physics context, slide visual architecture blueprints, pedagogical focus points, anticipated participant questions with model answers, and natural verbal transition cues for all 35 slides comprising Lecture 1.
+        This authoritative companion provides the complete word-for-word spoken narrative, technical physics context, slide visual architecture blueprints, pedagogical focus points, anticipated participant questions with model answers, and natural verbal transition cues for all 34 slides comprising Lecture 1.
         \par\vspace{0.6em}
-        Each slide is formatted on its own dedicated single page (1:1 correspondence with Slides 1 to 35), allowing the lecturer to present seamlessly from the lectern and providing hackathon attendees with a self-contained, reproducible reference for all three competition tracks.
+        Each slide is formatted on its own dedicated single page (1:1 correspondence with Slides 1 to 34), allowing the lecturer to present seamlessly from the lectern and providing hackathon attendees with a self-contained, reproducible reference for all three competition tracks.
     \end{minipage}
     \vfill
     {\footnotesize\color{darkgray}Korea University Accelerator Physics Laboratory \enspace$\bullet$\enspace 2026}
@@ -701,7 +685,7 @@ def build_english_tex():
 \fancyfoot[C]{\small\color{darkgray}Table of Contents}
 
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=8pt,right=8pt,top=4pt,bottom=4pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}Table of Contents \enspace$|$\enspace Lecture 1 Slide Directory (Slides 1--35)}
+{\large\bfseries\color{white}Table of Contents \enspace$|$\enspace Lecture 1 Slide Directory (Slides 1--34)}
 \end{tcolorbox}
 \vspace{0.4em}
 
@@ -711,12 +695,12 @@ def build_english_tex():
 \end{multicols}}
 ''')
 
-    # --- Slide Pages (1 to 35) ---
-    out.append(r'''% --- Slide Pages (1 to 35) ---
+    # --- Slide Pages (1 to 34) ---
+    out.append(r'''% --- Slide Pages (1 to 34) ---
 \clearpage
 \pagenumbering{arabic}
 \setcounter{page}{1}
-\fancyfoot[C]{\small\bfseries\color{primaryblue}Slide \thepage\ of 35}
+\fancyfoot[C]{\small\bfseries\color{primaryblue}Slide \thepage\ of 34}
 ''')
 
     for s in SLIDES:
@@ -734,7 +718,7 @@ def build_english_tex():
         out.append(r'\phantomsection')
         out.append(f'\\addcontentsline{{toc}}{{section}}{{Slide {num}: {title}}}')
         out.append(r'\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]')
-        out.append(f'{{\\large\\bfseries\\color{{white}}Slide {num}:\\enspace {title}}}\\hfill{{\\footnotesize\\bfseries\\color{{white!85!lightbg}}{cat} \\enspace$|$\\enspace Slide {num} of 35}}')
+        out.append(f'{{\\large\\bfseries\\color{{white}}Slide {num}:\\enspace {title}}}\\hfill{{\\footnotesize\\bfseries\\color{{white!85!lightbg}}{cat} \\enspace$|$\\enspace Slide {num} of 34}}')
         out.append(r'\end{tcolorbox}')
         out.append(r'\vspace{0.2em}')
 
@@ -786,7 +770,7 @@ def build_korean_tex():
 \fancyhf{}
 \fancyhead[L]{\small\bfseries\color{primaryblue}가속기 인공지능 튜토리얼 \enspace$|$\enspace 제1강 슬라이드 내러티브 대본}
 \fancyhead[R]{\small\color{darkgray}박종식 교수 (고려대학교)}
-\fancyfoot[C]{\small\bfseries\color{primaryblue}슬라이드 \thepage\ / 35}
+\fancyfoot[C]{\small\bfseries\color{primaryblue}슬라이드 \thepage\ / 34}
 \fancyfoot[R]{\footnotesize\color{darkgray}AI4ACC Tutorial 2026}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
@@ -824,9 +808,9 @@ def build_korean_tex():
     \begin{minipage}{0.88\textwidth}
         \small\color{darkgray}
         \textbf{문서 개요 및 교수학적 구성 체계:}\\
-        본 문서는 제1강 총 35개 슬라이드 전체에 대한 구두 발표 대본(Verbatim Script), 물리 이론 배경, 슬라이드 시각 구성 요약, 교육적 강조 포인트, 예상 질의응답(Q\&A), 그리고 다음 슬라이드로의 자연스러운 전환 멘트를 수록한 공식 강연 해설서입니다.
+        본 문서는 제1강 총 34개 슬라이드 전체에 대한 구두 발표 대본(Verbatim Script), 물리 이론 배경, 슬라이드 시각 구성 요약, 교육적 강조 포인트, 예상 질의응답(Q\&A), 그리고 다음 슬라이드로의 자연스러운 전환 멘트를 수록한 공식 강연 해설서입니다.
         \par\vspace{0.6em}
-        각 슬라이드의 내용 전체가 정확히 1페이지 안에 완결되도록 조판(1번부터 35번 슬라이드와 1:1 페이지 대응)되어, 발표자가 강단에서 편리하게 직관적으로 슬라이드를 넘기며 강연할 수 있으며, 참가자들의 실전 해커톤 자습 교재로 최적화되었습니다.
+        각 슬라이드의 내용 전체가 정확히 1페이지 안에 완결되도록 조판(1번부터 34번 슬라이드와 1:1 페이지 대응)되어, 발표자가 강단에서 편리하게 직관적으로 슬라이드를 넘기며 강연할 수 있으며, 참가자들의 실전 해커톤 자습 교재로 최적화되었습니다.
     \end{minipage}
     \vfill
     {\footnotesize\color{darkgray}고려대학교 가속기물리연구실 \enspace$\bullet$\enspace 2026}
@@ -847,7 +831,7 @@ def build_korean_tex():
 \fancyfoot[C]{\small\color{darkgray}목차}
 
 \noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=8pt,right=8pt,top=4pt,bottom=4pt,boxrule=0pt,arc=2pt]
-{\large\bfseries\color{white}목차 (Table of Contents) \enspace$|$\enspace 제1강 슬라이드 디렉토리 (슬라이드 1--35)}
+{\large\bfseries\color{white}목차 (Table of Contents) \enspace$|$\enspace 제1강 슬라이드 디렉토리 (슬라이드 1--34)}
 \end{tcolorbox}
 \vspace{0.4em}
 
@@ -857,12 +841,12 @@ def build_korean_tex():
 \end{multicols}}
 ''')
 
-    # --- Slide Pages (1 to 35) ---
-    out.append(r'''% --- Slide Pages (1 to 35) ---
+    # --- Slide Pages (1 to 34) ---
+    out.append(r'''% --- Slide Pages (1 to 34) ---
 \clearpage
 \pagenumbering{arabic}
 \setcounter{page}{1}
-\fancyfoot[C]{\small\bfseries\color{primaryblue}슬라이드 \thepage\ / 35}
+\fancyfoot[C]{\small\bfseries\color{primaryblue}슬라이드 \thepage\ / 34}
 ''')
 
     for s in SLIDES:
@@ -880,7 +864,7 @@ def build_korean_tex():
         out.append(r'\phantomsection')
         out.append(f'\\addcontentsline{{toc}}{{section}}{{슬라이드 {num}: {title}}}')
         out.append(r'\noindent\begin{tcolorbox}[colback=navy,colframe=navy,left=6pt,right=6pt,top=3pt,bottom=3pt,boxrule=0pt,arc=2pt]')
-        out.append(f'{{\\large\\bfseries\\color{{white}}슬라이드 {num}:\\enspace {title}}}\\hfill{{\\footnotesize\\bfseries\\color{{white!85!lightbg}}{cat} \\enspace$|$\\enspace 슬라이드 {num} / 35}}')
+        out.append(f'{{\\large\\bfseries\\color{{white}}슬라이드 {num}:\\enspace {title}}}\\hfill{{\\footnotesize\\bfseries\\color{{white!85!lightbg}}{cat} \\enspace$|$\\enspace 슬라이드 {num} / 34}}')
         out.append(r'\end{tcolorbox}')
         out.append(r'\vspace{0.2em}')
 

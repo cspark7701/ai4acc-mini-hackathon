@@ -31,7 +31,7 @@
 \setlength{\parindent}{0pt}
 
 % Total Slides Count
-\newcommand{\totalslides}{35}
+\newcommand{\totalslides}{34}
 
 % Positioning helper
 \newcommand{\at}[4]{%
@@ -1002,27 +1002,44 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 28: Track 3: Closed-Loop Bayesian Optimization
+% SLIDE 28: Track 3: Closed-Loop Bayesian Optimization & LCB Acquisition (MERGED)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.08}
-  \slideheader{Track 3 Challenge}{Track 3: Closed-Loop Bayesian Optimization}{Sample-efficient probabilistic modeling with epistemic uncertainty estimation}
+  \slidespread{1.12}
+  \slideheader{Track 3 Challenge}{Track 3: Bayesian Optimization \& LCB Acquisition}{Sample-efficient Gaussian Process surrogate with Lower Confidence Bound acquisition}
 
-  \drawcard{0.8}{1.4}{11.733}{5.3}{Probabilistic Gaussian Process Modeling}
-  \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
-    {\bfseries\color{navy}Gaussian Process Surrogate Formulation:}\\[0.3em]
-    Instead of a single prediction, a GP models a distribution over orbit response functions of the total current $\mathbf{I}$:\\[0.5em]
-    \centering{\fs{18}{22}\bfseries\color{primaryblue}$\hat{\mathbf{Y}}(\mathbf{I}) \sim \mathcal{GP}\left( \mathbf{m}(\mathbf{I}), \mathbf{K}(\mathbf{I}, \mathbf{I}') \right)$}\\[0.7em]
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Probabilistic Gaussian Process Modeling \& LCB Acquisition Strategy}
+
+  % Left column: GP Formulation & Kernels (width 5.4 in, starts at x = 1.05 in, y = 1.95 in)
+  \at{1.05}{1.95}{5.4}{\fs{12}{16}\color{darkgray}%
+    {\bfseries\color{navy}1. Probabilistic GP Surrogate Formulation:}\\[0.3em]
+    Instead of a deterministic point prediction, a GP models a distribution over orbit response functions of the total current $\mathbf{I}$:\\[0.4em]
+    \centering{\fs{14}{18}\bfseries\color{primaryblue}$\hat{\mathbf{Y}}(\mathbf{I}) \sim \mathcal{GP}\left( \mathbf{m}(\mathbf{I}), \mathbf{K}(\mathbf{I}, \mathbf{I}') \right)$}\\[0.5em]
     \raggedright
-    {\bfseries\color{navy}$\bullet$ Composite Physics-Informed Kernel Architecture:}\\[0.3em]
-    \centering{\fs{14}{17}\bfseries\color{primaryblue}$k(\mathbf{x}, \mathbf{x}') = k_{\text{Mat\'ern-5/2}}(\mathbf{x}, \mathbf{x}') + \sigma_{\text{noise}}^2 \cdot \delta(\mathbf{x}, \mathbf{x}')$}\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ Physics-Informed Composite Kernel Architecture:}\\[0.25em]
+    \centering{\fs{12.5}{15}\bfseries\color{primaryblue}$k(\mathbf{x}, \mathbf{x}') = k_{\text{Mat\'ern-5/2}}(\mathbf{x}, \mathbf{x}') + \sigma_{\text{noise}}^2 \cdot \delta(\mathbf{x}, \mathbf{x}')$}\\[0.4em]
     \raggedright
-    -- \textbf{Mat\'ern-5/2 Kernel:} Captures smooth, non-linear magnetic saturation falloff without imposing the unrealistic infinite differentiability of RBF kernels.\\
-    -- \textbf{White Noise Kernel:} Explicitly accounts for the $10\ \mu\text{m}$ BPM diagnostic jitter floor, avoiding kernel overfitting to noise.\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Epistemic Uncertainty Estimation:}\\[0.3em]
-    For any candidate current $\mathbf{I} + \Delta\mathbf{I}$, the GP provides a posterior mean $\boldsymbol{\mu}_{\text{GP}}$ and a standard deviation $\boldsymbol{\sigma}_{\text{GP}}$.\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Closed-Loop Control, Offline Model:}\\[0.3em]
-    Each step re-solves the acquisition from the latest BPM reading, but the reference GP is fitted once on $\sim$300 calibration shots and stays fixed. Refitting it with every new step (e.g.\ from a \texttt{step\_callback}) turns Track 3 into true online Bayesian optimization.
+    -- \textbf{Mat\'ern-5/2 Kernel:} Models smooth, non-linear saturation falloff without unrealistic infinite smoothness.\\
+    -- \textbf{White Noise Kernel:} Explicitly matches the $10\ \mu\text{m}$ sensor noise floor ($\sigma_{\text{noise}} = 0.010\text{ mm}$), avoiding overfitting to jitter.\\[0.5em]
+    {\bfseries\color{navy}$\bullet$ Epistemic Uncertainty Estimation:}\\[0.25em]
+    For any candidate current $\mathbf{I} + \Delta\mathbf{I}$, the GP outputs a posterior mean $\boldsymbol{\mu}_{\text{GP}}$ and an uncertainty estimate $\boldsymbol{\sigma}_{\text{GP}}$.\\[0.5em]
+    {\bfseries\color{navy}$\bullet$ Closed-Loop Execution:} Re-solves acquisition from fresh BPM readings at each step. Fitted once on $\sim$300 calibration shots.
+  }
+
+  % Right column: LCB Acquisition Strategy (width 5.4 in, starts at x = 6.85 in, y = 1.95 in)
+  \at{6.85}{1.95}{5.4}{\fs{12}{16}\color{darkgray}%
+    {\bfseries\color{navy}2. Lower Confidence Bound (LCB) Acquisition:}\\[0.3em]
+    At each step, solve for delta kick $\Delta\mathbf{I} \in [-0.8, +0.8]^6\text{ A}$ minimizing the LCB acquisition criterion:\\[0.4em]
+    \centering{\fs{12.5}{15}\bfseries\color{primaryblue}$\alpha_{\text{LCB}}(\Delta\mathbf{I}) = \text{RMS}\left( \mathbf{Y}_{\text{obs}} - \boldsymbol{\mu}_{\text{GP}}(\mathbf{I}) + \boldsymbol{\mu}_{\text{GP}}(\mathbf{I} + \Delta\mathbf{I}) \right)$}\\[0.2em]
+    \centering{\fs{12.5}{15}\bfseries\color{primaryblue}$- \ \kappa \cdot \overline{\boldsymbol{\sigma}}_{\text{GP}}(\mathbf{I} + \Delta\mathbf{I}) \ + \ \lambda \|\Delta\mathbf{I}\|^2$}\\[0.5em]
+    \raggedright
+    {\bfseries\color{navy}$\bullet$ Parameter Interpretations:}\\[0.25em]
+    -- $\boldsymbol{\mu}_{\text{GP}}(\mathbf{I} + \Delta\mathbf{I}) - \boldsymbol{\mu}_{\text{GP}}(\mathbf{I})$: Predicted orbit change from kick $\Delta\mathbf{I}$. Adding to $\mathbf{Y}_{\text{obs}}$ yields predicted next orbit.\\
+    -- $\overline{\boldsymbol{\sigma}}_{\text{GP}}$: Epistemic uncertainty across the 12 BPM stations.\\
+    -- $\kappa \ge 0$: Exploration coefficient. $\kappa > 0$ probes unmapped high-current zones; $\kappa = 0$ exploits calibrated mean.\\
+    -- $\lambda \|\Delta\mathbf{I}\|^2$: Regularization penalty against coil heating.\\[0.6em]
+    {\bfseries\color{navy}$\bullet$ Benchmark-Leading Performance:}\\[0.25em]
+    \textbf{\color{successgreen}With $\kappa = 0$, Track 3 converges in 3.6 steps on average (878.384 points), achieving the top baseline score!}
   }
 
   \slidefooter{28}
@@ -1030,24 +1047,47 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 29: Lower Confidence Bound Acquisition
+% SLIDE 29: Gymnasium Environment Contract (REDESIGNED: CLEAR & MODULAR)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.40}
-  \slideheader{Acquisition Function}{Lower Confidence Bound Acquisition}{Balancing exploration of non-linear saturation against exploitation of predicted orbit corrections}
+  \slidespread{1.15}
+  \slideheader{Benchmark Contract}{Gymnasium Environment Contract}{How your controller interacts with the accelerator simulation step-by-step}
 
-  \drawcard{0.8}{1.4}{11.733}{5.3}{The LCB Acquisition Strategy}
-  \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
-    {\bfseries\color{navy}Lower Confidence Bound (LCB) Mathematical Formulation:}\\[0.3em]
-    At each step, the controller selects kicks by minimizing the LCB acquisition criterion:\\[0.5em]
-    \centering{\fs{16}{20}\bfseries\color{primaryblue}$\alpha_{\text{LCB}}(\Delta\mathbf{I}) = \text{RMS}\left( \mathbf{Y}_{\text{obs}} - \boldsymbol{\mu}_{\text{GP}}(\mathbf{I}) + \boldsymbol{\mu}_{\text{GP}}(\mathbf{I} + \Delta\mathbf{I}) \right)  -  \kappa \cdot \overline{\boldsymbol{\sigma}}_{\text{GP}}(\mathbf{I} + \Delta\mathbf{I})  +  \lambda \|\Delta\mathbf{I}\|^2$}\\[0.7em]
-    \raggedright
-    {\bfseries\color{navy}$\bullet$ Parameter Interpretations:}\\[0.3em]
-    -- $\boldsymbol{\mu}_{\text{GP}}(\mathbf{I})$: Posterior mean orbit response at total current $\mathbf{I}$, for all 12 BPM stations.\\
-    -- $\overline{\boldsymbol{\sigma}}_{\text{GP}}(\mathbf{I} + \Delta\mathbf{I})$: Posterior epistemic uncertainty (average standard deviation across BPMs).\\
-    -- $\kappa \ge 0$: Exploration coefficient. When $\kappa > 0$, the agent explores uncharted high-current regimes; when $\kappa = 0$, it exploits the calibrated posterior mean.\\
-    -- $\lambda \|\Delta\mathbf{I}\|^2$: Small penalty on the kick size, which keeps the optimizer away from needlessly large kicks.\\[0.8em]
-    {\bfseries\color{navy}$\bullet$ Reference Performance:} \textbf{\color{successgreen}With $\kappa = 0$, Track 3 converges in about 3.6 steps on average (878.384 points), the best reference score.}
+  \drawcard{0.8}{1.4}{11.733}{5.3}{Farama Gymnasium Environment: Method Calls, Data Shapes \& Rules}
+
+  % Top Banner: The Two Core Methods (width 11.1 in, x = 1.1 in, y = 1.95 in)
+  \at{1.1}{1.95}{11.1}{\fs{12.5}{16}\color{darkgray}%
+    {\bfseries\color{navy}Step 0: Start an Episode \enspace$\longrightarrow$\enspace \texttt{obs, info = env.reset(seed=seed)}}\\[0.2em]
+    Resets total currents to $\mathbf{0}\text{ A}$, samples random initial orbit distortion $\mathbf{Y}_0$ from seed, and returns initial 12 BPM readings.\\[0.6em]
+    {\bfseries\color{navy}Step 1..50: Closed-Loop Interaction \enspace$\longrightarrow$\enspace \texttt{obs, reward, terminated, truncated, info = env.step(action)}}\\[0.2em]
+    Applies 6 steerer delta kicks, updates total current state $\mathbf{I}_{t+1} = \text{clip}(\mathbf{I}_t + \text{action}, -5.0, 5.0)\text{ A}$, and measures new orbit.
+  }
+
+  % Dividing line between top and bottom
+  \draw[bordergray, line width=1.0pt] ([xshift=1.1in,yshift=-3.45in]current page.north west) -- ++(11.1in, 0in);
+
+  % Bottom Left: Input & Output Spaces (width 5.4 in, x = 1.1 in, y = 3.60 in)
+  \at{1.1}{3.60}{5.4}{\fs{12}{15.5}\color{darkgray}%
+    {\bfseries\color{navy}1. Observation \& Action Spaces:}\\[0.3em]
+    $\bullet$ \textbf{Observation (\texttt{obs}):} 12 BPM readings $\mathbf{Y} \in \mathbb{R}^{12}\text{ mm}$.\\
+    \hspace*{0.8em}-- Gaussian sensor noise: $\boldsymbol{\epsilon} \sim \mathcal{N}(0, 0.010^2)\text{ mm}$ ($10\ \mu\text{m}$ floor).\\[0.4em]
+    $\bullet$ \textbf{Action (\texttt{action}):} 6 delta currents $\Delta\mathbf{I} \in [-0.8, +0.8]^6\text{ A}$.\\
+    \hspace*{0.8em}-- Per-step rate limit: values outside $[-0.8, +0.8]\text{ A}$ are hard-clipped.\\[0.4em]
+    $\bullet$ \textbf{State Metadata (\texttt{info[\textquotedbl{}currents\textquotedbl{}]}):} Total currents $\mathbf{I} \in [-5.0, +5.0]^6\text{ A}$.\\
+    \hspace*{0.8em}-- \textbf{Crucial for saturation!} Always read \texttt{info[\textquotedbl{}currents\textquotedbl{}]}.
+  }
+
+  % Bottom Right: Termination & Scoring (width 5.4 in, x = 6.85 in, y = 3.60 in)
+  \at{6.85}{3.60}{5.4}{\fs{12}{15.5}\color{darkgray}%
+    {\bfseries\color{navy}2. Episode Termination \& Reward:}\\[0.3em]
+    $\bullet$ \textbf{\color{successgreen}Success (\texttt{terminated = True}):}\\
+    \hspace*{0.8em}Triggered when $\text{RMS} < 0.030\text{ mm}$ (30 microns). Mission done!\\[0.4em]
+    $\bullet$ \textbf{\color{crimson}Failure / Timeout (\texttt{truncated = True}):}\\
+    \hspace*{0.8em}Triggered if step count reaches $50$ before reaching $0.030\text{ mm}$.\\[0.4em]
+    $\bullet$ \textbf{RL Step Reward vs.\ Official Score (Important!):}\\
+    \hspace*{0.8em}-- \emph{Step Reward ($r_t$):} Guides RL policy training loss only:\\
+    \hspace*{1.4em}$r_t = -10\,\text{RMS} - 0.01\,\|\Delta\mathbf{I}\|^2 - c_{\text{step}} + (50\text{ if success})$.\\
+    \hspace*{0.8em}-- \emph{Official Score:} Evaluated by \texttt{benchmark.py} over 30 test seeds (Slide 30). Step rewards do \emph{not} affect leaderboard rank!
   }
 
   \slidefooter{29}
@@ -1055,33 +1095,7 @@
 \clearpage
 
 % ==============================================================================
-% SLIDE 30: Gymnasium Environment Contract
-% ==============================================================================
-\begin{tikzpicture}[remember picture,overlay]
-  \slidespread{1.50}
-  \slideheader{Benchmark Contract}{Gymnasium Environment Contract}{Standard Farama Gymnasium API contract governing state, actions, and rewards}
-
-  \drawcard{0.8}{1.4}{11.733}{5.3}{The Farama Gymnasium Environment Interface}
-  \at{1.1}{2.1}{11.1}{\fs{13.5}{19}\color{darkgray}%
-    {\bfseries\color{navy}Standard Gymnasium Method Signatures:}\\[0.3em]
-    \texttt{obs, info = env.reset(seed=seed)}\\
-    \texttt{obs, reward, terminated, truncated, info = env.step(action)}\\[0.7em]
-    $\bullet$ \textbf{Observation Space:} \texttt{Box(-10.0, +10.0, shape=(12,), dtype=float32)} (12 transverse BPM readings in mm).\\[0.4em]
-    $\bullet$ \textbf{Action Space:} \texttt{Box(-0.8, +0.8, shape=(6,), dtype=float32)} (6 per-step delta kicks $\Delta\mathbf{I}$ in Amperes).\\[0.7em]
-    $\bullet$ \textbf{Step Reward Function:}\\[0.3em]
-    \centering{\fs{14}{17}\bfseries\color{primaryblue}$r_t = - 10\,\text{RMS}_{t+1} - 0.01\,\|\Delta\mathbf{I}\|_2^2 - c_{\text{step}} + ( 50 \text{ if } \text{RMS}_{t+1} < 0.030\text{ mm else } 0 )$}\\[0.2em]
-    \raggedright
-    {\fs{12}{15}\color{mutedgray}Default weights, all adjustable (\texttt{rms\_weight}, \texttt{action\_weight}, \texttt{step\_penalty}, \texttt{success\_bonus}, \texttt{reward\_fn}); the reward guides RL training only and does not affect the official score.}\\[0.7em]
-    \raggedright
-    $\bullet$ \textbf{Termination Criteria:} \texttt{terminated = True} when $\text{RMS} < 0.030\text{ mm}$ (success); \texttt{truncated = True} when $\text{step} \ge 50$ (budget exhausted).
-  }
-
-  \slidefooter{30}
-\end{tikzpicture}
-\clearpage
-
-% ==============================================================================
-% SLIDE 31: Standardized 30-Seed Scoring Formula
+% SLIDE 30: Standardized 30-Seed Scoring Formula
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
@@ -1115,12 +1129,12 @@
     \textbf{Current norm:} Reported on the leaderboard but not scored; it varies by only a few percent between controllers.
   }
 
-  \slidefooter{31}
+  \slidefooter{30}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 32: Tested Benchmark Leaderboard & Trajectories (TABLE FORMAT - NO WRAPPING)
+% SLIDE 31: Tested Benchmark Leaderboard & Trajectories (TABLE FORMAT - NO WRAPPING)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.22}
@@ -1147,12 +1161,12 @@
       \end{tabular}
     };
 
-  \slidefooter{32}
+  \slidefooter{31}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 33: Method Comparison Summary (Baselines & Tracks)
+% SLIDE 32: Method Comparison Summary (Baselines & Tracks)
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.15}
@@ -1178,12 +1192,12 @@
     Reference: unmodified notebook controllers (per-seed 0--1000 scoring, mean over 30 seeds). Solution: the organizers' worked solution, which inverts the model on the total current. Baseline 0 is a fixed reference and is not tuned by participants.
   }
 
-  \slidefooter{33}
+  \slidefooter{32}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 34: Strategic Advice for Competitors
+% SLIDE 33: Strategic Advice for Competitors
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.39}
@@ -1202,12 +1216,12 @@
     $\bullet$ Connect your notebook runs to Weights \& Biases (\texttt{wandb.ai}) to visualize step-by-step RMS decay against reference baselines on the live leaderboard.
   }
 
-  \slidefooter{34}
+  \slidefooter{33}
 \end{tikzpicture}
 \clearpage
 
 % ==============================================================================
-% SLIDE 35: Summary & Transition to Lecture 2
+% SLIDE 34: Summary & Transition to Lecture 2
 % ==============================================================================
 \begin{tikzpicture}[remember picture,overlay]
   \slidespread{1.08}
@@ -1227,7 +1241,7 @@
     {\fs{16}{20}\bfseries\color{accent}Q \& A Discussion}
   }
 
-  \slidefooter{35}
+  \slidefooter{34}
 \end{tikzpicture}
 
 \end{document}
